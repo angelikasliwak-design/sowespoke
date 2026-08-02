@@ -73,13 +73,33 @@ const MASCOT_SVG = `<svg viewBox="0 0 64 64" aria-hidden="true">
    reiner Halbton-Punkte — für Hero-Bereiche und Seitenkarten. Ersetzen die
    Halbton-Textur, keine dicken Konturen/Panels (No-Border-Regel bleibt). */
 const HERO_ILLUSTRATION = `<svg viewBox="0 0 200 200" aria-hidden="true">
-  <path d="M58 76 Q100 55 145 40 Q152 100 145 160 Q100 145 58 124 Q54 100 58 76 Z"
-    fill="var(--accent-tint)" stroke="var(--ink)" stroke-width="3" stroke-linejoin="round"/>
-  <rect x="28" y="86" width="30" height="28" rx="9" fill="var(--accent-tint)" stroke="var(--ink)" stroke-width="3"/>
-  <path d="M158 60 Q182 100 158 140" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>
-  <path d="M177 44 Q209 100 177 156" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
-  <circle cx="152" cy="16" r="5" fill="var(--yellow)"/>
-  <circle cx="20" cy="152" r="3.5" fill="var(--teal)"/>
+  <defs>
+    <linearGradient id="megaBody" x1="30%" y1="100%" x2="90%" y2="0%">
+      <stop offset="0%" stop-color="#9c0349"/>
+      <stop offset="55%" stop-color="var(--accent)"/>
+      <stop offset="100%" stop-color="#ff4b9e"/>
+    </linearGradient>
+    <linearGradient id="megaGrip" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9c0349"/>
+      <stop offset="100%" stop-color="var(--accent)"/>
+    </linearGradient>
+  </defs>
+  <g transform="rotate(-7 100 100)">
+    <circle cx="34" cy="26" r="2.4" fill="var(--yellow)" opacity="0.8"/>
+    <circle cx="46" cy="18" r="1.6" fill="var(--yellow)" opacity="0.6"/>
+    <circle cx="24" cy="42" r="1.6" fill="var(--yellow)" opacity="0.6"/>
+    <path d="M58 76 Q100 55 145 40 Q153 100 145 160 Q100 145 58 124 Q54 100 58 76 Z"
+      fill="url(#megaBody)" stroke="var(--ink)" stroke-width="5" stroke-linejoin="round"/>
+    <ellipse cx="147" cy="100" rx="9" ry="57" fill="#fff" opacity="0.92" stroke="var(--ink)" stroke-width="3"/>
+    <ellipse cx="149.5" cy="100" rx="5.5" ry="49" fill="#eef0f2"/>
+    <path d="M76 68 Q92 63 106 59" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity="0.5" fill="none"/>
+    <rect x="24" y="83" width="34" height="34" rx="11" fill="url(#megaGrip)" stroke="var(--ink)" stroke-width="5"/>
+    <rect x="30" y="89" width="9" height="12" rx="3.5" fill="#fff" opacity="0.45"/>
+    <path d="M163 56 Q190 100 163 144" fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"/>
+    <path d="M183 38 Q217 100 183 162" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
+  </g>
+  <circle cx="156" cy="14" r="5" fill="var(--yellow)"/>
+  <circle cx="16" cy="156" r="3.5" fill="var(--teal)"/>
 </svg>`;
 
 const SIDECARD_ILLUSTRATION = `<svg viewBox="0 0 100 100" aria-hidden="true">
