@@ -105,15 +105,21 @@
   function renderMsChecklistSection(key, title, introDE, options) {
     const iconColor = key === "bulk" ? "--teal" : "--accent";
     const icon = key === "bulk" ? ICONS.layers : ICONS.sparkle;
+    // Nach Gruppe sortieren (stabil, erste Erscheinung entscheidet die
+    // Reihenfolge) — sonst wechseln sich Gruppen-Labels chaotisch ab, weil
+    // die Rohdaten in Dokument-Reihenfolge stehen, nicht nach Gruppe.
+    const groupOrder = [];
+    options.forEach((o) => { if (o.group && !groupOrder.includes(o.group)) groupOrder.push(o.group); });
+    const sorted = [...options].sort((a, b) => groupOrder.indexOf(a.group) - groupOrder.indexOf(b.group));
     return `
       <h2 class="feed__title feed__title--icon"><span class="feed__title__icon" style="background:var(${iconColor})">${icon}</span>${escapeHtml(title)}</h2>
       <div class="mailgen msreq">
         <p class="msreq__intro">${escapeHtml(introDE)}</p>
         <div class="msreq__checklist">
-          ${options
+          ${sorted
             .map((o, i) => {
               const divider =
-                o.group && o.group !== (options[i - 1] || {}).group
+                o.group && o.group !== (sorted[i - 1] || {}).group
                   ? `<div class="msreq__group-label">${escapeHtml(o.group)}</div>`
                   : "";
               const noteText = escapeHtml([o.what, o.note].filter(Boolean).join(" — "));
@@ -125,6 +131,7 @@
             })
             .join("")}
         </div>
+        <p class="msreq__count" id="msreq-${key}-count">0 ausgewählt</p>
         <div class="mailgen__field">
           <label for="msreq-${key}-accounts">Konto-Nummer(n) (eine pro Zeile)</label>
           <textarea id="msreq-${key}-accounts" placeholder="z. B.&#10;123-456-789&#10;987-654-321"></textarea>
@@ -156,14 +163,31 @@
     const subjectEl = document.getElementById(`msreq-${key}-subject`);
     const bodyEl = document.getElementById(`msreq-${key}-body`);
     const warningEl = document.getElementById(`msreq-${key}-warning`);
+    const countEl = document.getElementById(`msreq-${key}-count`);
     const copyBtn = view.querySelector(`[data-msreq-copy="${key}"]`);
 
+    // Eingaben lokal merken — dieselben Kundenkonten werden meist täglich
+    // wieder angefragt, erneutes Abtippen bei jedem Besuch war ein
+    // konkreter Kritikpunkt.
+    const savedAccounts = localStorage.getItem(`msreq-accounts:${key}`);
+    if (savedAccounts) accountsEl.value = savedAccounts;
+    try {
+      const savedSelected = JSON.parse(localStorage.getItem(`msreq-selected:${key}`) || "[]");
+      checks.forEach((c) => { if (savedSelected.includes(c.value)) c.checked = true; });
+    } catch {
+      // beschädigter localStorage-Eintrag ignorieren
+    }
+
     function fill() {
-      const selected = checks.filter((c) => c.checked).map((c) => options.find((o) => o.id === c.value).name);
+      const selectedIds = checks.filter((c) => c.checked).map((c) => c.value);
+      const selected = selectedIds.map((id) => options.find((o) => o.id === id).name);
       const accounts = accountsEl.value.split("\n").map((s) => s.trim()).filter(Boolean);
       const { subject, body } = composeMsMail(subjectBase, bodyIntro, selected, accountsEl.value);
       subjectEl.value = subject;
       bodyEl.value = body;
+      countEl.textContent = selected.length === 1 ? "1 ausgewählt" : `${selected.length} ausgewählt`;
+      localStorage.setItem(`msreq-accounts:${key}`, accountsEl.value);
+      localStorage.setItem(`msreq-selected:${key}`, JSON.stringify(selectedIds));
 
       const missing = [];
       if (!selected.length) missing.push("mindestens einen Punkt auswählen");
@@ -225,6 +249,9 @@
     const warningEl = document.getElementById("msreq-auto-warning");
     const copyBtn = view.querySelector(`[data-msreq-copy="auto"]`);
 
+    const savedAccounts = localStorage.getItem("msreq-accounts:auto");
+    if (savedAccounts) accountsEl.value = savedAccounts;
+
     function fill() {
       const accounts = accountsEl.value.split("\n").map((s) => s.trim()).filter(Boolean);
       const { subject, body } = composeMsMail(
@@ -235,6 +262,7 @@
       );
       subjectEl.value = subject;
       bodyEl.value = body;
+      localStorage.setItem("msreq-accounts:auto", accountsEl.value);
       if (!accounts.length) {
         warningEl.querySelector("span").textContent = "Bitte mindestens ein Konto angeben.";
         warningEl.hidden = false;
@@ -311,9 +339,21 @@
   }
 
   /* ---------------------------------------------------------------- Mascot */
+  /* Bleibt dauerhaft sichtbar (Nutzerwunsch), wird aber auf Seiten mit
+     Mail-Generator/Checklisten ausgeblendet — dort hat die Sprechblase
+     nachweislich Buttons/Formularfelder verdeckt (Kritik-Fund P0). Kein
+     dauerhaftes Schließen durch die Route, nur durch den X-Button. */
+  let mascotDismissedByUser = false;
+  let mascotCycleTimer = null;
+
+  function routeBlocksMascot(path) {
+    return path.startsWith("/praesentationen/") || path.startsWith("/vorlagen/") || path === "/anfragen";
+  }
 
   function showMascot() {
+    if (mascotDismissedByUser) return;
     const root = document.getElementById("mascot-root");
+    if (root.querySelector(".mascot")) return; // schon sichtbar
     let fact = factOfTheDay();
     root.innerHTML = `
       <div class="mascot" role="status">
@@ -327,7 +367,6 @@
     `;
     const mascotEl = root.querySelector(".mascot");
     const factEl = root.querySelector(".mascot__bubble p");
-    let cycleTimer;
 
     function nextFact() {
       fact = randomFact(fact);
@@ -338,12 +377,13 @@
       }, 160);
     }
     function scheduleCycle() {
-      clearInterval(cycleTimer);
-      cycleTimer = setInterval(nextFact, 15000); // wechselt von selbst, bleibt dauerhaft sichtbar
+      clearInterval(mascotCycleTimer);
+      mascotCycleTimer = setInterval(nextFact, 15000); // wechselt von selbst, bleibt dauerhaft sichtbar
     }
 
     root.querySelector(".mascot__close").addEventListener("click", () => {
-      clearInterval(cycleTimer);
+      mascotDismissedByUser = true;
+      clearInterval(mascotCycleTimer);
       mascotEl.classList.add("is-leaving");
       mascotEl.addEventListener("animationend", () => { root.innerHTML = ""; }, { once: true });
     });
@@ -354,8 +394,26 @@
     scheduleCycle();
   }
 
-  function initMascot() {
-    setTimeout(showMascot, 600);
+  function hideMascotForRoute() {
+    clearInterval(mascotCycleTimer);
+    const root = document.getElementById("mascot-root");
+    root.innerHTML = "";
+  }
+
+  let mascotIntroduced = false;
+
+  function updateMascotForRoute(path) {
+    if (mascotDismissedByUser) return;
+    if (routeBlocksMascot(path)) {
+      hideMascotForRoute();
+      return;
+    }
+    if (!mascotIntroduced) {
+      mascotIntroduced = true;
+      setTimeout(showMascot, 600); // sanfter erster Auftritt, danach sofortiges Ein-/Ausblenden
+    } else {
+      showMascot();
+    }
   }
 
   /* ---------------------------------------------------------------- Mailgen */
@@ -978,6 +1036,7 @@
   function render() {
     const { path, params } = currentRoute();
     updateNav(path);
+    updateMascotForRoute(path);
 
     if (path === "/") {
       renderNews(params.get("q") || "", params.get("ch") || "all");
@@ -1001,5 +1060,4 @@
 
   window.addEventListener("hashchange", render);
   render();
-  initMascot();
 })();

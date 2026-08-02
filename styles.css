@@ -23,6 +23,7 @@
 
   --teal: #2f8f8a;
   --on-teal: #ffffff;
+  --teal-text: #226b67; /* dunklere Variante nur für Fließtext/Links — 6.2:1 auf Weiß, WCAG-AA-sicher; --teal bleibt für Rahmen/Icons (nur 3:1 nötig) */
 
   --cat-ai: #5b3fb0;
   --cat-bid: #146b3a;
@@ -378,15 +379,15 @@ mark {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
   background: var(--paper);
   color: var(--ink-soft);
   transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
 }
-.row__rate-btn svg { width: 15px; height: 15px; }
+.row__rate-btn svg { width: 17px; height: 17px; }
 .row__rate-btn:hover:not(:disabled) { background: var(--paper-raised); color: var(--ink); }
 .row__rate-btn.is-voted { background: var(--accent-tint); color: var(--accent); border-color: var(--accent); }
 .row__rate-btn:disabled { cursor: default; }
@@ -517,7 +518,7 @@ mark {
   gap: var(--space-5);
   margin-bottom: var(--space-7);
 }
-.pre-line { white-space: pre-line; color: var(--ink-soft); font-size: 0.94rem; }
+.pre-line { white-space: pre-line; overflow-wrap: anywhere; color: var(--ink-soft); font-size: 0.94rem; }
 
 /* -- Leerzustand ----------------------------------------------------- */
 .empty-state {
@@ -568,7 +569,7 @@ mark {
   gap: var(--space-7);
 }
 @media (max-width: 60rem) {
-  .detail__body { grid-template-columns: 1fr; }
+  .detail__body { grid-template-columns: minmax(0, 1fr); }
 }
 .detail__main { display: flex; flex-direction: column; gap: var(--space-5); }
 .detail__main > p { max-width: 68ch; }
@@ -683,6 +684,7 @@ code {
   color: var(--ink);
   resize: vertical;
   line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 .mailgen__field textarea { min-height: 12rem; }
 .mailgen__warning {
@@ -731,6 +733,9 @@ code {
   background: var(--paper);
 }
 .msreq__group-label {
+  position: sticky;
+  top: 0;
+  background: var(--paper-raised);
   font-size: 0.76rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -739,6 +744,12 @@ code {
   padding: var(--space-3) var(--space-3) var(--space-1);
 }
 .msreq__group-label:first-child { padding-top: var(--space-2); }
+.msreq__count {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-top: calc(-1 * var(--space-2));
+}
 .msreq__option {
   display: flex;
   align-items: flex-start;
@@ -754,7 +765,7 @@ code {
 .msreq__meta { font-weight: 400; color: var(--ink-soft); font-size: 0.85rem; }
 .msreq__note { font-size: 0.85rem; color: var(--ink-soft); }
 .msreq__example { font-size: 0.9rem; }
-.msreq__example summary { cursor: pointer; font-weight: 600; color: var(--teal); }
+.msreq__example summary { cursor: pointer; font-weight: 600; color: var(--teal-text); }
 .msreq__example-text {
   white-space: pre-wrap;
   font-family: var(--font-body);
@@ -801,7 +812,7 @@ code {
   display: flex;
   align-items: flex-end;
   gap: var(--space-3);
-  max-width: min(19rem, calc(100vw - 2 * var(--space-5)));
+  max-width: min(18rem, calc(100vw - 2 * var(--space-5)));
   pointer-events: none;
   animation: mascot-in 320ms cubic-bezier(0.16, 1, 0.3, 1);
 }
