@@ -253,6 +253,7 @@
   function renderMicrosoftRequests() {
     view.innerHTML = `
       <section class="hero hero--compact">
+        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
         <div class="hero__intro">
           <h1>Anfragen an <mark>Microsoft</mark>.</h1>
           <p>Vorbereitete E-Mails auf Englisch an ${escapeHtml(MS_CONTACT_NAME)} — Beta-/Pilot-Programme, Bulk-Team-Aufgaben, Reports und Formulare.</p>
@@ -267,6 +268,7 @@
 
       <h2 class="feed__title feed__title--icon"><span class="feed__title__icon" style="background:var(--teal)">${ICONS.fileText}</span>SAP-ID-Erstellung</h2>
       <div class="info-box">
+        <div class="info-box__illustration">${SIDECARD_ILLUSTRATION}</div>
         <p>Formular zur Anlage einer neuen SAP-ID (Rechnungs-/Kontodaten, VAT, Microsoft-Advertising-Kundennummer). Direkt im Dokument ausfüllen und an ${escapeHtml(MS_CONTACT_NAME)} senden.</p>
         <a class="btn btn--secondary" href="content/microsoft-anfragen/${encodeURIComponent("SAP ID Creation Form .docx")}" download>${ICONS.download} Formular herunterladen</a>
       </div>
@@ -283,6 +285,7 @@
     const events = upcomingEvents(new Date(), 3);
     return `
       <div class="side-card">
+        <div class="side-card__illustration">${SIDECARD_ILLUSTRATION}</div>
         <h2>${ICONS.calendar} Anstehende Termine</h2>
         <ul class="side-card__list">
           ${events
@@ -323,32 +326,36 @@
       </div>
     `;
     const mascotEl = root.querySelector(".mascot");
-    root.querySelector(".mascot__close").addEventListener("click", () => {
-      mascotEl.classList.add("is-leaving");
-      mascotEl.addEventListener("animationend", () => { root.innerHTML = ""; }, { once: true });
-    });
     const factEl = root.querySelector(".mascot__bubble p");
-    root.querySelector(".mascot__more").addEventListener("click", () => {
+    let cycleTimer;
+
+    function nextFact() {
       fact = randomFact(fact);
       factEl.style.opacity = "0";
       setTimeout(() => {
         factEl.textContent = fact;
         factEl.style.opacity = "1";
       }, 160);
+    }
+    function scheduleCycle() {
+      clearInterval(cycleTimer);
+      cycleTimer = setInterval(nextFact, 15000); // wechselt von selbst, bleibt dauerhaft sichtbar
+    }
+
+    root.querySelector(".mascot__close").addEventListener("click", () => {
+      clearInterval(cycleTimer);
+      mascotEl.classList.add("is-leaving");
+      mascotEl.addEventListener("animationend", () => { root.innerHTML = ""; }, { once: true });
     });
-    sessionStorage.setItem("mascotShown", "1");
+    root.querySelector(".mascot__more").addEventListener("click", () => {
+      nextFact();
+      scheduleCycle(); // Timer neu starten, damit nicht gleich nochmal automatisch wechselt
+    });
+    scheduleCycle();
   }
 
   function initMascot() {
-    if (sessionStorage.getItem("mascotShown")) return;
-    // Erscheint erst, wenn der Hash 3s lang unverändert bleibt — verhindert,
-    // dass die Blase mitten in schneller Navigation über Buttons/Feldern
-    // der gerade angesteuerten Seite auftaucht.
-    let timer = setTimeout(showMascot, 3000);
-    window.addEventListener("hashchange", () => {
-      clearTimeout(timer);
-      if (!sessionStorage.getItem("mascotShown")) timer = setTimeout(showMascot, 3000);
-    });
+    setTimeout(showMascot, 600);
   }
 
   /* ---------------------------------------------------------------- Mailgen */
@@ -490,6 +497,7 @@
 
     view.innerHTML = `
       <section class="hero">
+        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
         <div class="hero__intro">
           <h1>Neuigkeiten aus der <mark>Online-Marketing-Welt</mark>.</h1>
           <p>Automatisch aktualisiert aus mehreren Branchen-Quellen — Fokus Microsoft Advertising.</p>
@@ -625,6 +633,7 @@
 
     view.innerHTML = `
       <section class="hero">
+        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
         <div class="hero__intro">
           <h1>Offizielle <mark>Microsoft-Präsentationen</mark>.</h1>
           <p>Zusammenfassungen, Beta-/Feature-Guides und Kunden-Mails direkt aus den echten Präsentationsfolien — neueste zuerst, Einträge ohne bekanntes Datum am Ende.</p>
@@ -705,6 +714,7 @@
           <div class="detail__main">
             <p>${escapeHtml(p.summaryDE)}</p>
             <div class="info-box">
+        <div class="info-box__illustration">${SIDECARD_ILLUSTRATION}</div>
               <h2>Kernfakten aus der Präsentation</h2>
               <ul>${p.keyFactsDE.map((f) => `<li>${escapeHtml(f)}</li>`).join("")}</ul>
             </div>
@@ -730,6 +740,7 @@
 
     view.innerHTML = `
       <section class="hero hero--compact">
+        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
         <div class="hero__intro">
           <h1>Vorlagen &amp; <mark>Wissensdatenbank</mark>.</h1>
           <p>Best Practices und alle E-Mail-Vorlagen an einem Ort — inklusive Vorlagen mit individuellen Zusatzfeldern.</p>
@@ -786,6 +797,7 @@
   async function renderMicrosoftLearn() {
     view.innerHTML = `
       <section class="hero hero--compact">
+        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
         <div class="hero__intro">
           <h1>Von <mark>Microsoft Learn</mark>.</h1>
           <p>Offizielle Kurzbeschreibungen ausgewählter Microsoft-Learn-Seiten, mit Link zur vollständigen Originalseite.</p>
@@ -848,6 +860,7 @@
           <div class="detail__main">
             <p>${escapeHtml(t.summary)}</p>
             <div class="info-box">
+        <div class="info-box__illustration">${SIDECARD_ILLUSTRATION}</div>
               <h2>Vorlagentext (Referenz)</h2>
               <p class="pre-line info-box__preview">${escapeHtml(t.contentIhr)}</p>
             </div>
@@ -882,6 +895,7 @@
     if (!items.length) return "";
     return `
       <div class="side-card">
+        <div class="side-card__illustration">${SIDECARD_ILLUSTRATION}</div>
         <h2>${ICONS.book} Zuletzt angesehen</h2>
         <ul class="side-card__list">
           ${items.map((e) => `<li><a href="${e.href}" class="side-card__recent"><strong>${escapeHtml(e.title)}</strong><p>${escapeHtml(e.kind)}</p></a></li>`).join("")}

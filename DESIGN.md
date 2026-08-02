@@ -95,8 +95,8 @@ Restrained-Strategie mit einer dominanten Markenfarbe: Magenta trägt Interaktio
 - **Marken-Magenta** (`#e4067e`): Buttons, aktiver Tab-Unterstrich, aktiver Sidebar-Eintrag, Aufzählungspunkte, Link-Hover. Erscheint klein und oft statt großflächig und selten — trägt Interaktion, nicht Fläche.
 
 ### Secondary
-- **Signal-Gelb** (`#ffcc00`): Beta-Badge (schwarzer Text, `on-yellow`) sowie als sparsamer Halbton-Punkt-Akzent in Kartenecken (Hero, Seitenkarte, Info-Box) — immer klein, immer über eine Radial-Masken-Ausblendung begrenzt, nie als flächendeckendes Muster.
-- **Marken-Petrol** (`#2f8f8a`): ausschließlich Logo-Mark in der Sidebar.
+- **Signal-Gelb** (`#ffcc00`): Beta-Badge (schwarzer Text, `on-yellow`) sowie als Sparkle-Akzent in den Eck-Illustrationen (Hero, Seitenkarte, Info-Box) — immer klein, nie als eigene Fläche.
+- **Marken-Petrol** (`#2f8f8a`): Logo-Mark in der Sidebar sowie als kleiner Punkt-Akzent in den Eck-Illustrationen.
 
 ### Neutral
 - **Tiefschwarz** (`#171717`): Fließtext, Icon-Sidebar-Icons.
@@ -190,7 +190,7 @@ Zwei Radiusstufen tragen fast alles: `10px` (Icon-Buttons, Formularfelder) und `
 
 ### Don't:
 - **Don't** dicke schwarze oder farbige Konturen um Panels/Karten einführen — diese App nutzt ausschließlich Schatten und `1px`-Trennlinien.
-- **Don't** Halbtonpunkte flächendeckend einsetzen — nur als maskierter Eck-Akzent (siehe Shapes), nie als Muster über eine ganze Fläche wie in der verworfenen Fassung 2.
+- **Don't** die Eck-Illustrationen (`HERO_ILLUSTRATION`/`SIDECARD_ILLUSTRATION` aus `icons.js`) flächendeckend oder mit dicken Konturen einsetzen — sie bleiben kleine, freistehende Line-Art-Motive in der Ecke, kein Muster über eine ganze Fläche wie in der verworfenen Fassung 2.
 - **Don't** mehr als eine Farbe gleichzeitig großflächig einsetzen (z. B. ein farbiges Kartenband plus eine zweite Akzentfarbe im selben Element).
 - **Don't** Emoji oder Icon-Fonts anstelle der gezeichneten Line-Art-Icons (`icons.js`) verwenden.
 - **Don't** neue Strukturmuster erfinden, ohne sie gegen das Editorial-Referenzlayout zu prüfen — Struktur ist bewusst von einem konkreten Vorbild abgeleitet, nicht frei gestaltet.

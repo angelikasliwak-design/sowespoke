@@ -165,22 +165,17 @@ mark {
   margin-bottom: var(--space-6);
   padding-top: var(--space-2);
 }
-.hero::before {
-  content: "";
+.hero__illustration {
   position: absolute;
   top: -1.5rem;
-  right: -1.5rem;
-  width: 260px;
-  height: 260px;
-  background-image: radial-gradient(circle, var(--yellow) 3px, transparent 3.3px);
-  background-size: 17px 17px;
-  -webkit-mask-image: radial-gradient(circle at top right, black 0%, black 35%, transparent 72%);
-  mask-image: radial-gradient(circle at top right, black 0%, black 35%, transparent 72%);
+  right: -0.5rem;
+  width: 150px;
+  height: 150px;
   pointer-events: none;
   z-index: 0;
 }
 .hero--compact { margin-bottom: var(--space-5); }
-.hero--compact::before { width: 180px; height: 180px; }
+.hero--compact .hero__illustration { width: 110px; height: 110px; top: -1rem; }
 .hero__intro, .hero .search { position: relative; z-index: 1; }
 .hero__intro { max-width: 40rem; }
 .hero__intro h1 {
@@ -396,21 +391,15 @@ mark {
   box-shadow: var(--shadow);
   padding: var(--space-5);
 }
-.side-card::after, .info-box::after {
-  content: "";
+.side-card__illustration, .info-box__illustration {
   position: absolute;
-  top: -12px;
-  right: -12px;
-  width: 76px;
-  height: 76px;
-  background-image: radial-gradient(circle, var(--yellow) 2px, transparent 2.2px);
-  background-size: 11px 11px;
-  -webkit-mask-image: radial-gradient(circle at top right, black 0%, black 25%, transparent 68%);
-  mask-image: radial-gradient(circle at top right, black 0%, black 25%, transparent 68%);
-  opacity: 0.8;
+  top: -6px;
+  right: -6px;
+  width: 64px;
+  height: 64px;
   pointer-events: none;
 }
-.side-card > * { position: relative; }
+.side-card > *:not(.side-card__illustration) { position: relative; }
 .side-card__icon {
   display: flex;
   align-items: center;
@@ -581,7 +570,7 @@ mark {
   border-radius: var(--radius);
   padding: var(--space-4) var(--space-5);
 }
-.info-box > * { position: relative; }
+.info-box > *:not(.info-box__illustration) { position: relative; }
 .info-box h2 { font-size: 0.95rem; font-weight: 700; margin-bottom: var(--space-3); }
 .info-box ul { display: flex; flex-direction: column; gap: var(--space-2); }
 .info-box li {
@@ -797,7 +786,11 @@ code {
 @keyframes mascot-out {
   to { transform: translateY(8px); opacity: 0; }
 }
-.mascot__figure { width: 52px; height: 52px; flex: none; }
+.mascot__figure { width: 52px; height: 52px; flex: none; animation: mascot-float 3.2s ease-in-out infinite; }
+@keyframes mascot-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(-4deg); }
+}
 .mascot__bubble {
   position: relative;
   background: var(--paper-raised);

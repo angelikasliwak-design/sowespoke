@@ -63,6 +63,30 @@ const MASCOT_SVG = `<svg viewBox="0 0 64 64" aria-hidden="true">
   <path d="M20 33c2.4 2.6 6.6 2.6 9 0" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/>
 </svg>`;
 
+/* Verspielte Eck-Illustrationen im Line-Art-Stil der übrigen Icons, statt
+   reiner Halbton-Punkte — für Hero-Bereiche und Seitenkarten. Ersetzen die
+   Halbton-Textur, keine dicken Konturen/Panels (No-Border-Regel bleibt). */
+const HERO_ILLUSTRATION = `<svg viewBox="0 0 200 200" aria-hidden="true">
+  <g fill="none" stroke="var(--ink)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M58 78 L142 48 L142 152 L58 122 Z"/>
+    <rect x="32" y="88" width="26" height="24" rx="6"/>
+  </g>
+  <g fill="none" stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round">
+    <path d="M156 65 Q176 100 156 135"/>
+    <path d="M174 50 Q202 100 174 150"/>
+  </g>
+  <path d="M30 34 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z" fill="var(--yellow)"/>
+  <path d="M166 158 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z" fill="var(--yellow)"/>
+  <circle cx="148" cy="20" r="4" fill="var(--teal)"/>
+</svg>`;
+
+const SIDECARD_ILLUSTRATION = `<svg viewBox="0 0 100 100" aria-hidden="true">
+  <path d="M22 14 l3.4 8.6 8.6 3.4 -8.6 3.4 -3.4 8.6 -3.4 -8.6 -8.6 -3.4 8.6 -3.4z" fill="var(--yellow)"/>
+  <circle cx="62" cy="12" r="3.4" fill="var(--accent)"/>
+  <circle cx="82" cy="32" r="2.6" fill="var(--accent)"/>
+  <circle cx="46" cy="36" r="2.2" fill="var(--teal)"/>
+</svg>`;
+
 const CATEGORY_ICON = {
   "KI & Automatisierung": "sparkle",
   "Gebotsstrategien": "gauge",
