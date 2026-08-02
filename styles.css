@@ -168,6 +168,10 @@ mark {
 @media (min-width: 90rem) {
   .view { max-width: 88rem; }
   .layout-2col { grid-template-columns: minmax(0, 1fr) 23rem; }
+  /* Überschrift wuchs sonst nicht mit — wirkte im breiteren Layout klein
+     und "verloren" im vielen zusätzlichen Weißraum. */
+  .hero__intro { max-width: 46rem; }
+  .hero__intro h1 { font-size: clamp(1.85rem, 1rem + 2.6vw, 3.4rem); }
 }
 
 .site-footer {
