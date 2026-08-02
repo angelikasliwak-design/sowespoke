@@ -201,16 +201,6 @@ mark {
   pointer-events: none;
   z-index: 1;
 }
-.hero__blob {
-  position: absolute;
-  top: -3rem;
-  right: 4rem;
-  width: 230px;
-  height: 230px;
-  opacity: 0.9;
-  pointer-events: none;
-  z-index: 0;
-}
 .hero--compact { margin-bottom: var(--space-5); }
 .hero--compact .hero__illustration { width: 110px; height: 110px; top: -1rem; }
 .hero__intro, .hero .search { position: relative; z-index: 1; }
@@ -825,7 +815,6 @@ code {
   /* Illustration kollidiert bei schmaler Breite mit der (dann mehrzeiligen)
      Überschrift — auf Mobile weglassen statt Text zu überdecken. */
   .hero__illustration { display: none; }
-  .hero__blob { display: none; }
   .rail {
     width: 100%;
     height: auto;

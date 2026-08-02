@@ -130,15 +130,10 @@ const HERO_ILLUSTRATION = `<svg viewBox="0 0 200 200" aria-hidden="true">
   <circle cx="16" cy="156" r="3.5" fill="var(--teal)"/>
 </svg>`;
 
-const SIDECARD_ILLUSTRATION = `<svg viewBox="0 0 200 200" aria-hidden="true">
-  <path d="M70 10 C95 -4 122 -2 132 20 C156 14 178 28 176 52 C196 58 202 82 184 98
-    C196 116 186 140 162 142 C160 166 134 180 112 168 C96 186 66 186 54 166
-    C28 172 6 154 12 130 C-8 120 -8 94 12 82 C4 60 20 36 46 38 C50 18 60 8 70 10 Z"
-    fill="var(--yellow)"/>
-  <circle cx="70" cy="60" r="5" fill="var(--accent)" opacity="0.5"/>
-  <circle cx="120" cy="90" r="4" fill="var(--accent)" opacity="0.4"/>
-  <circle cx="90" cy="115" r="3.5" fill="var(--accent)" opacity="0.35"/>
-  <circle cx="130" cy="55" r="3" fill="var(--accent)" opacity="0.4"/>
+const SIDECARD_ILLUSTRATION = `<svg viewBox="0 0 100 100" aria-hidden="true">
+  <circle cx="58" cy="22" r="7" fill="var(--yellow)" opacity="0.9"/>
+  <circle cx="80" cy="46" r="4" fill="var(--accent)"/>
+  <circle cx="34" cy="42" r="3" fill="var(--teal)" opacity="0.8"/>
 </svg>`;
 
 const CATEGORY_ICON = {
