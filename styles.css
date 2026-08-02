@@ -163,6 +163,12 @@ mark {
   width: 100%;
   padding: var(--space-7) var(--space-6) var(--space-6);
 }
+/* Auf breiten Monitoren blieb sonst viel Fläche rechts ungenutzt liegen —
+   Inhalt darf hier mitwachsen statt starr bei 68rem zu kappen. */
+@media (min-width: 90rem) {
+  .view { max-width: 88rem; }
+  .layout-2col { grid-template-columns: minmax(0, 1fr) 23rem; }
+}
 
 .site-footer {
   text-align: center;
