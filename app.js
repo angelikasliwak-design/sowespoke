@@ -1033,6 +1033,16 @@
     });
   }
 
+  function renderNotFound(path) {
+    view.innerHTML = `
+      <div class="empty-state">
+        ${ICONS.magnifyEmpty}
+        <strong>Seite nicht gefunden</strong>
+        <p>Für "${escapeHtml(path)}" gibt es hier nichts — vermutlich ein veralteter oder falsch getippter Link.</p>
+        <a class="btn btn--secondary" href="#/">${ICONS.home} Zur Startseite</a>
+      </div>`;
+  }
+
   function render() {
     const { path, params } = currentRoute();
     updateNav(path);
@@ -1053,11 +1063,17 @@
     } else if (path === "/anfragen") {
       renderMicrosoftRequests();
     } else {
-      renderNews("", "all");
+      renderNotFound(path);
     }
-    view.focus({ preventScroll: true });
+    // Beim allerersten Laden Fokus nicht stehlen — sonst ist der
+    // Skip-Link per Tab nie erreichbar. Bei echter Navigation (Klick,
+    // hashchange) ist das Fokus-Verschieben auf den neuen Inhalt dagegen
+    // gewünscht (Screenreader-Nutzer sollen wissen, dass sich was ändert).
+    if (!isInitialRender) view.focus({ preventScroll: true });
+    isInitialRender = false;
   }
 
+  let isInitialRender = true;
   window.addEventListener("hashchange", render);
   render();
 })();
