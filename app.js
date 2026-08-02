@@ -103,8 +103,10 @@
   }
 
   function renderMsChecklistSection(key, title, introDE, options) {
+    const iconColor = key === "bulk" ? "--teal" : "--accent";
+    const icon = key === "bulk" ? ICONS.layers : ICONS.sparkle;
     return `
-      <h2 class="feed__title">${escapeHtml(title)}</h2>
+      <h2 class="feed__title feed__title--icon"><span class="feed__title__icon" style="background:var(${iconColor})">${icon}</span>${escapeHtml(title)}</h2>
       <div class="mailgen msreq">
         <p class="msreq__intro">${escapeHtml(introDE)}</p>
         <div class="msreq__checklist">
@@ -179,7 +181,7 @@
 
   function renderMsAutobiddingSection() {
     return `
-      <h2 class="feed__title">Autobidding Report</h2>
+      <h2 class="feed__title feed__title--icon"><span class="feed__title__icon" style="background:var(--accent)">${ICONS.gauge}</span>Autobidding Report</h2>
       <div class="mailgen msreq">
         <p class="msreq__intro pre-line">${escapeHtml(MS_AUTOBIDDING_REPORT.cautionDE)}</p>
         <details class="msreq__example">
@@ -258,7 +260,7 @@
 
       ${renderMsAutobiddingSection()}
 
-      <h2 class="feed__title">SAP-ID-Erstellung</h2>
+      <h2 class="feed__title feed__title--icon"><span class="feed__title__icon" style="background:var(--teal)">${ICONS.fileText}</span>SAP-ID-Erstellung</h2>
       <div class="info-box">
         <p>Formular zur Anlage einer neuen SAP-ID (Rechnungs-/Kontodaten, VAT, Microsoft-Advertising-Kundennummer). Direkt im Dokument ausfüllen und an ${escapeHtml(MS_CONTACT_NAME)} senden.</p>
         <a class="btn btn--secondary" href="content/microsoft-anfragen/${encodeURIComponent("SAP ID Creation Form .docx")}" download>${ICONS.download} Formular herunterladen</a>
@@ -302,25 +304,46 @@
 
   /* ---------------------------------------------------------------- Mascot */
 
+  function showMascot() {
+    const root = document.getElementById("mascot-root");
+    let fact = factOfTheDay();
+    root.innerHTML = `
+      <div class="mascot" role="status">
+        <div class="mascot__figure">${MASCOT_SVG}</div>
+        <div class="mascot__bubble">
+          <button type="button" class="mascot__close" aria-label="Schließen">${ICONS.close}</button>
+          <p>${escapeHtml(fact)}</p>
+          <button type="button" class="mascot__more">Noch ein Fakt ${ICONS.arrowRight}</button>
+        </div>
+      </div>
+    `;
+    const mascotEl = root.querySelector(".mascot");
+    root.querySelector(".mascot__close").addEventListener("click", () => {
+      mascotEl.classList.add("is-leaving");
+      mascotEl.addEventListener("animationend", () => { root.innerHTML = ""; }, { once: true });
+    });
+    const factEl = root.querySelector(".mascot__bubble p");
+    root.querySelector(".mascot__more").addEventListener("click", () => {
+      fact = randomFact(fact);
+      factEl.style.opacity = "0";
+      setTimeout(() => {
+        factEl.textContent = fact;
+        factEl.style.opacity = "1";
+      }, 160);
+    });
+    sessionStorage.setItem("mascotShown", "1");
+  }
+
   function initMascot() {
     if (sessionStorage.getItem("mascotShown")) return;
-    const root = document.getElementById("mascot-root");
-    const fact = factOfTheDay();
-    setTimeout(() => {
-      root.innerHTML = `
-        <div class="mascot" role="status">
-          <div class="mascot__figure">${MASCOT_SVG}</div>
-          <div class="mascot__bubble">
-            <button type="button" class="mascot__close" aria-label="Schließen">${ICONS.close}</button>
-            <p>${escapeHtml(fact)}</p>
-          </div>
-        </div>
-      `;
-      root.querySelector(".mascot__close").addEventListener("click", () => {
-        root.innerHTML = "";
-      });
-      sessionStorage.setItem("mascotShown", "1");
-    }, 3000);
+    // Erscheint erst, wenn der Hash 3s lang unverändert bleibt — verhindert,
+    // dass die Blase mitten in schneller Navigation über Buttons/Feldern
+    // der gerade angesteuerten Seite auftaucht.
+    let timer = setTimeout(showMascot, 3000);
+    window.addEventListener("hashchange", () => {
+      clearTimeout(timer);
+      if (!sessionStorage.getItem("mascotShown")) timer = setTimeout(showMascot, 3000);
+    });
   }
 
   /* ---------------------------------------------------------------- Mailgen */

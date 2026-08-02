@@ -50,15 +50,17 @@ const ICONS = {
   news: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><rect x="3" y="4" width="18" height="16" rx="1.6"/><path d="M7 8.5h6"/><path d="M7 12h10"/><path d="M7 15.5h10"/></svg>`,
 };
 
-/* Maskottchen: kleiner Fuchs, eigenständige Illustration statt Line-Icon */
+/* Maskottchen: freundliche Lupe, im gleichen Line-Art-Strichstil wie icons.js
+   statt einer flächig gefüllten Comic-Figur — passt zum "No-Border"/
+   Line-Art-Grundsatz aus DESIGN.md. */
 const MASCOT_SVG = `<svg viewBox="0 0 64 64" aria-hidden="true">
-  <path d="M14 16 L26 28 L14 30 Z" fill="var(--accent)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M50 16 L38 28 L50 30 Z" fill="var(--accent)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>
-  <circle cx="32" cy="36" r="20" fill="#ffffff" stroke="var(--ink)" stroke-width="2.2"/>
-  <circle cx="25" cy="34" r="2.4" fill="var(--ink)"/>
-  <circle cx="39" cy="34" r="2.4" fill="var(--ink)"/>
-  <path d="M28 43c2.2 2 5.8 2 8 0" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/>
-  <path d="M32 39l-2.4 3h4.8z" fill="var(--accent)"/>
+  <circle cx="27" cy="27" r="18" fill="#ffffff" stroke="var(--ink)" stroke-width="2.4"/>
+  <path d="M39.5 39.5 L54 54" stroke="var(--ink)" stroke-width="3.2" stroke-linecap="round"/>
+  <circle cx="16" cy="29" r="2.8" fill="var(--accent-tint)"/>
+  <circle cx="38" cy="29" r="2.8" fill="var(--accent-tint)"/>
+  <circle cx="20.5" cy="24.5" r="2" fill="var(--ink)"/>
+  <circle cx="33.5" cy="24.5" r="2" fill="var(--ink)"/>
+  <path d="M20 33c2.4 2.6 6.6 2.6 9 0" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/>
 </svg>`;
 
 const CATEGORY_ICON = {
