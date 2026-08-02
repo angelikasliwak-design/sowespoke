@@ -46,7 +46,7 @@ Name: "Sowespoke". Visuelle Marke: Magenta als dominante Akzentfarbe, Petrol/Gel
 
 ## Evidence on Hand
 
-17 echte Microsoft-/Branchen-Präsentationen liegen als PDF vor (`content/presentations/`), Inhalt wird ausgewertet und nur mit tatsächlich im Dokument enthaltenen Informationen zusammengefasst — keine Ergänzung aus Allgemeinwissen. RSS-Quellen bestätigt funktionsfähig: Microsoft Advertising Blog (offiziell), Search Engine Land, adseed SEA-News, OMR, t3n. Drei weitere Quellen (THINK with Google, analyticsmania, PPC Hero) sind technisch noch ungeklärt (kein einfacher RSS-Zugang bzw. blockierter Abruf).
+18 echte Microsoft-/Branchen-Präsentationen liegen als PDF vor (`content/presentations/`), Inhalt wird ausgewertet und nur mit tatsächlich im Dokument enthaltenen Informationen zusammengefasst — keine Ergänzung aus Allgemeinwissen. RSS-Quellen bestätigt funktionsfähig: Microsoft Advertising Blog (offiziell), Search Engine Land, adseed SEA-News, OMR. t3n wurde am 2026-08-02 wieder entfernt (nur fachfremder Gesamt-Feed verfügbar, kein Marketing-spezifischer Feed). Drei weitere Quellen (THINK with Google, analyticsmania, PPC Hero) sind technisch noch ungeklärt (kein einfacher RSS-Zugang bzw. blockierter Abruf).
 
 ## Product Principles
 

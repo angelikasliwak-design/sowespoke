@@ -13,7 +13,9 @@ const SOURCES = [
   { name: "Search Engine Land", url: "https://searchengineland.com/feed", channel: "Allgemein", lang: "en" },
   { name: "adseed SEA-News", url: "https://www.adseed.de/blog/sea-news/feed/", channel: "Google", lang: "de" },
   { name: "OMR", url: "https://omr.com/de/feed/", channel: "Allgemein", lang: "de" },
-  { name: "t3n", url: "https://t3n.de/rss.xml", channel: "Allgemein", lang: "de" },
+  // t3n bewusst entfernt: kein eigener Marketing-Feed verfügbar (nur
+  // Gesamt-Tech-Feed inkl. Astronomie/Hardware/Wissenschaft, fachfremd
+  // für dieses Tool) — siehe Nutzer-Feedback vom 2026-08-02.
 ];
 
 // Einzelne, von Hand kuratierte Artikel ohne RSS-Feed (z. B. der
