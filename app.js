@@ -580,6 +580,7 @@
           : `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Begriff oder Kanal.</p></div>`
       }
     `;
+    if (items.length) wireNewsRatings(feed);
   }
 
   function newsRow(item) {
@@ -599,8 +600,43 @@
           </span>
           <span class="row__arrow">${ICONS.external}</span>
         </a>
+        <div class="row__rate" data-rate-link="${escapeHtml(item.link)}" data-rate-title="${escapeHtml(item.title)}">
+          <button type="button" class="row__rate-btn" data-vote="up" aria-label="Relevant, mehr davon">${ICONS.thumbUp}</button>
+          <button type="button" class="row__rate-btn" data-vote="down" aria-label="Nicht relevant">${ICONS.thumbDown}</button>
+          <span class="row__rate-status"></span>
+        </div>
       </li>
     `;
+  }
+
+  function wireNewsRatings(feed) {
+    feed.querySelectorAll(".row__rate").forEach((rateEl) => {
+      const link = rateEl.dataset.rateLink;
+      const voted = localStorage.getItem(`newsVote:${link}`);
+      if (voted) {
+        rateEl.querySelector(`[data-vote="${voted}"]`).classList.add("is-voted");
+        rateEl.querySelectorAll(".row__rate-btn").forEach((b) => (b.disabled = true));
+      }
+      rateEl.querySelectorAll(".row__rate-btn").forEach((btn) => {
+        btn.addEventListener("click", async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const vote = btn.dataset.vote;
+          rateEl.querySelectorAll(".row__rate-btn").forEach((b) => (b.disabled = true));
+          btn.classList.add("is-voted");
+          localStorage.setItem(`newsVote:${link}`, vote);
+          try {
+            await fetch("/api/rate", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ link, title: rateEl.dataset.rateTitle, rating: vote }),
+            });
+          } catch {
+            // Stimme bleibt lokal gemerkt, auch wenn der Request fehlschlägt.
+          }
+        });
+      });
+    });
   }
 
   function wireTopControls(onSearch, onTab, tabKey) {

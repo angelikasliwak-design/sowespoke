@@ -48,7 +48,13 @@ function parseItems(xml, isAtom) {
     }
     const pubDateRaw =
       extractTag(block, "pubDate") || extractTag(block, "updated") || extractTag(block, "published") || extractTag(block, "dc:date");
-    const description = stripHtml(extractTag(block, isAtom ? "summary" : "description")).slice(0, 240);
+    // Manche Feeds liefern zusätzlich zur kurzen Zusammenfassung den vollen
+    // Artikeltext über content:encoded — davon nehmen wir mehr für einen
+    // aussagekräftigeren Teaser, statt nur den knappen Summary-Satz.
+    const rawSummary = extractTag(block, isAtom ? "summary" : "description");
+    const rawContent = extractTag(block, "content:encoded") || extractTag(block, "content");
+    const rawBest = rawContent.length > rawSummary.length ? rawContent : rawSummary;
+    const description = stripHtml(rawBest).slice(0, 420);
     const parsed = Date.parse(pubDateRaw);
     return {
       title,
