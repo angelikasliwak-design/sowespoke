@@ -713,6 +713,15 @@ code {
   border-radius: var(--radius-sm);
   background: var(--paper);
 }
+.msreq__group-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--ink-soft);
+  padding: var(--space-3) var(--space-3) var(--space-1);
+}
+.msreq__group-label:first-child { padding-top: var(--space-2); }
 .msreq__option {
   display: flex;
   align-items: flex-start;

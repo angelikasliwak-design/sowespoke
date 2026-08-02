@@ -10,24 +10,61 @@
 
 const MS_CONTACT_NAME = "Anne-Celine";
 
-// Quelle: content/microsoft-anfragen/Pilot Activation (1).docx — Tabelle
-// "Closed Beta / Experiment nomination overview (Jan 2026)", aktuellste
-// Version im Dokument (löst die ältere "Mid-2025 pilots & betas"-Liste ab).
+// Quelle: content/microsoft-anfragen/Pilot Activation (1).docx — enthält
+// drei Tabellen. Verwendet werden die aktuelle Tabelle "Closed Beta /
+// Experiment nomination overview (Jan 2026)" (löst die ältere "Mid-2025
+// pilots & betas"-Liste ab) sowie der allgemeine Experiment-/Alpha-/
+// Beta-Katalog (erste Tabelle im Dokument, ohne Datum). Stufe (Experiment/
+// Alpha/Beta) ist im Dokument nur bei drei Einträgen des Katalogs explizit
+// angegeben — bei den übrigen steht im Dokument keine Stufe, deshalb bleibt
+// das Feld dort leer statt geraten zu werden.
 const MS_BETA_PROGRAMS = [
-  { id: "custom-report-builder", name: "Custom Report Builder", what: "Erweitertes Reporting-Tool für stark individualisierte Reports über die Standard-Microsoft-Advertising-Oberfläche hinaus", markets: "Global (gezielt)", note: "Nur auf Einladung. Für Advertiser/Partner mit fortgeschrittenem Reporting-Bedarf und aktiver MAP-Nutzung." },
-  { id: "ad-delivery-diagnostics", name: "Ad Delivery Diagnostics (Copilot)", what: "Diagnose-Einblicke zu Auslieferung, Pacing und Ausspielungs-Einschränkungen", markets: "Global (außer China)", note: "Verwaltete Konten mit aktiven Kampagnen und einer Historie von Auslieferungsproblemen." },
-  { id: "billing-diagnostics", name: "Billing Diagnostics (Copilot)", what: "Diagnose-Einblicke zu Abrechnung, Rechnungsstellung und Spend-Abweichungen", markets: "Global", note: "Erfordert historische Abrechnungsaktivität und frühere Abrechnungsanfragen." },
-  { id: "native-consent-legal", name: "Native Ads – Consent & Legal Notices", what: "Ermöglicht Consent-Handling und rechtliche Hinweise für Native Ads", markets: "Global", note: "Advertiser mit Native Ads, insbesondere regulierte Branchen." },
-  { id: "doubleverify", name: "DoubleVerify Integration", what: "Viewability- und Brand-Safety-Messung über DoubleVerify", markets: "Global", note: "Erfordert aktive Display-/Video-Ausgaben und Zustimmung zum DV-Datenaustausch." },
-  { id: "modeled-conversions", name: "Modeled Conversions Reporting", what: "Erweitertes Conversion-Reporting mit modellierten Daten (wenn direkte Signale fehlen)", markets: "Global", note: "UET implementiert, laufendes Conversion-Tracking, ausreichendes Volumen." },
-  { id: "vertical-ads-expansion", name: "Enable Vertical Ads – Multichannel Expansion", what: "Erweiterung der zulässigen Vertical Ads auf weitere Microsoft-Advertising-Kanäle", markets: "Marktabhängig", note: "Advertiser, die bereits genehmigte Vertical Ads schalten (z. B. Auto, Reise, Finanzen)." },
-  { id: "google-discovery-import", name: "Google Discovery Import", what: "Import von Google-Discovery-Kampagnen in Microsoft Advertising", markets: "Amerika / EMEA / APAC", note: "Advertiser mit aktiven Google-Discovery-Kampagnen, die Feedback geben möchten." },
-  { id: "debit-credit-card-ads", name: "Debit / Credit Card Ads", what: "Anzeigen für Debit- und Kreditkarten-Angebote", markets: "US, CA, UK, AU, FR, DE", note: "Reguliert. Finanzielle Advertiser-Eignung und Policy-Konformität erforderlich." },
-  { id: "health-insurance-ads", name: "Health Insurance Ads", what: "Feed-basierte Anzeigen für Krankenversicherungstarife", markets: "Marktabhängig (v. a. USA/EU)", note: "Stark eingeschränkt. Erfordert Lizenzierung und Validierung als Gesundheits-Advertiser." },
-  { id: "lodging-solutions", name: "Lodging Solutions (Hotel Price Ads / Property Promotion Ads)", what: "Hotel-Anzeigen mit Preisen, Verfügbarkeit und Objektdetails in der Suche", markets: "Global (phasenweise)", note: "Reise-Advertiser mit strukturierten Hotel-/Feed-Daten." },
-  { id: "audience-ads-tcpa", name: "Audience Ads – tCPA / Max Conversions", what: "Automatisierte Gebotsstrategien für Audience Ads auf Basis von Conversion-Zielen", markets: "Amerika / EMEA / APAC", note: "Erfordert Audience-Ads-Nutzung, Conversion-Tracking und ausreichendes Volumen." },
-  { id: "affinity-targeting", name: "Affinity Targeting (Audience Signals)", what: "Zielgruppen-Targeting basierend auf Interessen, Gewohnheiten und Affinitäten", markets: "Global (kontrolliert)", note: "Eingeschränkter Zugang, klarer Anwendungsfall erforderlich." },
-  { id: "keyword-targeting-signals", name: "Keyword Targeting (Audience Signals)", what: "Zielgruppen-Targeting über keyword-basierte Intent-Signale", markets: "Global (kontrolliert)", note: "Ähnliche Anforderungen wie Affinity-Targeting; Reife und Skalierung erforderlich." },
+  { id: "custom-report-builder", group: "Nominierungs-Überblick Januar 2026", name: "Custom Report Builder", what: "Erweitertes Reporting-Tool für stark individualisierte Reports über die Standard-Microsoft-Advertising-Oberfläche hinaus", markets: "Global (gezielt)", note: "Nur auf Einladung. Für Advertiser/Partner mit fortgeschrittenem Reporting-Bedarf und aktiver MAP-Nutzung." },
+  { id: "ad-delivery-diagnostics", group: "Nominierungs-Überblick Januar 2026", name: "Ad Delivery Diagnostics (Copilot)", what: "Diagnose-Einblicke zu Auslieferung, Pacing und Ausspielungs-Einschränkungen", markets: "Global (außer China)", note: "Verwaltete Konten mit aktiven Kampagnen und einer Historie von Auslieferungsproblemen." },
+  { id: "billing-diagnostics", group: "Nominierungs-Überblick Januar 2026", name: "Billing Diagnostics (Copilot)", what: "Diagnose-Einblicke zu Abrechnung, Rechnungsstellung und Spend-Abweichungen", markets: "Global", note: "Erfordert historische Abrechnungsaktivität und frühere Abrechnungsanfragen." },
+  { id: "native-consent-legal", group: "Nominierungs-Überblick Januar 2026", name: "Native Ads – Consent & Legal Notices", what: "Ermöglicht Consent-Handling und rechtliche Hinweise für Native Ads", markets: "Global", note: "Advertiser mit Native Ads, insbesondere regulierte Branchen." },
+  { id: "doubleverify", group: "Nominierungs-Überblick Januar 2026", name: "DoubleVerify Integration", what: "Viewability- und Brand-Safety-Messung über DoubleVerify", markets: "Global", note: "Erfordert aktive Display-/Video-Ausgaben und Zustimmung zum DV-Datenaustausch." },
+  { id: "modeled-conversions", group: "Nominierungs-Überblick Januar 2026", name: "Modeled Conversions Reporting", what: "Erweitertes Conversion-Reporting mit modellierten Daten (wenn direkte Signale fehlen)", markets: "Global", note: "UET implementiert, laufendes Conversion-Tracking, ausreichendes Volumen." },
+  { id: "vertical-ads-expansion", group: "Nominierungs-Überblick Januar 2026", name: "Enable Vertical Ads – Multichannel Expansion", what: "Erweiterung der zulässigen Vertical Ads auf weitere Microsoft-Advertising-Kanäle", markets: "Marktabhängig", note: "Advertiser, die bereits genehmigte Vertical Ads schalten (z. B. Auto, Reise, Finanzen)." },
+  { id: "google-discovery-import", group: "Nominierungs-Überblick Januar 2026", name: "Google Discovery Import", what: "Import von Google-Discovery-Kampagnen in Microsoft Advertising", markets: "Amerika / EMEA / APAC", note: "Advertiser mit aktiven Google-Discovery-Kampagnen, die Feedback geben möchten." },
+  { id: "debit-credit-card-ads", group: "Nominierungs-Überblick Januar 2026", name: "Debit / Credit Card Ads", what: "Anzeigen für Debit- und Kreditkarten-Angebote", markets: "US, CA, UK, AU, FR, DE", note: "Reguliert. Finanzielle Advertiser-Eignung und Policy-Konformität erforderlich." },
+  { id: "health-insurance-ads", group: "Nominierungs-Überblick Januar 2026", name: "Health Insurance Ads", what: "Feed-basierte Anzeigen für Krankenversicherungstarife", markets: "Marktabhängig (v. a. USA/EU)", note: "Stark eingeschränkt. Erfordert Lizenzierung und Validierung als Gesundheits-Advertiser." },
+  { id: "lodging-solutions", group: "Nominierungs-Überblick Januar 2026", name: "Lodging Solutions (Hotel Price Ads / Property Promotion Ads)", what: "Hotel-Anzeigen mit Preisen, Verfügbarkeit und Objektdetails in der Suche", markets: "Global (phasenweise)", note: "Reise-Advertiser mit strukturierten Hotel-/Feed-Daten." },
+  { id: "audience-ads-tcpa", group: "Nominierungs-Überblick Januar 2026", name: "Audience Ads – tCPA / Max Conversions", what: "Automatisierte Gebotsstrategien für Audience Ads auf Basis von Conversion-Zielen", markets: "Amerika / EMEA / APAC", note: "Erfordert Audience-Ads-Nutzung, Conversion-Tracking und ausreichendes Volumen." },
+  { id: "affinity-targeting", group: "Nominierungs-Überblick Januar 2026", name: "Affinity Targeting (Audience Signals)", what: "Zielgruppen-Targeting basierend auf Interessen, Gewohnheiten und Affinitäten", markets: "Global (kontrolliert)", note: "Eingeschränkter Zugang, klarer Anwendungsfall erforderlich." },
+  { id: "keyword-targeting-signals", group: "Nominierungs-Überblick Januar 2026", name: "Keyword Targeting (Audience Signals)", what: "Zielgruppen-Targeting über keyword-basierte Intent-Signale", markets: "Global (kontrolliert)", note: "Ähnliche Anforderungen wie Affinity-Targeting; Reife und Skalierung erforderlich." },
+
+  { id: "enable-uet-rep", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Enable UET REP", what: "Interner Schalter, um UET-Reporting zwangsweise für Tests und Validierung zu aktivieren", note: "Stufe laut Dokument: Experiment." },
+  { id: "disable-uet-rep", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Disable UET REP", what: "Interne Testfunktion zum Deaktivieren des UET-Reportings" },
+  { id: "showroom-ads", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Showroom Ads", what: "Frühes experimentelles Anzeigenformat, das Produkte in einer immersiven Oberfläche präsentiert" },
+  { id: "custom-segments-targeting", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Custom Segments Targeting", what: "Experimentelles Zielgruppen-Targeting auf Basis selbst definierter Segmente" },
+  { id: "category-insights-click-coverage", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Category Insights and Click Coverage Reports", what: "Diagnose-Einblicke zu Kategorien-Performance und Click-Coverage-Lücken", note: "Stufe laut Dokument: Alpha." },
+  { id: "ads-globalization-korea", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Ads Globalization: PA Korea", what: "Frühe Erweiterung der Anzeigenfunktionen für den südkoreanischen Markt" },
+  { id: "website-control-lists", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Website Control Lists – Exclusions", what: "Kontrollen zum Ausschluss bestimmter Websites oder Platzierungen" },
+  { id: "html5-display-ads", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "HTML5 Display Ads", what: "Neues Display-Creative-Format mit HTML5-Assets" },
+  { id: "conversions-api-capi", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Conversions API (CAPI)", what: "Serverseitiges Conversion-Tracking zur Stärkung der Optimierungssignale" },
+  { id: "sponsored-promotions-brands", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Sponsored Promotions by Brands", what: "Von Marken finanzierte Promotions in Partner-/Handelsumgebungen", note: "Stufe laut Dokument: Beta." },
+  { id: "conversion-value-rules", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Conversion Value Rules", what: "Anpassung von Conversion-Werten zur Beeinflussung wertbasierten Bietens" },
+  { id: "autobidding-vertical-ads", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Autobidding (tCPA / Max Conv) for Vertical Ads", what: "Automatisiertes Bieten erweitert auf vertikal-spezifische Anzeigen" },
+  { id: "offline-conversions-error-report", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Offline Conversions Error Report in API", what: "Einblick in Fehler beim Hochladen von Offline-Conversions über die API" },
+  { id: "ads-studio-video-templates", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Ads Studio – Video Templates", what: "Vorgefertigte Video-Vorlagen zur schnelleren Creative-Produktion" },
+  { id: "nielsen-demo-new-clients", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Nielsen demo (new clients)", what: "Nielsen-Messintegration für Neukunden" },
+  { id: "nielsen-one-existing-clients", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Nielsen One (existing clients)", what: "Erweiterte Nielsen-One-Messung für Bestandskunden" },
+  { id: "placement-targeting-planner", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Placement targeting in Planner", what: "Möglichkeit, Media nach Platzierung zu planen" },
+  { id: "search-campaign-diagnostic-tile", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Search Campaign Diagnostic Tile", what: "Diagnose-Einblicke direkt in der Search-Kampagnen-Oberfläche" },
+  { id: "device-topics-targeting-planner", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Device & topics targeting support in Planner", what: "Planungsunterstützung für Geräte- und Themen-Targeting" },
+  { id: "lia-only-shopping-pmax", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "LIA-only Shopping & PMAX campaigns", what: "Local Inventory Ads ausschließlich über Shopping und PMax unterstützt" },
+  { id: "new-customer-acquisition-pmax", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Support New Customer Acquisition Goal for PMax", what: "Neues Optimierungsziel zur Gewinnung von Neukunden" },
+  { id: "enhanced-keyword-planner-intl", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Enhanced Keyword Planner – INTL languages", what: "Verbesserte Keyword-Recherche für internationale Sprachen" },
+  { id: "data-driven-attribution", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Data-Driven Attribution", what: "Datenbasierte Zuordnung von Conversion-Wert über alle Touchpoints" },
+  { id: "ad-preview-hub-awf", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Ad preview hub – AWF", what: "Zentralisierte Vorschau-Erfahrung für AWF-Anzeigen" },
+  { id: "pmax-self-serve-negative-keywords", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Performance Max – self-serve negative keywords", what: "Möglichkeit, negative Keywords direkt in PMax zu verwalten" },
+  { id: "ads-studio-brand-kit-native", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Ads Studio – Brand Kit on Native", what: "Anwendung von Markenstyling auf Native Ads" },
+  { id: "predictive-targeting-planner", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Predictive targeting in Planner", what: "Vorausschauende Zielgruppen- und Targeting-Vorschläge in der Planung" },
+  { id: "optout-autogen-assets-rsas", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Opt-out: autogen assets in new RSAs", what: "Möglichkeit, automatisch generierte RSA-Assets zu deaktivieren" },
+  { id: "mobile-app-install-pmax", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Mobile app install powered by PMAX", what: "App-Install-Kampagnen über Performance Max" },
+  { id: "ad-strength-pmax-mma-awf", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "Ad strength for PMAX, MMA, AWF", what: "Diagnose zu Anzeigenqualität und -stärke über mehrere Formate hinweg" },
+  { id: "linkedin-job-seniority", group: "Genereller Experiment-/Alpha-/Beta-Katalog", name: "LinkedIn Job Seniority", what: "Targeting auf Basis des LinkedIn-Karrierelevel-Signals" },
 ];
 
 // Quelle: Screenshot "External (client facing) tasks" aus content/microsoft-anfragen/bulkteam.png

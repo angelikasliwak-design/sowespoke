@@ -111,13 +111,18 @@
         <p class="msreq__intro">${escapeHtml(introDE)}</p>
         <div class="msreq__checklist">
           ${options
-            .map(
-              (o) => `
+            .map((o, i) => {
+              const divider =
+                o.group && o.group !== (options[i - 1] || {}).group
+                  ? `<div class="msreq__group-label">${escapeHtml(o.group)}</div>`
+                  : "";
+              const noteText = escapeHtml([o.what, o.note].filter(Boolean).join(" — "));
+              return `${divider}
             <label class="msreq__option">
               <input type="checkbox" data-msreq-opt="${key}" value="${o.id}" />
-              <span><strong>${escapeHtml(o.name)}</strong>${o.markets ? ` <span class="msreq__meta">(${escapeHtml(o.markets)})</span>` : ""}<br /><span class="msreq__note">${escapeHtml(o.what ? o.what + " — " : "")}${escapeHtml(o.note || "")}</span></span>
-            </label>`
-            )
+              <span><strong>${escapeHtml(o.name)}</strong>${o.markets ? ` <span class="msreq__meta">(${escapeHtml(o.markets)})</span>` : ""}<br /><span class="msreq__note">${noteText}</span></span>
+            </label>`;
+            })
             .join("")}
         </div>
         <div class="mailgen__field">
