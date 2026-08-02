@@ -115,7 +115,7 @@ Restrained-Strategie mit einer dominanten Markenfarbe: Magenta trägt Interaktio
 ### Named Rules
 **The Small-and-Often Rule.** Magenta erscheint an vielen kleinen Stellen (Button, Unterstrich, Punktmarker), nie als große Fläche. Eine magentafarbene Fläche, die größer als ein Button oder Badge ist, verletzt diese Regel.
 
-**The No-Border Rule.** Karten (Seitenkarte, Info-Box, Mail-Generator) grenzen sich ausschließlich über `--shadow` vom Hintergrund ab, nie über einen sichtbaren Rahmen. Trennlinien (`--line`) sind nur für Listen und Tabs erlaubt.
+**Die Bunte-Rahmen-Regel (seit der 4. Fassung, 2026-08-02).** Ursprünglich galt hier eine No-Border-Regel (Karten nur über Schatten abgegrenzt). Auf expliziten Nutzerwunsch nach mehr Comic-/Pop-Art-Charakter gilt jetzt: Seitenkarte, Info-Box und Mail-Generator bekommen je einen `3px`-Vollrahmen in einer festen, typbezogenen Farbe (Seitenkarte: Magenta, Info-Box: Petrol, Mail-Generator: Gelb) — nicht zufällig gemischt pro Instanz, sondern konsistent pro Komponente. Listenzeilen (`row`-Muster) bleiben bewusst randlos, damit die Liste weiterhin scanbar bleibt — die Rahmen sind auf abgegrenzte Karten-Container begrenzt, kein Muster über die ganze Seite. Trennlinien (`--line`) bleiben für Listen und Tabs.
 
 ## Typography
 
@@ -166,7 +166,7 @@ Zwei Radiusstufen tragen fast alles: `10px` (Icon-Buttons, Formularfelder) und `
 - **Hover:** Titel und Pfeil wechseln zu Magenta, Pfeil verschiebt sich `3px` nach rechts.
 
 ### Seitenkarte / Info-Box / Mail-Generator
-- **Style:** Weiß, `14px` Radius, `shadow`, kein Rahmen, `1.5rem` Innenabstand.
+- **Style:** Weiß, `14px` Radius, `shadow`, `3px`-Typrahmen (Seitenkarte magenta, Info-Box petrol, Mail-Generator gelb), `1.5rem` Innenabstand.
 - **Interne Trennung:** `1px`-Linien zwischen Listeneinträgen innerhalb der Karte (z. B. Best-Practices-Liste).
 
 ### Inputs / Fields
@@ -183,13 +183,13 @@ Zwei Radiusstufen tragen fast alles: `10px` (Icon-Buttons, Formularfelder) und `
 
 ### Do:
 - **Do** Magenta klein und häufig einsetzen (Button, Unterstrich, Punktmarker) statt großflächig und selten.
-- **Do** Karten ausschließlich über Schatten von der Fläche abheben, nie über einen sichtbaren Rahmen.
-- **Do** neue Listeninhalte als Zeile (`row`-Muster) anlegen, nicht als eigenständige Karte mit Rahmen — das Listenmuster ist die primäre Content-Form dieser App.
+- **Do** Karten (Seitenkarte/Info-Box/Mail-Generator) mit dem festen `3px`-Typ-Rahmen versehen (siehe Bunte-Rahmen-Regel) plus Schatten — Farbe ist an den Komponenten-Typ gebunden, nicht frei wählbar.
+- **Do** neue Listeninhalte als Zeile (`row`-Muster) anlegen, randlos — das Listenmuster ist die primäre Content-Form dieser App und bleibt bewusst ohne Rahmen, damit es scanbar bleibt.
 - **Do** Baloo 2 auf die eine Headline pro Seite begrenzen; alles andere bleibt Inter, auch wenn es fett gesetzt ist.
 - **Do** bei Unsicherheit über Markendetails ein echtes Bild/Screenshot anfordern statt aus Text-Fetch zu raten.
 
 ### Don't:
-- **Don't** dicke schwarze oder farbige Konturen um Panels/Karten einführen — diese App nutzt ausschließlich Schatten und `1px`-Trennlinien.
+- **Don't** Rahmenfarben pro Karten-Instanz frei mischen (z. B. eine Seitenkarte mal magenta, mal gelb) — die Farbe hängt am Komponenten-Typ, nicht am Zufall, sonst entsteht wieder das "zu viele Farben gleichzeitig"-Problem der verworfenen Fassung 2.
 - **Don't** die Eck-Illustrationen (`HERO_ILLUSTRATION`/`SIDECARD_ILLUSTRATION` aus `icons.js`) flächendeckend oder mit dicken Konturen einsetzen — sie bleiben kleine, freistehende Line-Art-Motive in der Ecke, kein Muster über eine ganze Fläche wie in der verworfenen Fassung 2.
 - **Don't** mehr als eine Farbe gleichzeitig großflächig einsetzen (z. B. ein farbiges Kartenband plus eine zweite Akzentfarbe im selben Element).
 - **Don't** Emoji oder Icon-Fonts anstelle der gezeichneten Line-Art-Icons (`icons.js`) verwenden.

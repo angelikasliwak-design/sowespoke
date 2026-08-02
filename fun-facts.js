@@ -1,6 +1,7 @@
 /**
- * Leichte Marketing-Trivia für das Maskottchen — bewusst nicht als
- * Fachaussage gemeint, rein zur Auflockerung.
+ * Leichte Trivia für das Maskottchen — Mix aus Online-Marketing-Fakten und
+ * allgemeinen interessanten Infos, bewusst nicht als Fachaussage gemeint,
+ * rein zur Auflockerung.
  */
 const FUN_FACTS = [
   "Der erste bezahlte Online-Werbebanner ging 1994 live — Klickrate: 44 %. Heute freut man sich über 2 %.",
@@ -13,6 +14,16 @@ const FUN_FACTS = [
   "Die durchschnittliche Aufmerksamkeitsspanne für eine Anzeige liegt bei unter 2 Sekunden — kürzer als ein Wimpernschlag mit Zögern.",
   "\"ROAS\" klingt nach Fachbegriff, ist aber im Kern nur eine simple Division — Umsatz durch Werbekosten.",
   "Der erste Werbespot im deutschen Fernsehen lief 1956 — für ein Waschmittel.",
+  "Honig verdirbt praktisch nie — in jahrtausendealten ägyptischen Gräbern wurde noch essbarer Honig gefunden.",
+  "Oktopusse haben drei Herzen und blaues Blut.",
+  "Ein Tag auf der Venus dauert länger als ein Jahr auf der Venus — sie dreht sich extrem langsam um sich selbst.",
+  "Bananen sind botanisch gesehen Beeren. Erdbeeren dagegen nicht.",
+  "Die Chinesische Mauer ist entgegen einem hartnäckigen Mythos mit bloßem Auge aus dem All nicht sichtbar.",
+  "Der Kot von Wombats ist würfelförmig — vermutlich, damit er nicht wegrollt und als Duftmarke liegen bleibt.",
+  "Der Eiffelturm wird im Sommer durch die Hitzeausdehnung des Metalls bis zu 15 cm höher.",
+  "Menschen und Giraffen haben exakt die gleiche Anzahl an Halswirbeln: sieben.",
+  "Ein Blitz ist etwa fünfmal heißer als die Oberfläche der Sonne.",
+  "Der kürzeste Krieg der Geschichte (Britannien gegen Sansibar, 1896) dauerte etwa 38 Minuten.",
 ];
 
 function factOfTheDay() {

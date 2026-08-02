@@ -388,6 +388,7 @@ mark {
   overflow: hidden;
   background: var(--paper-raised);
   border-radius: var(--radius);
+  border: 3px solid var(--accent);
   box-shadow: var(--shadow);
   padding: var(--space-5);
 }
@@ -568,6 +569,7 @@ mark {
   background: var(--paper-raised);
   box-shadow: var(--shadow);
   border-radius: var(--radius);
+  border: 3px solid var(--teal);
   padding: var(--space-4) var(--space-5);
 }
 .info-box > *:not(.info-box__illustration) { position: relative; }
@@ -613,6 +615,7 @@ mark {
 .mailgen {
   background: var(--paper-raised);
   border-radius: var(--radius);
+  border: 3px solid var(--yellow);
   box-shadow: var(--shadow);
   padding: var(--space-5);
   display: flex;
@@ -795,8 +798,31 @@ code {
   position: relative;
   background: var(--paper-raised);
   border-radius: var(--radius);
+  border: 3px solid var(--ink);
   box-shadow: var(--shadow-hover);
   padding: var(--space-4) var(--space-5) var(--space-4) var(--space-4);
+}
+.mascot__bubble::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  bottom: 20px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 8px 14px 8px 0;
+  border-color: transparent var(--ink) transparent transparent;
+}
+.mascot__bubble::after {
+  content: "";
+  position: absolute;
+  left: -10px;
+  bottom: 21px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 11px 6px 0;
+  border-color: transparent var(--paper-raised) transparent transparent;
 }
 .mascot__bubble p {
   font-size: 0.9rem;

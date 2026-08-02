@@ -50,17 +50,19 @@ const ICONS = {
   news: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><rect x="3" y="4" width="18" height="16" rx="1.6"/><path d="M7 8.5h6"/><path d="M7 12h10"/><path d="M7 15.5h10"/></svg>`,
 };
 
-/* Maskottchen: freundliche Lupe, im gleichen Line-Art-Strichstil wie icons.js
-   statt einer flächig gefüllten Comic-Figur — passt zum "No-Border"/
-   Line-Art-Grundsatz aus DESIGN.md. */
+/* Maskottchen: freundliche Lupe im Pop-Art-Comic-Stil — kräftige Füllung,
+   dicke schwarze Comic-Konturen, Stern-Badge. Bewusste Abkehr vom reinen
+   Line-Art-Look nach explizitem Nutzerwunsch nach mehr Comic-Charakter. */
 const MASCOT_SVG = `<svg viewBox="0 0 64 64" aria-hidden="true">
-  <circle cx="27" cy="27" r="18" fill="#ffffff" stroke="var(--ink)" stroke-width="2.4"/>
-  <path d="M39.5 39.5 L54 54" stroke="var(--ink)" stroke-width="3.2" stroke-linecap="round"/>
-  <circle cx="16" cy="29" r="2.8" fill="var(--accent-tint)"/>
-  <circle cx="38" cy="29" r="2.8" fill="var(--accent-tint)"/>
-  <circle cx="20.5" cy="24.5" r="2" fill="var(--ink)"/>
-  <circle cx="33.5" cy="24.5" r="2" fill="var(--ink)"/>
-  <path d="M20 33c2.4 2.6 6.6 2.6 9 0" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/>
+  <circle cx="28" cy="28" r="19" fill="var(--accent)" stroke="var(--ink)" stroke-width="3"/>
+  <path d="M41 41 L57 57" stroke="var(--ink)" stroke-width="5.5" stroke-linecap="round"/>
+  <path d="M41 41 L57 57" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="21" cy="26" r="3.6" fill="#fff"/>
+  <circle cx="35" cy="26" r="3.6" fill="#fff"/>
+  <circle cx="21.5" cy="26.5" r="1.7" fill="var(--ink)"/>
+  <circle cx="35.5" cy="26.5" r="1.7" fill="var(--ink)"/>
+  <path d="M20 35c3 3.6 9 3.6 12 0" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
+  <path d="M7 7 l3.2 7.6 7.6 3.2 -7.6 3.2 -3.2 7.6 -3.2 -7.6 -7.6 -3.2 7.6 -3.2z" fill="var(--yellow)" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round"/>
 </svg>`;
 
 /* Verspielte Eck-Illustrationen im Line-Art-Stil der übrigen Icons, statt
