@@ -73,24 +73,19 @@ const MASCOT_SVG = `<svg viewBox="0 0 64 64" aria-hidden="true">
    reiner Halbton-Punkte — für Hero-Bereiche und Seitenkarten. Ersetzen die
    Halbton-Textur, keine dicken Konturen/Panels (No-Border-Regel bleibt). */
 const HERO_ILLUSTRATION = `<svg viewBox="0 0 200 200" aria-hidden="true">
-  <g fill="none" stroke="var(--ink)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M58 78 L142 48 L142 152 L58 122 Z"/>
-    <rect x="32" y="88" width="26" height="24" rx="6"/>
-  </g>
-  <g fill="none" stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round">
-    <path d="M156 65 Q176 100 156 135"/>
-    <path d="M174 50 Q202 100 174 150"/>
-  </g>
-  <path d="M30 34 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z" fill="var(--yellow)"/>
-  <path d="M166 158 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z" fill="var(--yellow)"/>
-  <circle cx="148" cy="20" r="4" fill="var(--teal)"/>
+  <path d="M58 76 Q100 55 145 40 Q152 100 145 160 Q100 145 58 124 Q54 100 58 76 Z"
+    fill="var(--accent-tint)" stroke="var(--ink)" stroke-width="3" stroke-linejoin="round"/>
+  <rect x="28" y="86" width="30" height="28" rx="9" fill="var(--accent-tint)" stroke="var(--ink)" stroke-width="3"/>
+  <path d="M158 60 Q182 100 158 140" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M177 44 Q209 100 177 156" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+  <circle cx="152" cy="16" r="5" fill="var(--yellow)"/>
+  <circle cx="20" cy="152" r="3.5" fill="var(--teal)"/>
 </svg>`;
 
 const SIDECARD_ILLUSTRATION = `<svg viewBox="0 0 100 100" aria-hidden="true">
-  <path d="M22 14 l3.4 8.6 8.6 3.4 -8.6 3.4 -3.4 8.6 -3.4 -8.6 -8.6 -3.4 8.6 -3.4z" fill="var(--yellow)"/>
-  <circle cx="62" cy="12" r="3.4" fill="var(--accent)"/>
-  <circle cx="82" cy="32" r="2.6" fill="var(--accent)"/>
-  <circle cx="46" cy="36" r="2.2" fill="var(--teal)"/>
+  <circle cx="58" cy="22" r="7" fill="var(--yellow)" opacity="0.9"/>
+  <circle cx="80" cy="46" r="4" fill="var(--accent)"/>
+  <circle cx="34" cy="42" r="3" fill="var(--teal)" opacity="0.8"/>
 </svg>`;
 
 const CATEGORY_ICON = {
