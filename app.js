@@ -281,6 +281,7 @@
   function renderMicrosoftRequests() {
     view.innerHTML = `
       <section class="hero hero--compact">
+        <div class="hero__blob">${BRAND_BLOB}</div>
         <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
         <div class="hero__intro">
           <h1>Anfragen an <mark>Microsoft</mark>.</h1>
@@ -555,6 +556,7 @@
 
     view.innerHTML = `
       <section class="hero">
+        <div class="hero__blob">${BRAND_BLOB}</div>
         <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
         <div class="hero__intro">
           <h1>Neuigkeiten aus der <mark>Online-Marketing-Welt</mark>.</h1>
@@ -727,6 +729,7 @@
 
     view.innerHTML = `
       <section class="hero">
+        <div class="hero__blob">${BRAND_BLOB}</div>
         <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
         <div class="hero__intro">
           <h1>Offizielle <mark>Microsoft-Präsentationen</mark>.</h1>
@@ -834,6 +837,7 @@
 
     view.innerHTML = `
       <section class="hero hero--compact">
+        <div class="hero__blob">${BRAND_BLOB}</div>
         <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
         <div class="hero__intro">
           <h1>Vorlagen &amp; <mark>Wissensdatenbank</mark>.</h1>
@@ -891,6 +895,7 @@
   async function renderMicrosoftLearn() {
     view.innerHTML = `
       <section class="hero hero--compact">
+        <div class="hero__blob">${BRAND_BLOB}</div>
         <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
         <div class="hero__intro">
           <h1>Von <mark>Microsoft Learn</mark>.</h1>

@@ -69,6 +69,34 @@ const MASCOT_SVG = `<svg viewBox="0 0 64 64" aria-hidden="true">
   <path d="M7 7 l3.2 7.6 7.6 3.2 -7.6 3.2 -3.2 7.6 -3.2 -7.6 -7.6 -3.2 7.6 -3.2z" fill="var(--yellow)" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round"/>
 </svg>`;
 
+/* Echte Marken-Formen nach Vorlage der Sowespoke-Präsentationsfolien:
+   organischer Teal-"Blob" (torn-edge Kreisform) + gelbe Comic-Wolke mit
+   Halbton-Textur. Laufen als große, weiche Hintergrundform HINTER dem
+   Content — nie als hartkantiges Element, das mit Inhalt konkurriert. */
+const BRAND_BLOB = `<svg viewBox="0 0 240 240" aria-hidden="true">
+  <path d="M60 8 C110 -8 175 10 200 55 C222 95 210 148 172 178 C132 210 68 212 32 182
+    C-2 154 -10 100 8 62 C20 36 34 16 60 8 Z" fill="var(--teal)"/>
+  <path d="M55 40 C70 30 85 32 92 42" stroke="#ffffff" stroke-width="7" stroke-linecap="round" fill="none" opacity="0.5"/>
+</svg>`;
+
+const BRAND_BURST = `<svg viewBox="0 0 200 200" aria-hidden="true">
+  <defs>
+    <pattern id="burstDots" width="11" height="11" patternUnits="userSpaceOnUse">
+      <circle cx="2.4" cy="2.4" r="2.4" fill="#c98a00"/>
+    </pattern>
+    <clipPath id="burstClip">
+      <path d="M70 10 C95 -4 122 -2 132 20 C156 14 178 28 176 52 C196 58 202 82 184 98
+        C196 116 186 140 162 142 C160 166 134 180 112 168 C96 186 66 186 54 166
+        C28 172 6 154 12 130 C-8 120 -8 94 12 82 C4 60 20 36 46 38 C50 18 60 8 70 10 Z" />
+    </clipPath>
+  </defs>
+  <path d="M70 10 C95 -4 122 -2 132 20 C156 14 178 28 176 52 C196 58 202 82 184 98
+    C196 116 186 140 162 142 C160 166 134 180 112 168 C96 186 66 186 54 166
+    C28 172 6 154 12 130 C-8 120 -8 94 12 82 C4 60 20 36 46 38 C50 18 60 8 70 10 Z"
+    fill="var(--yellow)"/>
+  <rect x="0" y="0" width="200" height="200" fill="url(#burstDots)" clip-path="url(#burstClip)" opacity="0.55"/>
+</svg>`;
+
 /* Verspielte Eck-Illustrationen im Line-Art-Stil der übrigen Icons, statt
    reiner Halbton-Punkte — für Hero-Bereiche und Seitenkarten. Ersetzen die
    Halbton-Textur, keine dicken Konturen/Panels (No-Border-Regel bleibt). */
@@ -102,10 +130,15 @@ const HERO_ILLUSTRATION = `<svg viewBox="0 0 200 200" aria-hidden="true">
   <circle cx="16" cy="156" r="3.5" fill="var(--teal)"/>
 </svg>`;
 
-const SIDECARD_ILLUSTRATION = `<svg viewBox="0 0 100 100" aria-hidden="true">
-  <circle cx="58" cy="22" r="7" fill="var(--yellow)" opacity="0.9"/>
-  <circle cx="80" cy="46" r="4" fill="var(--accent)"/>
-  <circle cx="34" cy="42" r="3" fill="var(--teal)" opacity="0.8"/>
+const SIDECARD_ILLUSTRATION = `<svg viewBox="0 0 200 200" aria-hidden="true">
+  <path d="M70 10 C95 -4 122 -2 132 20 C156 14 178 28 176 52 C196 58 202 82 184 98
+    C196 116 186 140 162 142 C160 166 134 180 112 168 C96 186 66 186 54 166
+    C28 172 6 154 12 130 C-8 120 -8 94 12 82 C4 60 20 36 46 38 C50 18 60 8 70 10 Z"
+    fill="var(--yellow)"/>
+  <circle cx="70" cy="60" r="5" fill="var(--accent)" opacity="0.5"/>
+  <circle cx="120" cy="90" r="4" fill="var(--accent)" opacity="0.4"/>
+  <circle cx="90" cy="115" r="3.5" fill="var(--accent)" opacity="0.35"/>
+  <circle cx="130" cy="55" r="3" fill="var(--accent)" opacity="0.4"/>
 </svg>`;
 
 const CATEGORY_ICON = {

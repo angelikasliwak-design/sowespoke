@@ -117,6 +117,11 @@ Restrained-Strategie mit einer dominanten Markenfarbe: Magenta trägt Interaktio
 
 **Die Bunte-Rahmen-Regel (seit der 4. Fassung, 2026-08-02).** Ursprünglich galt hier eine No-Border-Regel (Karten nur über Schatten abgegrenzt). Auf expliziten Nutzerwunsch nach mehr Comic-/Pop-Art-Charakter gilt jetzt: Seitenkarte, Info-Box und Mail-Generator bekommen je einen `3px`-Vollrahmen in einer festen, typbezogenen Farbe (Seitenkarte: Magenta, Info-Box: Petrol, Mail-Generator: Gelb) — nicht zufällig gemischt pro Instanz, sondern konsistent pro Komponente. Listenzeilen (`row`-Muster) bleiben bewusst randlos, damit die Liste weiterhin scanbar bleibt — die Rahmen sind auf abgegrenzte Karten-Container begrenzt, kein Muster über die ganze Seite. Trennlinien (`--line`) bleiben für Listen und Tabs.
 
+**Echte Marken-Formen (seit 2026-08-02, nach echten Sowespoke-Präsentationsfolien als Vorlage).** Zwei wiederkehrende Formen aus dem tatsächlichen Marken-Auftritt, in `icons.js`:
+- `BRAND_BLOB` — organischer Teal-Kreis mit unregelmäßigem Rand ("Blob"), als große, kräftige Hintergrundform hinter der Hero-Illustration (`.hero__blob`, ~90% Deckkraft, nicht zaghaft transparent).
+- `BRAND_BURST` / `SIDECARD_ILLUSTRATION` — gelbe Comic-Wolke ("Explosionswolke") mit Halbton-Punkt-Textur, als Eck-Akzent auf Seitenkarten/Info-Boxen. Aus Performance-Gründen (die Illustration erscheint mehrfach pro Seite, IDs dürfen im DOM nicht kollidieren) nutzt die kleine Kartenversion einzelne Punkte statt eines SVG-`<pattern>`.
+Beide bewusst als einzelne, klar begrenzte Formen eingesetzt, nie großflächig über mehrere Elemente hinweg.
+
 ## Typography
 
 **Display Font:** Baloo 2 (mit Segoe UI, system-ui als Fallback) — nur für die große Hero-/Seiten-Headline.
@@ -190,7 +195,7 @@ Zwei Radiusstufen tragen fast alles: `10px` (Icon-Buttons, Formularfelder) und `
 
 ### Don't:
 - **Don't** Rahmenfarben pro Karten-Instanz frei mischen (z. B. eine Seitenkarte mal magenta, mal gelb) — die Farbe hängt am Komponenten-Typ, nicht am Zufall, sonst entsteht wieder das "zu viele Farben gleichzeitig"-Problem der verworfenen Fassung 2.
-- **Don't** die Eck-Illustrationen (`HERO_ILLUSTRATION`/`SIDECARD_ILLUSTRATION` aus `icons.js`) flächendeckend oder mit dicken Konturen einsetzen — sie bleiben kleine, freistehende Line-Art-Motive in der Ecke, kein Muster über eine ganze Fläche wie in der verworfenen Fassung 2.
+- **Don't** die Illustrationen (`HERO_ILLUSTRATION`/`SIDECARD_ILLUSTRATION`/`BRAND_BLOB`/`BRAND_BURST` aus `icons.js`) als flächendeckendes Muster einsetzen — sie bleiben einzelne, freistehende Formen an definierten Stellen (Hero-Ecke, Karten-Ecke), kein Muster über eine ganze Fläche wie in der verworfenen Fassung 2.
 - **Don't** mehr als eine Farbe gleichzeitig großflächig einsetzen (z. B. ein farbiges Kartenband plus eine zweite Akzentfarbe im selben Element).
 - **Don't** Emoji oder Icon-Fonts anstelle der gezeichneten Line-Art-Icons (`icons.js`) verwenden.
 - **Don't** neue Strukturmuster erfinden, ohne sie gegen das Editorial-Referenzlayout zu prüfen — Struktur ist bewusst von einem konkreten Vorbild abgeleitet, nicht frei gestaltet.
