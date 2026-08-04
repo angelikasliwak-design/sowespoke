@@ -97,10 +97,12 @@ const BRAND_BURST = `<svg viewBox="0 0 200 200" aria-hidden="true">
   <rect x="0" y="0" width="200" height="200" fill="url(#burstDots)" clip-path="url(#burstClip)" opacity="0.55"/>
 </svg>`;
 
-/* Verspielte Eck-Illustrationen im Line-Art-Stil der übrigen Icons, statt
-   reiner Halbton-Punkte — für Hero-Bereiche und Seitenkarten. Ersetzen die
-   Halbton-Textur, keine dicken Konturen/Panels (No-Border-Regel bleibt). */
-const HERO_ILLUSTRATION = `<svg viewBox="0 0 200 200" aria-hidden="true">
+/* Eck-Illustration für den Hero-Bereich: EIN komponiertes Cluster (Halbton-
+   Punktfeld + Comic-Blitz + Megafon), das den Leerraum neben der Überschrift
+   bewusst füllt, statt eine einzelne Form isoliert in der Ecke schweben zu
+   lassen. Alle Teile überlappen/berühren sich — kein verstreuter Einzel-Akzent
+   (siehe DESIGN.md, Fassung "Marken-Formen zurückgenommen"). */
+const HERO_ILLUSTRATION = `<svg viewBox="0 0 300 190" aria-hidden="true">
   <defs>
     <linearGradient id="megaBody" x1="30%" y1="100%" x2="90%" y2="0%">
       <stop offset="0%" stop-color="#9c0349"/>
@@ -111,8 +113,15 @@ const HERO_ILLUSTRATION = `<svg viewBox="0 0 200 200" aria-hidden="true">
       <stop offset="0%" stop-color="#9c0349"/>
       <stop offset="100%" stop-color="var(--accent)"/>
     </linearGradient>
+    <pattern id="heroDots" width="13" height="13" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="2.6" fill="var(--teal)"/>
+    </pattern>
   </defs>
-  <g transform="rotate(-7 100 100)">
+  <rect x="2" y="8" width="60" height="60" rx="12" fill="url(#heroDots)" opacity="0.55" transform="rotate(-6 32 38)"/>
+  <path d="M48 26 L76 8 L62 46 L92 32 L54 82 L64 48 L36 58 Z"
+    fill="var(--yellow)" stroke="var(--ink)" stroke-width="4.5" stroke-linejoin="round"
+    transform="rotate(9 64 44)"/>
+  <g transform="translate(96,-8) rotate(-7 100 100)">
     <circle cx="34" cy="26" r="2.4" fill="var(--yellow)" opacity="0.8"/>
     <circle cx="46" cy="18" r="1.6" fill="var(--yellow)" opacity="0.6"/>
     <circle cx="24" cy="42" r="1.6" fill="var(--yellow)" opacity="0.6"/>
@@ -126,8 +135,8 @@ const HERO_ILLUSTRATION = `<svg viewBox="0 0 200 200" aria-hidden="true">
     <path d="M163 56 Q190 100 163 144" fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"/>
     <path d="M183 38 Q217 100 183 162" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
   </g>
-  <circle cx="156" cy="14" r="5" fill="var(--yellow)"/>
-  <circle cx="16" cy="156" r="3.5" fill="var(--teal)"/>
+  <circle cx="252" cy="10" r="5" fill="var(--yellow)"/>
+  <circle cx="18" cy="150" r="3.5" fill="var(--teal)"/>
 </svg>`;
 
 const SIDECARD_ILLUSTRATION = `<svg viewBox="0 0 100 100" aria-hidden="true">

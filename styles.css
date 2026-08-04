@@ -194,15 +194,15 @@ mark {
 }
 .hero__illustration {
   position: absolute;
-  top: -1.5rem;
+  top: -1.6rem;
   right: -0.5rem;
-  width: 150px;
-  height: 150px;
+  width: 258px;
+  height: 163px;
   pointer-events: none;
   z-index: 1;
 }
 .hero--compact { margin-bottom: var(--space-5); }
-.hero--compact .hero__illustration { width: 110px; height: 110px; top: -1rem; }
+.hero--compact .hero__illustration { width: 189px; height: 120px; top: -1.1rem; }
 .hero__intro, .hero .search { position: relative; z-index: 1; }
 .hero__intro { max-width: 40rem; }
 .hero__intro h1 {
