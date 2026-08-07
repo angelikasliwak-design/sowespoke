@@ -118,48 +118,43 @@ const BRAND_BURST = `<svg viewBox="0 0 200 200" aria-hidden="true">
    bewusst füllt, statt eine einzelne Form isoliert in der Ecke schweben zu
    lassen. Alle Teile überlappen/berühren sich — kein verstreuter Einzel-Akzent
    (siehe DESIGN.md, Fassung "Marken-Formen zurückgenommen"). */
-const HERO_ILLUSTRATION = `<svg viewBox="0 0 300 190" aria-hidden="true">
-  <defs>
-    <linearGradient id="megaBody" x1="30%" y1="100%" x2="90%" y2="0%">
-      <stop offset="0%" stop-color="#9c0349"/>
-      <stop offset="55%" stop-color="var(--accent)"/>
-      <stop offset="100%" stop-color="#ff4b9e"/>
-    </linearGradient>
-    <linearGradient id="megaGrip" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#9c0349"/>
-      <stop offset="100%" stop-color="var(--accent)"/>
-    </linearGradient>
-    <pattern id="heroDots" width="13" height="13" patternUnits="userSpaceOnUse">
-      <circle cx="3" cy="3" r="2.6" fill="var(--teal)"/>
-    </pattern>
-  </defs>
-  <rect x="2" y="8" width="60" height="60" rx="12" fill="url(#heroDots)" opacity="0.55" transform="rotate(-6 32 38)"/>
-  <path d="M48 26 L76 8 L62 46 L92 32 L54 82 L64 48 L36 58 Z"
-    fill="var(--yellow)" stroke="var(--ink)" stroke-width="4.5" stroke-linejoin="round"
-    transform="rotate(9 64 44)"/>
-  <!-- Türkisfarbener Comic-Burst hinter dem Megafon (Referenz-Mockup
-     2026-08-07) — rendert zuerst, damit das Megafon darüber liegt. -->
-  <path d="M215 5 L228 45 L268 30 L248 68 L290 78 L248 95 L275 130 L233 118 L238 160 L208 128 L178 158 L175 115 L138 128 L165 90 L128 72 L170 60 L155 22 L195 42 Z"
-    fill="var(--teal)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
-  <g transform="translate(96,-8) rotate(-7 100 100)">
-    <circle cx="34" cy="26" r="2.4" fill="var(--yellow)" opacity="0.8"/>
-    <circle cx="46" cy="18" r="1.6" fill="var(--yellow)" opacity="0.6"/>
-    <circle cx="24" cy="42" r="1.6" fill="var(--yellow)" opacity="0.6"/>
-    <path d="M58 76 Q100 55 145 40 Q153 100 145 160 Q100 145 58 124 Q54 100 58 76 Z"
-      fill="url(#megaBody)" stroke="var(--ink)" stroke-width="5" stroke-linejoin="round"/>
-    <ellipse cx="147" cy="100" rx="9" ry="57" fill="#fff" opacity="0.92" stroke="var(--ink)" stroke-width="3"/>
-    <ellipse cx="149.5" cy="100" rx="5.5" ry="49" fill="#eef0f2"/>
-    <path d="M76 68 Q92 63 106 59" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity="0.5" fill="none"/>
-    <rect x="24" y="83" width="34" height="34" rx="11" fill="url(#megaGrip)" stroke="var(--ink)" stroke-width="5"/>
-    <rect x="30" y="89" width="9" height="12" rx="3.5" fill="#fff" opacity="0.45"/>
-    <path d="M163 56 Q190 100 163 144" fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"/>
-    <path d="M183 38 Q217 100 183 162" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
-    <path d="M200 168 l2.4 5.6 5.6 2.4 -5.6 2.4 -2.4 5.6 -2.4-5.6 -5.6-2.4 5.6-2.4z" fill="var(--yellow)" stroke="var(--ink)" stroke-width="1.1" stroke-linejoin="round"/>
-    <circle cx="90" cy="150" r="2.2" fill="var(--accent)" opacity="0.7"/>
-    <circle cx="130" cy="16" r="1.8" fill="var(--yellow)" opacity="0.75"/>
+/* Zweite Megafon-Fassung (2026-08-07, spät) — kompakter, gedrungener
+   Marker-Doodle-Stil statt Verlaufs-Glanz-Megafon: dicke Outlines, flache
+   Farbflächen, 45°-Kippung mit Öffnung oben links, Impact-Burst aus 13
+   handgezeichneten Strahlen. Koordinaten programmatisch erzeugt (siehe
+   DESIGN.md), viewBox eng um den Inhalt zugeschnitten (quadratisch statt
+   der vorherigen 300×190-Breitformat-Box — .hero__illustration wurde
+   entsprechend auf ein quadratisches Seitenverhältnis angepasst). */
+const HERO_ILLUSTRATION = `<svg viewBox="0 0 764 774" aria-hidden="true">
+  <g transform="translate(382.2,387.0) rotate(-135) translate(-392.2,8.3)">
+    <g>
+      <path d="M426.5,-188.3 Q418.0,-231.8 406.6,-274.6" stroke="var(--ink)" stroke-width="21.1" fill="none" stroke-linecap="round"/>
+      <path d="M511.4,-186.1 Q521.0,-256.0 542.0,-323.5" stroke="var(--ink)" stroke-width="13.1" fill="none" stroke-linecap="round"/>
+      <path d="M539.3,-188.0 Q552.5,-222.6 565.0,-257.6" stroke="var(--ink)" stroke-width="13.7" fill="none" stroke-linecap="round"/>
+      <path d="M600.6,-147.2 Q625.7,-179.0 654.3,-207.7" stroke="var(--ink)" stroke-width="19.4" fill="none" stroke-linecap="round"/>
+      <path d="M631.5,-108.7 Q679.5,-133.0 720.1,-168.3" stroke="var(--ink)" stroke-width="17.7" fill="none" stroke-linecap="round"/>
+      <path d="M662.6,-58.2 Q729.3,-75.6 794.4,-97.9" stroke="var(--ink)" stroke-width="21.0" fill="none" stroke-linecap="round"/>
+      <path d="M665.6,4.3 Q713.1,1.2 760.4,6.4" stroke="var(--ink)" stroke-width="21.5" fill="none" stroke-linecap="round"/>
+      <path d="M657.2,43.2 Q710.6,62.6 767.0,68.5" stroke="var(--ink)" stroke-width="17.7" fill="none" stroke-linecap="round"/>
+      <path d="M635.8,99.5 Q684.6,138.6 742.1,163.2" stroke="var(--ink)" stroke-width="15.3" fill="none" stroke-linecap="round"/>
+      <path d="M594.6,145.4 Q641.8,198.3 686.8,252.9" stroke="var(--ink)" stroke-width="16.0" fill="none" stroke-linecap="round"/>
+      <path d="M535.3,179.9 Q553.5,218.1 564.0,259.1" stroke="var(--ink)" stroke-width="21.2" fill="none" stroke-linecap="round"/>
+      <path d="M487.0,189.4 Q497.4,247.7 497.5,306.9" stroke="var(--ink)" stroke-width="17.9" fill="none" stroke-linecap="round"/>
+      <path d="M453.3,199.7 Q444.6,234.9 447.3,271.1" stroke="var(--ink)" stroke-width="13.7" fill="none" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(55,25) rotate(58)">
+      <rect x="0" y="-52" width="168" height="104" rx="40" fill="var(--teal)" stroke="var(--ink)" stroke-width="20" stroke-linejoin="round"/>
+    </g>
+    <path d="M28,-46 C55,-70 92,-72 128,-58 L150,10 C110,34 62,36 30,14 Z"
+      fill="var(--accent)" stroke="var(--ink)" stroke-width="18" stroke-linejoin="round"/>
+    <path d="M118,-118 C230,-150 330,-158 396,-152
+             L402,152
+             C330,158 230,150 118,118 Z"
+      fill="#fff" stroke="var(--ink)" stroke-width="22" stroke-linejoin="round"/>
+    <ellipse cx="470" cy="0" rx="82" ry="170" fill="var(--accent)" stroke="var(--ink)" stroke-width="22"/>
+    <ellipse cx="476" cy="0" rx="54" ry="140" fill="#fff" stroke="var(--ink)" stroke-width="14"/>
+    <circle cx="492" cy="0" r="46" fill="var(--accent)" stroke="var(--ink)" stroke-width="12"/>
   </g>
-  <circle cx="18" cy="150" r="3.5" fill="var(--teal)"/>
-  <circle cx="270" cy="150" r="2.6" fill="var(--yellow)" opacity="0.8"/>
 </svg>`;
 
 /* Karten-Eck-Illustrationen: je EIN komponiertes Mini-Cluster pro Karten-

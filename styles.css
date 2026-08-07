@@ -312,13 +312,17 @@ mark {
 .hero__illustration {
   position: relative;
   flex: none;
-  width: 340px;
-  height: 215px;
+  /* Quadratisches Format seit der zweiten Megafon-Fassung (2026-08-07,
+     spät) — vorher 340×215 fürs Breitformat-Verlaufsmegafon, das neue
+     Marker-Doodle-Megafon ist als kompakte, annähernd quadratische
+     Komposition angelegt (viewBox 764×774). */
+  width: 250px;
+  height: 254px;
   pointer-events: none;
   filter: drop-shadow(0 14px 22px rgba(23, 23, 23, 0.16));
 }
 .hero--compact { margin-bottom: var(--space-5); padding: var(--space-5); }
-.hero--compact .hero__illustration { width: 220px; height: 139px; }
+.hero--compact .hero__illustration { width: 168px; height: 170px; }
 
 /* Verbundene Hero-Komposition (News-Seite, Kurskorrektur 2026-08-07):
    Sprechblase + Illustration wurden vorher als eigene Flex-Geschwister mit
