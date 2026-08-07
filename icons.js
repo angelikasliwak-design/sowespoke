@@ -56,24 +56,33 @@ const ICONS = {
   trophy: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 5H4v2a3 3 0 0 0 3 3"/><path d="M17 5h3v2a3 3 0 0 1-3 3"/><path d="M12 14v3"/><path d="M8.5 20.5h7"/><path d="M9.5 17.5h5l1 3h-7z"/></svg>`,
 };
 
-/* Maskottchen: freundliche Lupe im Pop-Art-Comic-Stil — kräftige Füllung,
-   dicke schwarze Comic-Konturen, Stern-Badge. Bewusste Abkehr vom reinen
-   Line-Art-Look nach explizitem Nutzerwunsch nach mehr Comic-Charakter. */
+/* Maskottchen (2026-08-07, live-Feedback: "gefällt mir nicht, süßes
+   Tierchen in unseren Farben"): kleiner Fuchs statt der Lupen-Kugel —
+   Magenta als Fell, Petrol als Halstuch, Gelb als Stern-Akzent. Dicke
+   schwarze Comic-Konturen bleiben, passt zum übrigen Pop-Art-System. */
 const MASCOT_SVG = `<svg viewBox="0 0 64 64" aria-hidden="true">
-  <circle cx="28" cy="28" r="19" fill="var(--accent)" stroke="var(--ink)" stroke-width="3"/>
-  <path d="M41 41 L57 57" stroke="var(--ink)" stroke-width="5.5" stroke-linecap="round"/>
-  <path d="M41 41 L57 57" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round"/>
-  <circle cx="21" cy="26" r="3.6" fill="#fff"/>
-  <circle cx="35" cy="26" r="3.6" fill="#fff"/>
-  <circle cx="21.5" cy="26.5" r="1.7" fill="var(--ink)"/>
-  <circle cx="35.5" cy="26.5" r="1.7" fill="var(--ink)"/>
-  <path d="M20 35c3 3.6 9 3.6 12 0" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
-  <path d="M7 7 l3.2 7.6 7.6 3.2 -7.6 3.2 -3.2 7.6 -3.2 -7.6 -7.6 -3.2 7.6 -3.2z" fill="var(--yellow)" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round"/>
-  <!-- Lupe: Case-Wall-Richtung macht aus dem Maskottchen eine kleine
-       Ermittler-Figur, ohne Gesicht/Kern anzutasten (Nutzerwunsch: Maskottchen bleibt). -->
-  <circle cx="10" cy="43" r="6" fill="none" stroke="var(--ink)" stroke-width="2.6"/>
-  <circle cx="10" cy="43" r="6" fill="#fff" opacity="0.35"/>
-  <path d="M14.3 47.3 L20 53" stroke="var(--ink)" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M11 22 L5 4 L24 15 Z" fill="var(--accent)" stroke="var(--ink)" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M53 22 L59 4 L40 15 Z" fill="var(--accent)" stroke="var(--ink)" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M13.5 18 L10 8 L20.5 15 Z" fill="var(--accent-tint)"/>
+  <path d="M50.5 18 L54 8 L43.5 15 Z" fill="var(--accent-tint)"/>
+  <path d="M32 12c14 0 22 10 22 22 0 12-9 20-22 20S10 46 10 34c0-12 8-22 22-22z" fill="var(--accent)" stroke="var(--ink)" stroke-width="3"/>
+  <path d="M32 29c8 0 13 5.5 13 11.5S39.5 51 32 51s-13-5-13-10.5S24 29 32 29z" fill="#fff"/>
+  <circle cx="17.5" cy="37" r="3.2" fill="var(--accent-tint)"/>
+  <circle cx="46.5" cy="37" r="3.2" fill="var(--accent-tint)"/>
+  <circle cx="24" cy="30" r="3.3" fill="var(--ink)"/>
+  <circle cx="40" cy="30" r="3.3" fill="var(--ink)"/>
+  <circle cx="25.1" cy="28.8" r="1.1" fill="#fff"/>
+  <circle cx="41.1" cy="28.8" r="1.1" fill="#fff"/>
+  <!-- Runde Brille (PIX-Richtung aus dem Maskottchen-Moodboard, 2026-08-07):
+       neugierig-schlauer Charakter, passt zum "sucht immer nach Wissen"-Ton. -->
+  <circle cx="24" cy="30" r="6.2" fill="none" stroke="var(--ink)" stroke-width="2.4"/>
+  <circle cx="40" cy="30" r="6.2" fill="none" stroke="var(--ink)" stroke-width="2.4"/>
+  <path d="M30.2 30 L33.8 30" stroke="var(--ink)" stroke-width="2.4"/>
+  <path d="M17.8 29 L13.5 27" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M46.2 29 L50.5 27" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M32 38.5 l-3.4 3 3.4 2.2 3.4-2.2z" fill="var(--ink)"/>
+  <path d="M17 48 Q32 58 47 48 L47 54 Q32 63 17 54 Z" fill="var(--teal)" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round"/>
+  <path d="M52 6 l2.2 5.3 5.3 2.2 -5.3 2.2 -2.2 5.3 -2.2 -5.3 -5.3 -2.2 5.3 -2.2z" fill="var(--yellow)" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round"/>
 </svg>`;
 
 /* Echte Marken-Formen nach Vorlage der Sowespoke-Präsentationsfolien:
@@ -142,8 +151,16 @@ const HERO_ILLUSTRATION = `<svg viewBox="0 0 300 190" aria-hidden="true">
     <path d="M163 56 Q190 100 163 144" fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"/>
     <path d="M183 38 Q217 100 183 162" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
   </g>
-  <circle cx="252" cy="10" r="5" fill="var(--yellow)"/>
   <circle cx="18" cy="150" r="3.5" fill="var(--teal)"/>
+  <!-- Comic-Sprechblase über dem Megafon (Mockup-Referenz 2026-08-07) —
+     bewusst ohne eingebetteten Fließtext: bei der Anzeigegröße (~200px)
+     wäre SVG-Text kaum lesbar. Drei Punkte statt Wörter deuten "spricht"
+     an, ohne das Risiko unleserlicher Mini-Schrift. -->
+  <path d="M176 2 h80 a10 10 0 0 1 10 10 v20 a10 10 0 0 1 -10 10 h-44 l-11 14 v-14 h-25 a10 10 0 0 1 -10 -10 v-20 a10 10 0 0 1 10 -10 z"
+    fill="#fff" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="200" cy="22" r="2.4" fill="var(--accent)"/>
+  <circle cx="216" cy="22" r="2.4" fill="var(--accent)"/>
+  <circle cx="232" cy="22" r="2.4" fill="var(--accent)"/>
 </svg>`;
 
 /* Karten-Eck-Illustrationen: je EIN komponiertes Mini-Cluster pro Karten-

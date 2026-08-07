@@ -17,7 +17,11 @@
   };
 
   const NAV_ICON = { news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", "microsoft-learn": "sparkle", anfragen: "mail" };
-  railLinks.forEach((a) => { a.innerHTML = ICONS[NAV_ICON[a.dataset.nav]]; });
+  railLinks.forEach((a) => {
+    const iconSlot = a.querySelector(".rail__nav-icon");
+    if (iconSlot) iconSlot.innerHTML = ICONS[NAV_ICON[a.dataset.nav]];
+    else a.innerHTML = ICONS[NAV_ICON[a.dataset.nav]];
+  });
 
   function escapeHtml(str) {
     return String(str).replace(/[&<>"']/g, (c) => ({
@@ -559,20 +563,22 @@
 
     view.innerHTML = `
       <section class="hero">
-        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
         <div class="hero__intro">
           <h1>Neuigkeiten aus der <mark>Online-Marketing-Welt</mark>.</h1>
           <p>Automatisch aktualisiert aus mehreren Branchen-Quellen — Fokus Microsoft Advertising.</p>
         </div>
+        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
+      </section>
+      <div class="toolbar">
         <label class="search">
           ${ICONS.search}
           <input type="search" id="search-input" placeholder="News durchsuchen …" value="${escapeHtml(query || "")}" aria-label="News durchsuchen" />
         </label>
-      </section>
-      <nav class="tabs" aria-label="Kanäle">
-        <button type="button" class="tabs__item ${ch === "all" ? "is-active" : ""}" data-ch="all">Alle</button>
-        ${channels.map((c) => `<button type="button" class="tabs__item ${ch === c ? "is-active" : ""}" data-ch="${c}">${c}</button>`).join("")}
-      </nav>
+        <nav class="tabs" aria-label="Kanäle">
+          <button type="button" class="tabs__item ${ch === "all" ? "is-active" : ""}" data-ch="all">Alle</button>
+          ${channels.map((c) => `<button type="button" class="tabs__item ${ch === c ? "is-active" : ""}" data-ch="${c}">${c}</button>`).join("")}
+        </nav>
+      </div>
       <div class="layout-2col">
         <div class="feed" id="news-feed">
           <h2 class="feed__title">Aktuelle Beiträge</h2>
@@ -634,7 +640,7 @@
       : "";
 
     feed.innerHTML = `
-      <h2 class="feed__title">Aktuelle Beiträge${items.length ? ` (${items.length})` : ""}</h2>
+      <h2 class="feed__title">Aktuelle Beiträge${items.length ? `<span class="feed__title__count">${items.length} Ergebnisse</span>` : ""}</h2>
       ${failedNotice}
       ${
         items.length
@@ -731,22 +737,24 @@
 
     view.innerHTML = `
       <section class="hero">
-        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
         <div class="hero__intro">
           <h1>Offizielle <mark>Microsoft-Präsentationen</mark>.</h1>
           <p>Zusammenfassungen, Beta-/Feature-Guides und Kunden-Mails direkt aus den echten Präsentationsfolien — neueste zuerst, Einträge ohne bekanntes Datum am Ende.</p>
         </div>
+        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
+      </section>
+      <div class="toolbar">
         <label class="search">
           ${ICONS.search}
           <input type="search" id="search-input" placeholder="Präsentation durchsuchen …" value="${escapeHtml(query || "")}" aria-label="Präsentationen durchsuchen" />
         </label>
-      </section>
-      <nav class="tabs" aria-label="Art">
-        <button type="button" class="tabs__item ${dt === "all" ? "is-active" : ""}" data-dt="all">Alle</button>
-        ${docTypes.map((d) => `<button type="button" class="tabs__item ${dt === d ? "is-active" : ""}" data-dt="${escapeHtml(d)}">${escapeHtml(d)}</button>`).join("")}
-      </nav>
+        <nav class="tabs" aria-label="Art">
+          <button type="button" class="tabs__item ${dt === "all" ? "is-active" : ""}" data-dt="all">Alle</button>
+          ${docTypes.map((d) => `<button type="button" class="tabs__item ${dt === d ? "is-active" : ""}" data-dt="${escapeHtml(d)}">${escapeHtml(d)}</button>`).join("")}
+        </nav>
+      </div>
       <div class="feed">
-        <h2 class="feed__title">Präsentationen${items.length ? ` (${items.length})` : ""}</h2>
+        <h2 class="feed__title">Präsentationen${items.length ? `<span class="feed__title__count">${items.length} Ergebnisse</span>` : ""}</h2>
         ${items.length ? presentationList(items) : `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Begriff oder Filter.</p></div>`}
       </div>
     `;
@@ -871,7 +879,7 @@
         ).join("")}
       </ul>
 
-      <h2 class="feed__title">Vorlagen aus Präsentationen (${linkedTemplates.length})</h2>
+      <h2 class="feed__title">Vorlagen aus Präsentationen<span class="feed__title__count">${linkedTemplates.length} Ergebnisse</span></h2>
       <ul class="article-list">
         ${linkedTemplates
           .map(
@@ -907,7 +915,7 @@
         </div>
       </section>
       <div class="feed">
-        <h2 class="feed__title">Case Studies${items.length ? ` (${items.length})` : ""}</h2>
+        <h2 class="feed__title">Case Studies${items.length ? `<span class="feed__title__count">${items.length} Ergebnisse</span>` : ""}</h2>
         ${
           items.length
             ? `<ul class="article-list">${items.map(caseStudyRow).join("")}</ul>`
@@ -999,7 +1007,7 @@
     } else if (!learnData.items || learnData.items.length === 0) {
       learnFeed.innerHTML = `<div class="empty-state">${ICONS.book}<strong>Noch keine Quellen hinterlegt</strong><p>Sobald konkrete Microsoft-Learn-Links hinterlegt sind, erscheinen hier die offiziellen Kurzbeschreibungen mit Link zur Originalseite.</p></div>`;
     } else {
-      learnFeed.innerHTML = `<h2 class="feed__title">Quellen (${learnData.items.length})</h2><ul class="article-list">${learnData.items
+      learnFeed.innerHTML = `<h2 class="feed__title">Quellen<span class="feed__title__count">${learnData.items.length} Ergebnisse</span></h2><ul class="article-list">${learnData.items
         .map(
           (it) => `
         <li>

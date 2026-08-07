@@ -39,6 +39,20 @@
   --cork: #d9c3a0;
   --cork-dark: #5a3c14;
 
+  /* Semantische Alias-Tokens (Brief 2026-08-07) — zeigen auf dieselben
+     Werte wie oben, damit Komponenten wahlweise die kurzen Marken-Namen
+     oder die semantischen Rollen-Namen nutzen; keine zweite Palette. */
+  --brand-primary: var(--accent);
+  --brand-secondary: var(--teal);
+  --brand-accent: var(--yellow);
+  --background: var(--cork);
+  --surface: var(--paper-raised);
+  --surface-secondary: var(--paper);
+  --text-primary: var(--ink);
+  --text-secondary: var(--ink-soft);
+  --border: var(--line);
+  --hover: var(--paper);
+
   /* -- Typografie ----------------------------------------------------- */
   --font-display: "Baloo 2", "Segoe UI", system-ui, sans-serif;
   --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
@@ -75,16 +89,23 @@ body {
 /* Case-Wall-Richtung: der Content-Bereich ist eine Korkwand, an die Karten
    gepinnt werden (siehe DESIGN.md "Case-Wall"). Die Sidebar bleibt bewusst
    sauberes Weiß — wie eine Pinnwand an einer Bürowand. Gesprenkelte
-   Textur über gestaffelte radiale Farbverläufe statt Rasterbild. */
-.view {
+   Textur über gestaffelte radiale Farbverläufe statt Rasterbild.
+   Sitzt auf .shell__main (voller Flex-Bereich), NICHT auf .view (das per
+   max-width auf lesbare Breite begrenzt ist) — sonst bleibt auf sehr
+   breiten Screens ein weißer Streifen zwischen Content und Bildschirmrand
+   stehen (Live-Feedback vom 2026-08-07). */
+.shell__main {
   background-color: var(--cork);
+  /* Deutlich zurückgenommen (Brief Punkt 21: "kein starkes Punktmuster
+     überall, große Lesebereiche müssen ruhig bleiben") — vorher 0.11-0.16
+     Deckkraft, jetzt kaum wahrnehmbares Papierkorn statt Muster. */
   background-image:
-    radial-gradient(circle at 12% 18%, rgba(90, 60, 20, 0.16) 0, rgba(90, 60, 20, 0.16) 2px, transparent 2.6px),
-    radial-gradient(circle at 68% 8%, rgba(90, 60, 20, 0.13) 0, rgba(90, 60, 20, 0.13) 1.6px, transparent 2.2px),
-    radial-gradient(circle at 40% 52%, rgba(90, 60, 20, 0.14) 0, rgba(90, 60, 20, 0.14) 2.2px, transparent 2.8px),
-    radial-gradient(circle at 85% 60%, rgba(90, 60, 20, 0.12) 0, rgba(90, 60, 20, 0.12) 1.8px, transparent 2.4px),
-    radial-gradient(circle at 22% 82%, rgba(90, 60, 20, 0.15) 0, rgba(90, 60, 20, 0.15) 2px, transparent 2.6px),
-    radial-gradient(circle at 92% 92%, rgba(90, 60, 20, 0.11) 0, rgba(90, 60, 20, 0.11) 1.6px, transparent 2.2px);
+    radial-gradient(circle at 12% 18%, rgba(90, 60, 20, 0.05) 0, rgba(90, 60, 20, 0.05) 2px, transparent 2.6px),
+    radial-gradient(circle at 68% 8%, rgba(90, 60, 20, 0.04) 0, rgba(90, 60, 20, 0.04) 1.6px, transparent 2.2px),
+    radial-gradient(circle at 40% 52%, rgba(90, 60, 20, 0.045) 0, rgba(90, 60, 20, 0.045) 2.2px, transparent 2.8px),
+    radial-gradient(circle at 85% 60%, rgba(90, 60, 20, 0.04) 0, rgba(90, 60, 20, 0.04) 1.8px, transparent 2.4px),
+    radial-gradient(circle at 22% 82%, rgba(90, 60, 20, 0.045) 0, rgba(90, 60, 20, 0.045) 2px, transparent 2.6px),
+    radial-gradient(circle at 92% 92%, rgba(90, 60, 20, 0.035) 0, rgba(90, 60, 20, 0.035) 1.6px, transparent 2.2px);
   background-size: 140px 140px;
 }
 img, svg { display: block; max-width: 100%; }
@@ -93,12 +114,16 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 h1, h2, h3, p { margin: 0; }
 ul { margin: 0; padding: 0; list-style: none; }
 mark {
-  background: var(--accent-tint);
+  /* Farbiger Text + Unterstreichung statt Pillen-Hintergrund (Mockup-
+     Referenz 2026-08-07) — text-decoration statt Pseudo-Element, damit
+     die Linie auch bei mehrzeilig umbrechenden Headlines korrekt pro
+     Zeile mitläuft. */
+  background: none;
   color: var(--accent);
-  padding: 0.04em 0.32em;
-  border-radius: 40% var(--radius-sm) 40% var(--radius-sm) / var(--radius) 40% var(--radius) 40%;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.14em;
 }
 
 :focus-visible {
@@ -129,43 +154,77 @@ mark {
   min-height: 100vh;
   min-height: 100dvh;
 }
+/* Beschriftete Sidebar (2026-08-07-Mockup) statt Icon-only-Leiste — nur
+   für tatsächlich existierende Seiten, keine erfundenen Menüpunkte. Auf
+   Mobile fällt sie zurück auf die schmale Icon-only-Form (s. Media Query). */
 .rail {
   flex: none;
-  width: 76px;
+  width: 236px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: var(--space-5);
-  padding: var(--space-4) 0;
+  align-items: stretch;
+  gap: var(--space-6);
+  padding: var(--space-6) var(--space-4) var(--space-4);
   background: var(--paper-raised);
   border-right: 1px solid var(--line);
   position: sticky;
   top: 0;
   height: 100vh;
   height: 100dvh;
+  overflow-y: auto;
+}
+.rail__logo {
+  padding-bottom: var(--space-4);
+  margin-bottom: var(--space-1);
+  border-bottom: 1px solid var(--line);
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
 }
 .rail__logo img {
-  width: 44px;
-  height: 58px;
+  width: 40px;
+  height: 52px;
   object-fit: contain;
 }
 .rail__nav {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 .rail__nav a {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 44px;
+  gap: var(--space-3);
+  width: 100%;
   height: 44px;
+  padding: 0 var(--space-3);
   border-radius: var(--radius-sm);
   color: var(--ink-soft);
+  font-size: 0.92rem;
+  font-weight: 600;
+  /* padding-left bewusst NICHT animiert (Layout-Eigenschaft, Detector-Fund) —
+     der Wechsel passiert beim Routenwechsel, nicht als Hover-Effekt, braucht
+     also keine Übergangsanimation. */
+  transition: background-color 150ms ease, color 150ms ease;
 }
-.rail__nav a svg { width: 22px; height: 22px; }
+.rail__nav-icon { flex: none; display: flex; }
+.rail__nav-icon svg { width: 20px; height: 20px; }
+.rail__nav-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .rail__nav a:hover { background: var(--paper); color: var(--ink); }
-.rail__nav a[aria-current="page"] { background: var(--accent-tint); color: var(--accent); }
+.rail__nav a[aria-current="page"] { background: var(--accent-tint); color: var(--accent); padding-left: calc(var(--space-3) + 6px); }
+.rail__nav a[aria-current="page"]::before {
+  /* Zusätzlicher Indikator neben der Farbe (Brief: "Do NOT rely only on
+     color") — schmaler Balken am linken Rand der aktiven Pille. */
+  content: "";
+  position: absolute;
+  left: var(--space-1);
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--accent);
+}
 
 .shell__main {
   flex: 1;
@@ -200,33 +259,29 @@ mark {
 }
 
 /* -- Hero ---------------------------------------------------------- */
+/* 2026-08-07 (Brief): Illustration schwebte vorher absolut positioniert
+   frei im Raum und überlappte teils die Suche. Jetzt ein normales
+   Flex-Kind, begrenzt in der Größe, unterstützt die Headline statt sie
+   zu dominieren. Suche+Filter sind in .toolbar ausgelagert (Punkt 11). */
 .hero {
-  position: relative;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-6);
   flex-wrap: wrap;
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-5);
   padding-top: var(--space-2);
 }
 .hero__illustration {
-  position: absolute;
-  top: -1.6rem;
-  right: -0.5rem;
-  width: 258px;
-  height: 163px;
+  flex: none;
+  width: 220px;
+  height: 139px;
   pointer-events: none;
-  z-index: 1;
-  /* Echter Schattenwurf statt flach aufgeklebt — folgt der Alphaform der
-     SVG-Cluster-Illustration, nicht ihrer rechteckigen Bounding-Box. */
-  filter: drop-shadow(0 12px 18px rgba(23, 23, 23, 0.16));
+  filter: drop-shadow(0 10px 16px rgba(23, 23, 23, 0.14));
 }
-.hero--compact { margin-bottom: var(--space-5); }
-.hero--compact .hero__illustration { width: 189px; height: 120px; top: -1.1rem; }
-.hero__intro, .hero .search { position: relative; z-index: 1; }
-.hero__intro { max-width: 40rem; animation: hero-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-.hero .search { animation: hero-in 420ms cubic-bezier(0.16, 1, 0.3, 1) 60ms both; }
+.hero--compact { margin-bottom: var(--space-4); }
+.hero--compact .hero__illustration { width: 170px; height: 108px; }
+.hero__intro { flex: 1 1 26rem; max-width: 40rem; animation: hero-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both; }
 .hero__intro h1 {
   font-family: var(--font-display);
   font-weight: 700;
@@ -246,11 +301,21 @@ mark {
   max-width: 46ch;
 }
 
+/* -- Toolbar: Suche + Filter vereint (Brief Punkt 11) -------------------- */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-5);
+}
+.toolbar .tabs { margin-bottom: 0; flex: 1 1 auto; }
+
 /* -- Suche --------------------------------------------------------------- */
 .search {
   position: relative;
-  flex: 0 1 22rem;
-  min-width: 15rem;
+  flex: 0 1 20rem;
+  min-width: 14rem;
 }
 .search input {
   width: 100%;
@@ -309,30 +374,24 @@ mark {
 }
 
 .feed__title {
-  display: inline-flex;
+  /* Klare Editorial-Überschrift statt Tesafilm-Pille — sah wie ein
+     schwebender Button aus (Brief 2026-08-07, Punkt 12). */
+  display: flex;
   align-items: center;
-  gap: 0.55em;
-  font-size: 1.05rem;
+  gap: 0.6em;
+  font-size: 1.2rem;
   font-weight: 700;
   margin-bottom: var(--space-5);
-  /* Zonen-Label als Tesafilm-Streifen auf der Korkwand statt schlichtem
-     Text — trägt die Case-Wall-Metapher in die Abschnittsüberschriften. */
-  background: rgba(255, 255, 255, 0.86);
-  padding: 0.4em 0.9em;
-  border-radius: var(--radius-xs);
-  box-shadow: 0 3px 8px -3px rgba(23, 23, 23, 0.28);
-  transform: rotate(-0.8deg);
-}
-.feed__title::before {
-  content: "";
-  flex: none;
-  width: 9px;
-  height: 9px;
-  background: var(--accent);
-  border-radius: var(--radius-xs);
-  transform: rotate(45deg);
 }
 .feed__title--icon::before { display: none; }
+.feed__title__count {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-tint);
+  padding: 0.25em 0.7em;
+  border-radius: 999px;
+}
 .feed__title__icon {
   display: flex;
   align-items: center;
@@ -368,66 +427,41 @@ mark {
   padding: var(--space-4) var(--space-1) var(--space-2);
 }
 
-/* -- Artikel-Liste: Karten an der Korkwand ---------------------------------
-   Case-Wall-Richtung (2026-08-07, siehe DESIGN.md): flache, umrandete
-   Listenzeilen werden zu einzeln angepinnten Karteikarten — Raster statt
-   Liste, echte Reißnägel, leichte Drehung pro Karte für die "von Hand
-   angepinnt"-Unregelmäßigkeit. Trägt die im Audit verstärkte Comic-/
-   Halbton-Sprache erstmals auf Strukturebene statt nur als Detail-Akzent. */
+/* -- Artikel-Liste: Karten-Raster --------------------------------------
+   2026-08-07 (Nutzer-Brief nach Live-Test): das erste Case-Wall-Konzept
+   (starke Rotation, Reißnagel auf jeder Karte) wirkte "messy" statt
+   "handgemacht", und die Pins hatten keine erkennbare Bedeutung. Zurück
+   zu geraden, exakt ausgerichteten Karten mit ruhigem Schatten + Rahmen;
+   die Korkwand (.shell__main) bleibt als Atmosphäre im Hintergrund, ohne
+   dass jede einzelne Karte den Pinnwand-Kitsch mitmacht. */
 .article-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
-  gap: var(--space-6) var(--space-5);
+  grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
+  gap: var(--space-5);
+  align-items: stretch;
 }
 .article-list li:not(.feed__divider) {
-  position: relative;
-  background: var(--paper);
-  border-radius: var(--radius-xs);
-  box-shadow: 0 14px 26px -12px rgba(23, 23, 23, 0.4), 0 3px 6px rgba(23, 23, 23, 0.12);
-  padding: var(--space-4) var(--space-2) var(--space-1);
-  /* Deutlich stärkere Drehung als der erste Versuch (0.2-0.9deg war im
-     Screenshot praktisch unsichtbar) — jetzt echt als von Hand angepinnt
-     lesbar, nicht nur leicht schief ausgerichtet. */
-  transform: rotate(-2.8deg);
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+  height: 100%;
 }
-.article-list li:not(.feed__divider):nth-child(3n+2) { transform: rotate(2.2deg); }
-.article-list li:not(.feed__divider):nth-child(3n+3) { transform: rotate(-1.3deg); }
-.article-list li:not(.feed__divider):nth-child(4n+1) { transform: rotate(1.6deg); }
-.article-list li:not(.feed__divider):nth-child(5n) { transform: rotate(-3.2deg); }
 .article-list li:not(.feed__divider):hover, .article-list li:not(.feed__divider):focus-within {
-  transform: rotate(0deg) translateY(-4px) scale(1.015);
-  box-shadow: 0 22px 34px -14px rgba(23, 23, 23, 0.44), 0 5px 10px rgba(23, 23, 23, 0.14);
-  z-index: 2;
-}
-.article-list li:not(.feed__divider)::before {
-  /* Reißnagel als echtes rundes Objekt: Kuppel-Verlauf für Glanzlicht,
-     eigener Schlagschatten der auf die Karte darunter fällt (nicht nur ein
-     Rand um einen flachen Kreis) — vorher als winziger flacher Punkt kaum
-     als Pin erkennbar. Einheitlich Marken-Magenta statt pro Kanal
-     eingefärbt: ein Pin ist ein physisches Objekt, kein zweites
-     Wayfinding-System neben dem Thumbnail. */
-  content: "";
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  /* Wiederverwendet die bestehenden Megafon-Verlaufsfarben aus HERO_ILLUSTRATION
-     (icons.js) statt einen weiteren Magenta-Ton zu erfinden. */
-  background: radial-gradient(circle at 35% 30%, #ff4b9e 0%, var(--accent) 45%, #9c0349 100%);
-  border: 1.5px solid var(--ink);
-  box-shadow: 0 4px 6px rgba(23, 23, 23, 0.45), 0 1px 0 rgba(255, 255, 255, 0.4) inset;
-  z-index: 2;
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--accent);
 }
 .row {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-4) calc(var(--space-2) + 26px);
+  height: 100%;
+  /* Einheitlicher 24px-Innenabstand auf allen Seiten (Brief Punkt 15),
+     unten etwas mehr Raum für den absolut positionierten Pfeil. */
+  padding: var(--space-5) var(--space-5) calc(var(--space-5) + 22px);
   text-decoration: none;
   color: var(--ink);
   position: relative;
@@ -462,21 +496,29 @@ mark {
 }
 .row__cat { font-weight: 600; }
 .row__title {
-  display: block;
   font-weight: 700;
   font-size: 1.05rem;
   margin-bottom: var(--space-1);
+  /* Max. 2 Zeilen, dann Ellipsis — Karten bleiben gleich hoch, egal wie
+     lang der Titel ist (Brief Punkt 15). */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .row__summary {
-  display: block;
   color: var(--ink-soft);
   font-size: 0.94rem;
   max-width: 62ch;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .row__arrow {
   position: absolute;
-  right: var(--space-3);
-  bottom: var(--space-3);
+  right: var(--space-5);
+  bottom: var(--space-5);
   color: var(--ink-soft);
   transition: transform 160ms ease, color 160ms ease;
 }
@@ -489,7 +531,8 @@ mark {
   align-items: center;
   justify-content: flex-end;
   gap: var(--space-2);
-  padding: 0 var(--space-4) var(--space-3);
+  padding: 0 var(--space-5) var(--space-5);
+  margin-top: calc(-1 * var(--space-3));
 }
 .row__rate-btn {
   display: flex;
@@ -926,10 +969,30 @@ code {
     border-bottom: 1px solid var(--line);
     position: sticky;
   }
-  .rail__logo { flex-shrink: 0; }
+  .rail__logo {
+    flex-shrink: 0;
+    width: auto;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    border-bottom: none;
+  }
   .rail__logo img { width: 32px; height: 42px; }
   .rail__nav { flex-direction: row; gap: var(--space-2); flex-shrink: 0; }
+  /* Zurück zur schmalen Icon-only-Form auf Mobile — Labels würden die
+     horizontale Leiste sprengen. */
+  .rail__nav a { width: 44px; height: 44px; padding: 0; justify-content: center; }
+  .rail__nav a[aria-current="page"] { padding-left: 0; }
+  .rail__nav-label { display: none; }
+  .rail__nav a[aria-current="page"]::before {
+    left: 50%;
+    top: auto;
+    bottom: -8px;
+    transform: translateX(-50%);
+    width: 22px;
+    height: 3px;
+  }
   .view { padding: var(--space-5) var(--space-4) var(--space-5); }
+  .toolbar { gap: var(--space-3); }
   .row { gap: var(--space-3); }
   .row__thumb { width: 44px; height: 44px; }
   .row__thumb svg { width: 20px; height: 20px; }

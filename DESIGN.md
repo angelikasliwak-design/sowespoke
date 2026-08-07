@@ -95,14 +95,13 @@ Frühere Fassung ("The Editorial Desk", bis 2026-08-07): ein ruhiges, listenbasi
 
 Diese Fassung ist das Ergebnis von zwei verworfenen Anläufen: Fassung 1 war ein ruhiges, aber markenfremdes ligne-claire-Navy-System (falsche Markenrecherche per Text-Fetch ohne visuellen Abgleich). Fassung 2 übertrug die echten Markenfarben, aber unverändert auf die alte Comic-Panel-Struktur — Ergebnis war ein überladenes, schwer navigierbares Raster mit zu vielen gleichzeitig aktiven Farben und Formen pro Karte. Diese dritte Fassung trennt die Fragen sauber: Struktur kommt von einem konkreten, klaren Referenz-Layout; Marke ist auf eine einzige dominante Akzentfarbe plus zwei sparsam eingesetzte Zweitfarben reduziert.
 
-**Key Characteristics:**
-- Icon-Sidebar (Home/Bibliothek) bleibt — sauberes Weiß, wie eine Pinnwand an der Bürowand, Navigation unverändert bewährt
-- Content-Fläche ist eine Korkwand (`--cork`-Textur); Inhalte sind einzeln angepinnte Karteikarten im Raster, nicht Zeilen einer Liste
-- Jede Karte trägt einen echten Reißnagel (Magenta) oben, minimal unterschiedliche Drehung pro Karte (von-Hand-angepinnte Unregelmäßigkeit)
-- Abschnittsüberschriften als Tesafilm-Streifen auf der Wand statt schlichtem Text
-- Eine große, editorial gesetzte Headline (Baloo 2) mit farbig markierter Schlüsselphrase — der einzige Ort mit Display-Schrift
-- Seitenkarte/Info-Box/Mail-Generator bleiben wie zuvor: weiße Karten mit `3px`-Typrahmen und farbigem Schein (siehe Bunte-Rahmen-Regel) — eigene Zone, kein Pin
-- Magenta ist die einzige Farbe mit hoher Präsenz (Buttons, aktiver Tab, Reißnägel, Sprechpunkt-Marker); Petrol und Gelb erscheinen nur klein (Logo, Beta-Badge)
+**Key Characteristics (aktualisiert nach Mockup-Kurskorrektur, siehe Named Rules):**
+- Beschriftete Sidebar (`236px`, nur echte Seiten) — sauberes Weiß, aktive Seite mit Tint-Hintergrund + linkem Farbbalken. Fällt auf Mobile zurück auf schmale Icon-only-Form.
+- Content-Fläche ist eine Korkwand (`--cork`-Textur, sehr dezent), Inhalte sind **gerade, exakt ausgerichtete Karten im Raster** — Rotation und Reißnagel wurden nach Nutzer-Feedback wieder entfernt (wirkten "messy", Pin ohne erkennbare Bedeutung)
+- Abschnittsüberschriften sind schlichte Überschriften mit separater Ergebnis-Pille, keine Tesafilm-Optik mehr
+- Eine große, editorial gesetzte Headline (Baloo 2) mit farbig unterstrichener Schlüsselphrase (Text-Farbe + Underline, kein Pillen-Hintergrund) — der einzige Ort mit Display-Schrift
+- Seitenkarte/Info-Box/Mail-Generator: weiße Karten mit `3px`-Typrahmen und farbigem Schein (siehe Bunte-Rahmen-Regel) — eigene Zone, unverändert
+- Magenta ist die einzige Farbe mit hoher Präsenz (Buttons, aktiver Tab/Nav, Mark-Unterstreichung); Petrol und Gelb erscheinen nur klein (Logo, Beta-Badge)
 
 ## Colors
 
@@ -139,6 +138,17 @@ Restrained-Strategie mit einer dominanten Markenfarbe: Magenta trägt Interaktio
 **Echte Marken-Formen — Experiment zurückgenommen (2026-08-02).** `BRAND_BLOB` (organischer Teal-Blob) und `BRAND_BURST` (gelbe Halbton-Comic-Wolke) wurden nach echten Sowespoke-Präsentationsfolien gebaut und kurzzeitig als verstreute Einzel-Akzente eingesetzt (Blob hinter der Hero-Illustration, Burst als Eck-Akzent auf Seitenkarten). Angelika-Feedback: In der Referenzfolie wirken Blob, Burst, Gradient-Panel und Foto als **eine** komponierte Illustration zusammen — als isolierte Einzelteile an unzusammenhängenden UI-Stellen (Hero-Ecke vs. Karten-Ecke) wirken sie beliebig/sinnlos, und der Hero-Blob überlappte zudem das Suchfeld (echter Layout-Bug). Beide Konstanten bleiben in `icons.js` definiert, sind aber aktuell **nicht verwendet**. `SIDECARD_ILLUSTRATION` ist zurückgesetzt auf die ursprüngliche einfache 3-Punkt-Version.
 
 **Hero-Illustration als komponiertes Cluster (2026-08-04).** Nach dem Rücknehmen der Marken-Formen blieb neben der Überschrift sichtbarer Leerraum, während das Megafon isoliert in der Ecke schwebte — Angelika-Feedback anhand eines Comic-Landingpage-Referenzbilds: mehrere kleine Elemente (Blitz, Halbton-Punktfeld, Foto, Farbflächen) berühren/überlappen sich dort zu EINER Komposition, statt einzeln verteilt zu sein. `HERO_ILLUSTRATION` in `icons.js` ist jetzt selbst ein Cluster aus drei sich berührenden Teilen in einem gemeinsamen SVG (Halbton-Punktfeld-Patch + Comic-Blitz + Megafon), breiter statt höher (`viewBox 0 0 300 190`), füllt den Raum links vom Megafon statt ihn leer zu lassen. Bleibt eine einzelne Instanz pro Seite (Hero kommt nie doppelt vor) — keine ID-Kollisionsgefahr wie bei `SIDECARD_ILLUSTRATION`.
+
+**Kurskorrektur nach konkretem Mockup (2026-08-07, spät).** Nutzer lieferte einen ausführlichen 32-Punkte-Brief plus ein reales Bild-Mockup — löst die vorherige Case-Wall-Ausführung in mehreren Punkten ab, Grundidee (Kork-Atmosphäre) bleibt, Ausführung wird ruhiger/professioneller:
+- **Karten sind wieder gerade** (keine Rotation), **kein Reißnagel mehr** (war rein dekorativ ohne erkennbare Bedeutung — Brief Punkt 19 verlangt explizit Entfernen oder drastisches Reduzieren bei fehlender Funktion). Karten: `1px`-Rand + `--shadow`/`--shadow-hover`, `14px`-Radius, `24px`-Innenabstand, Titel/Zusammenfassung mit `-webkit-line-clamp` für gleiche Kartenhöhe.
+- **Sidebar** von Icon-only (`76px`) auf beschriftete Version (`236px`, nur echte Seiten — keine erfundenen Menüpunkte) — Logo mit mehr Luft, aktive Seite: Tint-Hintergrund + zusätzlicher linker Farbbalken (nicht nur Farbe als Unterscheidung). Fällt auf Mobile zurück auf Icon-only.
+- **Hero:** Illustration kein absolut positioniertes Frei-Element mehr, sondern normales Flex-Kind, moderat groß (nicht das Layout dominierend). `<mark>` ist jetzt farbiger Text mit Unterstreichung statt Pillen-Hintergrund. Sprechblasen-Form über dem Megafon ergänzt (ohne eingebetteten Fließtext — bei ~200px Anzeigegröße nicht lesbar).
+- **Suche + Filter** aus dem Hero ausgelagert in eine gemeinsame `.toolbar` darunter — vorher wirkten sie "disconnected".
+- **Sektions-Header** (`feed__title`) verliert die Tesafilm-Pillen-Optik ("sah aus wie ein schwebender Button") — schlichte Überschrift, Ergebnis-Anzahl als eigene rosa Pille (`feed__title__count`).
+- **Hintergrund-Punktmuster** auf `.shell__main` von 0.11-0.16 Deckkraft auf 0.035-0.05 reduziert — sollte kaum wahrnehmbares Papierkorn sein, kein auffälliges Muster über der gesamten Lesefläche.
+- **Semantische Alias-Tokens** ergänzt (`--brand-primary`, `--surface`, `--text-primary` usw.), zeigen auf dieselben Werte wie die Marken-Tokens — keine zweite Palette, nur zusätzliche Namen für den Fall, dass Komponenten sie nutzen wollen.
+- **Maskottchen** bekommt eine runde Brille (Richtung "PIX" aus einem Maskottchen-Moodboard: neugierig, sucht immer nach Wissen — passt zum Produkt).
+- Case-Wall-Kork-Hintergrund und die drei typgebundenen Karten-Illustrationen (Seitenkarte/Info-Box/Mail-Generator) bleiben unverändert — die Kurskorrektur betrifft die Artikel-Liste/Karten-Ebene, nicht die gesamte Richtung.
 
 **Mutigere Umsetzung des bestehenden Systems (2026-08-07).** Audit-Feedback: die Marke war schon richtig angelegt, wurde aber zu zaghaft ausgeführt. Bestätigt durch echte Sowespoke-Firmenmaterialien (sowespoke.com, Präsentationsfolien) als Referenz: großflächigere Halbton-Punktfelder, Comic-Sticker-Badges mit hartem Versatz-Schatten statt weichem Blur, echte Kartenillustrationen statt drei bloßer Punkte. Nichts an Farbpalette, Fonts oder Struktur geändert — nur die Ausführung verschärft:
 - Kartenschatten (Seitenkarte/Info-Box/Mail-Generator) hatten `0 0 26px` Versatz — ein Schatten ohne Offset ist ein aufgemalter Ring, keine echte Tiefe. Jetzt `0 14px 32px -14px`, Richtung wie `shadow-hover`.
@@ -195,12 +205,12 @@ Zwei Radiusstufen tragen fast alles: `10px` (Icon-Buttons, Formularfelder) und `
 - **Kategorie-Chip:** Vollfarbige Tinte, weißer Text, Pille.
 - **Beta-Badge:** Gelbe Füllung, schwarzer Text/Icon, Pille, kleiner als der Kategorie-Chip. Comic-Sticker-Ausführung: `1.5px` Ink-Rand, `sticker-shadow`, `-2deg` Drehung. `.flash--muted` (dezente Variante) bleibt ohne Schatten/Drehung.
 
-### Angepinnte Karte (`article-list li` + `row`)
-- **Aufbau:** Weiße Karte mit `52px` farbigem Icon-Thumbnail (Kategorie-Tinte, sichtbares Halbton-Punktraster) oben, Meta-Zeile (Datum, Kategorie, Beta-Badge), Titel (Inter 700), Zusammenfassung, Pfeil-Icon unten rechts (absolut positioniert).
-- **Reißnagel:** `13px` Kreis in Marken-Magenta mit Ink-Rand, mittig oben, `-7px` über die Kartenkante hinausragend — immer Magenta, unabhängig von der Kategorie-Tinte des Thumbnails (ein Pin ist ein physisches Objekt, kein zweites Wayfinding-System).
-- **Drehung:** leichte, per `nth-child` alternierende Rotation (`-0.7deg`/`0.6deg`/`-0.2deg`/`0.9deg`) für die von-Hand-angepinnte Unregelmäßigkeit; beim Hover/Fokus richtet sich die Karte auf (`rotate(0)`) und hebt sich leicht an.
-- **Trennung:** Rasterabstand statt Trennlinie — jede Karte ist eine eigenständige Fläche mit echtem, versetztem Schatten.
-- **Hover:** Titel und Pfeil wechseln zu Magenta, Pfeil verschiebt sich `3px` nach rechts, Karte hebt sich an und richtet sich gerade.
+### Karte (`article-list li` + `row`)
+- **Aufbau:** Weiße Karte, `1px`-Rand (`--border`), `14px`-Radius, `--shadow`, `24px`-Innenabstand über `.row`. `52px` farbiges Icon-Thumbnail (Kategorie-Tinte, sichtbares Halbton-Punktraster) oben, Meta-Zeile (Datum, Kategorie, Beta-Badge), Titel (Inter 700, max. 2 Zeilen), Zusammenfassung (max. 3 Zeilen), Pfeil-Icon unten rechts (absolut positioniert). Alle Karten in einer Grid-Zeile gleich hoch (`align-items:stretch` + Line-Clamp).
+- **Kein Reißnagel mehr** (Kurskorrektur 2026-08-07): war rein dekorativ ohne erkennbare Bedeutung, wirkte laut Nutzer-Feedback wie ein bedeutungsloses Element auf jeder Karte.
+- **Keine Rotation mehr** (Kurskorrektur 2026-08-07): erste Case-Wall-Fassung drehte Karten bis zu `±3.2deg` für den "handgepinnt"-Effekt — Nutzer-Feedback: wirkt "messy", nicht "kreativ". Karten sind jetzt exakt am Raster ausgerichtet.
+- **Trennung:** Rasterabstand (`24px`) statt Trennlinie — jede Karte ist eine eigenständige Fläche mit Rand + Schatten.
+- **Hover:** Titel und Pfeil wechseln zu Magenta, Pfeil verschiebt sich `3px` nach rechts, Karte hebt sich leicht an (`translateY(-3px)`), Rand wird magenta, Schatten wird `shadow-hover`.
 - **Ausnahme:** `feed__divider` (z. B. "Ohne bekanntes Datum") bekommt keine Karten-Optik — bleibt schlichtes, `grid-column: 1/-1` spannendes Textlabel innerhalb desselben Rasters.
 
 ### Seitenkarte / Info-Box / Mail-Generator
@@ -221,7 +231,9 @@ Zwei Radiusstufen tragen fast alles: `10px` (Icon-Buttons, Formularfelder) und `
 - **Focus:** `3px` Magenta-Outline (`:focus-visible`), `2px` Offset.
 
 ### Sidebar-Navigation
-- **Style:** Icon-only, `44px` Touch-Ziel, `10px` Radius. Aktiver Eintrag: `accent-tint`-Hintergrund, Magenta-Icon. Inaktiv: grauer Icon, Hover mit Warmpapier-Hintergrund.
+- **Style (Desktop):** Beschriftet, `236px` breit, `44px` Touch-Ziel pro Zeile, `10px` Radius. Aktiver Eintrag: `accent-tint`-Hintergrund, Magenta-Icon+Text, zusätzlich `3px` breiter Magenta-Balken links (Farbe allein reicht laut Brief nicht als einziger Indikator). Inaktiv: grauer Icon+Text, Hover mit Warmpapier-Hintergrund.
+- **Style (Mobile, `≤48rem`):** Fällt zurück auf Icon-only (`44px`-Quadrate, Labels ausgeblendet), horizontale Leiste, aktiver Indikator wird zum unteren Balken statt linkem.
+- **Nur echte Seiten:** keine Menüpunkte für nicht existierende Bereiche anlegen, auch wenn Referenz-Mockups mehr zeigen.
 
 ### Tabs
 - **Style:** Textbutton mit `2px` Unterstrich. Aktiv: Magenta-Text und -Unterstrich. Inaktiv: Grauschiefer, Hover auf Schwarz.
