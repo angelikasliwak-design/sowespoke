@@ -121,6 +121,7 @@ Restrained-Strategie mit einer dominanten Markenfarbe: Magenta trägt Interaktio
 - **Reinweiß** (`#ffffff`): Karten-Füllung.
 - **Trennlinie** (`#e7e3db`): 1px-Linien zwischen Listenzeilen und Tabs — die einzige "Kontur" im System.
 - **Teal-Tint** (`#e2f3f2`): helle Türkis-Fläche, Pendant zu `accent-tint` — u.a. Hero-Hintergrund.
+- **Warnung** (`#7a4a00` Text auf `#fff3d6`-Fläche): eigenständiges, a11y-sicheres Warnhinweis-Paar (`.feed__notice`, `.mailgen__warning`) — bewusst kein Signal-Gelb (`--yellow`), da dessen Kontrast auf hellem Grund für Fließtext nicht ausreicht. Aus zwei zuvor undokumentierten Literalwerten in `--warning`/`--warning-tint` überführt (2026-08-07).
 
 **Kork entfernt (2026-08-07, spät).** Die Tokens `--cork`/`--cork-dark` und die Kork-Textur auf `.shell__main` sind vollständig entfernt — explizite Nutzeranweisung ("Bitte nicht wieder das aktuelle Korkwand-Design als Grundlage nehmen"). Die Content-Fläche ist jetzt flaches `--paper`. Das Halbton-Punktmuster lebt nur noch begrenzt im `.hero`-Hintergrund weiter, nicht mehr seitenweit.
 

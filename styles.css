@@ -34,6 +34,8 @@
   --success: #146b3a;
   --success-tint: #dcf1e3;
   --teal-tint: #e2f3f2; /* helle Türkis-Fläche, Pendant zu --accent-tint */
+  --warning: #7a4a00;
+  --warning-tint: #fff3d6;
 
   /* Semantische Alias-Tokens (Brief 2026-08-07) — zeigen auf dieselben
      Werte wie oben, damit Komponenten wahlweise die kurzen Marken-Namen
@@ -520,8 +522,8 @@ mark {
   gap: var(--space-2);
   font-size: 0.86rem;
   font-weight: 600;
-  color: #7a4a00;
-  background: #fff3d6;
+  color: var(--warning);
+  background: var(--warning-tint);
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-sm);
   margin-bottom: var(--space-4);
@@ -997,8 +999,8 @@ code {
   gap: var(--space-2);
   font-size: 0.86rem;
   font-weight: 600;
-  color: #7a4a00;
-  background: #fff3d6;
+  color: var(--warning);
+  background: var(--warning-tint);
   padding: var(--space-3);
   border-radius: var(--radius-sm);
 }
