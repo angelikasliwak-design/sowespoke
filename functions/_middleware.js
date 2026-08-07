@@ -9,7 +9,12 @@
 import { verifySessionToken } from "./_lib/auth.js";
 
 const PUBLIC_EXACT_PATHS = new Set([
+  // Cloudflare Pages leitet /login.html -> /login um (Clean-URL-Standard-
+  // verhalten) — beide Formen müssen öffentlich sein, sonst entsteht eine
+  // Redirect-Schleife zwischen dieser Middleware und Pages' eigenem Redirect.
+  "/login",
   "/login.html",
+  "/register",
   "/register.html",
   "/auth.js",
   "/auth.css",
@@ -45,7 +50,7 @@ export async function onRequest(context) {
         headers: { "Content-Type": "application/json; charset=utf-8" },
       });
     }
-    const redirectUrl = new URL("/login.html", url.origin);
+    const redirectUrl = new URL("/login", url.origin);
     redirectUrl.searchParams.set("next", url.pathname + url.search);
     return Response.redirect(redirectUrl.toString(), 302);
   }

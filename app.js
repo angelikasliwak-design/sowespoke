@@ -1082,7 +1082,7 @@
     logoutLink.addEventListener("click", async (e) => {
       e.preventDefault();
       await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
-      location.href = "/login.html";
+      location.href = "/login";
     });
   }
 })();
