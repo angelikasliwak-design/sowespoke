@@ -1,6 +1,6 @@
-/* Eigenständiges, schlankes Stylesheet für login.html / register.html —
-   bewusst getrennt von styles.css, damit beide Seiten öffentlich (ohne
-   Login) ausgeliefert werden können, ohne das ganze App-CSS freizugeben. */
+/* Eigenständiges, schlankes Stylesheet für login.html — bewusst getrennt
+   von styles.css, damit die Login-Seite öffentlich (ohne Login) ausgeliefert
+   werden kann, ohne das ganze App-CSS freizugeben. */
 
 :root {
   --ink: #171717;
@@ -66,64 +66,37 @@ body.auth-body {
   line-height: 1.5;
 }
 
-.auth-form { display: flex; flex-direction: column; gap: 1rem; }
-
-.auth-form label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--ink-soft);
-}
-
-.auth-form input {
-  font: inherit;
-  font-size: 1rem;
-  padding: 0.65rem 0.75rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--paper);
-  color: var(--ink);
-}
-
-.auth-form input:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 1px;
-  border-color: var(--accent);
-}
-
-.auth-form button {
-  margin-top: 0.25rem;
-  padding: 0.75rem 1rem;
-  border-radius: var(--radius-sm);
-  background: var(--accent);
-  color: var(--on-accent);
-  font-weight: 700;
-  font-size: 0.9375rem;
-  font-family: inherit;
-  border: none;
-  cursor: pointer;
-}
-
-.auth-form button:disabled { opacity: 0.6; cursor: default; }
-.auth-form button:hover:not(:disabled) { filter: brightness(1.05); }
-
 .auth-error {
   background: var(--accent-tint);
   color: #a5341a;
   border-radius: var(--radius-sm);
   padding: 0.6rem 0.75rem;
   font-size: 0.85rem;
-  margin: 0;
+  margin: 0 0 1rem;
 }
 
-.auth-card__switch {
-  text-align: center;
-  font-size: 0.875rem;
-  color: var(--ink-soft);
-  margin: 1.5rem 0 0;
+.auth-google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper-raised);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  text-decoration: none;
 }
 
-.auth-card__switch a { color: var(--accent); font-weight: 600; text-decoration: none; }
-.auth-card__switch a:hover { text-decoration: underline; }
+.auth-google-btn:hover { background: var(--paper); }
+
+.auth-google-btn:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.auth-google-btn__icon { width: 18px; height: 18px; flex: none; }

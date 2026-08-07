@@ -14,7 +14,7 @@ Diese Website darf **nicht** wie generischer, austauschbarer AI-generierter Stan
 
 ## Stack
 
-Reines statisches HTML/CSS/JS, kein Build-Prozess. Deploy über Cloudflare Pages (Git-Integration, automatischer Deploy bei Push auf `main`). Leichtes Backend über Cloudflare Pages Functions (`functions/`): `/api/learn`, `/api/news`, `/api/rate` sowie `/api/auth/*` fürs Login. Zugriff auf die gesamte Seite ist über `functions/_middleware.js` auf `@sowespoke.com`/`@sowespoke.de`-Konten beschränkt (E-Mail+Passwort, siehe `CLOUDFLARE-ACCESS-SETUP.md`). Erfordert eine D1-Datenbank (Binding `DB`) und ein Secret `SESSION_SECRET`.
+Reines statisches HTML/CSS/JS, kein Build-Prozess. Deploy über Cloudflare Pages (Git-Integration, automatischer Deploy bei Push auf `main`). Leichtes Backend über Cloudflare Pages Functions (`functions/`): `/api/learn`, `/api/news`, `/api/rate` sowie `/api/auth/*` fürs Login. Zugriff auf die gesamte Seite ist über `functions/_middleware.js` auf `@sowespoke.com`/`@sowespoke.de`-Google-Konten beschränkt (Login via „Mit Google anmelden", siehe `CLOUDFLARE-ACCESS-SETUP.md`). Erfordert die Secrets `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` und `SESSION_SECRET`. Kein Passwort-Speicher, keine Datenbank nötig — Google übernimmt die Identitätsprüfung.
 
 ## Sprache
 

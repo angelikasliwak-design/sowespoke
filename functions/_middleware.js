@@ -1,12 +1,12 @@
 /**
  * Cloudflare Pages Middleware — läuft vor jedem Request an die Seite
  * (Seiten UND /api/*) und ersetzt die frühere Cloudflare-Access-Sperre.
- * Ohne gültige Session wird auf /login.html umgeleitet (bzw. bei /api/*
- * mit 401 geantwortet). Erfordert die Bindings DB (D1) und SESSION_SECRET
- * (Secret) im Cloudflare-Pages-Projekt.
+ * Ohne gültige Session wird auf /login umgeleitet (bzw. bei /api/* mit
+ * 401 geantwortet). Login läuft über Google OAuth (functions/api/auth/google/*),
+ * erfordert die Secrets GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET und SESSION_SECRET.
  */
 
-import { verifySessionToken } from "./_lib/auth.js";
+import { verifySessionToken, getCookie } from "./_lib/auth.js";
 
 const PUBLIC_EXACT_PATHS = new Set([
   // Cloudflare Pages leitet /login.html -> /login um (Clean-URL-Standard-
@@ -14,8 +14,6 @@ const PUBLIC_EXACT_PATHS = new Set([
   // Redirect-Schleife zwischen dieser Middleware und Pages' eigenem Redirect.
   "/login",
   "/login.html",
-  "/register",
-  "/register.html",
   "/auth.js",
   "/auth.css",
 ]);
@@ -26,12 +24,6 @@ function isPublicPath(pathname) {
   if (pathname.startsWith("/assets/brand/")) return true;
   if (pathname.startsWith("/api/auth/")) return true;
   return false;
-}
-
-function getCookie(request, name) {
-  const header = request.headers.get("Cookie") || "";
-  const match = header.match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`));
-  return match ? decodeURIComponent(match[1]) : null;
 }
 
 export async function onRequest(context) {

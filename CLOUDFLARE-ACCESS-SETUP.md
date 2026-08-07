@@ -1,40 +1,43 @@
-# Login einrichten — Zugriff nur für Firmen-E-Mails
+# Login einrichten — Google-Anmeldung nur für Firmen-Konten
 
-Die Seite ist **nicht mehr** über Cloudflare Access (Zero Trust) abgesperrt, sondern über ein eigenes Login (E-Mail + Passwort), das direkt im Projekt liegt: `functions/_middleware.js`, `functions/api/auth/*`, `login.html`, `register.html`. Registrierung ist nur mit einer `@sowespoke.com`- oder `@sowespoke.de`-E-Mail möglich (siehe `ALLOWED_DOMAINS` in `functions/_lib/auth.js`).
+Die Seite ist **nicht mehr** über Cloudflare Access (Zero Trust) abgesperrt, sondern über ein eigenes Login, das direkt im Projekt liegt: `functions/_middleware.js`, `functions/api/auth/google/*`, `login.html`. Anmeldung läuft über **„Mit Google anmelden"** — nur `@sowespoke.com`- oder `@sowespoke.de`-Google-Konten werden akzeptiert (`ALLOWED_DOMAINS` in `functions/_lib/auth.js`). Es gibt kein eigenes Passwort und keine Nutzerdatenbank — Google übernimmt die Identitätsprüfung, die Seite prüft nur die Domain der bestätigten E-Mail.
 
-Damit das läuft, braucht das Cloudflare-Pages-Projekt zwei Dinge, die **nicht im Repo** liegen (genau wie die bestehende KV-Bindung `NEWS_RATINGS`): eine D1-Datenbank und ein Secret.
+## 1. Google OAuth-Client anlegen
 
-## 1. D1-Datenbank anlegen
+In der [Google Cloud Console](https://console.cloud.google.com/apis/credentials) (mit dem Google-Workspace-Konto, das zu sowespoke.com/.de gehört):
 
-Im Cloudflare-Dashboard oder per Wrangler (`wrangler login` einmalig nötig):
+1. Projekt auswählen oder neu anlegen (z. B. „Sowespoke Wissenszentrum").
+2. **APIs & Services → OAuth consent screen**:
+   - User Type: **Internal** (nur Konten der eigenen Google-Workspace-Organisation können sich überhaupt am Consent-Screen anmelden — zusätzliche Sicherheitsebene neben der Domain-Prüfung im Code).
+   - App-Name, Support-E-Mail ausfüllen, speichern.
+3. **APIs & Services → Credentials → Create Credentials → OAuth client ID**:
+   - Application type: **Web application**
+   - Name: z. B. „Sowespoke Pages"
+   - **Authorized redirect URIs:** `https://sowespoke.pages.dev/api/auth/google/callback`
+   - Erstellen — Client-ID und Client-Secret werden angezeigt.
 
-```
-wrangler d1 create sowespoke-auth
-wrangler d1 execute sowespoke-auth --remote --file=schema.sql
-```
+## 2. Secrets im Cloudflare-Pages-Projekt setzen
 
-## 2. D1-Bindung am Pages-Projekt setzen
-
-Pages-Projekt „sowespoke" → **Settings → Functions → D1 database bindings** → Add binding:
-- **Variable name:** `DB`
-- **D1 database:** `sowespoke-auth`
-
-## 3. Session-Secret setzen
-
-Ein zufälliger, langer String, mit dem Login-Sessions signiert werden. Pages-Projekt → **Settings → Environment variables** → Variable hinzufügen, als **Secret** markieren:
-- **Variable name:** `SESSION_SECRET`
-- **Wert:** ein langer Zufallswert, z. B. mit `openssl rand -base64 32` erzeugt
+Pages-Projekt „sowespoke" → **Settings → Variables and secrets** → je einen Secret hinzufügen:
+- `GOOGLE_CLIENT_ID` — die Client-ID aus Schritt 1
+- `GOOGLE_CLIENT_SECRET` — das Client-Secret aus Schritt 1
+- `SESSION_SECRET` — ein langer Zufallswert zum Signieren der Login-Session (bereits gesetzt)
 
 Alternativ per CLI:
 
 ```
-wrangler pages secret put SESSION_SECRET --project-name=sowespoke
+wrangler pages secret put GOOGLE_CLIENT_ID --project-name=sowespoke
+wrangler pages secret put GOOGLE_CLIENT_SECRET --project-name=sowespoke
 ```
+
+## 3. Deploy auslösen
+
+Secrets gelten erst ab der **nächsten** Deployment — nach dem Setzen einmal im Dashboard unter **Deployments** die neueste Production-Deployment über „..." → **Retry deployment** anstoßen (oder einen neuen Commit pushen).
 
 ## 4. Testen
 
-Nach dem nächsten Deploy (Push auf `main`) `sowespoke.pages.dev` in einem privaten Fenster öffnen — es sollte auf `/login.html` umleiten. Mit `register.html` ein Konto mit einer `@sowespoke.com`/`@sowespoke.de`-Adresse anlegen, danach normal einloggen.
+`sowespoke.pages.dev` in einem privaten Fenster öffnen → sollte auf `/login` umleiten. „Mit Google anmelden" klicken, mit einer `@sowespoke.com`/`@sowespoke.de`-Adresse einloggen. Mit einer fremden Google-Adresse sollte die Anmeldung mit „Zugriff nur mit einem @sowespoke.com- oder @sowespoke.de-Konto" abgelehnt werden.
 
-## Wichtig — bekannte Einschränkung
+## Falls die Domain mal wechselt oder eine weitere hinzukommt
 
-Die Registrierung prüft nur, ob die eingegebene E-Mail-Adresse auf eine erlaubte Domain endet — sie verifiziert **nicht**, dass die Person diese Adresse wirklich besitzt (kein Bestätigungslink/-code). Wer die Domain-Regel kennt, könnte sich theoretisch mit einer fremden `@sowespoke.com`-Adresse registrieren, ohne Zugriff auf das echte Postfach zu haben. Für ein rein internes Tool ist das meist ein akzeptables Risiko; falls echte Verifizierung gewünscht ist, braucht es einen E-Mail-Versand (z. B. über einen Dienst wie Resend) für einen Bestätigungslink vor der Kontoaktivierung.
+`ALLOWED_DOMAINS` in `functions/_lib/auth.js` anpassen und in der Google Cloud Console ggf. eine weitere Redirect-URI hinterlegen, falls die Seite unter einer eigenen Domain statt `sowespoke.pages.dev` läuft.

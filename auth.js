@@ -5,71 +5,27 @@
     return new URLSearchParams(location.search).get(name);
   }
 
-  function showError(el, message) {
-    el.textContent = message;
-    el.hidden = false;
+  const ERROR_MESSAGES = {
+    domain: "Zugriff nur mit einem @sowespoke.com- oder @sowespoke.de-Konto.",
+    state: "Sitzung abgelaufen — bitte erneut versuchen.",
+    google: "Anmeldung abgebrochen.",
+    oauth: "Anmeldung fehlgeschlagen — bitte erneut versuchen.",
+  };
+
+  const googleBtn = document.getElementById("google-btn");
+  if (googleBtn) {
+    const next = qs("next");
+    if (next) {
+      const url = new URL(googleBtn.href, location.origin);
+      url.searchParams.set("next", next);
+      googleBtn.href = url.pathname + url.search;
+    }
   }
 
-  function submitForm(form, url, errorEl, buildBody, onSuccess) {
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      errorEl.hidden = true;
-      const btn = form.querySelector("button[type=submit]");
-
-      let body;
-      try {
-        body = buildBody(new FormData(form));
-      } catch (err) {
-        showError(errorEl, err.message);
-        return;
-      }
-
-      btn.disabled = true;
-      try {
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          showError(errorEl, data.error || "Etwas ist schiefgelaufen.");
-          return;
-        }
-        onSuccess();
-      } catch {
-        showError(errorEl, "Netzwerkfehler — bitte erneut versuchen.");
-      } finally {
-        btn.disabled = false;
-      }
-    });
-  }
-
-  const loginForm = document.getElementById("login-form");
-  if (loginForm) {
-    submitForm(
-      loginForm,
-      "/api/auth/login",
-      document.getElementById("login-error"),
-      (fd) => ({ email: fd.get("email"), password: fd.get("password") }),
-      () => { location.href = qs("next") || "/"; }
-    );
-  }
-
-  const registerForm = document.getElementById("register-form");
-  if (registerForm) {
-    submitForm(
-      registerForm,
-      "/api/auth/register",
-      document.getElementById("register-error"),
-      (fd) => {
-        const email = fd.get("email");
-        const password = fd.get("password");
-        const passwordConfirm = fd.get("passwordConfirm");
-        if (password !== passwordConfirm) throw new Error("Passwörter stimmen nicht überein");
-        return { email, password };
-      },
-      () => { location.href = "/"; }
-    );
+  const errorEl = document.getElementById("auth-error");
+  const errorCode = qs("error");
+  if (errorEl && errorCode) {
+    errorEl.textContent = ERROR_MESSAGES[errorCode] || ERROR_MESSAGES.oauth;
+    errorEl.hidden = false;
   }
 })();

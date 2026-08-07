@@ -8,54 +8,11 @@
 export const ALLOWED_DOMAINS = ["sowespoke.com", "sowespoke.de"];
 const SESSION_DAYS = 14;
 export const SESSION_MAX_AGE_SECONDS = SESSION_DAYS * 24 * 60 * 60;
-const PBKDF2_ITERATIONS = 100000;
 
 export function isAllowedEmail(email) {
   const match = /^[^\s@]+@([^\s@]+)$/.exec(String(email || "").trim().toLowerCase());
   if (!match) return false;
   return ALLOWED_DOMAINS.includes(match[1]);
-}
-
-function toHex(buffer) {
-  return [...new Uint8Array(buffer)].map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-function fromHex(hex) {
-  const bytes = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
-  return bytes;
-}
-
-async function deriveBits(password, salt) {
-  const keyMaterial = await crypto.subtle.importKey(
-    "raw",
-    new TextEncoder().encode(password),
-    { name: "PBKDF2" },
-    false,
-    ["deriveBits"]
-  );
-  return crypto.subtle.deriveBits(
-    { name: "PBKDF2", salt, iterations: PBKDF2_ITERATIONS, hash: "SHA-256" },
-    keyMaterial,
-    256
-  );
-}
-
-export async function hashPassword(password) {
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const bits = await deriveBits(password, salt);
-  return { salt: toHex(salt), hash: toHex(bits) };
-}
-
-export async function verifyPassword(password, saltHex, hashHex) {
-  const bits = await deriveBits(password, fromHex(saltHex));
-  const actual = new Uint8Array(bits);
-  const expected = fromHex(hashHex);
-  if (actual.length !== expected.length) return false;
-  // Konstante Vergleichszeit statt früh abzubrechen — verhindert Timing-Angriffe.
-  let diff = 0;
-  for (let i = 0; i < actual.length; i++) diff |= actual[i] ^ expected[i];
-  return diff === 0;
 }
 
 function b64url(bytes) {
@@ -116,8 +73,20 @@ export function clearSessionCookie() {
   return "session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0";
 }
 
+export function getCookie(request, name) {
+  const header = request.headers.get("Cookie") || "";
+  const match = header.match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 export function json(data, status = 200, cookie) {
   const headers = { "Content-Type": "application/json; charset=utf-8" };
   if (cookie) headers["Set-Cookie"] = cookie;
   return new Response(JSON.stringify(data), { status, headers });
+}
+
+/** Nur Pfade der eigenen Seite als Redirect-Ziel zulassen (kein Open Redirect). */
+export function safeNextPath(next) {
+  if (typeof next === "string" && next.startsWith("/") && !next.startsWith("//")) return next;
+  return "/";
 }
