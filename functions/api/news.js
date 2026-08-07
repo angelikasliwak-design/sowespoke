@@ -2,10 +2,11 @@
  * Cloudflare Pages Function — aggregiert externe RSS/Atom-Feeds serverseitig
  * (Browser kann fremde Feeds wegen CORS meist nicht direkt laden).
  *
- * WICHTIG: Automatische Übersetzung ins Deutsche ist NICHT implementiert —
- * das würde einen LLM-API-Key voraussetzen (gleiche Entscheidung wie der
- * geplante Chatbot). Bis dahin liefern wir Titel/Text in der Originalsprache
- * und markieren sie mit `lang`; das Frontend zeigt ein Sprach-Badge.
+ * Übersetzung: englische Quellen (`lang: "en"`) werden, sofern das Secret
+ * `OPENAI_API_KEY` gesetzt ist, per OpenAI-Chat-Completions ins Deutsche
+ * übersetzt (siehe `translateItems`). Ohne gesetzten Key bleibt das
+ * bisherige Verhalten unverändert: Original-Text + "EN"-Sprach-Badge im
+ * Frontend, kein Fehler.
  */
 
 const SOURCES = [
@@ -124,6 +125,55 @@ async function fetchSource(source) {
   }
 }
 
+// Übersetzt die englischsprachigen Items in einem einzigen Batch-Request
+// (statt einem Request pro Artikel) — hält Kosten/Latenz niedrig, das
+// Ergebnis landet ohnehin im 15-Minuten-Response-Cache. Bei fehlendem Key,
+// Netzwerkfehler oder unerwarteter Antwort werden die Original-Items
+// unverändert zurückgegeben — Übersetzung ist ein optionales Add-on, kein
+// harter Abhängigkeitspunkt für den News-Feed.
+async function translateItems(items, apiKey, model) {
+  const toTranslate = items.filter((i) => i.lang === "en" && (i.title || i.description));
+  if (!toTranslate.length || !apiKey) return items;
+
+  const payload = toTranslate.map((i, idx) => ({ id: idx, title: i.title, description: i.description }));
+
+  try {
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: model || "gpt-4.1-mini",
+        response_format: { type: "json_object" },
+        temperature: 0.2,
+        messages: [
+          {
+            role: "system",
+            content:
+              'Du übersetzt kurze Online-Marketing-News-Teaser aus dem Englischen ins Deutsche für ein internes Wissenszentrum einer Marketing-Agentur. Behalte Produktnamen und Fachbegriffe bei (z. B. Microsoft Advertising, ROAS, CPC, Performance Max), übersetze natürlich, knapp und sachlich, keine Erklärungen oder Zusätze. Antworte ausschließlich mit einem JSON-Objekt der Form {"items":[{"id":number,"title":string,"description":string}]} in derselben Reihenfolge wie die Eingabe, ein Eintrag pro Eingabe-Item.',
+          },
+          { role: "user", content: JSON.stringify({ items: payload }) },
+        ],
+      }),
+    });
+    if (!res.ok) return items;
+    const data = await res.json();
+    const raw = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    if (!raw) return items;
+    const parsed = JSON.parse(raw);
+    const byId = new Map((parsed.items || []).map((t) => [t.id, t]));
+
+    let cursor = 0;
+    return items.map((item) => {
+      if (item.lang !== "en" || !(item.title || item.description)) return item;
+      const t = byId.get(cursor++);
+      if (!t) return item;
+      return { ...item, title: t.title || item.title, description: t.description || item.description, translated: true };
+    });
+  } catch (err) {
+    return items;
+  }
+}
+
 export async function onRequestGet(context) {
   const cache = caches.default;
   const cacheKey = new Request(context.request.url, context.request);
@@ -131,15 +181,17 @@ export async function onRequestGet(context) {
   if (cached) return cached;
 
   const results = await Promise.all([...SOURCES.map(fetchSource), ...ARTICLES.map(fetchArticle)]);
-  const items = results.filter((r) => !r.error).flatMap((r) => r.items);
+  let items = results.filter((r) => !r.error).flatMap((r) => r.items);
   const failedSources = results.filter((r) => r.error).map((r) => ({ source: r.source, status: r.status, message: r.message }));
 
   items.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
+  items = items.slice(0, 60);
+  items = await translateItems(items, context.env.OPENAI_API_KEY, context.env.OPENAI_MODEL);
 
   const body = JSON.stringify({
     generatedAt: new Date().toISOString(),
     count: items.length,
-    items: items.slice(0, 60),
+    items,
     failedSources,
   });
 

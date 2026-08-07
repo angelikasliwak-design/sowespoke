@@ -296,11 +296,12 @@
   function renderMicrosoftRequests() {
     view.innerHTML = `
       <section class="hero hero--compact">
-        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
         <div class="hero__intro">
+          <span class="hero__eyebrow">Service-Anfragen</span>
           <h1>Anfragen an <mark>Microsoft</mark>.</h1>
           <p>Vorbereitete E-Mails auf Englisch an ${escapeHtml(MS_CONTACT_NAME)} — Beta-/Pilot-Programme, Bulk-Team-Aufgaben, Reports und Formulare.</p>
         </div>
+        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
       </section>
 
       ${renderMsChecklistSection("beta", "Beta- & Pilot-Programme", "Aktueller Nominierungs-Überblick (Stand Januar 2026) — auswählen, was für den Kunden angefragt werden soll.", MS_BETA_PROGRAMS)}
@@ -707,7 +708,7 @@
             <span class="row__meta">
               ${item.pubDate ? `<span class="row__date">— ${formatDate(item.pubDate)}</span>` : ""}
               <span class="row__cat">${escapeHtml(item.source)}</span>
-              ${item.lang === "en" ? `<span class="flash flash--muted">EN</span>` : ""}
+              ${item.translated ? `<span class="flash flash--muted" title="Automatisch aus dem Englischen übersetzt">Übersetzt</span>` : item.lang === "en" ? `<span class="flash flash--muted">EN</span>` : ""}
             </span>
             <span class="row__title">${escapeHtml(item.title)}</span>
             ${item.description ? `<span class="row__summary">${escapeHtml(item.description)}</span>` : ""}
@@ -788,15 +789,19 @@
     if (q) items = items.filter((p) => [p.title, p.summaryDE, p.docType].join(" ").toLowerCase().includes(q));
 
     view.innerHTML = `
-      <section class="hero">
+      <section class="hero hero--connected">
         <div class="hero__intro">
+          <span class="hero__eyebrow">Offizielle Quelle</span>
           <h1>Offizielle <mark>Microsoft-Präsentationen</mark>.</h1>
           <p>Zusammenfassungen, Beta-/Feature-Guides und Kunden-Mails direkt aus den echten Präsentationsfolien — neueste zuerst, Einträge ohne bekanntes Datum am Ende.</p>
         </div>
-        <div class="hero__bubble">Wissen, das<br>weiterbringt!</div>
-        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
+        <div class="hero__scene">
+          <div class="hero__bubble">Wissen, das<br>weiterbringt!</div>
+          <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
+        </div>
       </section>
       <div class="toolbar">
+        <span class="toolbar__label">Was möchtest du finden?</span>
         <label class="search">
           ${ICONS.search}
           <input type="search" id="search-input" placeholder="Präsentation durchsuchen …" value="${escapeHtml(query || "")}" aria-label="Präsentationen durchsuchen" />
@@ -897,31 +902,54 @@
 
   /* ------------------------------------------------------------- Seite: Vorlagen */
 
-  function renderTemplates() {
-    const linkedTemplates = [...PRESENTATIONS].sort((a, b) => {
+  function renderTemplates(query) {
+    const q = (query || "").trim().toLowerCase();
+
+    let bestPractices = BEST_PRACTICES;
+    let standalone = STANDALONE_TEMPLATES;
+    let linkedTemplates = [...PRESENTATIONS].sort((a, b) => {
       if (a.dateKnown !== b.dateKnown) return a.dateKnown ? -1 : 1;
       return new Date(b.date) - new Date(a.date);
     });
+    if (q) {
+      bestPractices = bestPractices.filter((bp) => [bp.title, bp.body].join(" ").toLowerCase().includes(q));
+      standalone = standalone.filter((t) => [t.title, t.summary].join(" ").toLowerCase().includes(q));
+      linkedTemplates = linkedTemplates.filter((p) => [p.title, p.summaryDE, p.docType].join(" ").toLowerCase().includes(q));
+    }
+    const noResults = !bestPractices.length && !standalone.length && !linkedTemplates.length;
 
     view.innerHTML = `
       <section class="hero hero--compact">
-        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
         <div class="hero__intro">
+          <span class="hero__eyebrow">Wissensdatenbank</span>
           <h1>Vorlagen &amp; <mark>Wissensdatenbank</mark>.</h1>
           <p>Best Practices und alle E-Mail-Vorlagen an einem Ort — inklusive Vorlagen mit individuellen Zusatzfeldern.</p>
         </div>
+        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
       </section>
-
-      <h2 class="feed__title">Best Practices</h2>
-      <div class="card-grid">
-        ${BEST_PRACTICES.map(
-          (bp, i) => `<div class="side-card"><span class="side-card__icon" style="background-color: var(${i % 2 ? "--teal" : "--accent"})">${ICONS.flash}</span><h3>${escapeHtml(bp.title)}</h3><p class="pre-line">${escapeHtml(bp.body)}</p></div>`
-        ).join("")}
+      <div class="toolbar">
+        <span class="toolbar__label">Was möchtest du finden?</span>
+        <label class="search">
+          ${ICONS.search}
+          <input type="search" id="search-input" placeholder="Best Practices, Vorlagen durchsuchen …" value="${escapeHtml(query || "")}" aria-label="Vorlagen durchsuchen" />
+          <button type="button" class="search__submit" id="search-submit" aria-label="Suche fokussieren">${ICONS.search}</button>
+        </label>
       </div>
 
-      <h2 class="feed__title">Eigenständige Vorlagen</h2>
+      ${noResults ? `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Begriff.</p></div>` : ""}
+
+      ${bestPractices.length ? `
+      <h2 class="feed__title">Best Practices<span class="feed__title__count">${bestPractices.length} Ergebnisse</span></h2>
+      <div class="card-grid">
+        ${bestPractices.map(
+          (bp, i) => `<div class="side-card"><span class="side-card__icon" style="background-color: var(${i % 2 ? "--teal" : "--accent"})">${ICONS.flash}</span><h3>${escapeHtml(bp.title)}</h3><p class="pre-line">${escapeHtml(bp.body)}</p></div>`
+        ).join("")}
+      </div>` : ""}
+
+      ${standalone.length ? `
+      <h2 class="feed__title">Eigenständige Vorlagen<span class="feed__title__count">${standalone.length} Ergebnisse</span></h2>
       <ul class="article-list">
-        ${STANDALONE_TEMPLATES.map(
+        ${standalone.map(
           (t) => `
           <li>
             <a class="row" href="#/vorlagen/${t.id}">
@@ -929,14 +957,15 @@
               <span class="row__body">
                 <span class="row__meta">${t.isPlaceholder ? `<span class="flash flash--muted">Beispiel</span>` : ""}</span>
                 <span class="row__title">${escapeHtml(t.title)}</span>
-                <span class="row__summary">${escapeHtml(t.summary)}</span>
+                <span class="row__summary">${escapeHtml(t.summary.slice(0, 180))}${t.summary.length > 180 ? "…" : ""}</span>
               </span>
               <span class="row__arrow">${ICONS.arrowRight}</span>
             </a>
           </li>`
         ).join("")}
-      </ul>
+      </ul>` : ""}
 
+      ${linkedTemplates.length ? `
       <h2 class="feed__title">Vorlagen aus Präsentationen<span class="feed__title__count">${linkedTemplates.length} Ergebnisse</span></h2>
       <ul class="article-list">
         ${linkedTemplates
@@ -955,32 +984,69 @@
           </li>`
           )
           .join("")}
-      </ul>
+      </ul>` : ""}
     `;
+
+    wireTopControls(() => renderTemplates(document.getElementById("search-input").value), () => {}, "x");
   }
 
   /* ------------------------------------------------------- Seite: Case Studies */
 
-  function renderCaseStudies() {
-    const items = [...CASE_STUDIES].sort((a, b) => new Date(b.date) - new Date(a.date));
+  function renderCaseStudies(query, channel) {
+    const q = (query || "").trim().toLowerCase();
+    const ch = channel || "all";
+    const channels = [...new Set(CASE_STUDIES.map((c) => c.channel))];
+
+    let items = [...CASE_STUDIES].sort((a, b) => new Date(b.date) - new Date(a.date));
+    if (ch !== "all") items = items.filter((c) => c.channel === ch);
+    if (q) items = items.filter((c) => [c.title, c.metricHeadline, c.summaryDE, c.client].join(" ").toLowerCase().includes(q));
 
     view.innerHTML = `
       <section class="hero hero--compact">
-        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
         <div class="hero__intro">
+          <span class="hero__eyebrow">Kundenergebnisse</span>
           <h1>Case <mark>Studies</mark>.</h1>
           <p>Echte Ergebnisse und Testresultate aus den Kundenkonten — laufend gepflegt.</p>
         </div>
+        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
       </section>
+      ${channels.length > 1 ? `
+      <div class="toolbar">
+        <span class="toolbar__label">Was möchtest du finden?</span>
+        <label class="search">
+          ${ICONS.search}
+          <input type="search" id="search-input" placeholder="Case Studies durchsuchen …" value="${escapeHtml(query || "")}" aria-label="Case Studies durchsuchen" />
+          <button type="button" class="search__submit" id="search-submit" aria-label="Suche fokussieren">${ICONS.search}</button>
+        </label>
+        <nav class="tabs" aria-label="Kanal">
+          <button type="button" class="tabs__item ${ch === "all" ? "is-active" : ""}" data-ch="all">Alle</button>
+          ${channels.map((c) => `<button type="button" class="tabs__item ${ch === c ? "is-active" : ""}" data-ch="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join("")}
+        </nav>
+      </div>` : `
+      <div class="toolbar">
+        <label class="search">
+          ${ICONS.search}
+          <input type="search" id="search-input" placeholder="Case Studies durchsuchen …" value="${escapeHtml(query || "")}" aria-label="Case Studies durchsuchen" />
+          <button type="button" class="search__submit" id="search-submit" aria-label="Suche fokussieren">${ICONS.search}</button>
+        </label>
+      </div>`}
       <div class="feed">
         <h2 class="feed__title">Case Studies${items.length ? `<span class="feed__title__count">${items.length} Ergebnisse</span>` : ""}</h2>
         ${
           items.length
             ? `<ul class="article-list">${items.map(caseStudyRow).join("")}</ul>`
+            : CASE_STUDIES.length
+            ? `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Begriff oder Filter.</p></div>`
             : `<div class="empty-state">${ICONS.trophy}<strong>Noch keine Case Study hinterlegt</strong><p>Sobald Ergebnisse aus einem Kundenkonto dokumentiert sind, erscheinen sie hier.</p></div>`
         }
       </div>
     `;
+
+    wireTopControls(
+      () => renderCaseStudies(document.getElementById("search-input").value, ch),
+      (nextCh) => renderCaseStudies(query, nextCh),
+      "ch"
+    );
   }
 
   function caseStudyRow(c) {
@@ -1037,16 +1103,32 @@
     `;
   }
 
-  async function renderMicrosoftLearn() {
+  function learnRow(it) {
+    return `
+        <li>
+          <a class="row" href="${escapeHtml(it.url)}" target="_blank" rel="noopener">
+            <span class="row__thumb" style="background-color: var(--teal)">${ICONS.external}</span>
+            <span class="row__body">
+              <span class="row__meta"><span class="row__cat">Microsoft Learn</span></span>
+              <span class="row__title">${escapeHtml(it.title || it.label)}</span>
+              <span class="row__summary">${escapeHtml(it.description || "")}</span>
+            </span>
+            <span class="row__arrow">${ICONS.external}</span>
+          </a>
+        </li>`;
+  }
+
+  async function renderMicrosoftLearn(query) {
     view.innerHTML = `
       <section class="hero hero--compact">
-        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
         <div class="hero__intro">
+          <span class="hero__eyebrow">Microsoft Learn</span>
           <h1>Von <mark>Microsoft Learn</mark>.</h1>
           <p>Offizielle Kurzbeschreibungen ausgewählter Microsoft-Learn-Seiten, mit Link zur vollständigen Originalseite.</p>
         </div>
+        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
       </section>
-      <div id="learn-feed">
+      <div class="feed" id="learn-feed">
         <div class="empty-state">${ICONS.book}<strong>Lade Quellen …</strong></div>
       </div>
     `;
@@ -1062,26 +1144,34 @@
         server: "Der Dienst hat mit einem Fehler geantwortet — vermutlich vorübergehend.",
       }[learnData.kind || "network"];
       learnFeed.innerHTML = `<div class="empty-state">${ICONS.book}<strong>Gerade nicht verfügbar</strong><p>${copy}</p></div>`;
-    } else if (!learnData.items || learnData.items.length === 0) {
-      learnFeed.innerHTML = `<div class="empty-state">${ICONS.book}<strong>Noch keine Quellen hinterlegt</strong><p>Sobald konkrete Microsoft-Learn-Links hinterlegt sind, erscheinen hier die offiziellen Kurzbeschreibungen mit Link zur Originalseite.</p></div>`;
-    } else {
-      learnFeed.innerHTML = `<h2 class="feed__title">Quellen<span class="feed__title__count">${learnData.items.length} Ergebnisse</span></h2><ul class="article-list">${learnData.items
-        .map(
-          (it) => `
-        <li>
-          <a class="row" href="${escapeHtml(it.url)}" target="_blank" rel="noopener">
-            <span class="row__thumb" style="background-color: var(--teal)">${ICONS.external}</span>
-            <span class="row__body">
-              <span class="row__meta"><span class="row__cat">Microsoft Learn</span></span>
-              <span class="row__title">${escapeHtml(it.title || it.label)}</span>
-              <span class="row__summary">${escapeHtml(it.description || "")}</span>
-            </span>
-            <span class="row__arrow">${ICONS.external}</span>
-          </a>
-        </li>`
-        )
-        .join("")}</ul>`;
+      return;
     }
+    if (!learnData.items || learnData.items.length === 0) {
+      learnFeed.innerHTML = `<div class="empty-state">${ICONS.book}<strong>Noch keine Quellen hinterlegt</strong><p>Sobald konkrete Microsoft-Learn-Links hinterlegt sind, erscheinen hier die offiziellen Kurzbeschreibungen mit Link zur Originalseite.</p></div>`;
+      return;
+    }
+
+    const renderList = (q) => {
+      const query = (q || "").trim().toLowerCase();
+      const items = query
+        ? learnData.items.filter((it) => [it.title || it.label, it.description].join(" ").toLowerCase().includes(query))
+        : learnData.items;
+      const listHtml = items.length
+        ? `<h2 class="feed__title">Quellen<span class="feed__title__count">${items.length} Ergebnisse</span></h2><ul class="article-list">${items.map(learnRow).join("")}</ul>`
+        : `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Begriff.</p></div>`;
+      learnFeed.innerHTML = `
+        <div class="toolbar">
+          <label class="search">
+            ${ICONS.search}
+            <input type="search" id="search-input" placeholder="Microsoft-Learn-Quellen durchsuchen …" value="${escapeHtml(q || "")}" aria-label="Microsoft-Learn-Quellen durchsuchen" />
+            <button type="button" class="search__submit" id="search-submit" aria-label="Suche fokussieren">${ICONS.search}</button>
+          </label>
+        </div>
+        ${listHtml}
+      `;
+      wireTopControls(() => renderList(document.getElementById("search-input").value), () => {}, "x");
+    };
+    renderList(query);
   }
 
   function renderStandaloneTemplateDetail(id) {
@@ -1207,13 +1297,13 @@
     } else if (path.startsWith("/vorlagen/")) {
       renderStandaloneTemplateDetail(path.slice("/vorlagen/".length));
     } else if (path === "/vorlagen") {
-      renderTemplates();
+      renderTemplates(params.get("q") || "");
     } else if (path.startsWith("/case-studies/")) {
       renderCaseStudyDetail(path.slice("/case-studies/".length));
     } else if (path === "/case-studies") {
-      renderCaseStudies();
+      renderCaseStudies(params.get("q") || "", params.get("ch") || "all");
     } else if (path === "/microsoft-learn") {
-      renderMicrosoftLearn();
+      renderMicrosoftLearn(params.get("q") || "");
     } else if (path === "/anfragen") {
       renderMicrosoftRequests();
     } else {

@@ -35,7 +35,7 @@ Statt verstreuter Präsentationsfolien, einzelner Blog-Lesezeichen und einer Sam
 ## Capabilities and Constraints
 
 - Automatischer RSS-Feed über eine Cloudflare Pages Function (Browser kann fremde Feeds wegen CORS nicht direkt laden); Caching serverseitig (~15 Min.).
-- **Offen:** Live-Übersetzung der (teils englischen) RSS-Inhalte ins Deutsche ist noch nicht umgesetzt — braucht denselben LLM-API-Key wie der geplante Chatbot. Bis dahin erscheinen Original-Sprache-Inhalte mit Sprach-Badge.
+- Live-Übersetzung der englischsprachigen RSS-Quellen (Microsoft Advertising Blog, Search Engine Land) ins Deutsche über die OpenAI-API (`functions/api/news.js`, Secret `OPENAI_API_KEY`, Modell konfigurierbar über `OPENAI_MODEL`, Default `gpt-4.1-mini`) — läuft serverseitig als Batch-Übersetzung, Ergebnis liegt im ohnehin bestehenden 15-Minuten-Response-Cache. Ohne gesetztes Secret bleibt das bisherige Verhalten (Original-Text + "EN"-Badge) unverändert, kein Fehler.
 - Präsentationen werden manuell vom Nutzer bereitgestellt (PDF, Ordner `content/presentations/`), nicht über ein Live-Upload-Formular — bewusste Entscheidung, kein Datei-Backend nötig.
 - E-Mail-Vorlagen mit variablen, vorlagenspezifischen Feldern (nicht nur ein einheitliches "Kundenname"-Feld).
 - Zugriffsschutz über Google OAuth ("Mit Google anmelden"), umgesetzt in `functions/_middleware.js` und `functions/api/auth/google/*` — sperrt die gesamte Seite inkl. `/api/*`, außer `/login` selbst. Erfordert die Secrets `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `SESSION_SECRET` im Cloudflare-Pages-Projekt (Setup-Doku: `CLOUDFLARE-ACCESS-SETUP.md`). Keine eigene Nutzerdatenbank — Google übernimmt die Identitätsprüfung, die App prüft nur die E-Mail-Domain.

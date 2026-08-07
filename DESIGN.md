@@ -178,6 +178,15 @@ Restrained-Strategie mit einer dominanten Markenfarbe: Magenta trägt Interaktio
 - `.tabs__item` (global, alle Filter-Leisten) jetzt mit gedämpfter Textfarbe/Gewicht im Ruhezustand — nur der aktive Filter bleibt kräftig pink, das war vorher zu gleichmäßig kräftig für alle Zustände.
 - Maskottchen (`.mascot`) + Fakten-Widget (`.fact-widget`) parallel überarbeitet: größere Figur (52→74px bzw. 64→88px), negative Margin für Überlappungs-/"Halte"-Effekt mit der Sprechblase, neues Label "Wusstest du schon?" in der schwebenden Bubble (vorher nur im Inline-Widget vorhanden), weicherer/größerer Schatten, CTA "Noch ein Fakt →" jetzt als gefüllter Pillen-Button statt Text-Link, feineres Schließen-Icon (kleiner, gedämpfte Opazität), Pop-in-Animation mit Scale+Bounce (bewusste Wiederverwendung derselben, bereits geprüften Bounce-Kurve wie bei `.row__thumb`).
 
+**Seitenübergreifender Konsistenz-Durchgang (2026-08-07, spät).** Die letzten Design-Runden konzentrierten sich auf News/Präsentationen — die übrigen vier Seiten (Vorlagen, Case Studies, Microsoft Learn, Anfragen) blieben auf älteren Mustern zurück. Ein gezielter Audit (Vergleich aller Hero-/Toolbar-/Feed-Title-Strukturen gegen den News-Stand) fand und behob:
+- **Hero-Reihenfolge:** Vorlagen/Case Studies/Microsoft Learn/Anfragen hatten `.hero__illustration` VOR `.hero__intro` (Bild zuerst) — jetzt überall Text zuerst, Illustration danach, wie auf News/Präsentationen.
+- **`.hero__eyebrow`** (kleines Label über der Headline) jetzt auf allen 6 Seiten vorhanden, nicht nur News: "Offizielle Quelle" (Präsentationen), "Wissensdatenbank" (Vorlagen), "Kundenergebnisse" (Case Studies), "Microsoft Learn", "Service-Anfragen" (Anfragen).
+- **Präsentationen** bekommt dieselbe `.hero__scene`-Bündelung (Bubble+Illustration) wie News (vorher noch die alte 3-Geschwister-Variante) sowie das fehlende `.toolbar__label`.
+- **Echte Suche/Filter ergänzt, wo bisher keine existierte:** Vorlagen (durchsucht Best Practices + eigenständige Vorlagen + verknüpfte Präsentationsvorlagen gemeinsam), Case Studies (Suche + Kanal-Tabs, Tabs nur sichtbar wenn mehr als ein Kanal tatsächlich vorkommt — vermeidet leere Tabs bei wenig Daten), Microsoft Learn (client-seitige Suche über die bereits geladenen Quellen). Alle drei nutzen den bestehenden `wireTopControls()`-Helper, keine neue Suchlogik erfunden.
+- **`.feed__title__count`-Pille** jetzt auch bei "Best Practices" und "Eigenständige Vorlagen" (vorher nur bei "Vorlagen aus Präsentationen" auf derselben Seite — uneinheitlich).
+- **`#learn-feed` fehlte die `.feed`-Klasse** (Layout-Bug, keine Feed-Abstände) — ergänzt.
+- **Verwaiste CSS-Klasse `.side-card__link`** entfernt (keine Referenz mehr im Markup, Rest eines früheren Karten-Musters).
+
 ## Typography
 
 **Display Font:** Baloo 2 (mit Segoe UI, system-ui als Fallback) — nur für die große Hero-/Seiten-Headline.
