@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Statisches HTML/CSS/JS als Frontend (kein Build-Prozess), erweitert um **Cloudflare Pages Functions** für serverseitige Aufgaben, die im Browser nicht gehen: RSS-Aggregation (CORS), künftig ein API-basierter Chatbot. Kein eigener Server, keine Datenbank — bleibt auf Cloudflare Pages betreibbar. Zugriffsschutz über **Cloudflare Access** (E-Mail-Domain-Beschränkung), nicht im Anwendungscode.
+Statisches HTML/CSS/JS als Frontend (kein Build-Prozess), erweitert um **Cloudflare Pages Functions** für serverseitige Aufgaben, die im Browser nicht gehen: RSS-Aggregation (CORS), Login, künftig ein API-basierter Chatbot. Kein eigener Server, keine Datenbank — bleibt auf Cloudflare Pages betreibbar. Zugriffsschutz über **Google OAuth im Anwendungscode** (`functions/_middleware.js`, `functions/api/auth/google/*`), nicht mehr über Cloudflare Access.
 
 ## Users
 
@@ -28,7 +28,7 @@ Statt verstreuter Präsentationsfolien, einzelner Blog-Lesezeichen und einer Sam
 - **Präsentationen:** offizielle Microsoft-Präsentationen (vom Nutzer als PDF bereitgestellt, manuell eingepflegt, nach Datum sortiert) mit treuer Zusammenfassung (nur Dokumentinhalt, keine Erfindungen), extrahierten Beta-/Feature-Guides, E-Mail-Generierung pro Feature, und Download-Link zur Originaldatei.
 - **Vorlagen & Wissensdatenbank:** alle E-Mail-Vorlagen gesammelt, mit vorlagenspezifischen Zusatzfeldern (z. B. Kontonummer bei einer Konto-Erstellungs-Vorlage, nicht nur Kundenname), plus Best-Practices-Sammlung.
 - **Anstehende Termine:** Widget mit wiederkehrenden Marketing-Terminen (Black Friday, Prime Day, Muttertag usw.) und Countdown.
-- **Zugriffsschutz:** nur Personen mit Firmen-E-Mail-Adresse kommen rein (Cloudflare Access).
+- **Zugriffsschutz:** nur Personen mit einem `@sowespoke.com`/`@sowespoke.de`-Google-Konto kommen rein — Login über "Mit Google anmelden" (`/login`), Google verifiziert die E-Mail, die Domain-Prüfung läuft serverseitig im Code.
 - **Geplant, noch nicht entschieden:** ein Chatbot, der Fragen ausschließlich auf Basis der hinterlegten Präsentationen und des offiziellen Microsoft-Blogs beantwortet (RAG-Ansatz, mit Quellenangabe) — braucht einen LLM-API-Key, den der Nutzer noch bereitstellen muss.
 
 ## Capabilities and Constraints
@@ -37,7 +37,7 @@ Statt verstreuter Präsentationsfolien, einzelner Blog-Lesezeichen und einer Sam
 - **Offen:** Live-Übersetzung der (teils englischen) RSS-Inhalte ins Deutsche ist noch nicht umgesetzt — braucht denselben LLM-API-Key wie der geplante Chatbot. Bis dahin erscheinen Original-Sprache-Inhalte mit Sprach-Badge.
 - Präsentationen werden manuell vom Nutzer bereitgestellt (PDF, Ordner `content/presentations/`), nicht über ein Live-Upload-Formular — bewusste Entscheidung, kein Datei-Backend nötig.
 - E-Mail-Vorlagen mit variablen, vorlagenspezifischen Feldern (nicht nur ein einheitliches "Kundenname"-Feld).
-- Zugriffsschutz ausschließlich über Cloudflare Access (Konfiguration im Cloudflare-Dashboard, nicht im Code).
+- Zugriffsschutz über Google OAuth ("Mit Google anmelden"), umgesetzt in `functions/_middleware.js` und `functions/api/auth/google/*` — sperrt die gesamte Seite inkl. `/api/*`, außer `/login` selbst. Erfordert die Secrets `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `SESSION_SECRET` im Cloudflare-Pages-Projekt (Setup-Doku: `CLOUDFLARE-ACCESS-SETUP.md`). Keine eigene Nutzerdatenbank — Google übernimmt die Identitätsprüfung, die App prüft nur die E-Mail-Domain.
 - Suchfunktion über alle Inhalte.
 
 ## Brand Commitments
@@ -58,4 +58,4 @@ Name: "Sowespoke". Visuelle Marke: Magenta als dominante Akzentfarbe, Petrol/Gel
 
 ## Accessibility & Inclusion
 
-Zugriff auf Personen mit Firmen-E-Mail-Adresse beschränkt (Cloudflare Access), sonst keine öffentliche Zugänglichkeit. Keine zusätzlichen rechtlichen Pflichtangaben (z. B. Impressum) nötig, da nicht öffentlich zugänglich.
+Zugriff auf Personen mit `@sowespoke.com`/`@sowespoke.de`-Google-Konto beschränkt (Google OAuth im Code, nicht Cloudflare Access), sonst keine öffentliche Zugänglichkeit. Keine zusätzlichen rechtlichen Pflichtangaben (z. B. Impressum) nötig, da nicht öffentlich zugänglich.
