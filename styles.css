@@ -34,6 +34,11 @@
   --success: #146b3a;
   --success-tint: #dcf1e3;
 
+  /* Case-Wall-Richtung (2026-08-07): Korkwand-Untergrund für den Content-
+     Bereich, siehe DESIGN.md. */
+  --cork: #d9c3a0;
+  --cork-dark: #5a3c14;
+
   /* -- Typografie ----------------------------------------------------- */
   --font-display: "Baloo 2", "Segoe UI", system-ui, sans-serif;
   --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
@@ -61,13 +66,26 @@ html { -webkit-text-size-adjust: 100%; overflow-x: hidden; }
 body {
   margin: 0;
   overflow-x: hidden;
-  background-color: var(--paper);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.03 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   color: var(--ink);
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+}
+/* Case-Wall-Richtung: der Content-Bereich ist eine Korkwand, an die Karten
+   gepinnt werden (siehe DESIGN.md "Case-Wall"). Die Sidebar bleibt bewusst
+   sauberes Weiß — wie eine Pinnwand an einer Bürowand. Gesprenkelte
+   Textur über gestaffelte radiale Farbverläufe statt Rasterbild. */
+.view {
+  background-color: var(--cork);
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(90, 60, 20, 0.16) 0, rgba(90, 60, 20, 0.16) 2px, transparent 2.6px),
+    radial-gradient(circle at 68% 8%, rgba(90, 60, 20, 0.13) 0, rgba(90, 60, 20, 0.13) 1.6px, transparent 2.2px),
+    radial-gradient(circle at 40% 52%, rgba(90, 60, 20, 0.14) 0, rgba(90, 60, 20, 0.14) 2.2px, transparent 2.8px),
+    radial-gradient(circle at 85% 60%, rgba(90, 60, 20, 0.12) 0, rgba(90, 60, 20, 0.12) 1.8px, transparent 2.4px),
+    radial-gradient(circle at 22% 82%, rgba(90, 60, 20, 0.15) 0, rgba(90, 60, 20, 0.15) 2px, transparent 2.6px),
+    radial-gradient(circle at 92% 92%, rgba(90, 60, 20, 0.11) 0, rgba(90, 60, 20, 0.11) 1.6px, transparent 2.2px);
+  background-size: 140px 140px;
 }
 img, svg { display: block; max-width: 100%; }
 a { color: inherit; }
@@ -291,12 +309,19 @@ mark {
 }
 
 .feed__title {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.55em;
   font-size: 1.05rem;
   font-weight: 700;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-5);
+  /* Zonen-Label als Tesafilm-Streifen auf der Korkwand statt schlichtem
+     Text — trägt die Case-Wall-Metapher in die Abschnittsüberschriften. */
+  background: rgba(255, 255, 255, 0.86);
+  padding: 0.4em 0.9em;
+  border-radius: var(--radius-xs);
+  box-shadow: 0 3px 8px -3px rgba(23, 23, 23, 0.28);
+  transform: rotate(-0.8deg);
 }
 .feed__title::before {
   content: "";
@@ -334,25 +359,68 @@ mark {
 }
 .feed__notice svg { width: 14px; height: 14px; flex: none; }
 .feed__divider {
+  grid-column: 1 / -1;
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--ink-soft);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   padding: var(--space-4) var(--space-1) var(--space-2);
-  border-top: 1px solid var(--line);
 }
 
-/* -- Artikel-Liste --------------------------------------------------------- */
-.article-list li { border-bottom: 1px solid var(--line); }
-.article-list li:first-child { border-top: 1px solid var(--line); }
+/* -- Artikel-Liste: Karten an der Korkwand ---------------------------------
+   Case-Wall-Richtung (2026-08-07, siehe DESIGN.md): flache, umrandete
+   Listenzeilen werden zu einzeln angepinnten Karteikarten — Raster statt
+   Liste, echte Reißnägel, leichte Drehung pro Karte für die "von Hand
+   angepinnt"-Unregelmäßigkeit. Trägt die im Audit verstärkte Comic-/
+   Halbton-Sprache erstmals auf Strukturebene statt nur als Detail-Akzent. */
+.article-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: var(--space-6) var(--space-5);
+}
+.article-list li:not(.feed__divider) {
+  position: relative;
+  background: var(--paper-raised);
+  border-radius: var(--radius-xs);
+  box-shadow: 0 10px 22px -12px rgba(23, 23, 23, 0.3), 0 2px 5px rgba(23, 23, 23, 0.08);
+  padding: var(--space-3) var(--space-1) var(--space-1);
+  transform: rotate(-0.7deg);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.article-list li:not(.feed__divider):nth-child(3n+2) { transform: rotate(0.6deg); }
+.article-list li:not(.feed__divider):nth-child(3n+3) { transform: rotate(-0.2deg); }
+.article-list li:not(.feed__divider):nth-child(5n) { transform: rotate(0.9deg); }
+.article-list li:not(.feed__divider):hover, .article-list li:not(.feed__divider):focus-within {
+  transform: rotate(0deg) translateY(-3px);
+  box-shadow: 0 18px 30px -14px rgba(23, 23, 23, 0.36), 0 4px 8px rgba(23, 23, 23, 0.1);
+}
+.article-list li:not(.feed__divider)::before {
+  /* Reißnagel: einheitlich Marken-Magenta statt pro Kanal eingefärbt — ein
+     Pin ist ein physisches Objekt, kein zweites Wayfinding-System neben dem
+     Thumbnail. */
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--ink);
+  box-shadow: 0 2px 3px rgba(23, 23, 23, 0.4);
+  z-index: 1;
+}
 .row {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-4);
-  padding: var(--space-5) var(--space-1);
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4) calc(var(--space-2) + 26px);
   text-decoration: none;
   color: var(--ink);
+  position: relative;
 }
 .row__thumb {
   flex: none;
@@ -373,7 +441,7 @@ mark {
 }
 .row__thumb svg { width: 24px; height: 24px; position: relative; }
 .row:hover .row__thumb { transform: scale(1.06) rotate(-3deg); }
-.row__body { flex: 1; min-width: 0; }
+.row__body { flex: 1; min-width: 0; width: 100%; padding-right: var(--space-6); }
 .row__meta {
   display: flex;
   align-items: center;
@@ -396,8 +464,9 @@ mark {
   max-width: 62ch;
 }
 .row__arrow {
-  flex: none;
-  align-self: center;
+  position: absolute;
+  right: var(--space-3);
+  bottom: var(--space-3);
   color: var(--ink-soft);
   transition: transform 160ms ease, color 160ms ease;
 }
@@ -410,7 +479,7 @@ mark {
   align-items: center;
   justify-content: flex-end;
   gap: var(--space-2);
-  padding: 0 0 var(--space-4);
+  padding: 0 var(--space-4) var(--space-3);
 }
 .row__rate-btn {
   display: flex;

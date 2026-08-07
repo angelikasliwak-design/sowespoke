@@ -16,7 +16,7 @@ Mitarbeiter:innen der eigenen Firma (rein interne Nutzung, Zugriff auf die Firme
 
 ## Product Purpose
 
-Internes Wissenszentrum ("Sowespoke"), zentrale Anlaufstelle für: aktuelle Online-Marketing-News (automatisch aus RSS-Quellen), offizielle Microsoft-Präsentationen mit Beta-/Feature-Guides, und eine Sammlung aller E-Mail-Vorlagen samt Best Practices. Ziel: alles an einem Ort, sicher (nur firmenintern zugänglich), und die tägliche Arbeit spürbar erleichtern.
+Internes Wissenszentrum ("Sowespoke"), zentrale Anlaufstelle für: aktuelle Online-Marketing-News (automatisch aus RSS-Quellen), offizielle Microsoft-Präsentationen mit Beta-/Feature-Guides, Case Studies mit echten Kundenergebnissen, und eine Sammlung aller E-Mail-Vorlagen samt Best Practices. Ziel: alles an einem Ort, sicher (nur firmenintern zugänglich), und die tägliche Arbeit spürbar erleichtern.
 
 ## Positioning
 
@@ -27,6 +27,7 @@ Statt verstreuter Präsentationsfolien, einzelner Blog-Lesezeichen und einer Sam
 - **Startseite:** automatisch aktualisierter News-Feed aus mehreren Branchen-RSS-Quellen (Kanal-getaggt: Microsoft/Google/Meta/TikTok/Snapchat/Rechtliches/Allgemein), Fokus Microsoft Advertising.
 - **Präsentationen:** offizielle Microsoft-Präsentationen (vom Nutzer als PDF bereitgestellt, manuell eingepflegt, nach Datum sortiert) mit treuer Zusammenfassung (nur Dokumentinhalt, keine Erfindungen), extrahierten Beta-/Feature-Guides, E-Mail-Generierung pro Feature, und Download-Link zur Originaldatei.
 - **Vorlagen & Wissensdatenbank:** alle E-Mail-Vorlagen gesammelt, mit vorlagenspezifischen Zusatzfeldern (z. B. Kontonummer bei einer Konto-Erstellungs-Vorlage, nicht nur Kundenname), plus Best-Practices-Sammlung.
+- **Case Studies:** Sammlung echter Kundenergebnisse/Testresultate aus den Konten (z. B. "+45% ROAS durch Autobidding-Umstellung"), manuell gepflegt wie die Präsentationen (`case-studies-data.js`), laufend erweiterbar.
 - **Anstehende Termine:** Widget mit wiederkehrenden Marketing-Terminen (Black Friday, Prime Day, Muttertag usw.) und Countdown.
 - **Zugriffsschutz:** nur Personen mit einem `@sowespoke.com`/`@sowespoke.de`-Google-Konto kommen rein — Login über "Mit Google anmelden" (`/login`), Google verifiziert die E-Mail, die Domain-Prüfung läuft serverseitig im Code.
 - **Geplant, noch nicht entschieden:** ein Chatbot, der Fragen ausschließlich auf Basis der hinterlegten Präsentationen und des offiziellen Microsoft-Blogs beantwortet (RAG-Ansatz, mit Quellenangabe) — braucht einen LLM-API-Key, den der Nutzer noch bereitstellen muss.
@@ -50,7 +51,7 @@ Name: "Sowespoke". Visuelle Marke: Magenta als dominante Akzentfarbe, Petrol/Gel
 
 ## Product Principles
 
-1. Schneller Zugriff schlägt Vollständigkeit — man muss in Sekunden zum gesuchten Thema finden.
+1. Schneller Zugriff bleibt das Ziel — aber seit dem Case-Wall-Redesign (2026-08-07, explizite Nutzerentscheidung) darf mehr visuelle Wirkung/Erlebnis dafür ein minimal langsameres Scannen in Kauf nehmen; reine Vollständigkeit bleibt weiterhin nachrangig.
 2. Wissen aus Präsentationen wird strukturiert bewahrt und bleibt an der Quelle nachprüfbar (Originaldatei verlinkt), nicht nur einmalig gezeigt.
 3. Jede Beta-Funktion ist direkt in kommunizierbares Kundenmaterial (Teaser-Mail) übersetzbar.
 4. Wiederverwendbarkeit vor Neuerfindung — bestehende Vorlagen und Best Practices werden sichtbar gemacht statt jedes Mal neu geschrieben.

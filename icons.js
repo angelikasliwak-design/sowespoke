@@ -52,6 +52,8 @@ const ICONS = {
   thumbUp: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><path d="M7 11v9H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z"/><path d="M7 11l4-7a2 2 0 0 1 2 2v4h5.5a2 2 0 0 1 1.94 2.5l-1.5 6A2 2 0 0 1 17 20H9a2 2 0 0 1-2-2"/></svg>`,
 
   thumbDown: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><path d="M17 13V4h3a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1z"/><path d="M17 13l-4 7a2 2 0 0 1-2-2v-4H5.5a2 2 0 0 1-1.94-2.5l1.5-6A2 2 0 0 1 7 4h8a2 2 0 0 1 2 2"/></svg>`,
+
+  trophy: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 5H4v2a3 3 0 0 0 3 3"/><path d="M17 5h3v2a3 3 0 0 1-3 3"/><path d="M12 14v3"/><path d="M8.5 20.5h7"/><path d="M9.5 17.5h5l1 3h-7z"/></svg>`,
 };
 
 /* Maskottchen: freundliche Lupe im Pop-Art-Comic-Stil — kräftige Füllung,
@@ -67,6 +69,11 @@ const MASCOT_SVG = `<svg viewBox="0 0 64 64" aria-hidden="true">
   <circle cx="35.5" cy="26.5" r="1.7" fill="var(--ink)"/>
   <path d="M20 35c3 3.6 9 3.6 12 0" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/>
   <path d="M7 7 l3.2 7.6 7.6 3.2 -7.6 3.2 -3.2 7.6 -3.2 -7.6 -7.6 -3.2 7.6 -3.2z" fill="var(--yellow)" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round"/>
+  <!-- Lupe: Case-Wall-Richtung macht aus dem Maskottchen eine kleine
+       Ermittler-Figur, ohne Gesicht/Kern anzutasten (Nutzerwunsch: Maskottchen bleibt). -->
+  <circle cx="10" cy="43" r="6" fill="none" stroke="var(--ink)" stroke-width="2.6"/>
+  <circle cx="10" cy="43" r="6" fill="#fff" opacity="0.35"/>
+  <path d="M14.3 47.3 L20 53" stroke="var(--ink)" stroke-width="3.2" stroke-linecap="round"/>
 </svg>`;
 
 /* Echte Marken-Formen nach Vorlage der Sowespoke-Präsentationsfolien:

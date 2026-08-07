@@ -21,6 +21,8 @@ colors:
   cat-tracking: "#185f8c"
   success: "#146b3a"
   success-tint: "#dcf1e3"
+  cork: "#d9c3a0"
+  cork-dark: "#5a3c14"
 typography:
   display:
     fontFamily: "Baloo 2, Segoe UI, system-ui, sans-serif"
@@ -83,19 +85,22 @@ components:
 
 ## Overview
 
-**Creative North Star: "The Editorial Desk"**
+**Creative North Star: "The Case Wall"** (löst "The Editorial Desk" ab, 2026-08-07)
 
-Ein ruhiges, listenbasiertes internes Wissenszentrum — Struktur einem klaren Editorial-/Blog-Layout entlehnt (schmale Icon-Sidebar, große Auszeichnungs-Headline, Tab-Filter, scanbare Artikel-Liste, schlanke Seitenkarte), Marke von den echten Sowespoke-Präsentationen (Magenta als einzige starke Akzentfarbe, Petrol und Gelb sparsam als Zweitfarben, weiche Schatten statt harter Konturen).
+Die Seite ist jetzt eine Ermittlungs-Pinnwand: Inhalte (News, Präsentationen, Vorlagen, Case Studies) sind einzeln angepinnte Karteikarten auf einer Korkwand, nicht Zeilen einer flachen Liste. Herkunft: explizite Nutzerentscheidung für einen kompletten Strukturneuentwurf ("etwas ganz Neues"), gewürfelt über den Concept-Seed-Mechanismus des Impeccable-Skills gegen vier Alternativen (Sneaker-Box-Regal, Buchstaben-Sturm, U-Bahn-Netzplan, Nixie-Röhren-Zähler) — die Case-Wall gewann, weil sie den eigentlichen Produkt-Mechanismus ("Briefing rein → Kunden-Mail raus, wer zuerst weiß, handelt zuerst") direkt trägt und zur eigenen Sowespoke-Markenwelt passt (bestätigt anhand echter sowespoke.com-Screenshots: Halbton-Punkte, Comic-Sticker, Sprechblasen — die vorher nur als kleine Akzente existierten, bekommen hier ihr strukturelles Zuhause). Marke (Magenta/Petrol/Gelb, Baloo 2/Inter) bleibt unverändert — nur die räumliche Metapher ist neu.
+
+Frühere Fassung ("The Editorial Desk", bis 2026-08-07): ein ruhiges, listenbasiertes Wissenszentrum nach Editorial-/Blog-Layout-Vorbild. Diese Struktur-Entscheidung ist damit ersetzt; die Marken-/Farb-Historie darunter bleibt als Beleg bestehen.
 
 Diese Fassung ist das Ergebnis von zwei verworfenen Anläufen: Fassung 1 war ein ruhiges, aber markenfremdes ligne-claire-Navy-System (falsche Markenrecherche per Text-Fetch ohne visuellen Abgleich). Fassung 2 übertrug die echten Markenfarben, aber unverändert auf die alte Comic-Panel-Struktur — Ergebnis war ein überladenes, schwer navigierbares Raster mit zu vielen gleichzeitig aktiven Farben und Formen pro Karte. Diese dritte Fassung trennt die Fragen sauber: Struktur kommt von einem konkreten, klaren Referenz-Layout; Marke ist auf eine einzige dominante Akzentfarbe plus zwei sparsam eingesetzte Zweitfarben reduziert.
 
 **Key Characteristics:**
-- Icon-Sidebar (Home/Bibliothek) statt Top-Navigation — persistent, minimal
+- Icon-Sidebar (Home/Bibliothek) bleibt — sauberes Weiß, wie eine Pinnwand an der Bürowand, Navigation unverändert bewährt
+- Content-Fläche ist eine Korkwand (`--cork`-Textur); Inhalte sind einzeln angepinnte Karteikarten im Raster, nicht Zeilen einer Liste
+- Jede Karte trägt einen echten Reißnagel (Magenta) oben, minimal unterschiedliche Drehung pro Karte (von-Hand-angepinnte Unregelmäßigkeit)
+- Abschnittsüberschriften als Tesafilm-Streifen auf der Wand statt schlichtem Text
 - Eine große, editorial gesetzte Headline (Baloo 2) mit farbig markierter Schlüsselphrase — der einzige Ort mit Display-Schrift
-- Themen als schlichte Listenzeilen (Farbicon-Thumbnail, Datum, Titel, Kurztext, Pfeil), keine Karten mit eigenem Rahmen
-- Tabs für Kategorie-Filterung statt bunter Chips auf jeder Karte
-- Weiße Karten mit weichem Schatten, **kein sichtbarer Rahmen** — durchgängig für Seitenkarte, Info-Box, Mail-Generator
-- Magenta ist die einzige Farbe mit hoher Präsenz (Buttons, aktiver Tab, Icon-Sidebar-Status, Sprechpunkt-Marker); Petrol und Gelb erscheinen nur klein (Logo, Beta-Badge)
+- Seitenkarte/Info-Box/Mail-Generator bleiben wie zuvor: weiße Karten mit `3px`-Typrahmen und farbigem Schein (siehe Bunte-Rahmen-Regel) — eigene Zone, kein Pin
+- Magenta ist die einzige Farbe mit hoher Präsenz (Buttons, aktiver Tab, Reißnägel, Sprechpunkt-Marker); Petrol und Gelb erscheinen nur klein (Logo, Beta-Badge)
 
 ## Colors
 
@@ -114,6 +119,7 @@ Restrained-Strategie mit einer dominanten Markenfarbe: Magenta trägt Interaktio
 - **Warmpapier** (`#f7f5f1`): Seitenhintergrund.
 - **Reinweiß** (`#ffffff`): Karten-Füllung.
 - **Trennlinie** (`#e7e3db`): 1px-Linien zwischen Listenzeilen und Tabs — die einzige "Kontur" im System.
+- **Kork** (`#d9c3a0`, dunkler Farbton `#5a3c14` nur als Sprenkel-Textur): Untergrund der Content-Fläche (`.view`) seit der Case-Wall-Richtung — Sidebar bleibt bewusst reinweiß als Kontrast, wie eine Pinnwand an einer Bürowand.
 
 ### Wegweiser-Tinten (Kategorie-Thumbnails)
 - **Veilchen** `#5b3fb0` — KI & Automatisierung
@@ -159,6 +165,8 @@ Zwei-Spalten-Shell: `76px` breite Icon-Sidebar (sticky) + Hauptbereich, maximal 
 
 Mobil (`48rem`): Sidebar wird zur horizontalen Top-Leiste (Icons nebeneinander) statt zu verschwinden oder umzubrechen.
 
+**Case-Wall-Raster (2026-08-07).** Die Artikel-Liste (`article-list`) ist kein vertikal gestapelter, randgetrennter Zeilenstapel mehr, sondern ein CSS-Grid (`repeat(auto-fill, minmax(17rem,1fr))`) aus einzelnen Karten — auf breiten Screens mehrspaltig, auf schmalen automatisch einspaltig, ohne eigene Media Query. Trennlinien (`--line`) entfallen für diese Karten; Abstand zwischen Karten trägt jetzt die Trennung, plus Schatten/Rotation für die Wand-Haptik.
+
 ## Elevation & Depth
 
 Reine Schatten-Tiefe, keine Konturen. Ein einziger Schatten-Token für den Ruhezustand aller Karten, ein zweiter für Hover — kein Konturensystem wie in den verworfenen Vorfassungen.
@@ -184,10 +192,13 @@ Zwei Radiusstufen tragen fast alles: `10px` (Icon-Buttons, Formularfelder) und `
 - **Kategorie-Chip:** Vollfarbige Tinte, weißer Text, Pille.
 - **Beta-Badge:** Gelbe Füllung, schwarzer Text/Icon, Pille, kleiner als der Kategorie-Chip. Comic-Sticker-Ausführung: `1.5px` Ink-Rand, `sticker-shadow`, `-2deg` Drehung. `.flash--muted` (dezente Variante) bleibt ohne Schatten/Drehung.
 
-### Artikel-Zeile (`row`)
-- **Aufbau:** `52px` farbiges Icon-Thumbnail (Kategorie-Tinte) + Meta-Zeile (Datum, Kategorie, Beta-Badge) + Titel (Inter 700) + Zusammenfassung + Pfeil-Icon rechts.
-- **Trennung:** `1px`-Linie zwischen Zeilen, keine eigene Kartenfläche pro Zeile.
-- **Hover:** Titel und Pfeil wechseln zu Magenta, Pfeil verschiebt sich `3px` nach rechts.
+### Angepinnte Karte (`article-list li` + `row`)
+- **Aufbau:** Weiße Karte mit `52px` farbigem Icon-Thumbnail (Kategorie-Tinte, sichtbares Halbton-Punktraster) oben, Meta-Zeile (Datum, Kategorie, Beta-Badge), Titel (Inter 700), Zusammenfassung, Pfeil-Icon unten rechts (absolut positioniert).
+- **Reißnagel:** `13px` Kreis in Marken-Magenta mit Ink-Rand, mittig oben, `-7px` über die Kartenkante hinausragend — immer Magenta, unabhängig von der Kategorie-Tinte des Thumbnails (ein Pin ist ein physisches Objekt, kein zweites Wayfinding-System).
+- **Drehung:** leichte, per `nth-child` alternierende Rotation (`-0.7deg`/`0.6deg`/`-0.2deg`/`0.9deg`) für die von-Hand-angepinnte Unregelmäßigkeit; beim Hover/Fokus richtet sich die Karte auf (`rotate(0)`) und hebt sich leicht an.
+- **Trennung:** Rasterabstand statt Trennlinie — jede Karte ist eine eigenständige Fläche mit echtem, versetztem Schatten.
+- **Hover:** Titel und Pfeil wechseln zu Magenta, Pfeil verschiebt sich `3px` nach rechts, Karte hebt sich an und richtet sich gerade.
+- **Ausnahme:** `feed__divider` (z. B. "Ohne bekanntes Datum") bekommt keine Karten-Optik — bleibt schlichtes, `grid-column: 1/-1` spannendes Textlabel innerhalb desselben Rasters.
 
 ### Seitenkarte / Info-Box / Mail-Generator
 - **Style:** Weiß, `14px` Radius, `shadow-glow` (typfarbig, siehe Elevation), `3px`-Typrahmen (Seitenkarte magenta, Info-Box petrol, Mail-Generator gelb), `1.5rem` Innenabstand.
@@ -222,6 +233,8 @@ Zwei Radiusstufen tragen fast alles: `10px` (Icon-Buttons, Formularfelder) und `
 - **Do** bei Unsicherheit über Markendetails ein echtes Bild/Screenshot anfordern statt aus Text-Fetch zu raten.
 - **Do** Schatten immer mit Versatz versehen (`shadow`, `shadow-hover`, `shadow-glow`) — ein Schein ohne Offset ist Dekoration, keine Tiefe.
 - **Do** den harten, unverwischten `sticker-shadow` ausschließlich für das Beta-Badge verwenden — er ist die eine bewusste Ausnahme vom sonst durchgängig weichen Schattensystem, kein Ersatzmuster für Karten.
+- **Do** neue Listen-/Rasterinhalte als `article-list li` + `row`-Karte anlegen (Pin, Rotation, echte Kartenfläche) — das ist jetzt die primäre Content-Form, nicht mehr die randlose Zeile.
+- **Do** den Reißnagel immer in Magenta halten, unabhängig von Kategorie-Tinte — Konsistenz des physischen Objekts vor Wayfinding-Redundanz.
 
 ### Don't:
 - **Don't** Rahmenfarben pro Karten-Instanz frei mischen (z. B. eine Seitenkarte mal magenta, mal gelb) — die Farbe hängt am Komponenten-Typ, nicht am Zufall, sonst entsteht wieder das "zu viele Farben gleichzeitig"-Problem der verworfenen Fassung 2.

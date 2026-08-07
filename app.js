@@ -16,7 +16,7 @@
     Allgemein: "--ink-soft",
   };
 
-  const NAV_ICON = { news: "home", praesentationen: "layers", vorlagen: "book", "microsoft-learn": "sparkle", anfragen: "mail" };
+  const NAV_ICON = { news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", "microsoft-learn": "sparkle", anfragen: "mail" };
   railLinks.forEach((a) => { a.innerHTML = ICONS[NAV_ICON[a.dataset.nav]]; });
 
   function escapeHtml(str) {
@@ -36,6 +36,9 @@
   }
   function findStandaloneTemplate(id) {
     return STANDALONE_TEMPLATES.find((t) => t.id === id);
+  }
+  function findCaseStudy(id) {
+    return CASE_STUDIES.find((c) => c.id === id);
   }
 
   /* ------------------------------------------------- Anrede: du/ihr-Register */
@@ -889,6 +892,84 @@
     `;
   }
 
+  /* ------------------------------------------------------- Seite: Case Studies */
+
+  function renderCaseStudies() {
+    const items = [...CASE_STUDIES].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    view.innerHTML = `
+      <section class="hero hero--compact">
+        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
+        <div class="hero__intro">
+          <h1>Case <mark>Studies</mark>.</h1>
+          <p>Echte Ergebnisse und Testresultate aus den Kundenkonten — laufend gepflegt.</p>
+        </div>
+      </section>
+      <div class="feed">
+        <h2 class="feed__title">Case Studies${items.length ? ` (${items.length})` : ""}</h2>
+        ${
+          items.length
+            ? `<ul class="article-list">${items.map(caseStudyRow).join("")}</ul>`
+            : `<div class="empty-state">${ICONS.trophy}<strong>Noch keine Case Study hinterlegt</strong><p>Sobald Ergebnisse aus einem Kundenkonto dokumentiert sind, erscheinen sie hier.</p></div>`
+        }
+      </div>
+    `;
+  }
+
+  function caseStudyRow(c) {
+    const chVar = CHANNEL_VAR[c.channel] || "--accent";
+    return `
+      <li>
+        <a class="row" href="#/case-studies/${c.id}">
+          <span class="row__thumb" style="background-color: var(${chVar})">${ICONS.trophy}</span>
+          <span class="row__body">
+            <span class="row__meta">
+              <span class="row__date">— ${formatDate(c.date)}</span>
+              <span class="row__cat">${escapeHtml(c.client)}</span>
+              ${c.isPlaceholder ? `<span class="flash flash--muted">Beispiel</span>` : ""}
+            </span>
+            <span class="row__title">${escapeHtml(c.metricHeadline)} — ${escapeHtml(c.title)}</span>
+            <span class="row__summary">${escapeHtml(c.summaryDE.slice(0, 180))}${c.summaryDE.length > 180 ? "…" : ""}</span>
+          </span>
+          <span class="row__arrow">${ICONS.arrowRight}</span>
+        </a>
+      </li>
+    `;
+  }
+
+  function renderCaseStudyDetail(id) {
+    const c = findCaseStudy(id);
+    if (!c) {
+      view.innerHTML = `<a class="back-link" href="#/case-studies">${ICONS.arrowLeft} Zu den Case Studies</a>
+        <div class="empty-state">${ICONS.magnifyEmpty}<strong>Case Study nicht gefunden</strong></div>`;
+      return;
+    }
+    const chVar = CHANNEL_VAR[c.channel] || "--accent";
+    pushRecent({ href: `#/case-studies/${c.id}`, title: c.title, kind: "Case Study" });
+
+    view.innerHTML = `
+      <a class="back-link" href="#/case-studies">${ICONS.arrowLeft} Zu den Case Studies</a>
+      <article class="detail">
+        <div class="detail__meta">
+          <span class="chip" style="background-color: var(${chVar})">${escapeHtml(c.channel)}</span>
+          <span class="detail__date">— ${formatDate(c.date)} · ${escapeHtml(c.client)}</span>
+          ${c.isPlaceholder ? `<span class="flash flash--muted">Beispiel</span>` : ""}
+        </div>
+        <h1>${escapeHtml(c.metricHeadline)} — ${escapeHtml(c.title)}</h1>
+        <div class="detail__body">
+          <div class="detail__main">
+            <p>${escapeHtml(c.summaryDE)}</p>
+            <div class="info-box">
+              <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
+              <h2>Kernfakten</h2>
+              <ul>${c.keyFactsDE.map((f) => `<li>${escapeHtml(f)}</li>`).join("")}</ul>
+            </div>
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
   async function renderMicrosoftLearn() {
     view.innerHTML = `
       <section class="hero hero--compact">
@@ -1027,6 +1108,7 @@
         (a.dataset.nav === "news" && path === "/") ||
         (a.dataset.nav === "praesentationen" && path.startsWith("/praesentationen")) ||
         (a.dataset.nav === "vorlagen" && path.startsWith("/vorlagen")) ||
+        (a.dataset.nav === "case-studies" && path.startsWith("/case-studies")) ||
         (a.dataset.nav === "microsoft-learn" && path.startsWith("/microsoft-learn")) ||
         (a.dataset.nav === "anfragen" && path.startsWith("/anfragen"));
       if (active) a.setAttribute("aria-current", "page");
@@ -1059,6 +1141,10 @@
       renderStandaloneTemplateDetail(path.slice("/vorlagen/".length));
     } else if (path === "/vorlagen") {
       renderTemplates();
+    } else if (path.startsWith("/case-studies/")) {
+      renderCaseStudyDetail(path.slice("/case-studies/".length));
+    } else if (path === "/case-studies") {
+      renderCaseStudies();
     } else if (path === "/microsoft-learn") {
       renderMicrosoftLearn();
     } else if (path === "/anfragen") {
