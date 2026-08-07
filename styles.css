@@ -171,7 +171,7 @@ mark {
   /* Überschrift wuchs sonst nicht mit — wirkte im breiteren Layout klein
      und "verloren" im vielen zusätzlichen Weißraum. */
   .hero__intro { max-width: 46rem; }
-  .hero__intro h1 { font-size: clamp(1.85rem, 1rem + 2.6vw, 3.4rem); }
+  .hero__intro h1 { font-size: clamp(2.4rem, 1rem + 3vw, 3.85rem); }
 }
 
 .site-footer {
@@ -200,18 +200,26 @@ mark {
   height: 163px;
   pointer-events: none;
   z-index: 1;
+  /* Echter Schattenwurf statt flach aufgeklebt — folgt der Alphaform der
+     SVG-Cluster-Illustration, nicht ihrer rechteckigen Bounding-Box. */
+  filter: drop-shadow(0 12px 18px rgba(23, 23, 23, 0.16));
 }
 .hero--compact { margin-bottom: var(--space-5); }
 .hero--compact .hero__illustration { width: 189px; height: 120px; top: -1.1rem; }
 .hero__intro, .hero .search { position: relative; z-index: 1; }
-.hero__intro { max-width: 40rem; }
+.hero__intro { max-width: 40rem; animation: hero-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.hero .search { animation: hero-in 420ms cubic-bezier(0.16, 1, 0.3, 1) 60ms both; }
 .hero__intro h1 {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(1.85rem, 1.3rem + 2vw, 2.75rem);
-  line-height: 1.15;
-  letter-spacing: -0.01em;
+  font-size: clamp(2.1rem, 1.3rem + 2.6vw, 3.15rem);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
   text-wrap: balance;
+}
+@keyframes hero-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .hero__intro p {
   margin-top: var(--space-3);
@@ -355,8 +363,10 @@ mark {
   align-items: center;
   justify-content: center;
   color: #fff;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.6) 1.4px, transparent 1.6px);
-  background-size: 9px 9px;
+  /* Sichtbareres Ben-Day-Punktraster — comic-typisches Halbton-Druckmuster,
+     vorher zu blass, um als bewusstes Pop-Art-Element erkennbar zu sein. */
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.78) 1.6px, transparent 1.8px);
+  background-size: 8px 8px;
   background-position: right -3px bottom -3px;
   background-repeat: repeat;
   transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -430,9 +440,15 @@ mark {
   background: var(--yellow);
   padding: 2px var(--space-2);
   border-radius: 999px;
+  /* Comic-Sticker statt flachem Pill: harter Versatz-Schatten (kein Blur)
+     plus leichte Drehung — Halbton-/Sticker-Sprache aus den echten
+     Sowespoke-Materialien, hier im Kleinformat für ein Badge. */
+  border: 1.5px solid var(--ink);
+  box-shadow: 1.5px 1.5px 0 var(--ink);
+  transform: rotate(-2deg);
 }
 .flash svg { width: 12px; height: 12px; }
-.flash--muted { background: var(--paper); color: var(--ink-soft); border: 1px solid var(--line); }
+.flash--muted { background: var(--paper); color: var(--ink-soft); border: 1px solid var(--line); box-shadow: none; transform: none; }
 
 /* -- Seitenkarte --------------------------------------------------------- */
 .side-rail { display: flex; flex-direction: column; gap: var(--space-5); }
@@ -442,10 +458,12 @@ mark {
   background: var(--paper-raised);
   border-radius: var(--radius);
   border: 3px solid var(--accent);
-  box-shadow: var(--shadow), 0 0 26px -10px rgba(228, 6, 126, 0.45);
+  /* Versatz statt 0 0 — ein Schatten ohne Offset ist ein aufgemalter Ring,
+     kein physisches Licht. Richtung folgt --shadow-hover (Licht von oben). */
+  box-shadow: var(--shadow), 0 14px 32px -14px rgba(228, 6, 126, 0.5);
   padding: var(--space-5);
 }
-.side-card__illustration, .info-box__illustration {
+.side-card__illustration, .info-box__illustration, .mailgen__illustration {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -620,7 +638,7 @@ mark {
   position: relative;
   overflow: hidden;
   background: var(--paper-raised);
-  box-shadow: var(--shadow), 0 0 26px -10px rgba(47, 143, 138, 0.45);
+  box-shadow: var(--shadow), 0 14px 32px -14px rgba(47, 143, 138, 0.5);
   border-radius: var(--radius);
   border: 3px solid var(--teal);
   padding: var(--space-4) var(--space-5);
@@ -668,15 +686,18 @@ mark {
 
 /* -- Mail-Generator ------------------------------------------------------- */
 .mailgen {
+  position: relative;
+  overflow: hidden;
   background: var(--paper-raised);
   border-radius: var(--radius);
   border: 3px solid var(--yellow);
-  box-shadow: var(--shadow), 0 0 26px -10px rgba(255, 204, 0, 0.55);
+  box-shadow: var(--shadow), 0 14px 32px -14px rgba(255, 204, 0, 0.6);
   padding: var(--space-5);
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
 }
+.mailgen > *:not(.mailgen__illustration) { position: relative; }
 .mailgen h2 { font-size: 1rem; font-weight: 700; }
 .mailgen__field { display: flex; flex-direction: column; gap: var(--space-2); }
 .mailgen__field label { font-weight: 600; font-size: 0.88rem; }

@@ -296,7 +296,7 @@
 
       <h2 class="feed__title feed__title--icon"><span class="feed__title__icon" style="background:var(--teal)">${ICONS.fileText}</span>SAP-ID-Erstellung</h2>
       <div class="info-box">
-        <div class="info-box__illustration">${SIDECARD_ILLUSTRATION}</div>
+        <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
         <p>Formular zur Anlage einer neuen SAP-ID (Rechnungs-/Kontodaten, VAT, Microsoft-Advertising-Kundennummer). Direkt im Dokument ausfüllen und an ${escapeHtml(MS_CONTACT_NAME)} senden.</p>
         <a class="btn btn--secondary" href="content/microsoft-anfragen/${encodeURIComponent("SAP ID Creation Form .docx")}" download>${ICONS.download} Formular herunterladen</a>
       </div>
@@ -421,6 +421,7 @@
   function renderMailGen(topicKey, extraFields, subjectBase, contentIhr, extra) {
     return `
       <div class="mailgen">
+        <div class="mailgen__illustration">${MAILGEN_ILLUSTRATION}</div>
         <h2>Teaser-Mail an Kund:innen</h2>
         <div class="mailgen__field">
           <span class="mailgen__radiogroup-label">Empfänger:in</span>
@@ -808,7 +809,7 @@
           <div class="detail__main">
             <p>${escapeHtml(p.summaryDE)}</p>
             <div class="info-box">
-        <div class="info-box__illustration">${SIDECARD_ILLUSTRATION}</div>
+        <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
               <h2>Kernfakten aus der Präsentation</h2>
               <ul>${p.keyFactsDE.map((f) => `<li>${escapeHtml(f)}</li>`).join("")}</ul>
             </div>
@@ -954,7 +955,7 @@
           <div class="detail__main">
             <p>${escapeHtml(t.summary)}</p>
             <div class="info-box">
-        <div class="info-box__illustration">${SIDECARD_ILLUSTRATION}</div>
+        <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
               <h2>Vorlagentext (Referenz)</h2>
               <p class="pre-line info-box__preview">${escapeHtml(t.contentIhr)}</p>
             </div>

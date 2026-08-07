@@ -67,6 +67,16 @@ components:
     textColor: "{colors.on-yellow}"
     rounded: "{rounded.pill}"
     padding: "2px 8px"
+  auth-card:
+    backgroundColor: "{colors.paper-raised}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.md}"
+    padding: "36px 32px"
+  google-login-button:
+    backgroundColor: "{colors.paper-raised}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sm}"
+    padding: "12px 16px"
 ---
 
 # Design System: Sowespoke Wissenszentrum
@@ -121,6 +131,14 @@ Restrained-Strategie mit einer dominanten Markenfarbe: Magenta trägt Interaktio
 
 **Hero-Illustration als komponiertes Cluster (2026-08-04).** Nach dem Rücknehmen der Marken-Formen blieb neben der Überschrift sichtbarer Leerraum, während das Megafon isoliert in der Ecke schwebte — Angelika-Feedback anhand eines Comic-Landingpage-Referenzbilds: mehrere kleine Elemente (Blitz, Halbton-Punktfeld, Foto, Farbflächen) berühren/überlappen sich dort zu EINER Komposition, statt einzeln verteilt zu sein. `HERO_ILLUSTRATION` in `icons.js` ist jetzt selbst ein Cluster aus drei sich berührenden Teilen in einem gemeinsamen SVG (Halbton-Punktfeld-Patch + Comic-Blitz + Megafon), breiter statt höher (`viewBox 0 0 300 190`), füllt den Raum links vom Megafon statt ihn leer zu lassen. Bleibt eine einzelne Instanz pro Seite (Hero kommt nie doppelt vor) — keine ID-Kollisionsgefahr wie bei `SIDECARD_ILLUSTRATION`.
 
+**Mutigere Umsetzung des bestehenden Systems (2026-08-07).** Audit-Feedback: die Marke war schon richtig angelegt, wurde aber zu zaghaft ausgeführt. Bestätigt durch echte Sowespoke-Firmenmaterialien (sowespoke.com, Präsentationsfolien) als Referenz: großflächigere Halbton-Punktfelder, Comic-Sticker-Badges mit hartem Versatz-Schatten statt weichem Blur, echte Kartenillustrationen statt drei bloßer Punkte. Nichts an Farbpalette, Fonts oder Struktur geändert — nur die Ausführung verschärft:
+- Kartenschatten (Seitenkarte/Info-Box/Mail-Generator) hatten `0 0 26px` Versatz — ein Schatten ohne Offset ist ein aufgemalter Ring, keine echte Tiefe. Jetzt `0 14px 32px -14px`, Richtung wie `shadow-hover`.
+- `SIDECARD_ILLUSTRATION` (drei bloße Punkte, für alle Kartentypen identisch) ersetzt durch drei eigene, typgebundene Mini-Cluster: `SIDECARD_ILLUSTRATION` (magenta, Halbton-Patch + Konfetti), `INFOBOX_ILLUSTRATION` (petrol, Mini-Blob nach `BRAND_BLOB`-Vorbild), `MAILGEN_ILLUSTRATION` (gelb, Mini-Burst nach `BRAND_BURST`-Vorbild) — `BRAND_BLOB`/`BRAND_BURST` bleiben als eigenständige Konstanten unbenutzt, ihre Formsprache lebt jetzt verkleinert in diesen drei Karten-Illustrationen weiter. Jede nutzt zusätzlich 1-2 Konfetti-Punkte in den bisher nur auf Zeilen-Thumbnails sichtbaren Wegweiser-Tinten (`--cat-*`) — mehr Farbpräsenz ohne neue, undokumentierte Werte.
+- Beta-Badge (`.flash`) ist jetzt ein Comic-Sticker: `1.5px` Ink-Rand, harter `1.5px 1.5px 0`-Schlagschatten (kein Blur), `-2deg` Drehung — passend zur Sticker-/Halbton-Sprache der echten Firmenmaterialien. `.flash--muted` bleibt schattenlos und gerade (dezente Variante).
+- Hero-Headline von `clamp(1.85rem, 1.3rem+2vw, 2.75rem)` auf `clamp(2.1rem, 1.3rem+2.6vw, 3.15rem)` angehoben (Breitbild-Override entsprechend auf `3.85rem`-Deckel); Hero-Illustration bekommt echten Schattenwurf (`drop-shadow`, folgt der Alphaform); Hero-Intro/Suche erhalten einen einmaligen, dezenten Eintritts-Moment (`hero-in`, 420ms, wie das bestehende Maskottchen-Timing) statt Sofort-Erscheinen.
+- Halbton-Punktraster auf Zeilen-Thumbnails deutlich sichtbarer gemacht (Opazität 0.6→0.78, dichteres Raster).
+- **Bewusst nicht geändert:** Listen-Zeilen bleiben ohne Eintritts-Animation — Prinzip 1 aus `PRODUCT.md` ("Schneller Zugriff schlägt Vollständigkeit") verbietet, das Scannen der Liste künstlich zu verzögern.
+
 ## Typography
 
 **Display Font:** Baloo 2 (mit Segoe UI, system-ui als Fallback) — nur für die große Hero-/Seiten-Headline.
@@ -129,7 +147,7 @@ Restrained-Strategie mit einer dominanten Markenfarbe: Magenta trägt Interaktio
 **Character:** Baloo 2 ist bewusst auf einen einzigen Moment pro Seite begrenzt (die Headline) — das hält die Markenpersönlichkeit sichtbar, ohne die Scanbarkeit der Liste zu stören. Alles, was gelesen statt nur wahrgenommen wird, bleibt in Inter.
 
 ### Hierarchy
-- **Display** (700, `clamp(1.85rem, 1.3rem + 2vw, 2.75rem)`, 1.15): Seiten-Headline, genau einmal pro Seite.
+- **Display** (700, `clamp(2.1rem, 1.3rem + 2.6vw, 3.15rem)`, 1.12; ab `90rem` Breite `clamp(2.4rem, 1rem + 3vw, 3.85rem)`): Seiten-Headline, genau einmal pro Seite.
 - **Headline** (700, `clamp(1.6rem, 1.2rem + 1.6vw, 2.25rem)`): Detail-Seitentitel — ebenfalls Baloo 2, als Fortsetzung der Headline-Rolle.
 - **Title** (700, 1.05rem, Inter): Zeilentitel in der Artikel-Liste, Kartentitel.
 - **Body** (400, 1rem, 1.55; Messbreite bis 68ch): Beschreibungstexte, E-Mail-Inhalt.
@@ -148,6 +166,8 @@ Reine Schatten-Tiefe, keine Konturen. Ein einziger Schatten-Token für den Ruhez
 ### Shadow Vocabulary
 - **shadow** (`0 1px 2px rgba(23,23,23,.04), 0 8px 20px -10px rgba(23,23,23,.12)`): Ruhezustand aller Karten (Seitenkarte, Info-Box, Mail-Generator, Suchfeld, Leerzustand).
 - **shadow-hover** (`0 4px 10px rgba(23,23,23,.06), 0 14px 28px -12px rgba(23,23,23,.16)`): Primär-Button-Hover.
+- **shadow-glow** (`shadow` + `0 14px 32px -14px <typfarbe @ 50-60%>`): zusätzlicher farbiger Schein je Kartentyp (magenta/petrol/gelb), immer mit Versatz — ein Schein ohne Offset (`0 0 …`) ist Dekoration, keine Tiefe.
+- **sticker-shadow** (`1.5px 1.5px 0 var(--ink)`, kein Blur): einziger Ort mit hartem, unverwischtem Schatten — nur für das Beta-Badge (Comic-Sticker-Charakter), nicht für Karten oder Buttons.
 
 ## Shapes
 
@@ -162,7 +182,7 @@ Zwei Radiusstufen tragen fast alles: `10px` (Icon-Buttons, Formularfelder) und `
 
 ### Chips & Badges
 - **Kategorie-Chip:** Vollfarbige Tinte, weißer Text, Pille.
-- **Beta-Badge:** Gelbe Füllung, schwarzer Text/Icon, Pille, kleiner als der Kategorie-Chip.
+- **Beta-Badge:** Gelbe Füllung, schwarzer Text/Icon, Pille, kleiner als der Kategorie-Chip. Comic-Sticker-Ausführung: `1.5px` Ink-Rand, `sticker-shadow`, `-2deg` Drehung. `.flash--muted` (dezente Variante) bleibt ohne Schatten/Drehung.
 
 ### Artikel-Zeile (`row`)
 - **Aufbau:** `52px` farbiges Icon-Thumbnail (Kategorie-Tinte) + Meta-Zeile (Datum, Kategorie, Beta-Badge) + Titel (Inter 700) + Zusammenfassung + Pfeil-Icon rechts.
@@ -170,8 +190,17 @@ Zwei Radiusstufen tragen fast alles: `10px` (Icon-Buttons, Formularfelder) und `
 - **Hover:** Titel und Pfeil wechseln zu Magenta, Pfeil verschiebt sich `3px` nach rechts.
 
 ### Seitenkarte / Info-Box / Mail-Generator
-- **Style:** Weiß, `14px` Radius, `shadow`, `3px`-Typrahmen (Seitenkarte magenta, Info-Box petrol, Mail-Generator gelb), `1.5rem` Innenabstand.
+- **Style:** Weiß, `14px` Radius, `shadow-glow` (typfarbig, siehe Elevation), `3px`-Typrahmen (Seitenkarte magenta, Info-Box petrol, Mail-Generator gelb), `1.5rem` Innenabstand.
+- **Eck-Illustration:** je eine eigene, typgebundene Mini-Cluster-Illustration oben rechts (`SIDECARD_ILLUSTRATION`/`INFOBOX_ILLUSTRATION`/`MAILGEN_ILLUSTRATION` in `icons.js`) — Halbton-Patch bzw. Mini-Blob/-Burst in der Typfarbe plus 1-2 Konfetti-Punkten in den Wegweiser-Tinten, nicht drei beliebige Einzelpunkte.
 - **Interne Trennung:** `1px`-Linien zwischen Listeneinträgen innerhalb der Karte (z. B. Best-Practices-Liste).
+
+### Auth-Karte (`login.html`)
+- **Style:** Weiß, `14px` Radius, schlichter `1px`-Linienrand (`--line`), `shadow` (kein Typ-Rahmen/`shadow-glow`) — eigenständiger Seitentyp außerhalb der Bunte-Rahmen-Regel, da die Login-Seite bewusst öffentlich (ohne Session) ausgeliefert wird und nicht Teil der App-Kartenfamilie ist.
+- **Aufbau:** Logo, `h1` (Baloo 2), Hinweistext, Fehlermeldung (`role="alert"`), Google-Login-Button.
+
+### Google-Login-Button
+- **Bewusste Ausnahme** von Pillenform + Magenta-Primary: folgt Googles offiziellen "Sign in with Google"-Branding-Vorgaben (neutrale weiße Füllung, `1px`-Linienrand, Googles eigenes vierfarbiges "G"-Logo unverändert). Radius `10px` statt Pillenform — Google erlaubt beides, hier bewusst dezenter gehalten.
+- **Nicht** bei künftigen Design-Durchgängen auf Magenta/Pillenform "korrigieren" — würde Googles Branding-Vorgaben verletzen.
 
 ### Inputs / Fields
 - **Style:** `1px`-Linienrand (`--line`), `10px` Radius, Warmpapier-Füllung.
@@ -191,10 +220,12 @@ Zwei Radiusstufen tragen fast alles: `10px` (Icon-Buttons, Formularfelder) und `
 - **Do** neue Listeninhalte als Zeile (`row`-Muster) anlegen, randlos — das Listenmuster ist die primäre Content-Form dieser App und bleibt bewusst ohne Rahmen, damit es scanbar bleibt.
 - **Do** Baloo 2 auf die eine Headline pro Seite begrenzen; alles andere bleibt Inter, auch wenn es fett gesetzt ist.
 - **Do** bei Unsicherheit über Markendetails ein echtes Bild/Screenshot anfordern statt aus Text-Fetch zu raten.
+- **Do** Schatten immer mit Versatz versehen (`shadow`, `shadow-hover`, `shadow-glow`) — ein Schein ohne Offset ist Dekoration, keine Tiefe.
+- **Do** den harten, unverwischten `sticker-shadow` ausschließlich für das Beta-Badge verwenden — er ist die eine bewusste Ausnahme vom sonst durchgängig weichen Schattensystem, kein Ersatzmuster für Karten.
 
 ### Don't:
 - **Don't** Rahmenfarben pro Karten-Instanz frei mischen (z. B. eine Seitenkarte mal magenta, mal gelb) — die Farbe hängt am Komponenten-Typ, nicht am Zufall, sonst entsteht wieder das "zu viele Farben gleichzeitig"-Problem der verworfenen Fassung 2.
-- **Don't** die Illustrationen (`HERO_ILLUSTRATION`/`SIDECARD_ILLUSTRATION`/`BRAND_BLOB`/`BRAND_BURST` aus `icons.js`) als flächendeckendes Muster einsetzen — sie bleiben einzelne, freistehende Formen an definierten Stellen (Hero-Ecke, Karten-Ecke), kein Muster über eine ganze Fläche wie in der verworfenen Fassung 2.
+- **Don't** die Illustrationen als flächendeckendes Muster einsetzen — `HERO_ILLUSTRATION` und die drei Karten-Illustrationen (`SIDECARD_ILLUSTRATION`/`INFOBOX_ILLUSTRATION`/`MAILGEN_ILLUSTRATION`) bleiben einzelne, freistehende Cluster an definierten Stellen (Hero-Ecke, Karten-Ecke), kein Muster über eine ganze Fläche. `BRAND_BLOB`/`BRAND_BURST` bleiben eigenständig unbenutzt; ihre Formsprache lebt verkleinert in den drei Karten-Illustrationen weiter — nicht zusätzlich als separate Einzelakzente reaktivieren.
 - **Don't** mehr als eine Farbe gleichzeitig großflächig einsetzen (z. B. ein farbiges Kartenband plus eine zweite Akzentfarbe im selben Element).
 - **Don't** Emoji oder Icon-Fonts anstelle der gezeichneten Line-Art-Icons (`icons.js`) verwenden.
 - **Don't** neue Strukturmuster erfinden, ohne sie gegen das Editorial-Referenzlayout zu prüfen — Struktur ist bewusst von einem konkreten Vorbild abgeleitet, nicht frei gestaltet.

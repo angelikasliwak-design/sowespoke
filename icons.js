@@ -139,10 +139,45 @@ const HERO_ILLUSTRATION = `<svg viewBox="0 0 300 190" aria-hidden="true">
   <circle cx="18" cy="150" r="3.5" fill="var(--teal)"/>
 </svg>`;
 
+/* Karten-Eck-Illustrationen: je EIN komponiertes Mini-Cluster pro Karten-
+   typ (nicht drei verstreute Einzelpunkte wie zuvor), Farbe folgt der
+   Bunte-Rahmen-Regel (Seitenkarte magenta, Info-Box petrol, Mail-Generator
+   gelb). Konfetti-Punkte nutzen die bisher kaum sichtbaren Wegweiser-Tinten
+   (--cat-*) — mehr Farbe, ohne die Palette zu verlassen. */
 const SIDECARD_ILLUSTRATION = `<svg viewBox="0 0 100 100" aria-hidden="true">
-  <circle cx="58" cy="22" r="7" fill="var(--yellow)" opacity="0.9"/>
-  <circle cx="80" cy="46" r="4" fill="var(--accent)"/>
-  <circle cx="34" cy="42" r="3" fill="var(--teal)" opacity="0.8"/>
+  <defs>
+    <pattern id="sc-dots" width="9" height="9" patternUnits="userSpaceOnUse">
+      <circle cx="2.2" cy="2.2" r="2" fill="var(--accent)"/>
+    </pattern>
+  </defs>
+  <rect x="36" y="4" width="48" height="48" rx="11" fill="url(#sc-dots)" opacity="0.65" transform="rotate(8 60 28)"/>
+  <circle cx="28" cy="48" r="7.5" fill="var(--cat-ai)" opacity="0.88"/>
+  <circle cx="18" cy="20" r="4.5" fill="var(--cat-creative)" opacity="0.9"/>
+  <circle cx="88" cy="20" r="3" fill="var(--accent)"/>
+</svg>`;
+
+const INFOBOX_ILLUSTRATION = `<svg viewBox="0 0 100 100" aria-hidden="true">
+  <path d="M46 6 C67 0 87 11 91 32 C95 53 82 71 61 77 C40 83 19 72 13 53 C7 34 16 13 37 7 C40 6 43 6 46 6 Z"
+    fill="var(--teal)" opacity="0.92"/>
+  <path d="M32 30 C41 23 50 25 55 32" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" fill="none" opacity="0.5"/>
+  <circle cx="83" cy="66" r="5.5" fill="var(--cat-tracking)"/>
+  <circle cx="18" cy="70" r="3.5" fill="var(--cat-bid)" opacity="0.88"/>
+</svg>`;
+
+const MAILGEN_ILLUSTRATION = `<svg viewBox="0 0 100 100" aria-hidden="true">
+  <defs>
+    <pattern id="mg-dots" width="7" height="7" patternUnits="userSpaceOnUse">
+      <circle cx="1.6" cy="1.6" r="1.6" fill="#c98a00"/>
+    </pattern>
+    <clipPath id="mg-clip">
+      <path d="M40 5 C57 -3 73 4 77 16 C91 13 101 24 96 38 C105 46 101 63 86 67 C86 81 69 89 57 81 C47 93 29 91 23 78 C9 81 -1 68 5 54 C-5 46 -1 30 13 26 C15 13 25 5 40 5 Z"/>
+    </clipPath>
+  </defs>
+  <path d="M40 5 C57 -3 73 4 77 16 C91 13 101 24 96 38 C105 46 101 63 86 67 C86 81 69 89 57 81 C47 93 29 91 23 78 C9 81 -1 68 5 54 C-5 46 -1 30 13 26 C15 13 25 5 40 5 Z"
+    fill="var(--yellow)"/>
+  <rect x="0" y="0" width="100" height="100" fill="url(#mg-dots)" clip-path="url(#mg-clip)" opacity="0.5"/>
+  <circle cx="14" cy="84" r="4.5" fill="var(--cat-target)"/>
+  <circle cx="86" cy="12" r="3" fill="var(--cat-creative)" opacity="0.88"/>
 </svg>`;
 
 const CATEGORY_ICON = {
