@@ -14,7 +14,7 @@ Diese Website darf **nicht** wie generischer, austauschbarer AI-generierter Stan
 
 ## Stack
 
-Reines statisches HTML/CSS/JS, kein Build-Prozess, kein Backend. Deploy über Cloudflare Pages (Git-Integration, automatischer Deploy bei Push auf `main`).
+Reines statisches HTML/CSS/JS, kein Build-Prozess. Deploy über Cloudflare Pages (Git-Integration, automatischer Deploy bei Push auf `main`). Leichtes Backend über Cloudflare Pages Functions (`functions/`): `/api/learn`, `/api/news`, `/api/rate` sowie `/api/auth/*` fürs Login. Zugriff auf die gesamte Seite ist über `functions/_middleware.js` auf `@sowespoke.com`/`@sowespoke.de`-Konten beschränkt (E-Mail+Passwort, siehe `CLOUDFLARE-ACCESS-SETUP.md`). Erfordert eine D1-Datenbank (Binding `DB`) und ein Secret `SESSION_SECRET`.
 
 ## Sprache
 

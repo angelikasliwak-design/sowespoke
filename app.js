@@ -1076,4 +1076,13 @@
   let isInitialRender = true;
   window.addEventListener("hashchange", render);
   render();
+
+  const logoutLink = document.getElementById("logout-link");
+  if (logoutLink) {
+    logoutLink.addEventListener("click", async (e) => {
+      e.preventDefault();
+      await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+      location.href = "/login.html";
+    });
+  }
 })();

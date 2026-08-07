@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Anmelden — Sowespoke</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" type="image/png" href="assets/brand/logo-sowespoke-vertical (1).png" />
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+<link rel="stylesheet" href="auth.css" />
+</head>
+<body class="auth-body">
+<main class="auth-card">
+  <img class="auth-card__logo" src="assets/brand/logo-sowespoke-vertical (1).png" alt="Sowespoke" />
+  <h1>Anmelden</h1>
+  <p class="auth-card__hint">Nur mit einer <strong>@sowespoke.com</strong>- oder <strong>@sowespoke.de</strong>-E-Mail.</p>
+  <form id="login-form" class="auth-form" novalidate>
+    <label>
+      E-Mail
+      <input type="email" name="email" autocomplete="username" required />
+    </label>
+    <label>
+      Passwort
+      <input type="password" name="password" autocomplete="current-password" required minlength="8" />
+    </label>
+    <p id="login-error" class="auth-error" role="alert" hidden></p>
+    <button type="submit">Anmelden</button>
+  </form>
+  <p class="auth-card__switch">Noch kein Konto? <a href="register.html">Registrieren</a></p>
+</main>
+<script src="auth.js"></script>
+</body>
+</html>
