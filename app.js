@@ -746,6 +746,7 @@
         ${docTypes.map((d) => `<button type="button" class="tabs__item ${dt === d ? "is-active" : ""}" data-dt="${escapeHtml(d)}">${escapeHtml(d)}</button>`).join("")}
       </nav>
       <div class="feed">
+        <h2 class="feed__title">Präsentationen${items.length ? ` (${items.length})` : ""}</h2>
         ${items.length ? presentationList(items) : `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Begriff oder Filter.</p></div>`}
       </div>
     `;
@@ -998,7 +999,7 @@
     } else if (!learnData.items || learnData.items.length === 0) {
       learnFeed.innerHTML = `<div class="empty-state">${ICONS.book}<strong>Noch keine Quellen hinterlegt</strong><p>Sobald konkrete Microsoft-Learn-Links hinterlegt sind, erscheinen hier die offiziellen Kurzbeschreibungen mit Link zur Originalseite.</p></div>`;
     } else {
-      learnFeed.innerHTML = `<ul class="article-list">${learnData.items
+      learnFeed.innerHTML = `<h2 class="feed__title">Quellen (${learnData.items.length})</h2><ul class="article-list">${learnData.items
         .map(
           (it) => `
         <li>

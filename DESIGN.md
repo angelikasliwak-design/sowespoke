@@ -23,6 +23,8 @@ colors:
   success-tint: "#dcf1e3"
   cork: "#d9c3a0"
   cork-dark: "#5a3c14"
+  accent-light: "#ff4b9e"
+  accent-deep: "#9c0349"
 typography:
   display:
     fontFamily: "Baloo 2, Segoe UI, system-ui, sans-serif"
@@ -108,6 +110,7 @@ Restrained-Strategie mit einer dominanten Markenfarbe: Magenta trägt Interaktio
 
 ### Primary
 - **Marken-Magenta** (`#e4067e`): Buttons, aktiver Tab-Unterstrich, aktiver Sidebar-Eintrag, Aufzählungspunkte, Link-Hover. Erscheint klein und oft statt großflächig und selten — trägt Interaktion, nicht Fläche.
+- **Magenta hell/dunkel** (`accent-light` `#ff4b9e`, `accent-deep` `#9c0349`): dieselben zwei Verlaufsfarben, die schon im Megafon-Verlauf von `HERO_ILLUSTRATION` stecken — wiederverwendet für den kuppelförmigen Reißnagel-Verlauf (Case-Wall-Karten), damit kein weiterer Magenta-Ton erfunden wird.
 
 ### Secondary
 - **Signal-Gelb** (`#ffcc00`): Beta-Badge (schwarzer Text, `on-yellow`) sowie als Sparkle-Akzent in den Eck-Illustrationen (Hero, Seitenkarte, Info-Box) — immer klein, nie als eigene Fläche.
