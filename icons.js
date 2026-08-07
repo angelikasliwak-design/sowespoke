@@ -154,8 +154,12 @@ const HERO_ILLUSTRATION = `<svg viewBox="0 0 300 190" aria-hidden="true">
     <rect x="30" y="89" width="9" height="12" rx="3.5" fill="#fff" opacity="0.45"/>
     <path d="M163 56 Q190 100 163 144" fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"/>
     <path d="M183 38 Q217 100 183 162" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
+    <path d="M200 168 l2.4 5.6 5.6 2.4 -5.6 2.4 -2.4 5.6 -2.4-5.6 -5.6-2.4 5.6-2.4z" fill="var(--yellow)" stroke="var(--ink)" stroke-width="1.1" stroke-linejoin="round"/>
+    <circle cx="90" cy="150" r="2.2" fill="var(--accent)" opacity="0.7"/>
+    <circle cx="130" cy="16" r="1.8" fill="var(--yellow)" opacity="0.75"/>
   </g>
   <circle cx="18" cy="150" r="3.5" fill="var(--teal)"/>
+  <circle cx="270" cy="150" r="2.6" fill="var(--yellow)" opacity="0.8"/>
 </svg>`;
 
 /* Karten-Eck-Illustrationen: je EIN komponiertes Mini-Cluster pro Karten-

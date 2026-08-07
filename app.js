@@ -375,6 +375,7 @@
         <div class="mascot__figure">${MASCOT_SVG}</div>
         <div class="mascot__bubble">
           <button type="button" class="mascot__close" aria-label="Schließen">${ICONS.close}</button>
+          <span class="mascot__label">Wusstest du schon?</span>
           <p>${escapeHtml(fact)}</p>
           <button type="button" class="mascot__more">Noch ein Fakt ${ICONS.arrowRight}</button>
         </div>
@@ -600,15 +601,20 @@
     const channels = ["Microsoft", "Google", "Meta", "TikTok", "Snapchat", "KI", "CRO", "Rechtliches", "Allgemein"];
 
     view.innerHTML = `
-      <section class="hero">
+      <section class="hero hero--connected">
         <div class="hero__intro">
-          <h1>Neuigkeiten aus der <mark>Online-Marketing-Welt</mark>.</h1>
-          <p>Automatisch aktualisiert aus mehreren Branchen-Quellen — Fokus Microsoft Advertising.</p>
+          <span class="hero__eyebrow">News &amp; Insights</span>
+          <h1>Neuigkeiten aus der<br>Online-<mark>Marketing-Welt</mark>.</h1>
+          <p>Aktuelle Trends, Updates &amp; Insights aus der Online-Marketing-Welt – mit besonderem Fokus auf Microsoft Advertising.</p>
         </div>
-        <div class="hero__bubble">Wissen weitergeben.<br>Erfolg vervielfachen.</div>
-        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
+        <div class="hero__scene">
+          <div class="hero__bubble">Wissen weitergeben.<br>Erfolg vervielfachen.</div>
+          <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
+          <span class="hero__sticker">Live Updates</span>
+        </div>
       </section>
       <div class="toolbar">
+        <span class="toolbar__label">Was möchtest du finden?</span>
         <label class="search">
           ${ICONS.search}
           <input type="search" id="search-input" placeholder="News durchsuchen …" value="${escapeHtml(query || "")}" aria-label="News durchsuchen" />

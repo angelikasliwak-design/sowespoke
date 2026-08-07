@@ -170,6 +170,14 @@ Restrained-Strategie mit einer dominanten Markenfarbe: Magenta trägt Interaktio
 - Halbton-Punktraster auf Zeilen-Thumbnails deutlich sichtbarer gemacht (Opazität 0.6→0.78, dichteres Raster).
 - **Bewusst nicht geändert:** Listen-Zeilen bleiben ohne Eintritts-Animation — Prinzip 1 aus `PRODUCT.md` ("Schneller Zugriff schlägt Vollständigkeit") verbietet, das Scannen der Liste künstlich zu verzögern.
 
+**Verbundene Hero-Komposition + Maskottchen-Feinschliff (2026-08-07, spät).** Konkretes Feedback anhand von zwei Screenshots (News-Hero wirkte auseinandergezogen, Fakten-Box wirkte "unten rechts geparkt"):
+- News-Hero bekommt einen neuen Modifier `.hero--connected` (nur diese Seite, andere Hero-Instanzen unverändert): `.hero__bubble` + `.hero__illustration` sind jetzt in `.hero__scene` zu EINER Einheit gebündelt (Bubble überlappt die Illustration um `14px`) statt als eigenständige Flex-Geschwister über `justify-content:space-between` auf der vollen Hero-Breite verteilt zu sein — vorher wirkte die Bubble wie ein freistehendes Mittelelement, das Megafon wie an den Rand gedrängt.
+- Headline erzwingt jetzt 2 Zeilen ("Neuigkeiten aus der" / "Online-<mark>Marketing-Welt</mark>."), nur noch EIN Wortteil pink+wellenunterstrichen statt zwei.
+- Neues `.hero__eyebrow`-Label ("News & Insights") über der Headline, neuer `.hero__sticker` ("Live Updates") an der Illustration — beide selektiv eingesetzt, kein neues Muster für andere Seiten.
+- `HERO_ILLUSTRATION` (geteilt über alle Seiten) um ein Mini-Blitz-Symbol + zwei zusätzliche Konfetti-Punkte ergänzt — "mehr Bewegung", additiv, kein Strukturbruch.
+- `.tabs__item` (global, alle Filter-Leisten) jetzt mit gedämpfter Textfarbe/Gewicht im Ruhezustand — nur der aktive Filter bleibt kräftig pink, das war vorher zu gleichmäßig kräftig für alle Zustände.
+- Maskottchen (`.mascot`) + Fakten-Widget (`.fact-widget`) parallel überarbeitet: größere Figur (52→74px bzw. 64→88px), negative Margin für Überlappungs-/"Halte"-Effekt mit der Sprechblase, neues Label "Wusstest du schon?" in der schwebenden Bubble (vorher nur im Inline-Widget vorhanden), weicherer/größerer Schatten, CTA "Noch ein Fakt →" jetzt als gefüllter Pillen-Button statt Text-Link, feineres Schließen-Icon (kleiner, gedämpfte Opazität), Pop-in-Animation mit Scale+Bounce (bewusste Wiederverwendung derselben, bereits geprüften Bounce-Kurve wie bei `.row__thumb`).
+
 ## Typography
 
 **Display Font:** Baloo 2 (mit Segoe UI, system-ui als Fallback) — nur für die große Hero-/Seiten-Headline.
