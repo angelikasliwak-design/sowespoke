@@ -35,6 +35,14 @@
     return d.toLocaleDateString("de-DE", { day: "numeric", month: "short", year: "numeric" });
   }
 
+  /* Comic-"NEU"-Sticker nur für tatsächlich neue Inhalte (Brief: "nicht auf
+     jeder Karte"), datumsbasiert statt zufällig. */
+  function isRecent(iso, days) {
+    const d = new Date(iso + (iso.length === 10 ? "T00:00:00" : ""));
+    if (Number.isNaN(d.getTime())) return false;
+    return (Date.now() - d.getTime()) / 86400000 <= days;
+  }
+
   function findPresentation(id) {
     return PRESENTATIONS.find((p) => p.id === id);
   }
@@ -423,6 +431,36 @@
     }
   }
 
+  /* ----------------------------------------------------- Fakten-Widget */
+
+  function renderFactWidget() {
+    const fact = factOfTheDay();
+    return `
+      <section class="fact-widget" aria-label="Wusstest du schon?">
+        <div class="fact-widget__figure">${MASCOT_SVG}</div>
+        <div class="fact-widget__bubble">
+          <span class="fact-widget__label">Wusstest du schon?</span>
+          <p id="fact-widget-text">${escapeHtml(fact)}</p>
+          <button type="button" class="fact-widget__more" id="fact-widget-more">Noch ein Fakt ${ICONS.arrowRight}</button>
+        </div>
+      </section>
+    `;
+  }
+
+  function wireFactWidget() {
+    const textEl = document.getElementById("fact-widget-text");
+    const btn = document.getElementById("fact-widget-more");
+    if (!textEl || !btn) return;
+    btn.addEventListener("click", () => {
+      const next = randomFact(textEl.textContent);
+      textEl.style.opacity = "0";
+      setTimeout(() => {
+        textEl.textContent = next;
+        textEl.style.opacity = "1";
+      }, 160);
+    });
+  }
+
   /* ---------------------------------------------------------------- Mailgen */
 
   function renderMailGen(topicKey, extraFields, subjectBase, contentIhr, extra) {
@@ -567,12 +605,14 @@
           <h1>Neuigkeiten aus der <mark>Online-Marketing-Welt</mark>.</h1>
           <p>Automatisch aktualisiert aus mehreren Branchen-Quellen — Fokus Microsoft Advertising.</p>
         </div>
+        <div class="hero__bubble">Wissen weitergeben.<br>Erfolg vervielfachen.</div>
         <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
       </section>
       <div class="toolbar">
         <label class="search">
           ${ICONS.search}
           <input type="search" id="search-input" placeholder="News durchsuchen …" value="${escapeHtml(query || "")}" aria-label="News durchsuchen" />
+          <button type="button" class="search__submit" id="search-submit" aria-label="Suche fokussieren">${ICONS.search}</button>
         </label>
         <nav class="tabs" aria-label="Kanäle">
           <button type="button" class="tabs__item ${ch === "all" ? "is-active" : ""}" data-ch="all">Alle</button>
@@ -716,6 +756,12 @@
         debounceTimer = setTimeout(onSearch, 250);
       });
     }
+    const submitBtn = document.getElementById("search-submit");
+    if (submitBtn && input) {
+      // Suche filtert schon live beim Tippen — der Button ist der visuelle
+      // Abschluss aus dem Referenz-Mockup, holt sich per Klick den Fokus.
+      submitBtn.addEventListener("click", () => input.focus());
+    }
     view.querySelectorAll(".tabs__item").forEach((btn) => {
       btn.addEventListener("click", () => onTab(btn.dataset[tabKey]));
     });
@@ -741,12 +787,14 @@
           <h1>Offizielle <mark>Microsoft-Präsentationen</mark>.</h1>
           <p>Zusammenfassungen, Beta-/Feature-Guides und Kunden-Mails direkt aus den echten Präsentationsfolien — neueste zuerst, Einträge ohne bekanntes Datum am Ende.</p>
         </div>
+        <div class="hero__bubble">Wissen, das<br>weiterbringt!</div>
         <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
       </section>
       <div class="toolbar">
         <label class="search">
           ${ICONS.search}
           <input type="search" id="search-input" placeholder="Präsentation durchsuchen …" value="${escapeHtml(query || "")}" aria-label="Präsentationen durchsuchen" />
+          <button type="button" class="search__submit" id="search-submit" aria-label="Suche fokussieren">${ICONS.search}</button>
         </label>
         <nav class="tabs" aria-label="Art">
           <button type="button" class="tabs__item ${dt === "all" ? "is-active" : ""}" data-dt="all">Alle</button>
@@ -757,6 +805,7 @@
         <h2 class="feed__title">Präsentationen${items.length ? `<span class="feed__title__count">${items.length} Ergebnisse</span>` : ""}</h2>
         ${items.length ? presentationList(items) : `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Begriff oder Filter.</p></div>`}
       </div>
+      ${renderFactWidget()}
     `;
 
     wireTopControls(
@@ -764,6 +813,7 @@
       (nextDt) => renderPresentations(query, nextDt),
       "dt"
     );
+    wireFactWidget();
   }
 
   function presentationList(items) {
@@ -780,8 +830,10 @@
 
   function presentationRow(p) {
     const dtVar = DOCTYPE_VAR[p.docType] || "--ink-soft";
+    const isNew = p.dateKnown && isRecent(p.date, 21);
     return `
-      <li>
+      <li${isNew ? ' class="is-new"' : ""}>
+        ${isNew ? `<span class="card-badge card-badge--new">Neu</span>` : ""}
         <a class="row" href="#/praesentationen/${p.id}">
           <span class="row__thumb" style="background-color: var(${dtVar})">${ICONS.fileText}</span>
           <span class="row__body">
@@ -1181,4 +1233,28 @@
       location.href = "/login";
     });
   }
+
+  /* Kleiner Profil-Bereich unten in der Sidebar (Referenz-Mockup). Nur die
+     E-Mail ist bekannt (Google liefert kein Name/Foto/Rolle) — zeigt einen
+     Avatar-Kreis mit dem ersten Buchstaben statt eines erfundenen Fotos. */
+  (async () => {
+    const root = document.getElementById("rail-profile");
+    if (!root) return;
+    try {
+      const res = await fetch("/api/auth/me");
+      if (!res.ok) return;
+      const { email } = await res.json();
+      const initial = (email || "?").charAt(0).toUpperCase();
+      root.innerHTML = `
+        <span class="rail__profile-avatar">${escapeHtml(initial)}</span>
+        <span class="rail__profile-info">
+          <strong>${escapeHtml(email)}</strong>
+          <span>Team-Mitglied</span>
+        </span>
+        <span class="rail__profile-chevron">${ICONS.arrowRight}</span>
+      `;
+    } catch {
+      // Profil-Bereich bleibt einfach leer, wenn die Abfrage fehlschlägt.
+    }
+  })();
 })();

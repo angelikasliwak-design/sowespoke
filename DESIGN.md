@@ -21,8 +21,7 @@ colors:
   cat-tracking: "#185f8c"
   success: "#146b3a"
   success-tint: "#dcf1e3"
-  cork: "#d9c3a0"
-  cork-dark: "#5a3c14"
+  teal-tint: "#e2f3f2"
   accent-light: "#ff4b9e"
   accent-deep: "#9c0349"
 typography:
@@ -95,9 +94,9 @@ Frühere Fassung ("The Editorial Desk", bis 2026-08-07): ein ruhiges, listenbasi
 
 Diese Fassung ist das Ergebnis von zwei verworfenen Anläufen: Fassung 1 war ein ruhiges, aber markenfremdes ligne-claire-Navy-System (falsche Markenrecherche per Text-Fetch ohne visuellen Abgleich). Fassung 2 übertrug die echten Markenfarben, aber unverändert auf die alte Comic-Panel-Struktur — Ergebnis war ein überladenes, schwer navigierbares Raster mit zu vielen gleichzeitig aktiven Farben und Formen pro Karte. Diese dritte Fassung trennt die Fragen sauber: Struktur kommt von einem konkreten, klaren Referenz-Layout; Marke ist auf eine einzige dominante Akzentfarbe plus zwei sparsam eingesetzte Zweitfarben reduziert.
 
-**Key Characteristics (aktualisiert nach Mockup-Kurskorrektur, siehe Named Rules):**
-- Beschriftete Sidebar (`236px`, nur echte Seiten) — sauberes Weiß, aktive Seite mit Tint-Hintergrund + linkem Farbbalken. Fällt auf Mobile zurück auf schmale Icon-only-Form.
-- Content-Fläche ist eine Korkwand (`--cork`-Textur, sehr dezent), Inhalte sind **gerade, exakt ausgerichtete Karten im Raster** — Rotation und Reißnagel wurden nach Nutzer-Feedback wieder entfernt (wirkten "messy", Pin ohne erkennbare Bedeutung)
+**Key Characteristics (aktualisiert nach zweiter Mockup-Kurskorrektur, siehe Named Rules):**
+- Beschriftete Sidebar (`236px`, nur echte Seiten) — sauberes Weiß, aktive Seite mit Tint-Hintergrund + linkem Farbbalken, unten ein Profil-Stub mit echter Session-E-Mail. Fällt auf Mobile zurück auf schmale Icon-only-Form.
+- Content-Fläche ist **flaches, warmes Off-White** (kein Kork-Hintergrund mehr — explizit vom Nutzer verworfen), Inhalte sind **gerade, exakt ausgerichtete Karten im Raster** — Rotation und Reißnagel wurden nach Nutzer-Feedback wieder entfernt (wirkten "messy", Pin ohne erkennbare Bedeutung). Halbton-Punktmuster ist auf den Hero-Bereich begrenzt, nicht mehr seitenweit.
 - Abschnittsüberschriften sind schlichte Überschriften mit separater Ergebnis-Pille, keine Tesafilm-Optik mehr
 - Eine große, editorial gesetzte Headline (Baloo 2) mit farbig unterstrichener Schlüsselphrase (Text-Farbe + Underline, kein Pillen-Hintergrund) — der einzige Ort mit Display-Schrift
 - Seitenkarte/Info-Box/Mail-Generator: weiße Karten mit `3px`-Typrahmen und farbigem Schein (siehe Bunte-Rahmen-Regel) — eigene Zone, unverändert
@@ -121,7 +120,9 @@ Restrained-Strategie mit einer dominanten Markenfarbe: Magenta trägt Interaktio
 - **Warmpapier** (`#f7f5f1`): Seitenhintergrund.
 - **Reinweiß** (`#ffffff`): Karten-Füllung.
 - **Trennlinie** (`#e7e3db`): 1px-Linien zwischen Listenzeilen und Tabs — die einzige "Kontur" im System.
-- **Kork** (`#d9c3a0`, dunkler Farbton `#5a3c14` nur als Sprenkel-Textur): Untergrund der Content-Fläche (`.view`) seit der Case-Wall-Richtung — Sidebar bleibt bewusst reinweiß als Kontrast, wie eine Pinnwand an einer Bürowand.
+- **Teal-Tint** (`#e2f3f2`): helle Türkis-Fläche, Pendant zu `accent-tint` — u.a. Hero-Hintergrund.
+
+**Kork entfernt (2026-08-07, spät).** Die Tokens `--cork`/`--cork-dark` und die Kork-Textur auf `.shell__main` sind vollständig entfernt — explizite Nutzeranweisung ("Bitte nicht wieder das aktuelle Korkwand-Design als Grundlage nehmen"). Die Content-Fläche ist jetzt flaches `--paper`. Das Halbton-Punktmuster lebt nur noch begrenzt im `.hero`-Hintergrund weiter, nicht mehr seitenweit.
 
 ### Wegweiser-Tinten (Kategorie-Thumbnails)
 - **Veilchen** `#5b3fb0` — KI & Automatisierung
@@ -150,6 +151,16 @@ Restrained-Strategie mit einer dominanten Markenfarbe: Magenta trägt Interaktio
 - **Maskottchen** bekommt eine runde Brille (Richtung "PIX" aus einem Maskottchen-Moodboard: neugierig, sucht immer nach Wissen — passt zum Produkt).
 - Case-Wall-Kork-Hintergrund und die drei typgebundenen Karten-Illustrationen (Seitenkarte/Info-Box/Mail-Generator) bleiben unverändert — die Kurskorrektur betrifft die Artikel-Liste/Karten-Ebene, nicht die gesamte Richtung.
 
+**Zweite Kurskorrektur nach detailliertem 32-Punkte-Brief + drei Bild-Mockups (2026-08-07, spät).** Nutzer lieferte einen noch ausführlicheren Brief samt drei realen Bild-Mockups als explizites "Visual Target" und der ausdrücklichen Anweisung, das Kork-Design nicht mehr als Grundlage zu nehmen und nicht eigenständig auf ein generisches Minimal-Dashboard zurückzufallen. Umgesetzt:
+- **Kork-Hintergrund vollständig entfernt** (siehe Colors) — `.shell__main` ist jetzt flaches `--paper`, kein Textur-/Punktmuster mehr über der gesamten Fläche.
+- **Hero neu strukturiert:** Illustration ist jetzt kompakt (`340×215px`, mobil `220×139px`) und sitzt nach der Intro statt sie zu verdrängen; Halbton-Punktmuster ist auf den Hero-Hintergrund begrenzt (`.hero` selbst, `background-image` mit geringer Deckkraft), nicht mehr seitenweit. `<mark>` ist jetzt schwarze Wellenlinien-Unterstreichung (`text-decoration-style: wavy`) statt Farbfläche oder farbiger Unterstreichung — Text bleibt in Akzentfarbe. Neue `.hero__bubble`: echte Sprechblasen-Komponente mit kurzem Klartext (weißer Hintergrund, `3px`-Ink-Rahmen, Dreieck-Spitze über `::before`/`::after`) statt der vorherigen leeren Sprechblasen-Form.
+- **Suche + Filter:** Suchfeld jetzt mit rundem, rosa Such-Button (`.search__submit`, 40px) rechts im Feld statt nur Icon links; Filter-Tabs von Unterstrich-Optik auf Pill-/Chip-Optik umgestellt (`.tabs__item`: weißer Hintergrund + Rand, aktiv = volle Akzentfarbe + weißer Text) — auffälliger und dem Mockup entsprechend.
+- **Karten-Raster** von `minmax(15.5rem,1fr)`/`space-5`-Gap auf `minmax(19rem,1fr)`/`space-6`-Gap vergrößert — luftiger, wie im Referenzbild gefordert.
+- **Selektive Comic-Badges statt Reißnagel:** neues `.card-badge`/`.card-badge--new`-System (Sticker-Optik, `-6deg`-Drehung, harter Schatten) zeigt "Neu" **nur** bei Präsentationen mit bekanntem Datum (`dateKnown === true`) und einem Alter ≤ 21 Tage (`isRecent()`-Helper in `app.js`) — nicht auf jeder Karte, und nie bei Einträgen ohne echtes Datum (die nur einen Datei-Zeitstempel als Sortier-Fallback tragen).
+- **Sidebar-Profil-Stub:** neuer Block unten in der Sidebar (`.rail__profile`), lädt die echte Session-E-Mail über den neuen Endpunkt `functions/api/auth/me.js` (Google liefert keinen Namen/kein Foto, daher nur E-Mail + generischer Platzhalter "Team-Mitglied") — keine erfundenen Namen/Rollen/Fotos. Auf Mobile ausgeblendet.
+- **"Wusstest du schon?"-Widget:** neue `.fact-widget`-Komponente unterhalb des Präsentationen-Rasters (eigene Sprechblasen-Optik wie das schwebende Maskottchen, aber eigene DOM-IDs zur Kollisionsvermeidung), nutzt dieselben `factOfTheDay()`/`randomFact()`-Funktionen aus `fun-facts.js`. Auf explizite Anweisung ("Diese unteren Module nicht komplett weglassen") umgesetzt — die drei weiteren im Mockup gezeigten Module (Newsletter-Anmeldung, Top-Kategorien, Feedback-Box) sind bewusst zurückgestellt ("Erstmal nur Restyling, Widgets später").
+- **Bewusst zurückgestellt:** die volle Maskottchen-Familie (9 Charaktere aus dem Moodboard) über PIX hinaus, sowie die drei zusätzlichen Widgets — folgen in einem späteren Durchgang.
+
 **Mutigere Umsetzung des bestehenden Systems (2026-08-07).** Audit-Feedback: die Marke war schon richtig angelegt, wurde aber zu zaghaft ausgeführt. Bestätigt durch echte Sowespoke-Firmenmaterialien (sowespoke.com, Präsentationsfolien) als Referenz: großflächigere Halbton-Punktfelder, Comic-Sticker-Badges mit hartem Versatz-Schatten statt weichem Blur, echte Kartenillustrationen statt drei bloßer Punkte. Nichts an Farbpalette, Fonts oder Struktur geändert — nur die Ausführung verschärft:
 - Kartenschatten (Seitenkarte/Info-Box/Mail-Generator) hatten `0 0 26px` Versatz — ein Schatten ohne Offset ist ein aufgemalter Ring, keine echte Tiefe. Jetzt `0 14px 32px -14px`, Richtung wie `shadow-hover`.
 - `SIDECARD_ILLUSTRATION` (drei bloße Punkte, für alle Kartentypen identisch) ersetzt durch drei eigene, typgebundene Mini-Cluster: `SIDECARD_ILLUSTRATION` (magenta, Halbton-Patch + Konfetti), `INFOBOX_ILLUSTRATION` (petrol, Mini-Blob nach `BRAND_BLOB`-Vorbild), `MAILGEN_ILLUSTRATION` (gelb, Mini-Burst nach `BRAND_BURST`-Vorbild) — `BRAND_BLOB`/`BRAND_BURST` bleiben als eigenständige Konstanten unbenutzt, ihre Formsprache lebt jetzt verkleinert in diesen drei Karten-Illustrationen weiter. Jede nutzt zusätzlich 1-2 Konfetti-Punkte in den bisher nur auf Zeilen-Thumbnails sichtbaren Wegweiser-Tinten (`--cat-*`) — mehr Farbpräsenz ohne neue, undokumentierte Werte.
@@ -174,9 +185,9 @@ Restrained-Strategie mit einer dominanten Markenfarbe: Magenta trägt Interaktio
 
 ## Layout
 
-Zwei-Spalten-Shell: `76px` breite Icon-Sidebar (sticky) + Hauptbereich, maximal `68rem` Content-Breite, zentriert. Die Übersicht selbst ist ein `minmax(0,1fr) 20rem`-Grid (Artikel-Liste + Seitenkarte), das unter `60rem` auf eine Spalte fällt. Tabs sind horizontal scrollbar (`overflow-x:auto`) statt umzubrechen — funktioniert bei 5+ Kategorien auch auf schmalen Screens.
+Zwei-Spalten-Shell: `236px` breite, beschriftete Sidebar (sticky) + Hauptbereich, maximal `68rem` Content-Breite, zentriert. Die Übersicht selbst ist ein `minmax(0,1fr) 20rem`-Grid (Artikel-Liste + Seitenkarte), das unter `60rem` auf eine Spalte fällt. Tabs sind horizontal scrollbar (`overflow-x:auto`) statt umzubrechen — funktioniert bei 5+ Kategorien auch auf schmalen Screens.
 
-Mobil (`48rem`): Sidebar wird zur horizontalen Top-Leiste (Icons nebeneinander) statt zu verschwinden oder umzubrechen.
+Mobil (`48rem`): Sidebar fällt auf Icon-only (`44px`-Quadrate, Labels ausgeblendet) zurück, wird zur horizontalen Top-Leiste statt zu verschwinden oder umzubrechen.
 
 **Case-Wall-Raster (2026-08-07).** Die Artikel-Liste (`article-list`) ist kein vertikal gestapelter, randgetrennter Zeilenstapel mehr, sondern ein CSS-Grid (`repeat(auto-fill, minmax(17rem,1fr))`) aus einzelnen Karten — auf breiten Screens mehrspaltig, auf schmalen automatisch einspaltig, ohne eigene Media Query. Trennlinien (`--line`) entfallen für diese Karten; Abstand zwischen Karten trägt jetzt die Trennung, plus Schatten/Rotation für die Wand-Haptik.
 
@@ -236,7 +247,13 @@ Zwei Radiusstufen tragen fast alles: `10px` (Icon-Buttons, Formularfelder) und `
 - **Nur echte Seiten:** keine Menüpunkte für nicht existierende Bereiche anlegen, auch wenn Referenz-Mockups mehr zeigen.
 
 ### Tabs
-- **Style:** Textbutton mit `2px` Unterstrich. Aktiv: Magenta-Text und -Unterstrich. Inaktiv: Grauschiefer, Hover auf Schwarz.
+- **Style (seit 2026-08-07, spät):** Pill-/Chip-Optik statt Unterstrich — weißer Hintergrund + `1px`-Rand im Ruhezustand. Aktiv: volle Akzentfarbe-Füllung, weißer Text. Inaktiv: Grauschiefer-Text, Hover auf Schwarz.
+
+### Sidebar-Profil-Stub
+- **Style:** Unten in `.rail` (`.rail__profile`), Kreis-Avatar mit erstem Buchstaben der E-Mail, E-Mail-Text + generischer Platzhalter "Team-Mitglied", Chevron-Icon. Lädt echte Session-Daten über `GET /api/auth/me` (nur E-Mail verfügbar — Google liefert kein Namensfeld ohne zusätzlichen People-API-Scope). Scheitert die Anfrage, bleibt der Block leer (kein Platzhalter-Foto/-Name erfinden). Auf Mobile ausgeblendet (kein Platz in der Icon-only-Leiste).
+
+### Fakten-Widget ("Wusstest du schon?")
+- **Style:** Inline-Komponente unterhalb des Präsentationen-Rasters, gleiche Sprechblasen-Sprache wie das schwebende Maskottchen (`3px`-Ink-Rahmen, Dreieck-Spitze), aber eigene DOM-IDs (`fact-widget-*`) und eigenständiges Markup — keine Kollision mit dem schwebenden `#mascot-root`. Zeigt `factOfTheDay()` beim ersten Rendern, "Noch ein Fakt →"-Button ruft `randomFact()` mit sanftem Opacity-Fade auf.
 
 ## Do's and Don'ts
 
@@ -248,8 +265,8 @@ Zwei Radiusstufen tragen fast alles: `10px` (Icon-Buttons, Formularfelder) und `
 - **Do** bei Unsicherheit über Markendetails ein echtes Bild/Screenshot anfordern statt aus Text-Fetch zu raten.
 - **Do** Schatten immer mit Versatz versehen (`shadow`, `shadow-hover`, `shadow-glow`) — ein Schein ohne Offset ist Dekoration, keine Tiefe.
 - **Do** den harten, unverwischten `sticker-shadow` ausschließlich für das Beta-Badge verwenden — er ist die eine bewusste Ausnahme vom sonst durchgängig weichen Schattensystem, kein Ersatzmuster für Karten.
-- **Do** neue Listen-/Rasterinhalte als `article-list li` + `row`-Karte anlegen (Pin, Rotation, echte Kartenfläche) — das ist jetzt die primäre Content-Form, nicht mehr die randlose Zeile.
-- **Do** den Reißnagel immer in Magenta halten, unabhängig von Kategorie-Tinte — Konsistenz des physischen Objekts vor Wayfinding-Redundanz.
+- **Do** neue Listen-/Rasterinhalte als `article-list li` + `row`-Karte anlegen (gerade, kein Pin, kein Rotation) — das ist jetzt die primäre Content-Form, nicht mehr die randlose Zeile.
+- **Do** Comic-Badges (`.card-badge`) selektiv einsetzen (z. B. "Neu" nur bei echtem, aktuellem Datum) — nicht auf jeder Karte, sonst verliert das Signal seine Bedeutung.
 
 ### Don't:
 - **Don't** Rahmenfarben pro Karten-Instanz frei mischen (z. B. eine Seitenkarte mal magenta, mal gelb) — die Farbe hängt am Komponenten-Typ, nicht am Zufall, sonst entsteht wieder das "zu viele Farben gleichzeitig"-Problem der verworfenen Fassung 2.

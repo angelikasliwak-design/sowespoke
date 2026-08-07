@@ -33,11 +33,7 @@
 
   --success: #146b3a;
   --success-tint: #dcf1e3;
-
-  /* Case-Wall-Richtung (2026-08-07): Korkwand-Untergrund für den Content-
-     Bereich, siehe DESIGN.md. */
-  --cork: #d9c3a0;
-  --cork-dark: #5a3c14;
+  --teal-tint: #e2f3f2; /* helle Türkis-Fläche, Pendant zu --accent-tint */
 
   /* Semantische Alias-Tokens (Brief 2026-08-07) — zeigen auf dieselben
      Werte wie oben, damit Komponenten wahlweise die kurzen Marken-Namen
@@ -45,7 +41,7 @@
   --brand-primary: var(--accent);
   --brand-secondary: var(--teal);
   --brand-accent: var(--yellow);
-  --background: var(--cork);
+  --background: var(--paper);
   --surface: var(--paper-raised);
   --surface-secondary: var(--paper);
   --text-primary: var(--ink);
@@ -86,27 +82,13 @@ body {
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
-/* Case-Wall-Richtung: der Content-Bereich ist eine Korkwand, an die Karten
-   gepinnt werden (siehe DESIGN.md "Case-Wall"). Die Sidebar bleibt bewusst
-   sauberes Weiß — wie eine Pinnwand an einer Bürowand. Gesprenkelte
-   Textur über gestaffelte radiale Farbverläufe statt Rasterbild.
-   Sitzt auf .shell__main (voller Flex-Bereich), NICHT auf .view (das per
-   max-width auf lesbare Breite begrenzt ist) — sonst bleibt auf sehr
-   breiten Screens ein weißer Streifen zwischen Content und Bildschirmrand
-   stehen (Live-Feedback vom 2026-08-07). */
+/* Kurskorrektur (2026-08-07, spät): Korkwand-Hintergrund komplett entfernt
+   (explizit nicht mehr gewünscht) — flaches, warmes Off-White für die
+   gesamte Content-Fläche. Sitzt auf .shell__main (voller Flex-Bereich),
+   NICHT auf .view (das per max-width auf lesbare Breite begrenzt ist) —
+   sonst bleibt auf sehr breiten Screens ein weißer Streifen stehen. */
 .shell__main {
-  background-color: var(--cork);
-  /* Deutlich zurückgenommen (Brief Punkt 21: "kein starkes Punktmuster
-     überall, große Lesebereiche müssen ruhig bleiben") — vorher 0.11-0.16
-     Deckkraft, jetzt kaum wahrnehmbares Papierkorn statt Muster. */
-  background-image:
-    radial-gradient(circle at 12% 18%, rgba(90, 60, 20, 0.05) 0, rgba(90, 60, 20, 0.05) 2px, transparent 2.6px),
-    radial-gradient(circle at 68% 8%, rgba(90, 60, 20, 0.04) 0, rgba(90, 60, 20, 0.04) 1.6px, transparent 2.2px),
-    radial-gradient(circle at 40% 52%, rgba(90, 60, 20, 0.045) 0, rgba(90, 60, 20, 0.045) 2.2px, transparent 2.8px),
-    radial-gradient(circle at 85% 60%, rgba(90, 60, 20, 0.04) 0, rgba(90, 60, 20, 0.04) 1.8px, transparent 2.4px),
-    radial-gradient(circle at 22% 82%, rgba(90, 60, 20, 0.045) 0, rgba(90, 60, 20, 0.045) 2px, transparent 2.6px),
-    radial-gradient(circle at 92% 92%, rgba(90, 60, 20, 0.035) 0, rgba(90, 60, 20, 0.035) 1.6px, transparent 2.2px);
-  background-size: 140px 140px;
+  background-color: var(--paper);
 }
 img, svg { display: block; max-width: 100%; }
 a { color: inherit; }
@@ -120,10 +102,14 @@ mark {
      Zeile mitläuft. */
   background: none;
   color: var(--accent);
+  /* Schwarz + wavy statt pink/gerade (Referenz-Mockup 2026-08-07 zeigt die
+     Unterstreichung schwarz und handgezeichnet-wellig, nicht als gerade
+     pinke Linie). */
   text-decoration: underline;
-  text-decoration-color: var(--accent);
-  text-decoration-thickness: 3px;
-  text-underline-offset: 0.14em;
+  text-decoration-color: var(--ink);
+  text-decoration-style: wavy;
+  text-decoration-thickness: 2.5px;
+  text-underline-offset: 0.16em;
 }
 
 :focus-visible {
@@ -189,7 +175,7 @@ mark {
 .rail__nav {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 .rail__nav a {
   position: relative;
@@ -226,6 +212,50 @@ mark {
   background: var(--accent);
 }
 
+/* Profil-Bereich unten in der Sidebar (Referenz-Mockup) — nur E-Mail
+   bekannt (Google liefert kein Name/Foto/Rolle), daher Avatar-Kreis mit
+   Anfangsbuchstabe statt erfundenem Foto. Leer, bis /api/auth/me antwortet. */
+.rail__profile {
+  margin-top: auto;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 24px;
+}
+.rail__profile-avatar {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.rail__profile-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+.rail__profile-info strong {
+  font-size: 0.78rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rail__profile-info span { color: var(--ink-soft); }
+.rail__profile-chevron { flex: none; color: var(--ink-soft); transform: rotate(90deg); }
+.rail__profile-chevron svg { width: 13px; height: 13px; }
+
 .shell__main {
   flex: 1;
   min-width: 0;
@@ -245,10 +275,7 @@ mark {
 @media (min-width: 90rem) {
   .view { max-width: 88rem; }
   .layout-2col { grid-template-columns: minmax(0, 1fr) 23rem; }
-  /* Überschrift wuchs sonst nicht mit — wirkte im breiteren Layout klein
-     und "verloren" im vielen zusätzlichen Weißraum. */
-  .hero__intro { max-width: 46rem; }
-  .hero__intro h1 { font-size: clamp(2.4rem, 1rem + 3vw, 3.85rem); }
+  .hero__intro { max-width: 40rem; }
 }
 
 .site-footer {
@@ -264,30 +291,97 @@ mark {
    Flex-Kind, begrenzt in der Größe, unterstützt die Headline statt sie
    zu dominieren. Suche+Filter sind in .toolbar ausgelagert (Punkt 11). */
 .hero {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-6);
+  gap: var(--space-7);
   flex-wrap: wrap;
-  margin-bottom: var(--space-5);
-  padding-top: var(--space-2);
+  margin-bottom: var(--space-6);
+  padding: var(--space-6) var(--space-6);
+  border-radius: var(--radius);
+  overflow: hidden;
+  /* Halbton-Dots jetzt nur noch hier im Hero statt seitenweit (Brief:
+     "nur in ausgewählten Bereichen verwenden"). */
+  background-color: var(--surface-secondary);
+  background-image: radial-gradient(circle, rgba(23, 23, 23, 0.07) 1.4px, transparent 1.6px);
+  background-size: 15px 15px;
 }
 .hero__illustration {
+  position: relative;
   flex: none;
-  width: 220px;
-  height: 139px;
+  width: 340px;
+  height: 215px;
   pointer-events: none;
-  filter: drop-shadow(0 10px 16px rgba(23, 23, 23, 0.14));
+  filter: drop-shadow(0 14px 22px rgba(23, 23, 23, 0.16));
 }
-.hero--compact { margin-bottom: var(--space-4); }
-.hero--compact .hero__illustration { width: 170px; height: 108px; }
-.hero__intro { flex: 1 1 26rem; max-width: 40rem; animation: hero-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.hero--compact { margin-bottom: var(--space-5); padding: var(--space-5); }
+.hero--compact .hero__illustration { width: 220px; height: 139px; }
+.hero__intro { position: relative; flex: 1 1 26rem; max-width: 34rem; animation: hero-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.hero__intro::before {
+  /* Kleiner Stern-Doodle nahe der Headline (Referenz-Mockup 2026-08-07). */
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: -8px;
+  width: 26px;
+  height: 26px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z' fill='%23ffcc00' stroke='%23171717' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  pointer-events: none;
+}
+
+/* Comic-Sprechblase als echtes HTML-Element statt SVG-Text (lesbar bei
+   jeder Größe) — sitzt zwischen Intro-Text und Megafon-Illustration. */
+.hero__bubble {
+  position: relative;
+  flex: none;
+  max-width: 175px;
+  background: #fff;
+  border: 3px solid var(--ink);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.32;
+  box-shadow: var(--shadow);
+  animation: hero-in 420ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
+}
+.hero__bubble::after {
+  content: "";
+  position: absolute;
+  right: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 8px 0 8px 14px;
+  border-color: transparent transparent transparent var(--ink);
+}
+.hero__bubble::before {
+  content: "";
+  position: absolute;
+  right: -8.5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  z-index: 1;
+  border-style: solid;
+  border-width: 6px 0 6px 10px;
+  border-color: transparent transparent transparent #fff;
+}
+
 .hero__intro h1 {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(2.1rem, 1.3rem + 2.6vw, 3.15rem);
-  line-height: 1.12;
-  letter-spacing: -0.015em;
+  /* Deutlich größer (Brief: "keine kleine oder zu kompakte Headline") —
+     vorher Deckel bei 3.15rem/3.85rem, jetzt spürbar mehr Präsenz. */
+  font-size: clamp(2.6rem, 1.6rem + 3.4vw, 4.2rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
 @keyframes hero-in {
@@ -295,33 +389,32 @@ mark {
   to { opacity: 1; transform: translateY(0); }
 }
 .hero__intro p {
-  margin-top: var(--space-3);
+  margin-top: var(--space-4);
   color: var(--ink-soft);
-  font-size: 1.02rem;
-  max-width: 46ch;
+  font-size: 1.05rem;
+  max-width: 44ch;
 }
 
-/* -- Toolbar: Suche + Filter vereint (Brief Punkt 11) -------------------- */
+/* -- Toolbar: Suche (volle Breite) + Filter-Chips darunter (Brief) ------- */
 .toolbar {
   display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-  margin-bottom: var(--space-5);
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
 }
-.toolbar .tabs { margin-bottom: 0; flex: 1 1 auto; }
+.toolbar .tabs { margin-bottom: 0; }
 
 /* -- Suche --------------------------------------------------------------- */
 .search {
   position: relative;
-  flex: 0 1 20rem;
-  min-width: 14rem;
+  width: 100%;
 }
 .search input {
   width: 100%;
   font-family: var(--font-body);
-  font-size: 0.95rem;
-  padding: var(--space-3) var(--space-4) var(--space-3) var(--space-7);
+  font-size: 1rem;
+  /* Rechts Platz für den runden Such-Button lassen. */
+  padding: var(--space-4) 4rem var(--space-4) var(--space-7);
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--paper-raised);
@@ -331,36 +424,53 @@ mark {
 .search input::placeholder { color: var(--ink-soft); }
 .search svg {
   position: absolute;
-  left: var(--space-4);
+  left: var(--space-5);
   top: 50%;
   transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
+  width: 19px;
+  height: 19px;
   color: var(--ink-soft);
   pointer-events: none;
 }
+.search__submit {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.search__submit svg { width: 17px; height: 17px; }
+.search__submit:hover { transform: translateY(-50%) scale(1.06); box-shadow: var(--shadow-hover); }
 
-/* -- Tabs --------------------------------------------------------------- */
+/* -- Filter-Chips (Kurskorrektur 2026-08-07: Pills statt Underline-Tabs) */
 .tabs {
   display: flex;
   gap: var(--space-2);
   overflow-x: auto;
-  padding-bottom: var(--space-4);
-  margin-bottom: var(--space-5);
-  border-bottom: 1px solid var(--line);
   scrollbar-width: thin;
 }
 .tabs__item {
   flex: none;
-  padding: var(--space-2) var(--space-1);
-  font-size: 0.92rem;
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.88rem;
   font-weight: 600;
-  color: var(--ink-soft);
-  border-bottom: 2px solid transparent;
+  color: var(--ink);
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: 999px;
   white-space: nowrap;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
 }
-.tabs__item:hover { color: var(--ink); }
-.tabs__item.is-active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
+.tabs__item:hover { border-color: var(--accent); }
+.tabs__item.is-active { color: var(--on-accent); background: var(--accent); border-color: var(--accent); }
 
 /* -- Zweispalten-Layout --------------------------------------------------- */
 .layout-2col {
@@ -436,11 +546,14 @@ mark {
    dass jede einzelne Karte den Pinnwand-Kitsch mitmacht. */
 .article-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
-  gap: var(--space-5);
+  /* Größer/luftiger (Brief: "weniger Karten gleichzeitig, dafür bessere
+     Lesbarkeit") — vorher 15.5rem, jetzt spürbar breitere Mindestbreite. */
+  grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+  gap: var(--space-6);
   align-items: stretch;
 }
 .article-list li:not(.feed__divider) {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -448,6 +561,25 @@ mark {
   transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
   height: 100%;
 }
+.card-badge {
+  /* Comic-Sticker-Badge, gezielt eingesetzt (Brief: "nicht auf jeder
+     Karte") — wiederverwendet die Sticker-Sprache von .flash (harter
+     Versatz-Schatten, Drehung, Ink-Rand). */
+  position: absolute;
+  top: -10px;
+  left: -8px;
+  z-index: 2;
+  padding: 0.3em 0.7em;
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-radius: 999px;
+  border: 1.5px solid var(--ink);
+  box-shadow: 1.5px 1.5px 0 var(--ink);
+  transform: rotate(-6deg);
+}
+.card-badge--new { background: var(--accent); color: var(--on-accent); }
 .article-list li:not(.feed__divider):hover, .article-list li:not(.feed__divider):focus-within {
   transform: translateY(-3px);
   box-shadow: var(--shadow-hover);
@@ -958,6 +1090,8 @@ code {
   /* Illustration kollidiert bei schmaler Breite mit der (dann mehrzeiligen)
      Überschrift — auf Mobile weglassen statt Text zu überdecken. */
   .hero__illustration { display: none; }
+  .hero__bubble { display: none; }
+  .hero { padding: var(--space-5); }
   .rail {
     width: 100%;
     height: auto;
@@ -983,6 +1117,7 @@ code {
   .rail__nav a { width: 44px; height: 44px; padding: 0; justify-content: center; }
   .rail__nav a[aria-current="page"] { padding-left: 0; }
   .rail__nav-label { display: none; }
+  .rail__profile { display: none; }
   .rail__nav a[aria-current="page"]::before {
     left: 50%;
     top: auto;
@@ -1088,6 +1223,75 @@ code {
 @media (max-width: 34rem) {
   .mascot { right: var(--space-3); bottom: var(--space-3); }
   .hero::before { top: -0.75rem; right: -0.75rem; width: 150px; height: 150px; }
+}
+
+/* -- Fakten-Widget ---------------------------------------------------------- */
+.fact-widget {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  padding: var(--space-5);
+  background: var(--surface-secondary);
+  border-radius: var(--radius);
+}
+.fact-widget__figure { width: 64px; height: 64px; flex: none; }
+.fact-widget__bubble {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  background: var(--paper-raised);
+  border: 3px solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--space-4) var(--space-5);
+}
+.fact-widget__bubble::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  bottom: 20px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 8px 14px 8px 0;
+  border-color: transparent var(--ink) transparent transparent;
+}
+.fact-widget__bubble::after {
+  content: "";
+  position: absolute;
+  left: -10px;
+  bottom: 21px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 11px 6px 0;
+  border-color: transparent var(--paper-raised) transparent transparent;
+}
+.fact-widget__label {
+  display: block;
+  font-weight: 800;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  margin-bottom: var(--space-1);
+}
+.fact-widget__bubble p { font-size: 0.95rem; transition: opacity 160ms ease; }
+.fact-widget__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  margin-top: var(--space-3);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+.fact-widget__more svg { width: 12px; height: 12px; transition: transform 160ms ease; }
+.fact-widget__more:hover svg { transform: translateX(2px); }
+@media (max-width: 34rem) {
+  .fact-widget { flex-direction: column; align-items: flex-start; }
+  .fact-widget__bubble::before, .fact-widget__bubble::after { display: none; }
 }
 
 /* -- Reduced Motion ---------------------------------------------------------- */

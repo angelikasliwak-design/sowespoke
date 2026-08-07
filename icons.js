@@ -137,6 +137,10 @@ const HERO_ILLUSTRATION = `<svg viewBox="0 0 300 190" aria-hidden="true">
   <path d="M48 26 L76 8 L62 46 L92 32 L54 82 L64 48 L36 58 Z"
     fill="var(--yellow)" stroke="var(--ink)" stroke-width="4.5" stroke-linejoin="round"
     transform="rotate(9 64 44)"/>
+  <!-- Türkisfarbener Comic-Burst hinter dem Megafon (Referenz-Mockup
+     2026-08-07) — rendert zuerst, damit das Megafon darüber liegt. -->
+  <path d="M215 5 L228 45 L268 30 L248 68 L290 78 L248 95 L275 130 L233 118 L238 160 L208 128 L178 158 L175 115 L138 128 L165 90 L128 72 L170 60 L155 22 L195 42 Z"
+    fill="var(--teal)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
   <g transform="translate(96,-8) rotate(-7 100 100)">
     <circle cx="34" cy="26" r="2.4" fill="var(--yellow)" opacity="0.8"/>
     <circle cx="46" cy="18" r="1.6" fill="var(--yellow)" opacity="0.6"/>
@@ -152,15 +156,6 @@ const HERO_ILLUSTRATION = `<svg viewBox="0 0 300 190" aria-hidden="true">
     <path d="M183 38 Q217 100 183 162" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
   </g>
   <circle cx="18" cy="150" r="3.5" fill="var(--teal)"/>
-  <!-- Comic-Sprechblase über dem Megafon (Mockup-Referenz 2026-08-07) —
-     bewusst ohne eingebetteten Fließtext: bei der Anzeigegröße (~200px)
-     wäre SVG-Text kaum lesbar. Drei Punkte statt Wörter deuten "spricht"
-     an, ohne das Risiko unleserlicher Mini-Schrift. -->
-  <path d="M176 2 h80 a10 10 0 0 1 10 10 v20 a10 10 0 0 1 -10 10 h-44 l-11 14 v-14 h-25 a10 10 0 0 1 -10 -10 v-20 a10 10 0 0 1 10 -10 z"
-    fill="#fff" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
-  <circle cx="200" cy="22" r="2.4" fill="var(--accent)"/>
-  <circle cx="216" cy="22" r="2.4" fill="var(--accent)"/>
-  <circle cx="232" cy="22" r="2.4" fill="var(--accent)"/>
 </svg>`;
 
 /* Karten-Eck-Illustrationen: je EIN komponiertes Mini-Cluster pro Karten-
