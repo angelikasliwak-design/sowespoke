@@ -3,10 +3,10 @@
  * (Browser kann fremde Feeds wegen CORS meist nicht direkt laden).
  *
  * Übersetzung: englische Quellen (`lang: "en"`) werden, sofern das Secret
- * `OPENAI_API_KEY` gesetzt ist, per OpenAI-Chat-Completions ins Deutsche
- * übersetzt (siehe `translateItems`). Ohne gesetzten Key bleibt das
- * bisherige Verhalten unverändert: Original-Text + "EN"-Sprach-Badge im
- * Frontend, kein Fehler.
+ * `GEMINI_API_KEY` gesetzt ist, per Google-Gemini-API (kostenloses
+ * Kontingent, keine Zahlungsmethode nötig) ins Deutsche übersetzt (siehe
+ * `translateItems`). Ohne gesetzten Key bleibt das bisherige Verhalten
+ * unverändert: Original-Text + "EN"-Sprach-Badge im Frontend, kein Fehler.
  */
 
 const SOURCES = [
@@ -136,28 +136,26 @@ async function translateItems(items, apiKey, model) {
   if (!toTranslate.length || !apiKey) return items;
 
   const payload = toTranslate.map((i, idx) => ({ id: idx, title: i.title, description: i.description }));
+  const promptInstructions =
+    'Du übersetzt kurze Online-Marketing-News-Teaser aus dem Englischen ins Deutsche für ein internes Wissenszentrum einer Marketing-Agentur. Behalte Produktnamen und Fachbegriffe bei (z. B. Microsoft Advertising, ROAS, CPC, Performance Max), übersetze natürlich, knapp und sachlich, keine Erklärungen oder Zusätze. Antworte ausschließlich mit einem JSON-Objekt der Form {"items":[{"id":number,"title":string,"description":string}]} in derselben Reihenfolge wie die Eingabe, ein Eintrag pro Eingabe-Item.';
 
   try {
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-      body: JSON.stringify({
-        model: model || "gpt-4.1-mini",
-        response_format: { type: "json_object" },
-        temperature: 0.2,
-        messages: [
-          {
-            role: "system",
-            content:
-              'Du übersetzt kurze Online-Marketing-News-Teaser aus dem Englischen ins Deutsche für ein internes Wissenszentrum einer Marketing-Agentur. Behalte Produktnamen und Fachbegriffe bei (z. B. Microsoft Advertising, ROAS, CPC, Performance Max), übersetze natürlich, knapp und sachlich, keine Erklärungen oder Zusätze. Antworte ausschließlich mit einem JSON-Objekt der Form {"items":[{"id":number,"title":string,"description":string}]} in derselben Reihenfolge wie die Eingabe, ein Eintrag pro Eingabe-Item.',
-          },
-          { role: "user", content: JSON.stringify({ items: payload }) },
-        ],
-      }),
-    });
+    const modelId = model || "gemini-2.0-flash";
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: `${promptInstructions}\n\n${JSON.stringify({ items: payload })}` }] }],
+          generationConfig: { responseMimeType: "application/json", temperature: 0.2 },
+        }),
+      }
+    );
     if (!res.ok) return items;
     const data = await res.json();
-    const raw = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    const raw = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts
+      && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
     if (!raw) return items;
     const parsed = JSON.parse(raw);
     const byId = new Map((parsed.items || []).map((t) => [t.id, t]));
@@ -186,7 +184,7 @@ export async function onRequestGet(context) {
 
   items.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
   items = items.slice(0, 60);
-  items = await translateItems(items, context.env.OPENAI_API_KEY, context.env.OPENAI_MODEL);
+  items = await translateItems(items, context.env.GEMINI_API_KEY, context.env.GEMINI_MODEL);
 
   const body = JSON.stringify({
     generatedAt: new Date().toISOString(),
