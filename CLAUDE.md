@@ -6,9 +6,8 @@ Internes Wissenszentrum für Online-Marketing-News, Beta-Funktionen und Kunden-E
 
 Diese Website darf **nicht** wie generischer, austauschbarer AI-generierter Standard-Look aussehen (immer gleiches Blau/Lila-Gradient, immer gleiche Card-Grids, immer gleiche generische Icons, immer gleiche Standard-Schriftpaarung). Stattdessen gilt für jede Design- und UI-Arbeit an diesem Projekt:
 
-- **Immer den `impeccable`-Skill nutzen**, bevor UI gebaut oder verändert wird (`/impeccable init` wurde bereits ausgeführt → `PRODUCT.md` existiert). Vor neuen Oberflächen `new-work`/`shape` durchlaufen, um eine bewusste visuelle Welt (`DESIGN.md`) statt eines generischen Defaults zu etablieren.
-- Bestehende `DESIGN.md` (sobald vorhanden) ist die visuelle Autorität — Farben, Typografie, Ton, Komponenten von dort übernehmen, nicht neu erfinden.
-- Nach jeder sichtbaren UI-Änderung: `/impeccable audit` bzw. `/impeccable critique` zur Qualitätskontrolle nutzen (Hooks sind installiert und laufen automatisch nach UI-Datei-Edits).
+- **Verbindlicher Ablauf für jede Design-Arbeit und jede neue Funktion, ausnahmslos: siehe [WORKFLOW.md](WORKFLOW.md).** Kurzfassung: `impeccable`- und `ui-ux-pro-max`-Skill vor dem Bauen konsultieren → nach dem Bauen `/impeccable audit`/`critique` → Funde beheben → **mit echtem Browser-Screenshot selbst gegenprüfen** (lokaler Vorschau-Server unter `tools/local-preview-server.mjs`, Anleitung in `WORKFLOW.md`) → in `DESIGN.md` dokumentieren → committen.
+- Bestehende `DESIGN.md` ist die visuelle Autorität — Farben, Typografie, Ton, Komponenten von dort übernehmen, nicht neu erfinden.
 - Vor dem Abschluss einer neuen Oberfläche: `/impeccable polish` für den finalen Feinschliff.
 - Der Ton der Site ist intern/funktional (Mode: **Operate**/**Read** — Mitarbeitende sollen schnell Informationen finden, nicht überzeugt oder unterhalten werden). Klarheit und Durchsuchbarkeit haben Vorrang vor Show-Effekten.
 
