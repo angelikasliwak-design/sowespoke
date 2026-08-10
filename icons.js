@@ -61,25 +61,37 @@ const ICONS = {
    Magenta als Fell, Petrol als Halstuch, Gelb als Stern-Akzent. Dicke
    schwarze Comic-Konturen bleiben, passt zum übrigen Pop-Art-System. */
 /* SPARK — Maskottchen-Neuausrichtung (2026-08-10, Nutzer-Entscheidung nach
-   Master-Prompt-Abschnitt 4): löst die Fuchs-Figur "PIX" ab. Bewusst
-   abstrakt-geometrisch statt Tier-Clipart — ein Squircle in derselben
-   visuellen Sprache wie Karten/Buttons (Marken-Magenta-Füllung, dicke
-   Ink-Kontur, harter Versatz-Schatten ohne Blur — reuse der schon
-   etablierten sticker-shadow-Sprache statt einer neuen Schattenart),
-   dadurch wirkt es wie Teil des Systems statt aufgeklebter Sticker.
-   Minimal-Gesicht (zwei Punktaugen + Mund), einziges Extra: ein gelber
-   Blitz oben als "Antenne"/Namensgeber. Reihenfolge wichtig: Blitz wird
-   NACH dem Körper gezeichnet, sonst verdeckt der Körper ihn größtenteils
-   (per Screenshot-Selbsttest gefunden und korrigiert). */
-const MASCOT_SVG = `<svg viewBox="0 0 64 64" aria-hidden="true">
-  <rect x="13" y="15" width="48" height="48" rx="16" fill="var(--ink)"/>
-  <rect x="8" y="10" width="48" height="48" rx="16" fill="var(--accent)" stroke="var(--ink)" stroke-width="3.2"/>
-  <path d="M34,-4 L27,7 L30.5,7 L28.5,15 L38,4 L33,4 Z" fill="var(--yellow)" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round"/>
-  <circle cx="24" cy="31" r="4.4" fill="var(--ink)"/>
-  <circle cx="40" cy="31" r="4.4" fill="var(--ink)"/>
-  <circle cx="25.3" cy="29.6" r="1.15" fill="#fff"/>
-  <circle cx="41.3" cy="29.6" r="1.15" fill="#fff"/>
-  <path d="M27 41 Q32 44.5 37 41" stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+   Master-Prompt-Abschnitt 4): löst die Fuchs-Figur "PIX" ab. Abstrakt-
+   geometrischer Charakter statt Tier-Clipart.
+   Zweite Überarbeitung (2026-08-10, Nutzer-Feedback): die erste SPARK-
+   Version (organischer Rundkörper + Mund-Kurve) wirkte wie ein Apfel/eine
+   Tomate. Neu gezeichnet auf reiner Rechteck-Geometrie: exakter Squircle
+   per <rect rx="26"> (kein organischer Pfad, keine Einbuchtung oben),
+   harter Offset-Schatten (zweites identisches Rect, +4/+4 versetzt, ohne
+   Blur/filter) statt weichem Drop-Shadow, nur zwei Punktaugen ohne Mund
+   (kein Gesichtsausdruck, der als Frucht gelesen werden könnte), Blitz
+   jetzt klein, mittig oben und aus der Oberkante herauswachsend statt
+   seitlich/groß. Farb-Tokens statt Hardcoding, wo im SVG möglich
+   (var(--accent)/var(--yellow)/var(--ink) — --ink entspricht exakt der
+   geforderten Kontur-Farbe). Benannte Gruppen
+   (id="shadow"/"body"/"eye-l"/"eye-r"/"spark") für spätere gezielte
+   Animation einzelner Teile. */
+const MASCOT_SVG = `<svg viewBox="0 0 100 100" aria-hidden="true">
+  <g id="shadow">
+    <rect x="12" y="12" width="84" height="84" rx="26" fill="var(--ink)"/>
+  </g>
+  <g id="body">
+    <rect x="8" y="8" width="84" height="84" rx="26" fill="var(--accent)" stroke="var(--ink)" stroke-width="3"/>
+  </g>
+  <g id="eye-l">
+    <ellipse cx="35" cy="44" rx="4.5" ry="5.5" fill="var(--ink)"/>
+  </g>
+  <g id="eye-r">
+    <ellipse cx="65" cy="44" rx="4.5" ry="5.5" fill="var(--ink)"/>
+  </g>
+  <g id="spark">
+    <path d="M55,0 L45,9 L50,9 L44,17 L58,6 L52,6 Z" fill="var(--yellow)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="miter"/>
+  </g>
 </svg>`;
 
 /* Echte Marken-Formen nach Vorlage der Sowespoke-Präsentationsfolien:
@@ -89,13 +101,13 @@ const MASCOT_SVG = `<svg viewBox="0 0 64 64" aria-hidden="true">
 const BRAND_BLOB = `<svg viewBox="0 0 240 240" aria-hidden="true">
   <path d="M60 8 C110 -8 175 10 200 55 C222 95 210 148 172 178 C132 210 68 212 32 182
     C-2 154 -10 100 8 62 C20 36 34 16 60 8 Z" fill="var(--teal)"/>
-  <path d="M55 40 C70 30 85 32 92 42" stroke="#ffffff" stroke-width="7" stroke-linecap="round" fill="none" opacity="0.5"/>
+  <path d="M55 40 C70 30 85 32 92 42" stroke="var(--c-surface)" stroke-width="7" stroke-linecap="round" fill="none" opacity="0.5"/>
 </svg>`;
 
 const BRAND_BURST = `<svg viewBox="0 0 200 200" aria-hidden="true">
   <defs>
     <pattern id="burstDots" width="11" height="11" patternUnits="userSpaceOnUse">
-      <circle cx="2.4" cy="2.4" r="2.4" fill="#c98a00"/>
+      <circle cx="2.4" cy="2.4" r="2.4" fill="var(--c-yellow-700)"/>
     </pattern>
     <clipPath id="burstClip">
       <path d="M70 10 C95 -4 122 -2 132 20 C156 14 178 28 176 52 C196 58 202 82 184 98
@@ -152,9 +164,9 @@ const HERO_ILLUSTRATION = `<svg viewBox="0 0 764 770" aria-hidden="true">
     <path d="M118,-45 C220,-100 320,-145 396,-165
              L402,165
              C320,145 220,100 118,45 Z"
-      fill="#fff" stroke="var(--ink)" stroke-width="22" stroke-linejoin="round"/>
+      fill="var(--c-surface)" stroke="var(--ink)" stroke-width="22" stroke-linejoin="round"/>
     <ellipse cx="470" cy="0" rx="82" ry="170" fill="var(--accent)" stroke="var(--ink)" stroke-width="22"/>
-    <ellipse cx="476" cy="0" rx="54" ry="140" fill="#fff" stroke="var(--ink)" stroke-width="14"/>
+    <ellipse cx="476" cy="0" rx="54" ry="140" fill="var(--c-surface)" stroke="var(--ink)" stroke-width="14"/>
     <circle cx="492" cy="0" r="46" fill="var(--accent)" stroke="var(--ink)" stroke-width="12"/>
   </g>
 </svg>`;
@@ -179,7 +191,7 @@ const SIDECARD_ILLUSTRATION = `<svg viewBox="0 0 100 100" aria-hidden="true">
 const INFOBOX_ILLUSTRATION = `<svg viewBox="0 0 100 100" aria-hidden="true">
   <path d="M46 6 C67 0 87 11 91 32 C95 53 82 71 61 77 C40 83 19 72 13 53 C7 34 16 13 37 7 C40 6 43 6 46 6 Z"
     fill="var(--teal)" opacity="0.92"/>
-  <path d="M32 30 C41 23 50 25 55 32" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" fill="none" opacity="0.5"/>
+  <path d="M32 30 C41 23 50 25 55 32" stroke="var(--c-surface)" stroke-width="4.5" stroke-linecap="round" fill="none" opacity="0.5"/>
   <circle cx="83" cy="66" r="5.5" fill="var(--cat-tracking)"/>
   <circle cx="18" cy="70" r="3.5" fill="var(--cat-bid)" opacity="0.88"/>
 </svg>`;
@@ -187,7 +199,7 @@ const INFOBOX_ILLUSTRATION = `<svg viewBox="0 0 100 100" aria-hidden="true">
 const MAILGEN_ILLUSTRATION = `<svg viewBox="0 0 100 100" aria-hidden="true">
   <defs>
     <pattern id="mg-dots" width="7" height="7" patternUnits="userSpaceOnUse">
-      <circle cx="1.6" cy="1.6" r="1.6" fill="#c98a00"/>
+      <circle cx="1.6" cy="1.6" r="1.6" fill="var(--c-yellow-700)"/>
     </pattern>
     <clipPath id="mg-clip">
       <path d="M40 5 C57 -3 73 4 77 16 C91 13 101 24 96 38 C105 46 101 63 86 67 C86 81 69 89 57 81 C47 93 29 91 23 78 C9 81 -1 68 5 54 C-5 46 -1 30 13 26 C15 13 25 5 40 5 Z"/>

@@ -678,7 +678,11 @@
     copyRichBtn.addEventListener("click", async () => {
       const lines = sigEl.value.split("\n").map((l) => escapeHtml(l)).join("<br>");
       const logoUrl = `${location.origin}/assets/brand/${encodeURIComponent("logo-sowespoke-logo horizontal kleiner.png")}`;
-      const html = `<div style="font-family:Verdana,Geneva,sans-serif;font-size:13px;color:#171717;">
+      // Bewusste Ausnahme vom Token-System (Marken-Token-Umstellung,
+      // 2026-08-10): dieses HTML landet im Gmail-Compose-Fenster, das
+      // keinen Zugriff auf unsere CSS-Variablen hat — Literal-Wert nötig,
+      // aktualisiert auf den verifizierten Marken-Ink-Ton (--c-ink).
+      const html = `<div style="font-family:Verdana,Geneva,sans-serif;font-size:13px;color:#111111;">
         <img src="${logoUrl}" alt="Sowespoke" height="40" style="display:block;margin-bottom:8px;" />
         ${lines}
       </div>`;

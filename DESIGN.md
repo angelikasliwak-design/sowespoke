@@ -2,17 +2,17 @@
 name: Sowespoke Wissenszentrum
 description: Internes Editorial-Wissenszentrum mit Sowespoke-Markenfarben (Magenta/Petrol/Gelb)
 colors:
-  ink: "#171717"
-  ink-soft: "#63636b"
-  paper: "#f7f5f1"
+  ink: "#111111"
+  ink-soft: "#636363"
+  paper: "#f9f9f9"
   paper-raised: "#ffffff"
   line: "#e7e3db"
-  accent: "#e4067e"
+  accent: "#d4035f"
   accent-tint: "#fde6f1"
   on-accent: "#ffffff"
-  yellow: "#ffcc00"
-  on-yellow: "#171717"
-  teal: "#2f8f8a"
+  yellow: "#ffc600"
+  on-yellow: "#111111"
+  teal: "#609274"
   on-teal: "#ffffff"
   cat-ai: "#5b3fb0"
   cat-bid: "#146b3a"
@@ -26,11 +26,11 @@ colors:
   accent-deep: "#9c0349"
 typography:
   display:
-    fontFamily: "Baloo 2, Segoe UI, system-ui, sans-serif"
+    fontFamily: "Exo 2, Segoe UI, system-ui, sans-serif"
     fontWeight: 700
     letterSpacing: "-0.01em"
   body:
-    fontFamily: "Inter, Segoe UI, system-ui, sans-serif"
+    fontFamily: "Open Sans, Segoe UI, system-ui, sans-serif"
     fontWeight: 400
     lineHeight: 1.55
 rounded:
@@ -125,25 +125,32 @@ Diese Fassung ist das Ergebnis von zwei verworfenen Anläufen: Fassung 1 war ein
 - **Hero-Schatten ergänzt:** `--surface-secondary` ist identisch mit der Seiten-Hintergrundfarbe (beide `var(--paper)`) — ohne jede weitere Abgrenzung wirkte die Halbton-Punktmuster-Kante wie ein zufälliger Abbruch statt eine Kartenkante. `box-shadow: var(--shadow)` macht die Eingrenzung als bewusste Karte lesbar.
 - **Stern-Doodle animiert** (Nutzer-Vorschlag): sanftes 3,4s-Funkeln (`scale`+leichte Rotation, `star-twinkle`), pausiert unter `prefers-reduced-motion`.
 
+**Marken-Token-Umstellung: `tokens.css` + verifizierte Live-Site-Farben/-Fonts (2026-08-10).** Ursprünglicher Auftrag zitierte zwei nicht überprüfbare Quellen ("Live-Palette von sowespoke.com", "ONFINE Styleguide Rev. 0.5") — `sowespoke.com` kam im Projekt bis dahin nirgends als eigene Website vor (nur als E-Mail-Domain), das ONFINE-Dokument tauchte an keiner Stelle auf. Auftrag zunächst gestoppt und per Rückfrage geklärt (`AskUserQuestion`); Nutzer schickte danach echte Screenshots + die tatsächliche URL `https://www.sowespoke.com/`. Werte wurden **nicht** aus den Screenshots gepipettet, sondern per `curl` direkt aus der ausgelieferten Seite gelesen (WordPress-Theme, `--wp--preset--color--*`/`--wp--preset--font-family--*`-Variablen im HTML-Head) — dabei bestätigten sich die meisten der ursprünglich genannten Hex-Werte tatsächlich als korrekt (nur eben ohne verifizierbare Quellenangabe im Auftrag selbst).
+- **Neue Datei `tokens.css`** (als erstes Stylesheet vor `fonts.css`/`styles.css` in `index.html` geladen) — einziger Ort im Projekt mit Marken-Hex-Literalen. Verifiziert: `--c-pink-500 #d4035f`, `--c-yellow-500 #ffc600`, `--c-green-500 #609274`, `--c-green-200 #b1c5a4`, `--c-ink #111111`, `--c-ink-60 #636363`, `--c-ink-30 #a4a4a4`, `--c-paper #f9f9f9`, `--c-surface #ffffff` (alle mit Preset-Namen kommentiert). Abgeleitet, nicht selbst als Live-Preset bestätigt: `--c-green-700 #4d755d` (20% abgedunkelt, AA-Textkontrast — `--c-green-500` selbst erreicht auf Weiß nur ≈3,6:1) und `--c-yellow-700 #c98a00` (Halbton-Textur-Punkte auf Gelb, unverändert aus der Vorgänger-Palette). Interne, nicht-Marken-UI-Tokens (Kategorie-/Status-Farben, Tint-Flächen) wurden unverändert aus `styles.css` mit umbenannten `--c-*`-Namen reloziert, nicht neu erfunden.
+- **Bewusst NICHT übernommen:** die vier "Legacy-Cyan"-Töne aus dem ursprünglichen Auftrag — kein Beleg auf der Live-Seite (nur generische, nicht markenbezogene Gutenberg-Standardfarben) und die zitierte Quelle bleibt unbestätigt. Bei Bedarf bitte die echte Quelle nachreichen.
+- **`styles.css` `:root`** umgestellt: alle bisherigen Rollen-Namen (`--ink`, `--paper`, `--accent`, `--yellow`, `--teal` usw.) bleiben unverändert bestehen, zeigen aber jetzt per `var(--c-*)` auf `tokens.css` statt eigene Hex-Literale zu tragen — keine einzige Komponente im restlichen File musste angefasst werden. `--teal` trägt jetzt bewusst das verifizierte Marken-Grün statt des vorherigen Türkis (Name historisch beibehalten, Farbe geändert).
+- **Fonts:** Neo Sans Pro (echte Headline-Schrift der Live-Seite, kommerzielle Monotype-Lizenz, die dieses Projekt nicht besitzt) → Fallback **Exo 2** (Google Fonts, SIL OFL, self-hosted). Open Sans (echte, frei lizenzierte Fließtext-/UI-Schrift der Live-Seite) direkt übernommen, ebenfalls self-hosted (Dateien von der Live-Seite selbst geladen, Open Sans ist Apache-2.0-lizenziert). Baloo 2/Inter samt ungenutzter `.woff2`-Dateien entfernt — siehe `## Typography` für Details.
+- **Bewusste Ausnahme vom "kein Hex außerhalb `tokens.css`"-Ziel:** die exportierte E-Mail-Signatur (`app.js`, `copyRichBtn`-Handler) landet im Gmail-Compose-Fenster ohne Zugriff auf unsere CSS-Variablen und muss deshalb einen portablen Literal-Wert tragen (`#111111`, aktualisiert auf den neuen Marken-Ink-Ton) — dieselbe Kategorie Ausnahme wie die dort bereits bestehende Verdana-Schriftart.
+- **Verifiziert:** projektweite Hex-Suche über `styles.css`/`app.js`/`icons.js`/`index.html` liefert nach der Umstellung nur noch den einen dokumentierten Ausnahme-Treffer; Screenshot der Startseite bei 1920px bestätigt korrekt aufgelöste Farb-/Font-Tokens (kein ungestyltes Element, kein Kontrastbruch).
+
 ## Colors
 
 Restrained-Strategie mit einer dominanten Markenfarbe: Magenta trägt Interaktion und Aufmerksamkeit, Petrol und Gelb sind auf Logo bzw. Beta-Kennzeichnung begrenzt. Kategorie-Tinten bleiben ein kleines, kontrolliertes Wayfinding-System auf den Zeilen-Thumbnails.
 
 ### Primary
-- **Marken-Magenta** (`#e4067e`): Buttons, aktiver Tab-Unterstrich, aktiver Sidebar-Eintrag, Aufzählungspunkte, Link-Hover. Erscheint klein und oft statt großflächig und selten — trägt Interaktion, nicht Fläche.
-- **Magenta hell/dunkel** (`accent-light` `#ff4b9e`, `accent-deep` `#9c0349`): dieselben zwei Verlaufsfarben, die schon im Megafon-Verlauf von `HERO_ILLUSTRATION` stecken — wiederverwendet für den kuppelförmigen Reißnagel-Verlauf (Case-Wall-Karten), damit kein weiterer Magenta-Ton erfunden wird.
+- **Marken-Pink** (`#d4035f`, Token `--c-pink-500`): Buttons, aktiver Tab-Unterstrich, aktiver Sidebar-Eintrag, Aufzählungspunkte, Link-Hover. Erscheint klein und oft statt großflächig und selten — trägt Interaktion, nicht Fläche. Verifiziert von der echten Live-Seite `sowespoke.com` (2026-08-10), siehe `tokens.css`.
 
 ### Secondary
-- **Signal-Gelb** (`#ffcc00`): Beta-Badge (schwarzer Text, `on-yellow`) sowie als Sparkle-Akzent in den Eck-Illustrationen (Hero, Seitenkarte, Info-Box) — immer klein, nie als eigene Fläche.
-- **Marken-Petrol** (`#2f8f8a`): Logo-Mark in der Sidebar sowie als kleiner Punkt-Akzent in den Eck-Illustrationen.
+- **Signal-Gelb** (`#ffc600`, Token `--c-yellow-500`): Beta-Badge (dunkler Text, `on-yellow` — auf Gelb ausnahmslos `--c-ink`, nie Weiß) sowie als Sparkle-/Sticker-Akzent in den Eck-Illustrationen (Hero, Seitenkarte, Info-Box) — immer klein, nie als eigene Fläche.
+- **Marken-Grün** (`#609274`, Token `--c-green-500`, historischer CSS-Variablenname weiterhin `--teal`): Logo-Mark in der Sidebar sowie als kleiner Punkt-Akzent in den Eck-Illustrationen. Für Fließtext/Links gilt die abgedunkelte `--c-green-700` (`#4d755d`) — `#609274` selbst erreicht auf Weiß nur ≈3.6:1 Kontrast, unter dem AA-Minimum von 4.5:1.
 
 ### Neutral
-- **Tiefschwarz** (`#171717`): Fließtext, Icon-Sidebar-Icons.
-- **Grauschiefer** (`#63636b`): sekundärer Text (Meta-Zeilen, Zusammenfassungen).
-- **Warmpapier** (`#f7f5f1`): Seitenhintergrund.
-- **Reinweiß** (`#ffffff`): Karten-Füllung.
-- **Trennlinie** (`#e7e3db`): 1px-Linien zwischen Listenzeilen und Tabs — die einzige "Kontur" im System.
-- **Teal-Tint** (`#e2f3f2`): helle Türkis-Fläche, Pendant zu `accent-tint` — u.a. Hero-Hintergrund.
+- **Tiefschwarz** (`#111111`, Token `--c-ink`): Fließtext, Icon-Sidebar-Icons.
+- **Grauschiefer** (`#636363`, Token `--c-ink-60`): sekundärer Text (Meta-Zeilen, Zusammenfassungen).
+- **Warmpapier→Neutralweiß** (`#f9f9f9`, Token `--c-paper`): Seitenhintergrund — seit der Marken-Token-Umstellung (2026-08-10) kühler/neutraler statt warm-beige, folgt der verifizierten Live-Seite.
+- **Reinweiß** (`#ffffff`, Token `--c-surface`): Karten-Füllung.
+- **Trennlinie** (`#e7e3db`): 1px-Linien zwischen Listenzeilen und Tabs — die einzige "Kontur" im System. Internes UI-Token, kein Live-Site-Marken-Preset.
+- **Grün-Tint** (`#e2f3f2`): helle Fläche, Pendant zu `accent-tint` — u.a. Hero-Hintergrund. Internes UI-Token (Name historisch `--teal-tint`), unverändert aus der Vorgänger-Palette übernommen.
 - **Warnung** (`#7a4a00` Text auf `#fff3d6`-Fläche): eigenständiges, a11y-sicheres Warnhinweis-Paar (`.feed__notice`, `.mailgen__warning`) — bewusst kein Signal-Gelb (`--yellow`), da dessen Kontrast auf hellem Grund für Fließtext nicht ausreicht. Aus zwei zuvor undokumentierten Literalwerten in `--warning`/`--warning-tint` überführt (2026-08-07).
 
 **Kork entfernt (2026-08-07, spät).** Die Tokens `--cork`/`--cork-dark` und die Kork-Textur auf `.shell__main` sind vollständig entfernt — explizite Nutzeranweisung ("Bitte nicht wieder das aktuelle Korkwand-Design als Grundlage nehmen"). Die Content-Fläche ist jetzt flaches `--paper`. Das Halbton-Punktmuster lebt nur noch begrenzt im `.hero`-Hintergrund weiter, nicht mehr seitenweit.
@@ -212,10 +219,12 @@ Restrained-Strategie mit einer dominanten Markenfarbe: Magenta trägt Interaktio
 
 ## Typography
 
-**Display Font:** Baloo 2 (mit Segoe UI, system-ui als Fallback) — nur für die große Hero-/Seiten-Headline.
-**Body Font:** Inter (mit Segoe UI, system-ui als Fallback) — für alles andere, inklusive fetter Titel/Buttons/Labels über `font-weight`, nicht über einen Schriftwechsel.
+**Display Font:** Exo 2 (mit Segoe UI, system-ui als Fallback) — nur für die große Hero-/Seiten-Headline. Fallback für die echte Headline-Schrift der Live-Seite `sowespoke.com`, **Neo Sans Pro** (Monotype, kommerziell) — dieses Projekt hat dafür keine eigene Webfont-Lizenz, die Live-Seite hostet ihre eigenen, für sie lizenzierten Dateien. Exo 2 (Google Fonts, SIL Open Font License, self-hosted unter `assets/fonts/`) gewählt als frei lizenzierter, geometrisch verwandter Ersatz. Sollte künftig eine Neo-Sans-Pro-Lizenz für dieses Projekt vorliegen, kann `--font-display` direkt darauf umgestellt werden.
+**Body Font:** Open Sans (mit Segoe UI, system-ui als Fallback) — für alles andere, inklusive fetter Titel/Buttons/Labels über `font-weight`, nicht über einen Schriftwechsel. Echte, frei lizenzierte (Apache 2.0) Fließtext-/UI-Schrift der Live-Seite `sowespoke.com`, self-hosted unter `assets/fonts/`.
 
-**Character:** Baloo 2 ist bewusst auf einen einzigen Moment pro Seite begrenzt (die Headline) — das hält die Markenpersönlichkeit sichtbar, ohne die Scanbarkeit der Liste zu stören. Alles, was gelesen statt nur wahrgenommen wird, bleibt in Inter.
+**Character:** Exo 2 ist bewusst auf einen einzigen Moment pro Seite begrenzt (die Headline) — das hält die Markenpersönlichkeit sichtbar, ohne die Scanbarkeit der Liste zu stören. Alles, was gelesen statt nur wahrgenommen wird, bleibt in Open Sans.
+
+**Vorherige Schriften (bis 2026-08-10):** Baloo 2 (Display) / Inter (Body) — beide self-hosted, beide durch die Marken-Token-Umstellung ersetzt (siehe Log-Eintrag "Marken-Token-Umstellung"). Nicht mehr im Projekt vorhanden.
 
 ### Hierarchy
 - **Display** (700, `clamp(2.1rem, 1.3rem + 2.6vw, 3.15rem)`, 1.12; ab `90rem` Breite `clamp(2.4rem, 1rem + 3vw, 3.85rem)`): Seiten-Headline, genau einmal pro Seite.
@@ -322,7 +331,7 @@ Zwei Radiusstufen tragen fast alles: `10px` (Icon-Buttons, Formularfelder) und `
 - **Do** Magenta klein und häufig einsetzen (Button, Unterstrich, Punktmarker) statt großflächig und selten.
 - **Do** Karten (Seitenkarte/Info-Box/Mail-Generator) mit dem festen `3px`-Typ-Rahmen versehen (siehe Bunte-Rahmen-Regel) plus Schatten — Farbe ist an den Komponenten-Typ gebunden, nicht frei wählbar.
 - **Do** neue Listeninhalte als Zeile (`row`-Muster) anlegen, randlos — das Listenmuster ist die primäre Content-Form dieser App und bleibt bewusst ohne Rahmen, damit es scanbar bleibt.
-- **Do** Baloo 2 auf die eine Headline pro Seite begrenzen; alles andere bleibt Inter, auch wenn es fett gesetzt ist.
+- **Do** Exo 2 auf die eine Headline pro Seite begrenzen; alles andere bleibt Open Sans, auch wenn es fett gesetzt ist.
 - **Do** bei Unsicherheit über Markendetails ein echtes Bild/Screenshot anfordern statt aus Text-Fetch zu raten.
 - **Do** Schatten immer mit Versatz versehen (`shadow`, `shadow-hover`, `shadow-glow`) — ein Schein ohne Offset ist Dekoration, keine Tiefe.
 - **Do** den harten, unverwischten `sticker-shadow` ausschließlich für das Beta-Badge verwenden — er ist die eine bewusste Ausnahme vom sonst durchgängig weichen Schattensystem, kein Ersatzmuster für Karten.

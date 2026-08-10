@@ -8,34 +8,39 @@
 
 :root {
   /* -- Farbe -------------------------------------------------------- */
-  --ink: #171717;
-  --ink-soft: #63636b;
-  --paper: #f7f5f1;
-  --paper-raised: #ffffff;
-  --line: #e7e3db;
+  /* Marken-Token-Umstellung (2026-08-10) — Rohwerte kommen jetzt aus
+     tokens.css (verifiziert von der echten Live-Seite sowespoke.com, siehe
+     dort für Belege/Quellen). Diese Zeilen sind bewusst nur noch Aliase auf
+     var(--c-*), damit keine Komponente in diesem File umgeschrieben werden
+     muss — sie nutzen weiterhin die kurzen Rollen-Namen. */
+  --ink: var(--c-ink);
+  --ink-soft: var(--c-ink-60);
+  --paper: var(--c-paper);
+  --paper-raised: var(--c-surface);
+  --line: var(--c-line);
 
-  --accent: #e4067e;        /* Marken-Magenta — einzige starke Akzentfarbe */
-  --accent-tint: #fde6f1;
-  --on-accent: #ffffff;
+  --accent: var(--c-pink-500);   /* Marken-Magenta/-Pink — einzige starke Akzentfarbe */
+  --accent-tint: var(--c-pink-tint);
+  --on-accent: var(--c-surface);
 
-  --yellow: #ffcc00;
-  --on-yellow: #171717;
+  --yellow: var(--c-yellow-500);
+  --on-yellow: var(--ink); /* auf Gelb ausnahmslos dunkler Text, nie Weiß */
 
-  --teal: #2f8f8a;
-  --on-teal: #ffffff;
-  --teal-text: #226b67; /* dunklere Variante nur für Fließtext/Links — 6.2:1 auf Weiß, WCAG-AA-sicher; --teal bleibt für Rahmen/Icons (nur 3:1 nötig) */
+  --teal: var(--c-green-500); /* Name "teal" historisch, Farbe ist jetzt das verifizierte Marken-Grün */
+  --on-teal: var(--c-surface);
+  --teal-text: var(--c-green-700); /* dunklere Variante nur für Fließtext/Links — WCAG-AA-sicher auf Weiß; --teal bleibt für Rahmen/Icons (nur 3:1 nötig) */
 
-  --cat-ai: #5b3fb0;
-  --cat-bid: #146b3a;
-  --cat-target: #a5341a;
-  --cat-creative: #8f5c08;
-  --cat-tracking: #185f8c;
+  --cat-ai: var(--c-cat-ai);
+  --cat-bid: var(--c-cat-bid);
+  --cat-target: var(--c-cat-target);
+  --cat-creative: var(--c-cat-creative);
+  --cat-tracking: var(--c-cat-tracking);
 
-  --success: #146b3a;
-  --success-tint: #dcf1e3;
-  --teal-tint: #e2f3f2; /* helle Türkis-Fläche, Pendant zu --accent-tint */
-  --warning: #7a4a00;
-  --warning-tint: #fff3d6;
+  --success: var(--c-success);
+  --success-tint: var(--c-success-tint);
+  --teal-tint: var(--c-green-tint); /* helle Grün-Fläche, Pendant zu --accent-tint */
+  --warning: var(--c-warning);
+  --warning-tint: var(--c-warning-tint);
 
   /* Semantische Alias-Tokens (Brief 2026-08-07) — zeigen auf dieselben
      Werte wie oben, damit Komponenten wahlweise die kurzen Marken-Namen
@@ -52,8 +57,14 @@
   --hover: var(--paper);
 
   /* -- Typografie ----------------------------------------------------- */
-  --font-display: "Baloo 2", "Segoe UI", system-ui, sans-serif;
-  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  /* Neo Sans Pro (echte Headline-Schrift der Live-Seite) ist ein
+     kommerzielles Monotype-Font — die Live-Seite hostet eigene, für sie
+     lizenzierte Dateien, dieses Projekt hat dafür keine eigene Lizenz.
+     Fallback auf Exo 2 (Google Fonts, SIL OFL, frei), Entscheidung siehe
+     DESIGN.md-Eintrag "Marken-Token-Umstellung" (2026-08-10). Open Sans ist
+     die echte, frei lizenzierte Fließtext-/UI-Schrift der Live-Seite. */
+  --font-display: "Exo 2", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Open Sans", "Segoe UI", system-ui, sans-serif;
 
   /* -- Abstand / Radius / Schatten --------------------------------------- */
   --space-1: 0.25rem;
@@ -426,7 +437,7 @@ mark {
   position: relative;
   flex: none;
   max-width: 175px;
-  background: #fff;
+  background: var(--c-surface);
   border: 3px solid var(--ink);
   border-radius: var(--radius);
   padding: var(--space-3) var(--space-4);
@@ -459,7 +470,7 @@ mark {
   z-index: 1;
   border-style: solid;
   border-width: 6px 0 6px 10px;
-  border-color: transparent transparent transparent #fff;
+  border-color: transparent transparent transparent var(--c-surface);
 }
 
 .hero__intro h1 {
@@ -606,7 +617,7 @@ mark {
   width: 28px;
   height: 28px;
   border-radius: var(--radius-sm);
-  color: #fff;
+  color: var(--c-surface);
   flex: none;
 }
 .feed__title__icon svg { width: 15px; height: 15px; }
@@ -715,7 +726,7 @@ mark {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--c-surface);
   /* Sichtbareres Ben-Day-Punktraster — comic-typisches Halbton-Druckmuster,
      vorher zu blass, um als bewusstes Pop-Art-Element erkennbar zu sein. */
   background-image: radial-gradient(circle, rgba(255, 255, 255, 0.78) 1.6px, transparent 1.8px);
@@ -876,7 +887,7 @@ mark {
   width: 34px;
   height: 34px;
   border-radius: var(--radius-sm);
-  color: #fff;
+  color: var(--c-surface);
   margin-bottom: var(--space-3);
 }
 .side-card__icon svg { width: 17px; height: 17px; }
@@ -1037,7 +1048,7 @@ mark {
   border-radius: 999px;
   font-weight: 600;
   font-size: 0.78rem;
-  color: #fff;
+  color: var(--c-surface);
   white-space: nowrap;
 }
 

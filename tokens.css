@@ -1,0 +1,66 @@
+/* ==========================================================================
+   Sowespoke — Marken-Tokens (Primitiv-Ebene, einziger Ort mit Hex-Literalen)
+
+   Herkunft der Marken-Werte: nicht aus Screenshots gepipettet, sondern per
+   curl direkt aus der ausgelieferten Live-Seite https://www.sowespoke.com
+   gelesen (WordPress-Theme, CSS-Variablen --wp--preset--color--* /
+   --wp--preset--font-family--* im HTML-Head). Jeder Wert unten ist mit
+   seinem exakten Preset-Namen von dort belegt. Zwei Ausnahmen sind klar
+   gekennzeichnet:
+   - Werte ohne eigenen Preset auf der Live-Seite (z. B. AA-Text-Variante von
+     Grün, Schattierungs-Gelb) sind rechnerisch aus dem verifizierten
+     500er-Wert abgeleitet, nicht selbst von der Seite bestätigt.
+   - Die "Legacy-Cyan"-Töne aus der ursprünglichen Aufgabenstellung ("ONFINE
+     Styleguide Rev. 0.5") sind NICHT übernommen — dieses Dokument taucht im
+     Projekt nirgends auf und die Live-Seite selbst führt keine eigenen
+     Cyan-Marken-Presets (nur generische Gutenberg-Standardfarben, die nicht
+     zur Marke gehören). Bei Bedarf bitte die echte Quelle nachreichen.
+
+   Einzige zulässige Ausnahme von "kein Hex außerhalb dieser Datei": die
+   exportierte E-Mail-Signatur in app.js (renderMailGen → copyRichBtn) —
+   die läuft im Gmail-Compose-Fenster, das keinen Zugriff auf unser CSS hat,
+   und muss deshalb portable Literal-Werte tragen. Dort kommentiert.
+   ========================================================================== */
+
+:root {
+  /* -- Verifizierte Marken-Primitive (Live-Site-Presets) ----------------- */
+  --c-pink-500:   #D4035F; /* --wp--preset--color--accent-3 / accent-5 */
+  --c-yellow-500: #FFC600; /* --wp--preset--color--accent */
+  --c-green-500:  #609274; /* --wp--preset--color--accent-2 */
+  --c-green-200:  #B1C5A4; /* --wp--preset--color--accent-4 */
+  --c-ink:        #111111; /* --wp--preset--color--contrast */
+  --c-ink-60:     #636363; /* --wp--preset--color--contrast-2 */
+  --c-ink-30:     #A4A4A4; /* --wp--preset--color--contrast-3 */
+  --c-paper:      #F9F9F9; /* --wp--preset--color--base */
+  --c-surface:    #FFFFFF; /* --wp--preset--color--base-2 / white */
+
+  /* -- Abgeleitet, nicht als eigener Live-Preset bestätigt --------------- */
+  /* green-500 erreicht auf Weiß nur ~3.6:1 Kontrast (< AA 4.5:1) — für
+     Fließtext/Links um 20% abgedunkelt, exakt nach demselben Muster wie
+     die bisherige --teal-text-Lösung. */
+  --c-green-700:  #4D755D;
+  /* Dunkleres Gelb ausschließlich für Halbton-Textur-Punkte auf gelben
+     Flächen (Schattierung, keine eigenständige Akzentfarbe). */
+  --c-yellow-700: #C98A00;
+
+  /* -- Interne UI-Tokens (aus dem bestehenden Projekt übernommen, KEINE
+     Marken-Werte der Live-Site — Kategorie-/Status-Farben und Tint-Flächen
+     dieses internen Tools, unverändert relozierte Werte) -------------- */
+  --c-line:          #E7E3DB;
+  --c-pink-tint:     #FDE6F1;
+  --c-green-tint:    #E2F3F2;
+  --c-success:       #146B3A;
+  --c-success-tint:  #DCF1E3;
+  --c-warning:       #7A4A00;
+  --c-warning-tint:  #FFF3D6;
+  --c-cat-ai:        #5B3FB0;
+  --c-cat-bid:       #146B3A;
+  --c-cat-target:    #A5341A;
+  --c-cat-creative:  #8F5C08;
+  --c-cat-tracking:  #185F8C;
+
+  /* -- Comic-Primitives (harter Versatz statt weicher Unschärfe) --------- */
+  --border-comic:   2.5px solid var(--c-ink);
+  --shadow-comic:   4px 4px 0 var(--c-ink);
+  --shadow-comic-l: 6px 6px 0 var(--c-ink);
+}
