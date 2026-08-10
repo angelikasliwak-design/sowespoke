@@ -605,6 +605,18 @@ mark {
   margin-bottom: var(--space-4);
 }
 .feed__notice svg { width: 14px; height: 14px; flex: none; }
+/* Echter Systemstatus statt der bisherigen Marketing-Tagline im Hero
+   (Kritik-Fund 2026-08-10) — zeigt, dass der Feed tatsächlich frisch ist,
+   ruhig und beiläufig, kein Hervorheben. */
+.feed__updated {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  margin: calc(-1 * var(--space-3)) 0 var(--space-4);
+}
+.feed__updated svg { width: 13px; height: 13px; flex: none; color: var(--success); }
 .feed__divider {
   grid-column: 1 / -1;
   font-size: 0.8rem;
@@ -761,6 +773,20 @@ mark {
 .row__rate-btn.is-voted { background: var(--accent-tint); color: var(--accent); border-color: var(--accent); }
 .row__rate-btn:disabled { cursor: default; }
 .row__rate-btn:disabled:not(.is-voted) { opacity: 0.4; }
+/* Kritik-Fund (P2): Bestätigung war rein visuell (Farbwechsel), kein
+   Screenreader-Feedback. Ruhiger Fade statt Feier — eine Bewertung ist
+   eine Routine-Handlung, soll sich "sicher angekommen" anfühlen, nicht
+   gefeiert werden. */
+.row__rate-status {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  opacity: 0;
+  animation: rate-status-in 200ms ease 60ms both;
+}
+@keyframes rate-status-in {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 /* Kritik-Fund (2026-08-10, P1): 16 dauerhaft aktive Bewertungs-Buttons auf
    8 Karten konkurrierten mit dem eigentlichen Scan-Inhalt, bei jedem

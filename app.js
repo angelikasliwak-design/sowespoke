@@ -35,6 +35,12 @@
     return d.toLocaleDateString("de-DE", { day: "numeric", month: "short", year: "numeric" });
   }
 
+  function formatTime(iso) {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+  }
+
   /* Comic-"NEU"-Sticker nur für tatsächlich neue Inhalte (Brief: "nicht auf
      jeder Karte"), datumsbasiert statt zufällig. */
   function isRecent(iso, days) {
@@ -793,8 +799,13 @@
       ? `<p class="feed__notice">${ICONS.flash} ${data.failedSources.length} von ${data.failedSources.length + new Set(items.map((i) => i.source)).size} Quellen gerade nicht erreichbar (${data.failedSources.map((s) => escapeHtml(s.source)).join(", ")}).</p>`
       : "";
 
+    const updatedNotice = data.generatedAt
+      ? `<p class="feed__updated">${ICONS.check} Zuletzt aktualisiert um ${formatTime(data.generatedAt)} Uhr</p>`
+      : "";
+
     feed.innerHTML = `
       <h2 class="feed__title">Aktuelle Beiträge${items.length ? `<span class="feed__title__count">${items.length} Ergebnisse</span>` : ""}</h2>
+      ${updatedNotice}
       ${failedNotice}
       ${
         items.length
@@ -825,7 +836,7 @@
         <div class="row__rate" data-rate-link="${escapeHtml(item.link)}" data-rate-title="${escapeHtml(item.title)}">
           <button type="button" class="row__rate-btn" data-vote="up" aria-label="Relevant, mehr davon">${ICONS.thumbUp}</button>
           <button type="button" class="row__rate-btn" data-vote="down" aria-label="Nicht relevant">${ICONS.thumbDown}</button>
-          <span class="row__rate-status"></span>
+          <span class="row__rate-status" aria-live="polite"></span>
         </div>
       </li>
     `;
@@ -838,6 +849,8 @@
       if (voted) {
         rateEl.querySelector(`[data-vote="${voted}"]`).classList.add("is-voted");
         rateEl.querySelectorAll(".row__rate-btn").forEach((b) => (b.disabled = true));
+        const statusEl = rateEl.querySelector(".row__rate-status");
+        if (statusEl) statusEl.textContent = voted === "up" ? "Danke für dein Feedback." : "Danke, notiert.";
       }
       rateEl.querySelectorAll(".row__rate-btn").forEach((btn) => {
         btn.addEventListener("click", async (e) => {
@@ -847,6 +860,8 @@
           rateEl.querySelectorAll(".row__rate-btn").forEach((b) => (b.disabled = true));
           btn.classList.add("is-voted");
           localStorage.setItem(`newsVote:${link}`, vote);
+          const statusEl = rateEl.querySelector(".row__rate-status");
+          if (statusEl) statusEl.textContent = vote === "up" ? "Danke für dein Feedback." : "Danke, notiert.";
           try {
             await fetch("/api/rate", {
               method: "POST",
