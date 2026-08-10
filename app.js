@@ -1166,7 +1166,13 @@
       <h2 class="feed__title">Best Practices<span class="feed__title__count">${bestPractices.length} Ergebnisse</span></h2>
       <div class="card-grid">
         ${bestPractices.map(
-          (bp, i) => `<div class="side-card"><span class="side-card__icon" style="background-color: var(${i % 2 ? "--teal" : "--accent"})">${ICONS.flash}</span><h3>${escapeHtml(bp.title)}</h3><p class="pre-line">${escapeHtml(bp.body)}</p></div>`
+          (bp, i) => `
+          <div class="side-card">
+            <span class="side-card__icon" style="background-color: var(${i % 2 ? "--teal" : "--accent"})">${ICONS.flash}</span>
+            <h3>${escapeHtml(bp.title)}</h3>
+            <p class="pre-line side-card__body">${escapeHtml(bp.body)}</p>
+            <button type="button" class="side-card__expand" data-expand>Vollständig anzeigen ${ICONS.arrowRight}</button>
+          </div>`
         ).join("")}
       </div>` : ""}
 
@@ -1212,6 +1218,29 @@
     `;
 
     wireTopControls(() => renderTemplates(document.getElementById("search-input").value), () => {}, "x");
+    wireBestPracticeCards();
+  }
+
+  // Bug-Fund (Nutzer-Screenshot 2026-08-10): Best-Practices-Karten ohne
+  // Höhenbegrenzung liefen bei langen Texten beliebig weit runter und
+  // sprengten das gleichmäßige Karten-Raster. Clamp per CSS, Button nur
+  // einblenden, wenn tatsächlich etwas abgeschnitten wurde (scrollHeight
+  // vs. clientHeight — funktioniert unabhängig von der Textlänge, statt
+  // eine Zeichen-Grenze zu raten).
+  function wireBestPracticeCards() {
+    view.querySelectorAll(".side-card").forEach((card) => {
+      const body = card.querySelector(".side-card__body");
+      const btn = card.querySelector("[data-expand]");
+      if (!body || !btn) return;
+      if (body.scrollHeight <= body.clientHeight + 2) {
+        btn.remove();
+        return;
+      }
+      btn.addEventListener("click", () => {
+        const expanded = body.classList.toggle("is-expanded");
+        btn.innerHTML = expanded ? `Weniger anzeigen ${ICONS.arrowRight}` : `Vollständig anzeigen ${ICONS.arrowRight}`;
+      });
+    });
   }
 
   /* ------------------------------------------------------- Seite: Case Studies */
@@ -1568,7 +1597,7 @@
       root.innerHTML = `
         <span class="rail__profile-avatar">${escapeHtml(initial)}</span>
         <span class="rail__profile-info">
-          <strong>${escapeHtml(email)}</strong>
+          <strong title="${escapeHtml(email)}">${escapeHtml(email)}</strong>
           <span>Team-Mitglied</span>
         </span>
         <span class="rail__profile-chevron">${ICONS.arrowRight}</span>

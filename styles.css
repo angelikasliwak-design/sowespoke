@@ -949,6 +949,28 @@ mark {
   margin-bottom: var(--space-7);
 }
 .pre-line { white-space: pre-line; overflow-wrap: anywhere; color: var(--ink-soft); font-size: 0.94rem; }
+/* Bug-Fund (Nutzer-Screenshot 2026-08-10): Best-Practices-Karten ohne
+   Höhenbegrenzung sprengten das gleichmäßige Karten-Raster. Geklammert auf
+   12 Zeilen, Button (nur bei tatsächlicher Kürzung, siehe wireBestPractice
+   Cards) hebt die Klammer auf. */
+.side-card__body {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 12;
+  overflow: hidden;
+}
+.side-card__body.is-expanded { display: block; overflow: visible; }
+.side-card__expand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  margin-top: var(--space-3);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+.side-card__expand svg { width: 12px; height: 12px; transition: transform 160ms ease; }
+.side-card__expand:hover svg { transform: translateX(2px); }
 
 /* -- Leerzustand ----------------------------------------------------- */
 .empty-state {
