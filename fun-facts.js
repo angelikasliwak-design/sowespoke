@@ -1,10 +1,9 @@
 /**
- * Leichte Trivia für das Maskottchen — Mix aus Online-Marketing-Fakten und
- * allgemeinen interessanten Infos, bewusst nicht als Fachaussage gemeint,
- * rein zur Auflockerung.
+ * Leichte Trivia für das Maskottchen — ausschließlich Fakten aus der
+ * Online-Marketing- und Digitalwerbung-Welt, rein zur Auflockerung.
  */
 const FUN_FACTS = [
-  "Der erste bezahlte Online-Werbebanner ging 1994 live — Klickrate: 44 %. Heute freut man sich über 2 %.",
+  "Der erste bezahlte Online-Werbebanner ging 1994 live (AT&T auf HotWired) — Klickrate: 44 %. Heute freut man sich über 2 %.",
   "\"Spam\" als Begriff für Massen-Werbemails stammt von einem Monty-Python-Sketch, nicht vom Dosenfleisch direkt.",
   "Der Black Friday hat seinen Namen angeblich von der Verkehrspolizei Philadelphias — wegen des Verkehrschaos, nicht wegen roter Zahlen.",
   "Die erste registrierte Domain der Welt (symbolics.com) wurde 1985 angemeldet — heute ist sie ein Museumsstück.",
@@ -14,21 +13,16 @@ const FUN_FACTS = [
   "Die durchschnittliche Aufmerksamkeitsspanne für eine Anzeige liegt bei unter 2 Sekunden — kürzer als ein Wimpernschlag mit Zögern.",
   "\"ROAS\" klingt nach Fachbegriff, ist aber im Kern nur eine simple Division — Umsatz durch Werbekosten.",
   "Der erste Werbespot im deutschen Fernsehen lief 1956 — für ein Waschmittel.",
-  "Honig verdirbt praktisch nie — in jahrtausendealten ägyptischen Gräbern wurde noch essbarer Honig gefunden.",
-  "Oktopusse haben drei Herzen und blaues Blut.",
-  "Ein Tag auf der Venus dauert länger als ein Jahr auf der Venus — sie dreht sich extrem langsam um sich selbst.",
-  "Bananen sind botanisch gesehen Beeren. Erdbeeren dagegen nicht.",
-  "Die Chinesische Mauer ist entgegen einem hartnäckigen Mythos mit bloßem Auge aus dem All nicht sichtbar.",
-  "Der Kot von Wombats ist würfelförmig — vermutlich, damit er nicht wegrollt und als Duftmarke liegen bleibt.",
-  "Der Eiffelturm wird im Sommer durch die Hitzeausdehnung des Metalls bis zu 15 cm höher.",
-  "Menschen und Giraffen haben exakt die gleiche Anzahl an Halswirbeln: sieben.",
-  "Ein Blitz ist etwa fünfmal heißer als die Oberfläche der Sonne.",
-  "Der kürzeste Krieg der Geschichte (Britannien gegen Sansibar, 1896) dauerte etwa 38 Minuten.",
+  "GoTo.com (später Overture) erfand 1998 das Pay-per-Click-Modell für Suchmaschinenwerbung — zwei Jahre vor Google AdWords.",
+  "Google AdWords (heute Google Ads) startete im Oktober 2000 in der Beta mit rund 350 Werbetreibenden.",
+  "Amazons \"1-Click\"-Bestellbutton war von 1999 bis 2017 patentiert — fast 18 Jahre lang durften Konkurrenten ihn nicht einfach nachbauen.",
+  "Die erste massenhaft verschickte Werbe-E-Mail — ein Vorläufer des heutigen Spams — ging schon 1978 übers ARPANET raus, lange vor dem eigentlichen Internet.",
+  "Facebook führte seine ersten Werbeanzeigen erst im November 2007 ein — heute kaum vorstellbar, dass es davor keine gab.",
 ];
 
 function factOfTheDay() {
-  const dayIndex = Math.floor(Date.now() / 86400000);
-  return FUN_FACTS[dayIndex % FUN_FACTS.length];
+  const bucketIndex = Math.floor(Date.now() / (8 * 60 * 60 * 1000));
+  return FUN_FACTS[bucketIndex % FUN_FACTS.length];
 }
 
 function randomFact(excludeText) {
