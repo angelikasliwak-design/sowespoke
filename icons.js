@@ -60,29 +60,26 @@ const ICONS = {
    Tierchen in unseren Farben"): kleiner Fuchs statt der Lupen-Kugel —
    Magenta als Fell, Petrol als Halstuch, Gelb als Stern-Akzent. Dicke
    schwarze Comic-Konturen bleiben, passt zum übrigen Pop-Art-System. */
+/* SPARK — Maskottchen-Neuausrichtung (2026-08-10, Nutzer-Entscheidung nach
+   Master-Prompt-Abschnitt 4): löst die Fuchs-Figur "PIX" ab. Bewusst
+   abstrakt-geometrisch statt Tier-Clipart — ein Squircle in derselben
+   visuellen Sprache wie Karten/Buttons (Marken-Magenta-Füllung, dicke
+   Ink-Kontur, harter Versatz-Schatten ohne Blur — reuse der schon
+   etablierten sticker-shadow-Sprache statt einer neuen Schattenart),
+   dadurch wirkt es wie Teil des Systems statt aufgeklebter Sticker.
+   Minimal-Gesicht (zwei Punktaugen + Mund), einziges Extra: ein gelber
+   Blitz oben als "Antenne"/Namensgeber. Reihenfolge wichtig: Blitz wird
+   NACH dem Körper gezeichnet, sonst verdeckt der Körper ihn größtenteils
+   (per Screenshot-Selbsttest gefunden und korrigiert). */
 const MASCOT_SVG = `<svg viewBox="0 0 64 64" aria-hidden="true">
-  <path d="M11 22 L5 4 L24 15 Z" fill="var(--accent)" stroke="var(--ink)" stroke-width="2.6" stroke-linejoin="round"/>
-  <path d="M53 22 L59 4 L40 15 Z" fill="var(--accent)" stroke="var(--ink)" stroke-width="2.6" stroke-linejoin="round"/>
-  <path d="M13.5 18 L10 8 L20.5 15 Z" fill="var(--accent-tint)"/>
-  <path d="M50.5 18 L54 8 L43.5 15 Z" fill="var(--accent-tint)"/>
-  <path d="M32 12c14 0 22 10 22 22 0 12-9 20-22 20S10 46 10 34c0-12 8-22 22-22z" fill="var(--accent)" stroke="var(--ink)" stroke-width="3"/>
-  <path d="M32 29c8 0 13 5.5 13 11.5S39.5 51 32 51s-13-5-13-10.5S24 29 32 29z" fill="#fff"/>
-  <circle cx="17.5" cy="37" r="3.2" fill="var(--accent-tint)"/>
-  <circle cx="46.5" cy="37" r="3.2" fill="var(--accent-tint)"/>
-  <circle cx="24" cy="30" r="3.3" fill="var(--ink)"/>
-  <circle cx="40" cy="30" r="3.3" fill="var(--ink)"/>
-  <circle cx="25.1" cy="28.8" r="1.1" fill="#fff"/>
-  <circle cx="41.1" cy="28.8" r="1.1" fill="#fff"/>
-  <!-- Runde Brille (PIX-Richtung aus dem Maskottchen-Moodboard, 2026-08-07):
-       neugierig-schlauer Charakter, passt zum "sucht immer nach Wissen"-Ton. -->
-  <circle cx="24" cy="30" r="6.2" fill="none" stroke="var(--ink)" stroke-width="2.4"/>
-  <circle cx="40" cy="30" r="6.2" fill="none" stroke="var(--ink)" stroke-width="2.4"/>
-  <path d="M30.2 30 L33.8 30" stroke="var(--ink)" stroke-width="2.4"/>
-  <path d="M17.8 29 L13.5 27" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/>
-  <path d="M46.2 29 L50.5 27" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/>
-  <path d="M32 38.5 l-3.4 3 3.4 2.2 3.4-2.2z" fill="var(--ink)"/>
-  <path d="M17 48 Q32 58 47 48 L47 54 Q32 63 17 54 Z" fill="var(--teal)" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round"/>
-  <path d="M52 6 l2.2 5.3 5.3 2.2 -5.3 2.2 -2.2 5.3 -2.2 -5.3 -5.3 -2.2 5.3 -2.2z" fill="var(--yellow)" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round"/>
+  <rect x="13" y="15" width="48" height="48" rx="16" fill="var(--ink)"/>
+  <rect x="8" y="10" width="48" height="48" rx="16" fill="var(--accent)" stroke="var(--ink)" stroke-width="3.2"/>
+  <path d="M34,-4 L27,7 L30.5,7 L28.5,15 L38,4 L33,4 Z" fill="var(--yellow)" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round"/>
+  <circle cx="24" cy="31" r="4.4" fill="var(--ink)"/>
+  <circle cx="40" cy="31" r="4.4" fill="var(--ink)"/>
+  <circle cx="25.3" cy="29.6" r="1.15" fill="#fff"/>
+  <circle cx="41.3" cy="29.6" r="1.15" fill="#fff"/>
+  <path d="M27 41 Q32 44.5 37 41" stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round" fill="none"/>
 </svg>`;
 
 /* Echte Marken-Formen nach Vorlage der Sowespoke-Präsentationsfolien:
