@@ -410,6 +410,24 @@
     });
     scheduleCycle();
     avoidMascotCollision(mascotEl);
+    updateMascotCollapse(mascotEl);
+  }
+
+  // Kritik-Fund (2026-08-10, Assessment A): die Bubble hat pointer-events:
+  // auto und blockierte beim Scrollen echte Taps auf Artikelkarten darunter
+  // — nicht nur optisch überlappend. Statt die Blase über Inhalte zu
+  // schieben, klappt sie beim Überlappen mit .feed auf ein kleines,
+  // weiterhin schwebendes Icon zusammen (viel kleinere Trefffläche),
+  // sobald keine Überlappung mehr besteht, klappt sie automatisch wieder auf.
+  function mascotOverlapsFeed(mascotEl) {
+    const feed = document.querySelector(".feed");
+    if (!feed) return false;
+    const mRect = mascotEl.getBoundingClientRect();
+    const fRect = feed.getBoundingClientRect();
+    return mRect.left < fRect.right && mRect.right > fRect.left && mRect.top < fRect.bottom && mRect.bottom > fRect.top;
+  }
+  function updateMascotCollapse(mascotEl) {
+    mascotEl.classList.toggle("mascot--collapsed", mascotOverlapsFeed(mascotEl));
   }
 
   /* Screenshot-Selbsttest (2026-08-10) deckte auf: die fixe Maskottchen-
@@ -506,8 +524,21 @@
       mascotEl.style.visibility = "";
       mascotEl.style.pointerEvents = "";
       avoidMascotCollision(mascotEl);
+      updateMascotCollapse(mascotEl);
     }, 200);
   });
+
+  // Passiv + ungedrosselt: reines Klassen-Toggle ist billig genug, um bei
+  // jedem Scroll-Frame zu laufen, und muss sofort reagieren (kein Delay),
+  // damit die Blase nicht kurz über einer Karte "aufblitzt".
+  window.addEventListener(
+    "scroll",
+    () => {
+      const mascotEl = document.querySelector(".mascot");
+      if (mascotEl) updateMascotCollapse(mascotEl);
+    },
+    { passive: true }
+  );
 
   /* ----------------------------------------------------- Fakten-Widget */
 

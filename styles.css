@@ -332,7 +332,15 @@ mark {
    Einheit, .hero--connected rückt Intro+Szene enger zusammen statt sie
    über die ganze Hero-Breite zu verteilen. Nur News nutzt diesen Modifier —
    andere Seiten behalten das bestehende Layout unverändert. */
-.hero--connected { justify-content: flex-start; gap: var(--space-6); margin-bottom: var(--space-4); }
+.hero--connected {
+  justify-content: flex-start;
+  gap: var(--space-6);
+  /* Vertikal gestrafft (P0-Fund 2026-08-10) — weniger Padding/Margin,
+     damit Hero+Toolbar zusammen nicht mehr den ganzen ersten Bildschirm
+     füllen. */
+  padding: var(--space-5) var(--space-6);
+  margin-bottom: var(--space-3);
+}
 .hero--connected::before,
 .hero--connected::after {
   content: "";
@@ -442,10 +450,12 @@ mark {
 .hero__intro h1 {
   font-family: var(--font-display);
   font-weight: 700;
-  /* Deutlich größer (Brief: "keine kleine oder zu kompakte Headline") —
-     vorher Deckel bei 3.15rem/3.85rem, jetzt spürbar mehr Präsenz. */
-  font-size: clamp(2.6rem, 1.6rem + 3.4vw, 4.2rem);
-  line-height: 1.08;
+  /* Verkleinert (Screenshot-Selbsttest 2026-08-10, kritischer P0-Fund:
+     bei 4.2rem/2-zeiliger Headline war auf 1440×900 UND 390×844 kein
+     einziger Artikel ohne Scrollen sichtbar — widerspricht dem
+     Kernprinzip "schneller Zugriff". Deckel von 4.2rem auf 2.75rem. */
+  font-size: clamp(2rem, 1.3rem + 2vw, 2.75rem);
+  line-height: 1.1;
   letter-spacing: -0.02em;
   text-wrap: balance;
 }
@@ -454,9 +464,9 @@ mark {
   to { opacity: 1; transform: translateY(0); }
 }
 .hero__intro p {
-  margin-top: var(--space-4);
+  margin-top: var(--space-3);
   color: var(--ink-soft);
-  font-size: 1.05rem;
+  font-size: 1rem;
   max-width: 44ch;
 }
 
@@ -464,8 +474,8 @@ mark {
 .toolbar {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  margin-bottom: var(--space-6);
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
 }
 .toolbar .tabs { margin-bottom: 0; }
 .toolbar__label { font-size: 0.82rem; font-weight: 700; color: var(--ink-soft); }
@@ -751,6 +761,26 @@ mark {
 .row__rate-btn.is-voted { background: var(--accent-tint); color: var(--accent); border-color: var(--accent); }
 .row__rate-btn:disabled { cursor: default; }
 .row__rate-btn:disabled:not(.is-voted) { opacity: 0.4; }
+
+/* Kritik-Fund (2026-08-10, P1): 16 dauerhaft aktive Bewertungs-Buttons auf
+   8 Karten konkurrierten mit dem eigentlichen Scan-Inhalt, bei jedem
+   Besuch erneut. Auf Geräten mit echtem Hover nur bei Hover/Fokus
+   einblenden; auf Touch (kein Hover) bleiben sie sichtbar, da dort keine
+   Hover-Entdeckung möglich ist. Eine bereits abgegebene Bewertung bleibt
+   in jedem Fall sichtbar (Systemstatus geht vor Aufräumen). */
+@media (hover: hover) and (pointer: fine) {
+  .row__rate {
+    opacity: 0;
+    transform: translateY(-3px);
+    transition: opacity 150ms ease, transform 150ms ease;
+  }
+  li:hover .row__rate,
+  li:focus-within .row__rate,
+  .row__rate:has(.is-voted) {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 .flash {
   display: inline-flex;
@@ -1215,6 +1245,12 @@ code {
 }
 .mascot__figure, .mascot__bubble { pointer-events: auto; }
 .mascot.is-leaving { animation: mascot-out 160ms ease forwards; }
+/* Kritik-Fund (2026-08-10): pointer-events:auto auf der vollen Bubble
+   blockierte beim Scrollen echte Taps auf Artikelkarten darunter, nicht
+   nur optisch. Eingeklappt bleibt nur die kleine, schwebende Figur mit
+   deutlich kleinerer Trefffläche übrig. */
+.mascot--collapsed .mascot__bubble { display: none; }
+.mascot--collapsed .mascot__figure { transition: transform 150ms ease; }
 @keyframes mascot-in {
   from { transform: translateY(14px) scale(0.92); opacity: 0; }
   to { transform: translateY(0) scale(1); opacity: 1; }
