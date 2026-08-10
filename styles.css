@@ -1202,7 +1202,11 @@ code {
   display: flex;
   align-items: center;
   gap: 4px;
-  max-width: min(19rem, calc(100vw - 2 * var(--space-6)));
+  /* War min(19rem, ...) — auf schmaleren Viewports (~390px) deckte die
+     Blase damit bis zu 78% der Breite ab und überlagerte Filter-Pills/
+     Abschnittsüberschrift (Screenshot-Selbsttest 2026-08-10). Kleiner
+     genug halten, dass immer Content daneben sichtbar bleibt. */
+  max-width: min(15rem, calc(100vw - 2 * var(--space-6)));
   pointer-events: none;
   /* Bewusste Bounce-Easing-Wiederverwendung (dieselbe Kurve wie bereits bei
      .row__thumb geprüft/akzeptiert) — passendes Pop-in für einen Comic-
@@ -1308,7 +1312,14 @@ code {
 .mascot__close:hover { opacity: 1; background: var(--paper); color: var(--ink); }
 .mascot__close svg { width: 11px; height: 11px; }
 @media (max-width: 34rem) {
-  .mascot { right: var(--space-3); bottom: var(--space-3); }
+  .mascot {
+    right: var(--space-3);
+    bottom: var(--space-3);
+    max-width: min(12.5rem, calc(100vw - 2 * var(--space-3)));
+  }
+  .mascot__figure { width: 56px; height: 56px; }
+  .mascot__bubble { padding: var(--space-3) var(--space-4) var(--space-3) var(--space-3); }
+  .mascot__bubble p { font-size: 0.82rem; padding-right: var(--space-2); }
   .hero::before { top: -0.75rem; right: -0.75rem; width: 150px; height: 150px; }
 }
 

@@ -409,6 +409,67 @@
       scheduleCycle(); // Timer neu starten, damit nicht gleich nochmal automatisch wechselt
     });
     scheduleCycle();
+    avoidMascotCollision(mascotEl);
+  }
+
+  /* Screenshot-Selbsttest (2026-08-10) deckte auf: die fixe Maskottchen-
+     Ecke unten rechts überlappt strukturell die "Anstehende Termine"-Karte
+     im .side-rail der News-Seite — unabhängig von der Feed-Länge, weil die
+     Kartenposition nur von Hero+Toolbar-Höhe abhängt. Statt eines
+     Fixwerts: echte Kollisionsprüfung, die die Blase nach oben schiebt,
+     wenn sie eine begrenzt-hohe Sidebar-Karte träfe. Bewusst NICHT gegen
+     .feed geprüft — darüber hinwegzuscrollen ist normales, akzeptiertes
+     Verhalten für ein schwebendes Element. */
+  function mascotNeededLift(mascotEl) {
+    // .toolbar zusätzlich zu .side-rail geprüft (2026-08-10): auf schmalen
+    // Viewports rutscht .side-rail unter den Feed (einspaltiges Layout) und
+    // ist beim ersten Auftritt oft noch gar nicht im Viewport — dort
+    // überlappte die Blase stattdessen Suchfeld/Filter-Pills, die anders
+    // als der Feed wirklich bedienbar bleiben müssen.
+    const avoidEls = document.querySelectorAll(".side-rail, .toolbar");
+    const mRect = mascotEl.getBoundingClientRect();
+    let maxLift = 0;
+    avoidEls.forEach((avoidEl) => {
+      const aRect = avoidEl.getBoundingClientRect();
+      const overlaps = mRect.left < aRect.right && mRect.right > aRect.left && mRect.top < aRect.bottom && mRect.bottom > aRect.top;
+      if (!overlaps) return;
+      const lift = mRect.bottom - aRect.top + 16;
+      if (lift > maxLift) maxLift = lift;
+    });
+    return maxLift;
+  }
+
+  // Auf kurzen Mobile-Viewports gibt es im ersten Sichtfenster manchmal
+  // GAR keine kollisionsfreie Stelle (Hero-Headline nimmt den ganzen
+  // Bildschirm ein) — ein sehr großer Lift-Wert würde die Blase dann in
+  // die Headline schieben. Ab dieser Schwelle lieber bis zum ersten
+  // Scrollen unsichtbar bleiben, statt eine schlechte Position zu erzwingen.
+  const MASCOT_MAX_REASONABLE_LIFT = 180;
+
+  function avoidMascotCollision(mascotEl) {
+    const lift = mascotNeededLift(mascotEl);
+    if (lift <= 0) {
+      mascotEl.style.bottom = "";
+      return;
+    }
+    if (lift > MASCOT_MAX_REASONABLE_LIFT) {
+      mascotEl.style.visibility = "hidden";
+      mascotEl.style.pointerEvents = "none";
+      const onScroll = () => {
+        const stillNeeded = mascotNeededLift(mascotEl);
+        if (stillNeeded <= MASCOT_MAX_REASONABLE_LIFT) {
+          mascotEl.style.visibility = "";
+          mascotEl.style.pointerEvents = "";
+          const base = parseFloat(getComputedStyle(mascotEl).bottom) || 0;
+          mascotEl.style.bottom = stillNeeded > 0 ? base + stillNeeded + "px" : "";
+          window.removeEventListener("scroll", onScroll);
+        }
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      return;
+    }
+    const currentBottom = parseFloat(getComputedStyle(mascotEl).bottom) || 0;
+    mascotEl.style.bottom = currentBottom + lift + "px";
   }
 
   function hideMascotForRoute() {
@@ -432,6 +493,21 @@
       showMascot();
     }
   }
+
+  let mascotResizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(mascotResizeTimer);
+    mascotResizeTimer = setTimeout(() => {
+      const mascotEl = document.querySelector(".mascot");
+      if (!mascotEl) return;
+      // Kollisionsprüfung von neuem starten statt Lift/Sichtbarkeit von der
+      // vorherigen Fensterbreite fortzuschreiben.
+      mascotEl.style.bottom = "";
+      mascotEl.style.visibility = "";
+      mascotEl.style.pointerEvents = "";
+      avoidMascotCollision(mascotEl);
+    }, 200);
+  });
 
   /* ----------------------------------------------------- Fakten-Widget */
 
