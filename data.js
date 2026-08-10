@@ -26,7 +26,7 @@ const STANDALONE_TEMPLATES = [
     summary: "Erinnert Kund:innen, in gemeldeten Konten ohne Aktivität eine manuelle Änderung vorzunehmen, damit das Quartal angerechnet wird.",
     extraFields: [
       { key: "Quartal", label: "Quartal", placeholder: "z. B. 1/2026" },
-      { key: "Konten", label: "Betroffene Konten (eine Zeile pro Konto)", placeholder: "z. B.\nKonto A (123-456-789)\nKonto B (234-567-890)" },
+      { key: "Konten", label: "Betroffene Konten (eine Zeile pro Konto)", placeholder: "z. B.\nKonto A (F1104JH6)\nKonto B (X7598960)" },
     ],
     subject: "Erinnerung: Manuelle Änderung für Quartal {Quartal} nötig",
     contentIhr:
@@ -38,8 +38,8 @@ const STANDALONE_TEMPLATES = [
     summary: "Informiert Kund:innen über ein neu erstelltes Microsoft-Advertising-Konto inkl. Verwaltungskonto, Adaccount und Verknüpfungsschritten.",
     extraFields: [
       { key: "KundenName", label: "Kundenname/Firma", placeholder: "z. B. Musterfirma GmbH" },
-      { key: "Verwaltungskonto", label: "Kontonummer Verwaltungskonto", placeholder: "z. B. 123-456-789" },
-      { key: "Adaccount", label: "Adaccount-Nummer", placeholder: "z. B. 987-654-321" },
+      { key: "Verwaltungskonto", label: "Kontonummer Verwaltungskonto (MCC)", placeholder: "z. B. K120005U88" },
+      { key: "Adaccount", label: "Adaccount-Nummer", placeholder: "z. B. F1104JH6" },
     ],
     subject: "Euer neues Microsoft-Advertising-Konto ist eingerichtet",
     contentIhr:

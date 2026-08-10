@@ -308,6 +308,12 @@ mark {
   background-color: var(--surface-secondary);
   background-image: radial-gradient(circle, rgba(23, 23, 23, 0.07) 1.4px, transparent 1.6px);
   background-size: 15px 15px;
+  /* Bug-Fund (Nutzer-Screenshot 2026-08-10): --surface-secondary ist
+     identisch mit der Seiten-Hintergrundfarbe (beide var(--paper)) — ohne
+     jede weitere Abgrenzung wirkte die Punktmuster-Kante wie ein
+     zufälliger Abbruch statt eine Kartenkante. Schatten macht die
+     Eingrenzung als bewusste Karte lesbar. */
+  box-shadow: var(--shadow);
 }
 .hero__illustration {
   position: relative;
@@ -403,6 +409,15 @@ mark {
   background-repeat: no-repeat;
   background-size: contain;
   pointer-events: none;
+  transform-origin: center;
+  /* Sanftes Funkeln (Nutzer-Vorschlag 2026-08-10) — dezent genug, um beim
+     Lesen der Headline nicht abzulenken, aber genug Leben für ein
+     Comic-Detail. Pausiert unter prefers-reduced-motion, siehe unten. */
+  animation: star-twinkle 3.4s ease-in-out infinite;
+}
+@keyframes star-twinkle {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: scale(0.82) rotate(-8deg); opacity: 0.75; }
 }
 
 /* Comic-Sprechblase als echtes HTML-Element statt SVG-Text (lesbar bei
@@ -498,7 +513,11 @@ mark {
   box-shadow: var(--shadow);
 }
 .search input::placeholder { color: var(--ink-soft); }
-.search svg {
+/* Bug-Fund (Nutzer-Screenshot 2026-08-10): ">" statt Nachfahren-Selektor
+   — sonst trifft diese Regel auch das SVG im .search__submit-Button (der
+   liegt ebenfalls unter .search), das dadurch Position UND Farbe des
+   linken Präfix-Icons erbte statt zentriert/weiß im rosa Kreis zu sitzen. */
+.search > svg {
   position: absolute;
   left: var(--space-5);
   top: 50%;
@@ -1116,6 +1135,37 @@ code {
 }
 .mailgen__warning[hidden] { display: none; }
 .mailgen__warning svg { width: 15px; height: 15px; flex: none; margin-top: 2px; }
+/* Signatur (Nutzer-Feedback 2026-08-10): natives <details> statt eigenem
+   JS-Toggle — bewusst eingeklappt per Default, damit das Formular nicht
+   überladen wirkt, aber jederzeit erreichbar. */
+.mailgen__signature {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+}
+.mailgen__signature summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.92rem;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.mailgen__signature[open] summary { margin-bottom: var(--space-3); }
+.mailgen__signature-status { font-weight: 600; font-size: 0.8rem; color: var(--success); }
+.mailgen__signature-rich { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--space-3); }
+.mailgen__signature textarea {
+  width: 100%;
+  min-height: 6rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--ink);
+  resize: vertical;
+}
 .mailgen__actions { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; transform: none; }
 /* .btn kann auch ein <a> sein ("E-Mail senden" braucht einen echten Link
@@ -1485,4 +1535,5 @@ code {
 @media (prefers-reduced-motion: reduce) {
   * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
   .mascot { animation: none; }
+  .hero__intro::before { animation: none; }
 }

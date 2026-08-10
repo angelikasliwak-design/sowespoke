@@ -616,6 +616,16 @@
           <textarea id="body-${topicKey}" readonly></textarea>
         </div>
         <p class="mailgen__warning" id="warning-${topicKey}" hidden>${ICONS.flash}<span>Noch nicht ausgefüllt: <strong></strong> — wird sonst als Platzhalter mitkopiert.</span></p>
+        <details class="mailgen__signature">
+          <summary>Signatur<span class="mailgen__signature-status" id="sig-status-${topicKey}"></span></summary>
+          <p class="mailgen__hint">Einmal hinterlegen, gilt für alle Vorlagen in diesem Browser — wird automatisch als Text an jede generierte Mail angehängt (Gmail übernimmt die eigene Signatur beim Öffnen über einen vorausgefüllten Link nicht zuverlässig).</p>
+          <textarea id="sig-${topicKey}" data-signature-input rows="4" placeholder="z. B.&#10;Beste Grüße&#10;Angelika Sliwak&#10;Sowespoke"></textarea>
+          <div class="mailgen__signature-rich">
+            <button class="btn btn--secondary" data-copy-rich-signature="${topicKey}" type="button">${ICONS.copy} Signatur mit Logo kopieren</button>
+            <span class="mailgen__status" id="sig-rich-status-${topicKey}">${ICONS.check} Kopiert</span>
+          </div>
+          <p class="mailgen__hint">Gmails Compose-Link kann keine Bilder/Schriftarten übertragen (harte Grenze, kein Darstellungsfehler) — diese Version landet mit Logo und Verdana-Schrift in der Zwischenablage, danach im Gmail-Fenster einmal manuell mit Strg+V an gewünschter Stelle einfügen.</p>
+        </details>
         <div class="mailgen__actions">
           <a class="btn btn--primary" data-send="${topicKey}" href="#" target="_blank" rel="noopener">${ICONS.mail} In Gmail öffnen</a>
           <button class="btn btn--secondary" data-copy="${topicKey}" type="button">${ICONS.copy} In Zwischenablage kopieren</button>
@@ -636,6 +646,57 @@
     const warningEl = document.getElementById(`warning-${topicKey}`);
     const copyBtn = view.querySelector(`[data-copy="${topicKey}"]`);
     const sendBtn = view.querySelector(`[data-send="${topicKey}"]`);
+    const sigEl = document.getElementById(`sig-${topicKey}`);
+    const sigStatusEl = document.getElementById(`sig-status-${topicKey}`);
+
+    // Signatur ist bewusst EIN geteilter localStorage-Wert für alle
+    // Vorlagen (Nutzer-Feedback 2026-08-10: Gmail übernimmt beim Öffnen
+    // über einen vorausgefüllten Compose-Link die eigene Signatur nicht
+    // zuverlässig) — einmal einrichten, gilt überall.
+    const SIGNATURE_KEY = "sowespoke:signature";
+    sigEl.value = localStorage.getItem(SIGNATURE_KEY) || "";
+    function updateSigStatus() {
+      sigStatusEl.textContent = sigEl.value.trim() ? "✓ hinterlegt" : "";
+    }
+    updateSigStatus();
+    sigEl.addEventListener("input", () => {
+      localStorage.setItem(SIGNATURE_KEY, sigEl.value);
+      updateSigStatus();
+      fill();
+    });
+
+    // Rich-Signatur mit Logo + Verdana (Nutzer-Feedback 2026-08-10) — der
+    // Gmail-Compose-Link selbst kann das nicht transportieren (reiner Text
+    // im URL-Parameter, harte Grenze), also über die Zwischenablage als
+    // echtes HTML anbieten, das man einmal manuell in Gmail einfügt. Gmails
+    // Compose-Fenster ist ein Rich-Text-Editor und übernimmt eingefügtes
+    // HTML (Bild, Schriftart) korrekt — nur der automatisierte Link kann
+    // das nicht.
+    const copyRichBtn = view.querySelector(`[data-copy-rich-signature="${topicKey}"]`);
+    const sigRichStatusEl = document.getElementById(`sig-rich-status-${topicKey}`);
+    let sigRichTimer;
+    copyRichBtn.addEventListener("click", async () => {
+      const lines = sigEl.value.split("\n").map((l) => escapeHtml(l)).join("<br>");
+      const logoUrl = `${location.origin}/assets/brand/${encodeURIComponent("logo-sowespoke-logo horizontal kleiner.png")}`;
+      const html = `<div style="font-family:Verdana,Geneva,sans-serif;font-size:13px;color:#171717;">
+        <img src="${logoUrl}" alt="Sowespoke" height="40" style="display:block;margin-bottom:8px;" />
+        ${lines}
+      </div>`;
+      try {
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            "text/html": new Blob([html], { type: "text/html" }),
+            "text/plain": new Blob([sigEl.value], { type: "text/plain" }),
+          }),
+        ]);
+        sigRichStatusEl.innerHTML = `${ICONS.check} Kopiert — in Gmail mit Strg+V einfügen`;
+      } catch {
+        sigRichStatusEl.innerHTML = "Kopieren nicht möglich — Browser unterstützt das nicht";
+      }
+      sigRichStatusEl.classList.add("is-visible");
+      clearTimeout(sigRichTimer);
+      sigRichTimer = setTimeout(() => sigRichStatusEl.classList.remove("is-visible"), 3200);
+    });
 
     function parseRecipients(raw) {
       const addrs = raw.split(",").map((a) => a.trim()).filter(Boolean);
@@ -658,7 +719,9 @@
         // Konten ohne Änderungen" (subject enthält {Quartal}).
         subjectFilled = subjectFilled.replaceAll(`{${f.key}}`, val || `{${f.key}}`);
       });
-      const { subject, body } = composeMail(subjectFilled, content, extra, mode, nameEl.value.trim());
+      const { subject, body: bodyBase } = composeMail(subjectFilled, content, extra, mode, nameEl.value.trim());
+      const signature = sigEl.value.trim();
+      const body = signature ? `${bodyBase}\n\n--\n${signature}` : bodyBase;
       subjectEl.value = subject;
       bodyEl.value = body;
 

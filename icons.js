@@ -125,8 +125,8 @@ const BRAND_BURST = `<svg viewBox="0 0 200 200" aria-hidden="true">
    DESIGN.md), viewBox eng um den Inhalt zugeschnitten (quadratisch statt
    der vorherigen 300×190-Breitformat-Box — .hero__illustration wurde
    entsprechend auf ein quadratisches Seitenverhältnis angepasst). */
-const HERO_ILLUSTRATION = `<svg viewBox="0 0 764 774" aria-hidden="true">
-  <g transform="translate(382.2,387.0) rotate(-135) translate(-392.2,8.3)">
+const HERO_ILLUSTRATION = `<svg viewBox="0 0 764 770" aria-hidden="true">
+  <g transform="translate(382.2,384.9) rotate(-135) translate(-392.2,8.3)">
     <g>
       <path d="M426.5,-188.3 Q418.0,-231.8 406.6,-274.6" stroke="var(--ink)" stroke-width="21.1" fill="none" stroke-linecap="round"/>
       <path d="M511.4,-186.1 Q521.0,-256.0 542.0,-323.5" stroke="var(--ink)" stroke-width="13.1" fill="none" stroke-linecap="round"/>
@@ -145,11 +145,16 @@ const HERO_ILLUSTRATION = `<svg viewBox="0 0 764 774" aria-hidden="true">
     <g transform="translate(55,25) rotate(58)">
       <rect x="0" y="-52" width="168" height="104" rx="40" fill="var(--teal)" stroke="var(--ink)" stroke-width="20" stroke-linejoin="round"/>
     </g>
-    <path d="M28,-46 C55,-70 92,-72 128,-58 L150,10 C110,34 62,36 30,14 Z"
+    <path d="M28,-42 C60,-52 92,-50 118,-42 L118,42 C92,50 60,52 28,42 Z"
       fill="var(--accent)" stroke="var(--ink)" stroke-width="18" stroke-linejoin="round"/>
-    <path d="M118,-118 C230,-150 330,-158 396,-152
-             L402,152
-             C330,158 230,150 118,118 Z"
+    <!-- Deutlich ausgeprägte Trichterform (Kritik-Fund 2026-08-10): der
+         schmale Hals (Höhe 90) weitet sich klar sichtbar zur Öffnung
+         (Höhe ~330, verschmilzt mit dem Rand-Ring) statt wie vorher fast
+         parallel zu bleiben (Höhe 236→304, kaum ein Unterschied — sah wie
+         ein Rechteck aus, nicht wie ein Horn). -->
+    <path d="M118,-45 C220,-100 320,-145 396,-165
+             L402,165
+             C320,145 220,100 118,45 Z"
       fill="#fff" stroke="var(--ink)" stroke-width="22" stroke-linejoin="round"/>
     <ellipse cx="470" cy="0" rx="82" ry="170" fill="var(--accent)" stroke="var(--ink)" stroke-width="22"/>
     <ellipse cx="476" cy="0" rx="54" ry="140" fill="#fff" stroke="var(--ink)" stroke-width="14"/>

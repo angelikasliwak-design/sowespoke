@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font",
+        "value": "verdana",
+        "createdAt": "2026-08-10T16:45:13.971Z",
+        "reason": "User confirmed Verdana is intentional for the copied rich-signature HTML (exported/pasted into Gmail, not part of the site's own rendered typography system)"
+      }
+    ]
+  }
+}
