@@ -646,13 +646,19 @@
     function fill() {
       const mode = (modeEls.find((r) => r.checked) || {}).value || "multi";
       let content = contentIhr;
+      let subjectFilled = subjectBase;
       const missing = [];
       extraFields.forEach((f, i) => {
         const val = extraInputs[i].value.trim();
         if (!val) missing.push(f.label);
         content = content.replaceAll(`{${f.key}}`, val || `{${f.key}}`);
+        // Bug-Fund (Nutzer-Feedback 2026-08-10): subjectBase lief bisher nie
+        // durch dieselbe Ersetzung — ein {Quartal} o. Ä. im Betreff blieb
+        // für immer als wörtlicher Platzhalter stehen, z. B. bei "Erinnerung:
+        // Konten ohne Änderungen" (subject enthält {Quartal}).
+        subjectFilled = subjectFilled.replaceAll(`{${f.key}}`, val || `{${f.key}}`);
       });
-      const { subject, body } = composeMail(subjectBase, content, extra, mode, nameEl.value.trim());
+      const { subject, body } = composeMail(subjectFilled, content, extra, mode, nameEl.value.trim());
       subjectEl.value = subject;
       bodyEl.value = body;
 
