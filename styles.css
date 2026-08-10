@@ -1118,6 +1118,11 @@ code {
 .mailgen__warning svg { width: 15px; height: 15px; flex: none; margin-top: 2px; }
 .mailgen__actions { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; transform: none; }
+/* .btn kann auch ein <a> sein ("E-Mail senden" braucht einen echten Link
+   für mailto:, kein <button>) — <a> kennt kein natives disabled, daher
+   Klassen-Pendant + aria-disabled (JS verhindert zusätzlich die Navigation). */
+.btn.is-disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; pointer-events: none; }
+.mailgen__hint { font-size: 0.82rem; color: var(--ink-soft); margin-top: calc(-1 * var(--space-2)); }
 .mailgen__status {
   display: inline-flex;
   align-items: center;

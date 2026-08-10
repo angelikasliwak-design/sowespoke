@@ -591,6 +591,10 @@
           </div>
         </div>
         <div class="mailgen__field">
+          <label for="to-${topicKey}">E-Mail-Adresse(n) der Kundschaft</label>
+          <input type="text" id="to-${topicKey}" placeholder="name@kunde.de — mehrere mit Komma trennen" autocomplete="off" />
+        </div>
+        <div class="mailgen__field">
           <label for="f-${topicKey}-name">Name der Ansprechperson (optional)</label>
           <input type="text" id="f-${topicKey}-name" placeholder="z. B. Frau Meyer" />
         </div>
@@ -613,21 +617,31 @@
         </div>
         <p class="mailgen__warning" id="warning-${topicKey}" hidden>${ICONS.flash}<span>Noch nicht ausgefüllt: <strong></strong> — wird sonst als Platzhalter mitkopiert.</span></p>
         <div class="mailgen__actions">
-          <button class="btn btn--primary" data-copy="${topicKey}" type="button">${ICONS.copy} In Zwischenablage kopieren</button>
+          <a class="btn btn--primary" data-send="${topicKey}" href="#" target="_blank" rel="noopener">${ICONS.mail} E-Mail senden</a>
+          <button class="btn btn--secondary" data-copy="${topicKey}" type="button">${ICONS.copy} In Zwischenablage kopieren</button>
           <span class="mailgen__status" id="status-${topicKey}">${ICONS.check} Kopiert</span>
         </div>
+        <p class="mailgen__hint">„E-Mail senden" öffnet dein eigenes E-Mail-Programm mit fertig ausgefüllter Nachricht — du prüfst und schickst sie von dort aus ab, sie landet danach ganz normal in deinem Gesendet-Ordner. Bei sehr langem Text lieber „In Zwischenablage kopieren" nutzen.</p>
       </div>
     `;
   }
 
   function wireMailGen(topicKey, extraFields, subjectBase, contentIhr, extra) {
     const nameEl = document.getElementById(`f-${topicKey}-name`);
+    const toEl = document.getElementById(`to-${topicKey}`);
     const modeEls = Array.from(view.querySelectorAll(`input[name="mode-${topicKey}"]`));
     const extraInputs = extraFields.map((f) => document.getElementById(`f-${topicKey}-${f.key}`));
     const subjectEl = document.getElementById(`subject-${topicKey}`);
     const bodyEl = document.getElementById(`body-${topicKey}`);
     const warningEl = document.getElementById(`warning-${topicKey}`);
     const copyBtn = view.querySelector(`[data-copy="${topicKey}"]`);
+    const sendBtn = view.querySelector(`[data-send="${topicKey}"]`);
+
+    function parseRecipients(raw) {
+      const addrs = raw.split(",").map((a) => a.trim()).filter(Boolean);
+      const valid = addrs.every((a) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(a));
+      return { addrs, valid: addrs.length > 0 && valid };
+    }
 
     function fill() {
       const mode = (modeEls.find((r) => r.checked) || {}).value || "multi";
@@ -650,8 +664,20 @@
         warningEl.hidden = true;
         copyBtn.disabled = false;
       }
+
+      // "E-Mail senden" braucht zusätzlich eine gültige Empfänger-Adresse —
+      // "In Zwischenablage kopieren" kam schon vorher ohne aus (Nutzer
+      // trägt die Adresse dann selbst im E-Mail-Programm ein).
+      const { addrs, valid: recipientsValid } = parseRecipients(toEl.value.trim());
+      const ready = recipientsValid && !missing.length;
+      sendBtn.classList.toggle("is-disabled", !ready);
+      sendBtn.setAttribute("aria-disabled", String(!ready));
+      sendBtn.href = ready
+        ? `mailto:${addrs.join(",")}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+        : "#";
     }
     nameEl.addEventListener("input", fill);
+    toEl.addEventListener("input", fill);
     modeEls.forEach((r) => r.addEventListener("change", fill));
     extraInputs.forEach((el) => el.addEventListener("input", fill));
     fill();
