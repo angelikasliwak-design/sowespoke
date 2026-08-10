@@ -617,11 +617,11 @@
         </div>
         <p class="mailgen__warning" id="warning-${topicKey}" hidden>${ICONS.flash}<span>Noch nicht ausgefüllt: <strong></strong> — wird sonst als Platzhalter mitkopiert.</span></p>
         <div class="mailgen__actions">
-          <a class="btn btn--primary" data-send="${topicKey}" href="#" target="_blank" rel="noopener">${ICONS.mail} E-Mail senden</a>
+          <a class="btn btn--primary" data-send="${topicKey}" href="#" target="_blank" rel="noopener">${ICONS.mail} In Gmail öffnen</a>
           <button class="btn btn--secondary" data-copy="${topicKey}" type="button">${ICONS.copy} In Zwischenablage kopieren</button>
           <span class="mailgen__status" id="status-${topicKey}">${ICONS.check} Kopiert</span>
         </div>
-        <p class="mailgen__hint">„E-Mail senden" öffnet dein eigenes E-Mail-Programm mit fertig ausgefüllter Nachricht — du prüfst und schickst sie von dort aus ab, sie landet danach ganz normal in deinem Gesendet-Ordner. Bei sehr langem Text lieber „In Zwischenablage kopieren" nutzen.</p>
+        <p class="mailgen__hint">„In Gmail öffnen" öffnet ein neues Gmail-Compose-Fenster mit fertig ausgefüllter Nachricht — du prüfst und schickst sie von dort aus ab, sie landet danach ganz normal in deinem Gesendet-Ordner. Bei sehr langem Text lieber „In Zwischenablage kopieren" nutzen.</p>
       </div>
     `;
   }
@@ -672,8 +672,15 @@
       const ready = recipientsValid && !missing.length;
       sendBtn.classList.toggle("is-disabled", !ready);
       sendBtn.setAttribute("aria-disabled", String(!ready));
+      // Gmail-Compose-URL statt mailto: (Nutzer-Feedback 2026-08-10):
+      // mailto: geht immer an den vom Betriebssystem registrierten
+      // Standard-Handler (unter Windows meist Outlook), unabhängig davon,
+      // welchen Mail-Dienst man tatsächlich nutzt. Da der Login hier über
+      // Google Workspace läuft, ist Gmail der echte Mail-Dienst aller
+      // Nutzer:innen — die Compose-URL öffnet Gmail direkt im Browser-Tab,
+      // umgeht das Standard-Handler-Problem komplett.
       sendBtn.href = ready
-        ? `mailto:${addrs.join(",")}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+        ? `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(addrs.join(","))}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
         : "#";
     }
     nameEl.addEventListener("input", fill);
