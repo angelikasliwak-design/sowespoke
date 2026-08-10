@@ -586,8 +586,8 @@
         <div class="mailgen__field">
           <span class="mailgen__radiogroup-label">Empfänger:in</span>
           <div class="mailgen__radiogroup" role="radiogroup" aria-label="Anzahl Empfänger:innen">
-            <label><input type="radio" name="mode-${topicKey}" value="multi" checked /> Mehrere Personen (ihr)</label>
-            <label><input type="radio" name="mode-${topicKey}" value="single" /> Eine Person (du)</label>
+            <label><input type="radio" name="mode-${topicKey}" value="multi" /> Mehrere Personen (ihr)</label>
+            <label><input type="radio" name="mode-${topicKey}" value="single" checked /> Eine Person (du)</label>
           </div>
         </div>
         <div class="mailgen__field">
@@ -705,7 +705,7 @@
     }
 
     function fill() {
-      const mode = (modeEls.find((r) => r.checked) || {}).value || "multi";
+      const mode = (modeEls.find((r) => r.checked) || {}).value || "single";
       let content = contentIhr;
       let subjectFilled = subjectBase;
       const missing = [];
