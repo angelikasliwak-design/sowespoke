@@ -343,14 +343,24 @@ mark {
 /* -- Layout ------------------------------------------------------------ */
 .view {
   flex: 1;
-  max-width: 68rem;
   width: 100%;
+  /* Fluid statt gestuft (2026-08-10, Master-Prompt Abschnitt 2 — "größtes
+     Problem": toter Bereich rechts auf breiten Screens). Gemessener Fund
+     per Screenshot-Selbsttest: bei 2560px blieben 916px/35.8 % der
+     Viewport-Breite ungenutzt leer (bei 1920px bereits 14.4 %, an der
+     eigenen 15 %-Grenze) — der feste Sprung bei genau 90rem sprang zudem
+     abrupt von 68rem auf 88rem statt gleichmäßig mitzuwachsen. Ein
+     einzelner clamp() ersetzt beide Fixwerte: wächst stetig mit der
+     Viewport-Breite. Deckel bei 130rem (2080px) verhindert unangenehm
+     lange Zeilen — greift rechnerisch erst ab ca. 2870px Viewport-Breite
+     (4K/5K), bis dahin rein fluid über die vw-Formel, kalibriert auf < 15 %
+     Leerraum bei 2560px (Master-Prompt-Vorgabe). Unterhalb der alten
+     68rem-Marke ohne Wirkung, da width:100% den tatsächlichen Platz
+     sowieso begrenzt. */
+  max-width: clamp(68rem, 44rem + 48vw, 130rem);
   padding: var(--space-7) var(--space-6) var(--space-6);
 }
-/* Auf breiten Monitoren blieb sonst viel Fläche rechts ungenutzt liegen —
-   Inhalt darf hier mitwachsen statt starr bei 68rem zu kappen. */
 @media (min-width: 90rem) {
-  .view { max-width: 88rem; }
   .layout-2col { grid-template-columns: minmax(0, 1fr) 23rem; }
   .hero__intro { max-width: 40rem; }
 }
@@ -444,6 +454,9 @@ mark {
   top: -10px;
   right: -4px;
   z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
   background: var(--yellow);
   color: var(--on-yellow);
   font-size: 0.66rem;
@@ -455,6 +468,22 @@ mark {
   border-radius: 999px;
   box-shadow: 1.5px 1.5px 0 var(--ink);
   transform: rotate(-4deg);
+}
+/* Master-Prompt Abschnitt 3.5: "dezenter Puls-Punkt" fürs Live-Badge. */
+.hero__sticker-dot {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: sticker-pulse 1.8s ease-in-out infinite;
+}
+@keyframes sticker-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.7); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero__sticker-dot { animation: none; }
 }
 
 .hero__intro { position: relative; flex: 1 1 26rem; max-width: 34rem; animation: hero-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both; }

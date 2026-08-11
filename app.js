@@ -830,7 +830,7 @@
         <div class="hero__scene">
           <div class="hero__bubble">Wissen weitergeben.<br>Erfolg vervielfachen.</div>
           <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
-          <span class="hero__sticker">Live Updates</span>
+          <span class="hero__sticker"><span class="hero__sticker-dot" aria-hidden="true"></span>Live Updates</span>
         </div>
       </section>
       <div class="toolbar">
