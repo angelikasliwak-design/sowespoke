@@ -1645,6 +1645,30 @@ code {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50% { transform: translateY(-6px) rotate(-4deg); }
 }
+/* MOKA-Maskottchen (2026-08-11): Ohren wackeln, Dampf steigt auf. Gilt
+   für beide Stellen, an denen MASCOT_SVG eingebettet wird (schwebende
+   Blase UND das inline Fakten-Widget auf Präsentationen) — Selektoren
+   sind bewusst ID-basiert wie der Rest von MASCOT_SVG, nicht auf einen
+   Container beschränkt, exakt wie bei den bereits bestehenden
+   id="shadow"/"eye-l" usw. */
+#ear-left, #ear-right { transform-box: fill-box; }
+#ear-left { animation: moka-ear-wiggle-l 2.6s ease-in-out infinite; }
+#ear-right { animation: moka-ear-wiggle-r 2.6s ease-in-out infinite; animation-delay: 0.15s; }
+@keyframes moka-ear-wiggle-l {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-8deg); }
+}
+@keyframes moka-ear-wiggle-r {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(8deg); }
+}
+#steam path { transform-box: fill-box; transform-origin: 50% 100%; animation: moka-steam-rise 2.2s ease-in-out infinite; }
+#steam path:nth-child(2) { animation-delay: 0.5s; }
+@keyframes moka-steam-rise {
+  0% { transform: translateY(2px) scaleY(0.85); opacity: 0.3; }
+  50% { transform: translateY(-3px) scaleY(1.05); opacity: 0.85; }
+  100% { transform: translateY(-7px) scaleY(1); opacity: 0; }
+}
 .mascot__bubble {
   position: relative;
   z-index: 1;

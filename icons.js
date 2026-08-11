@@ -77,26 +77,55 @@ const ICONS = {
    Blur/filter) statt weichem Drop-Shadow, nur zwei Punktaugen ohne Mund
    (kein Gesichtsausdruck, der als Frucht gelesen werden könnte), Blitz
    jetzt klein, mittig oben und aus der Oberkante herauswachsend statt
-   seitlich/groß. Farb-Tokens statt Hardcoding, wo im SVG möglich
-   (var(--accent)/var(--yellow)/var(--ink) — --ink entspricht exakt der
-   geforderten Kontur-Farbe). Benannte Gruppen
-   (id="shadow"/"body"/"eye-l"/"eye-r"/"spark") für spätere gezielte
-   Animation einzelner Teile. */
-const MASCOT_SVG = `<svg viewBox="0 0 100 100" aria-hidden="true">
-  <g id="shadow">
-    <rect x="12" y="12" width="84" height="84" rx="26" fill="var(--ink)"/>
+   seitlich/groß. */
+/* MOKA — dritte Neuausrichtung (2026-08-11, Nutzer-Wunsch, Referenzbild
+   "Momo" von MascotCraft/open-source-mascots, CC0): löst SPARK ab.
+   Bewusst NICHT die Referenz-PNG direkt verwendet — zwei Gründe, siehe
+   DESIGN.md: (1) Stilbruch (Momo ist weiches Pastell-Kawaii ohne
+   Konturen, dieses Projekt ist durchgängig hartes Pop-Art/Comic mit
+   dicken schwarzen Konturen), (2) technisch: ein flaches PNG lässt sich
+   nicht in Ohren/Dampf-Ebenen zerlegen, um sie einzeln zu animieren.
+   Stattdessen: eigene Figur mit demselben Konzept (Kaffeetasse mit
+   Dampf, lange Ohren), aber im etablierten Comic-Stil gezeichnet —
+   dicke Ink-Konturen, Marken-Magenta, benannte Gruppen für Animation.
+   viewBox absichtlich 100×130 (höher als breit, Platz für die Ohren
+   oben) statt 100×100 — skaliert innerhalb der quadratischen
+   Mascot-Container automatisch passend ein (kein Clipping, per
+   Screenshot-Selbsttest bestätigt), da SVGs ohne definierte Breite/Höhe
+   den gesamten viewBox-Inhalt einpassen statt zu beschneiden.
+   Schatten bewusst NUR am Körper (nicht an den Ohren) — ein separater,
+   mitrotierender Ohren-Schatten wäre nötig, sonst bleibt beim
+   CSS-Wackeln ein statischer schwarzer "Geist" an der alten Ohr-Position
+   stehen (per Screenshot-Selbsttest gefunden und korrigiert, erste
+   Fassung hatte genau diesen Fehler). Benannte Gruppen
+   (id="shadow"/"ear-left"/"ear-right"/"body"/"face"/"coffee-cup"/
+   "steam") für die Animation in styles.css (Ohren-Wackeln, Dampf-Aufstieg). */
+const MASCOT_SVG = `<svg viewBox="0 0 100 130" aria-hidden="true">
+  <g id="shadow" transform="translate(4,4)">
+    <ellipse cx="50" cy="90" rx="36" ry="34" fill="var(--ink)"/>
+  </g>
+  <g id="ear-left">
+    <ellipse cx="34" cy="58" rx="13" ry="34" fill="var(--accent)" stroke="var(--ink)" stroke-width="3" transform="rotate(-18 34 58)"/>
+  </g>
+  <g id="ear-right">
+    <ellipse cx="66" cy="58" rx="13" ry="34" fill="var(--accent)" stroke="var(--ink)" stroke-width="3" transform="rotate(18 66 58)"/>
   </g>
   <g id="body">
-    <rect x="8" y="8" width="84" height="84" rx="26" fill="var(--accent)" stroke="var(--ink)" stroke-width="3"/>
+    <ellipse cx="50" cy="90" rx="36" ry="34" fill="var(--accent)" stroke="var(--ink)" stroke-width="3"/>
   </g>
-  <g id="eye-l">
-    <ellipse cx="35" cy="44" rx="4.5" ry="5.5" fill="var(--ink)"/>
+  <g id="face">
+    <ellipse cx="44" cy="82" rx="16" ry="14" fill="var(--c-surface)" stroke="var(--ink)" stroke-width="2.5"/>
+    <ellipse cx="38" cy="81" rx="3.2" ry="4.4" fill="var(--ink)"/>
+    <ellipse cx="50" cy="81" rx="3.2" ry="4.4" fill="var(--ink)"/>
   </g>
-  <g id="eye-r">
-    <ellipse cx="65" cy="44" rx="4.5" ry="5.5" fill="var(--ink)"/>
+  <g id="coffee-cup">
+    <path d="M77,101 q7,0 7,6 q0,6.5 -7,6.5" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+    <rect x="62" y="99" width="15" height="15" rx="3" fill="var(--c-surface)" stroke="var(--ink)" stroke-width="2.5"/>
+    <path d="M64,102 h11" stroke="var(--teal)" stroke-width="1.8" opacity="0.7"/>
   </g>
-  <g id="spark">
-    <path d="M55,0 L45,9 L50,9 L44,17 L58,6 L52,6 Z" fill="var(--yellow)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="miter"/>
+  <g id="steam">
+    <path d="M66,95 q3,-4 0,-8 q-3,-4 0,-8" stroke="var(--ink-soft)" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.7"/>
+    <path d="M73,95 q3,-4 0,-8 q-3,-4 0,-8" stroke="var(--ink-soft)" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.7"/>
   </g>
 </svg>`;
 
