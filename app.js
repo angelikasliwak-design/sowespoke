@@ -1510,40 +1510,40 @@
         </div>
         <aside class="side-rail">
           <div class="ticket-stats">
-            <div class="ticket-stat" style="--stat-color: var(--accent)">
+            <button type="button" class="ticket-stat" style="--stat-color: var(--accent)" data-st="all" title="Alle Tickets anzeigen">
               <span class="ticket-stat__icon">${ICONS.ticket}</span>
               <strong>${counts.all}</strong>
               <span>Alle Tickets</span>
-            </div>
-            <div class="ticket-stat" style="--stat-color: var(--yellow)">
+            </button>
+            <button type="button" class="ticket-stat" style="--stat-color: var(--yellow)" data-st="pending" title="Nur „In Bearbeitung“ anzeigen">
               <span class="ticket-stat__icon">${ICONS.hourglass}</span>
               <strong>${counts.pending || 0}</strong>
               <span>In Bearbeitung</span>
-            </div>
-            <div class="ticket-stat" style="--stat-color: var(--teal)">
+            </button>
+            <button type="button" class="ticket-stat" style="--stat-color: var(--teal)" data-st="completed" title="Nur „Erledigt“ anzeigen">
               <span class="ticket-stat__icon">${ICONS.check}</span>
               <strong>${counts.completed || 0}</strong>
               <span>Erledigt</span>
-            </div>
-            <div class="ticket-stat" style="--stat-color: var(--ink-soft)">
+            </button>
+            <button type="button" class="ticket-stat" style="--stat-color: var(--ink-soft)" data-st="cancelled" title="Nur „Storniert“ anzeigen">
               <span class="ticket-stat__icon">${ICONS.xCircle}</span>
               <strong>${counts.cancelled || 0}</strong>
               <span>Storniert</span>
-            </div>
+            </button>
           </div>
           <div class="side-card">
             <div class="side-card__illustration">${SIDECARD_ILLUSTRATION}</div>
             <h2>${ICONS.layoutGrid} Top-Kategorien</h2>
             <div class="ticket-cats">
-              ${topCategories.map(([cat, count], i) => `<span class="chip" style="background-color: var(${catVarCycle[i % catVarCycle.length]})">${escapeHtml(cat)} · ${count}</span>`).join("")}
+              ${topCategories.map(([cat, count], i) => `<button type="button" class="chip" style="background-color: var(${catVarCycle[i % catVarCycle.length]})" data-cat="${escapeHtml(cat)}" title="Nach „${escapeHtml(cat)}“ filtern">${escapeHtml(cat)} · ${count}</button>`).join("")}
             </div>
           </div>
-          <div class="info-box">
+          <a class="info-box info-box--link" href="#/anfragen">
             <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
             <h2>Eigene Anfrage stellen</h2>
             <p class="pre-line">Du hast selbst ein Anliegen an Microsoft oder ein internes Ticket-Thema? Nutze vorerst unseren bestehenden Anfragen-Bereich.</p>
-            <a class="btn btn--primary" href="#/anfragen" style="margin-top: var(--space-4)">${ICONS.mail} Zu den Anfragen</a>
-          </div>
+            <span class="btn btn--primary" style="margin-top: var(--space-4)">${ICONS.mail} Zu den Anfragen</span>
+          </a>
         </aside>
       </div>
     `;
@@ -1554,6 +1554,18 @@
       "st"
     );
     document.getElementById("ticket-sort").addEventListener("change", (e) => renderTickets(query, st, e.target.value));
+    // Stat-Kacheln filtern jetzt echt nach Status (statt nur Anzeige) —
+    // dieselbe Statuslogik wie die Tabs, nur ein zweiter, gleichwertiger
+    // Einstieg dahin.
+    view.querySelectorAll(".ticket-stat").forEach((btn) => {
+      btn.addEventListener("click", () => renderTickets(query, btn.dataset.st, sort));
+    });
+    // Kategorie-Chips filtern über die bestehende Suche (Kategorie ist
+    // bereits Teil des Such-Joins) — kein zweiter, paralleler Filter-
+    // Mechanismus nötig.
+    view.querySelectorAll(".ticket-cats .chip").forEach((btn) => {
+      btn.addEventListener("click", () => renderTickets(btn.dataset.cat, st, sort));
+    });
   }
 
   function learnRow(it) {

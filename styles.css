@@ -1185,6 +1185,17 @@ mark {
   border-radius: 50%;
   background: var(--accent);
 }
+/* Ganze Karte klickbar (2026-08-11, Nutzer-Wunsch) — .info-box ist hier
+   ein <a>, nicht mehr nur Container um einen separaten Button (der
+   sichtbare "Button" ist jetzt ein rein optischer <span>, sonst
+   verschachtelte Links). Rahmenfarbe bleibt Teal (Bunte-Rahmen-Regel:
+   Farbe hängt am Komponenten-Typ, nicht am Hover-Zustand). */
+.info-box--link { display: block; text-decoration: none; color: inherit; transition: transform 160ms ease, box-shadow 160ms ease; }
+.info-box--link:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover), 0 14px 32px -14px color-mix(in srgb, var(--teal) 60%, transparent);
+}
+.info-box--link:hover .btn--primary { box-shadow: var(--shadow-hover); }
 
 /* -- Tickets (2026-08-11, Beispieldaten) -------------------------------- */
 /* Nutzer-Wunsch (2026-08-11): jede Ticket-Zeile als eigene Karte mit
@@ -1259,6 +1270,9 @@ mark {
 }
 .ticket-stat {
   position: relative;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
   background: var(--paper-raised);
   border: 2.5px solid var(--stat-color);
   border-radius: var(--radius-sm);
@@ -1267,7 +1281,15 @@ mark {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  transition: transform 160ms ease, box-shadow 160ms ease;
 }
+/* Klickbar (2026-08-11, Nutzer-Wunsch): filtert die Liste nach dem
+   jeweiligen Status, gleichwertiger zweiter Einstieg neben den Tabs.
+   Hover vertieft den bestehenden harten Versatz-Schatten statt auf die
+   weiche shadow-hover-Sprache zu wechseln — im Grundzustand ist der
+   Schatten schon hart, ein Stilbruch nur beim Hover wäre inkonsistent. */
+.ticket-stat:hover { transform: translateY(-2px); box-shadow: 5px 5px 0 var(--stat-color); }
+.ticket-stat:focus-visible { outline-offset: 3px; }
 .ticket-stat__icon {
   display: flex;
   align-items: center;
@@ -1283,6 +1305,23 @@ mark {
 .ticket-stat span:last-child { font-size: 0.8rem; color: var(--ink-soft); font-weight: 600; }
 
 .ticket-cats { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+/* Klickbar (2026-08-11, Nutzer-Wunsch): filtert über die bestehende
+   Suche (Kategorie ist schon Teil des Such-Joins). Scoped auf
+   .ticket-cats .chip statt der geteilten .chip-Basisregel — .chip wird
+   an anderer Stelle (z. B. Case-Studies-Detail) weiterhin als reines,
+   nicht-klickbares Label verwendet. transparent-Rand reserviert den
+   Platz für den Hover-Rand, damit nichts springt. */
+.ticket-cats .chip {
+  /* min-height statt nur Padding (gleiches Muster wie bei .tabs__item,
+     UX-Pro-Audit 2026-08-11) — jetzt klickbar, also gilt das 44px-
+     Touch-Target-Minimum, das die Chip als reines Label vorher nicht
+     brauchte. */
+  min-height: 44px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+.ticket-cats .chip:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: var(--ink); }
 
 /* Sortier-Auswahl (2026-08-11, /impeccable layout: Kritik-Fund P1 —
    nur Erstellungsdatum sortierbar half bei der eigentlichen Aufgabe der
