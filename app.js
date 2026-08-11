@@ -450,7 +450,14 @@
     // ist beim ersten Auftritt oft noch gar nicht im Viewport — dort
     // überlappte die Blase stattdessen Suchfeld/Filter-Pills, die anders
     // als der Feed wirklich bedienbar bleiben müssen.
-    const avoidEls = document.querySelectorAll(".side-rail, .toolbar");
+    // .ticket-list zusätzlich (Kritik-Fund 2026-08-11): die sonst für .feed
+    // akzeptierte Kollaps-auf-Icon-Lösung reicht hier nicht — selbst das
+    // verkleinerte Icon saß direkt auf echtem Ticket-Fließtext (News-Karten
+    // haben dort Bild-/Leerraum, Ticket-Zeilen sind dichter Lesetext). Wie
+    // bei .side-rail/.toolbar: wegschieben statt nur verkleinern; wird der
+    // nötige Versatz unrealistisch groß, bleibt die Blase bis zum nächsten
+    // Scroll unsichtbar (bestehendes, bereits etabliertes Verhalten).
+    const avoidEls = document.querySelectorAll(".side-rail, .toolbar, .ticket-list");
     const mRect = mascotEl.getBoundingClientRect();
     let maxLift = 0;
     avoidEls.forEach((avoidEl) => {
@@ -1369,20 +1376,27 @@
      klickbar (kein `.row`-Link-Pattern) — es gibt keine echte Detailseite
      dahinter, ein Link ins Leere wäre eine vorgetäuschte Funktion. */
 
+  // Kritik-Fund (2026-08-11, dual-agent /impeccable critique): --yellow
+  // (#FFC600) und --teal (#609274) direkt als Fließtext lagen bei ~1.5:1
+  // bzw. ~3.6:1 Kontrast auf Papier — das Projekt hatte dieses Problem für
+  // Türkis bereits gelöst (--teal-text), aber hier nicht wiederverwendet.
+  // Jetzt konsequent die Text-sicheren Varianten für beide Farben.
   const TICKET_STATUS_META = {
     open: { label: "Offen", var: "--accent" },
-    pending: { label: "In Bearbeitung", var: "--yellow" },
-    completed: { label: "Erledigt", var: "--teal" },
+    pending: { label: "In Bearbeitung", var: "--yellow-text" },
+    completed: { label: "Erledigt", var: "--teal-text" },
     cancelled: { label: "Storniert", var: "--ink-soft" },
   };
   const TICKET_PRIORITY_META = {
     high: { label: "Hoch", var: "--accent" },
-    medium: { label: "Mittel", var: "--yellow" },
+    medium: { label: "Mittel", var: "--yellow-text" },
     low: { label: "Niedrig", var: "--ink-soft" },
   };
   // Systematische statt zufällige Zuweisung (wie CHANNEL_VAR) — dieselben
   // Initialen bekommen immer dieselbe Farbe, statt bei jedem Render zu wechseln.
-  const AVATAR_VAR_CYCLE = ["--accent", "--teal", "--cat-ai", "--cat-bid", "--cat-creative", "--cat-tracking", "--cat-target"];
+  // --teal-text statt --teal: weißer Avatar-Text auf rohem --teal maß nur
+  // 3.58:1 (Kritik-Fund), die Text-sichere Variante schafft ~5.2:1.
+  const AVATAR_VAR_CYCLE = ["--accent", "--teal-text", "--cat-ai", "--cat-bid", "--cat-creative", "--cat-tracking", "--cat-target"];
   function avatarColorVar(initials) {
     const code = initials.split("").reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
     return AVATAR_VAR_CYCLE[code % AVATAR_VAR_CYCLE.length];
@@ -1421,7 +1435,10 @@
 
     let items = [...TICKETS_DATA].sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
     if (st !== "all") items = items.filter((t) => t.status === st);
-    if (q) items = items.filter((t) => [t.subject, t.contactName, t.accountName, t.id, t.category].join(" ").toLowerCase().includes(q));
+    // Kritik-Fund (2026-08-11): assigneeName fehlte hier — "Zuständig"
+    // steht sichtbar auf jeder Zeile, eine Suche danach lieferte trotzdem
+    // 0 Treffer und der Leerzustand suggerierte fälschlich einen Tippfehler.
+    if (q) items = items.filter((t) => [t.subject, t.contactName, t.accountName, t.assigneeName, t.id, t.category].join(" ").toLowerCase().includes(q));
 
     const counts = TICKETS_DATA.reduce(
       (acc, t) => {
@@ -1455,11 +1472,11 @@
           <button type="button" class="search__submit" id="search-submit" aria-label="Suche fokussieren">${ICONS.search}</button>
         </label>
         <nav class="tabs" aria-label="Status">
-          <button type="button" class="tabs__item ${st === "all" ? "is-active" : ""}" data-st="all">Alle</button>
-          <button type="button" class="tabs__item ${st === "open" ? "is-active" : ""}" data-st="open">Offen</button>
-          <button type="button" class="tabs__item ${st === "pending" ? "is-active" : ""}" data-st="pending">In Bearbeitung</button>
-          <button type="button" class="tabs__item ${st === "completed" ? "is-active" : ""}" data-st="completed">Erledigt</button>
-          <button type="button" class="tabs__item ${st === "cancelled" ? "is-active" : ""}" data-st="cancelled">Storniert</button>
+          <button type="button" class="tabs__item ${st === "all" ? "is-active" : ""}" data-st="all">Alle<span class="tabs__item-count">${counts.all}</span></button>
+          <button type="button" class="tabs__item ${st === "open" ? "is-active" : ""}" data-st="open">Offen<span class="tabs__item-count">${counts.open || 0}</span></button>
+          <button type="button" class="tabs__item ${st === "pending" ? "is-active" : ""}" data-st="pending">In Bearbeitung<span class="tabs__item-count">${counts.pending || 0}</span></button>
+          <button type="button" class="tabs__item ${st === "completed" ? "is-active" : ""}" data-st="completed">Erledigt<span class="tabs__item-count">${counts.completed || 0}</span></button>
+          <button type="button" class="tabs__item ${st === "cancelled" ? "is-active" : ""}" data-st="cancelled">Storniert<span class="tabs__item-count">${counts.cancelled || 0}</span></button>
         </nav>
       </div>
       <div class="layout-2col">

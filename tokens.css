@@ -42,6 +42,12 @@
   /* Dunkleres Gelb ausschließlich für Halbton-Textur-Punkte auf gelben
      Flächen (Schattierung, keine eigenständige Akzentfarbe). */
   --c-yellow-700: #C98A00;
+  /* --c-yellow-700 selbst reicht als Text auf Weiß nicht (~2.9:1) — für
+     Gelb-als-Fließtext (Kritik-Fund 2026-08-11, Tickets-Seite: "In
+     Bearbeitung"/"Mittel" bei ~1.5:1 praktisch unlesbar) eine zweite,
+     deutlich dunklere Stufe nach demselben Muster wie --c-green-700,
+     ca. 5.3:1 auf Weiß. */
+  --c-yellow-800: #856700;
   /* Helle Tint-Varianten für großflächige, sehr dezente Farbwolken
      (page-bg-Hintergrundebene) — auf der Live-Seite nicht als eigener
      Preset vorhanden, daher rechnerisch aus dem verifizierten 500er-Wert

@@ -25,6 +25,7 @@
 
   --yellow: var(--c-yellow-500);
   --on-yellow: var(--ink); /* auf Gelb ausnahmslos dunkler Text, nie Weiß */
+  --yellow-text: var(--c-yellow-800); /* dunklere Variante nur für Gelb als Fließtext (z. B. Status-/Prioritäts-Labels) — --yellow selbst bleibt für Flächen/Icons (nur 3:1 nötig) */
 
   --teal: var(--c-green-500); /* Name "teal" historisch, Farbe ist jetzt das verifizierte Marken-Grün */
   --on-teal: var(--c-surface);
@@ -664,6 +665,26 @@ mark {
 }
 .tabs__item:hover { border-color: var(--accent); color: var(--ink); }
 .tabs__item.is-active { color: var(--on-accent); background: var(--accent); border-color: var(--accent); font-weight: 600; }
+/* Zähler-Badge pro Tab (2026-08-11, delight-Fund: Anzahl pro Status auf
+   einen Blick statt erst in den Stat-Kacheln nachschauen zu müssen) —
+   inline statt gestapelt wie im Referenz-Beispiel, damit die bestehende
+   44px-Pillenform auf allen anderen Tab-Leisten (News/Case Studies/…)
+   unangetastet bleibt; nur Tickets übergibt diese Markup-Ergänzung. */
+.tabs__item-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  margin-left: 0.5em;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--paper);
+  color: var(--ink-soft);
+}
+.tabs__item.is-active .tabs__item-count { background: var(--c-surface); color: var(--accent); }
 
 /* -- Zweispalten-Layout --------------------------------------------------- */
 .layout-2col {
