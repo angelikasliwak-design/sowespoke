@@ -1,5 +1,5 @@
 /**
- * Aus 17 echten PDF-Präsentationen extrahiert (content/presentations/).
+ * Aus 23 echten PDF-Präsentationen extrahiert (content/presentations/).
  * Zusammenfassungen/Fakten stammen ausschließlich aus den Dokumenten selbst,
  * ins Deutsche übertragen — keine Ergänzung aus Allgemeinwissen.
  * `dateKnown: false` heißt: kein Datum im Dokument gefunden, `date` ist der
@@ -16,6 +16,94 @@ const DOCTYPE_VAR = {
 };
 
 const PRESENTATIONS = [
+  {
+    id: "holiday-insights-2026-core-de",
+    file: "2026 Core Holiday Insights – DE – Jun2026.pdf",
+    title: "Retail Peak 2026 (Deutschland): Wirtschaftsausblick, KI in der Suche und Performance-Max-Empfehlungen",
+    // Datenperioden im Dokument (u. a. "Mar 2026", "Apr 2026", Prognose
+    // Okt.–Dez. 2026) legen Juni 2026 als Erstellungszeitraum nahe, ein
+    // explizites Datum steht auf keiner Folie. Auf ausdrücklichen Wunsch
+    // von Angelika (11.08.2026) wird das Anzeige-/Sortierdatum zusätzlich
+    // auf den Upload-Tag gesetzt, damit der Eintrag ganz oben mit
+    // "Neu"-Badge erscheint — keine Aussage über das echte Foliendatum.
+    date: "2026-08-08", dateKnown: true,
+    docType: "Saisonal",
+    summaryDE: "Umfassende Holiday-2026-Strategiepräsentation für den deutschen Markt (Teil einer EU6-Reihe) mit sechs Themenblöcken: makroökonomischer Ausblick (Inflation, Verbrauchervertrauen, Auswirkungen des Iran-Konflikts auf die Energiekosten), struktureller Wandel hin zu KI-gestützter Suche, Markt-Performance rund um Black Friday, der Wert von Markenbekanntheit, Nachfrage-/Klick-Prognosen für Okt.–Dez. 2026 sowie Empfehlungen zu Performance Max und Audience Ads.",
+    customerBlurb: "Microsoft hat eine umfassende Analyse zur Feiertagssaison 2026 in Deutschland veröffentlicht — von der Wirtschaftslage über den KI-Wandel in der Suche bis zu konkreten Kampagnenempfehlungen für Performance Max und Audience Ads. Gerne gehen wir mit euch durch, welche der Handlungsempfehlungen für eure Kampagnenplanung ab Herbst relevant sind.",
+    keyFactsDE: [
+      "Alle sechs großen EU-Märkte liegen laut Deck über dem EZB-Inflationsziel von 1,0 %; Spanien (3,4 %) und UK (3,1 %) am weitesten vom Zielwert entfernt (Stand März 2026).",
+      "Eine anhaltende Sperrung der Straße von Hormuz gilt laut Deck als größter Unsicherheitsfaktor für die Kostenentwicklung im Peak 2026, mit Auswirkungen auf Kraftstoff-, Fracht- und Verpackungskosten in Q3/Q4.",
+      "KI-Shopping-Tool-Nutzung in Deutschland liegt laut zitierter McKinsey-Studie bei 66 % (Q1 2026); Bing-Nutzer:innen setzen KI-Tools laut Deck 10 % häufiger ein als Google-Nutzer:innen.",
+      "Black-Friday-Woche treibt laut internen Microsoft-Daten das höchste Klickvolumen, doch die Nachfrage baut sich bereits ab Oktober stetig auf; für Deutschland wird ein Rückgang der Conversion-Kosten (CPA) von rund 20 % vor Black Friday berichtet.",
+      "Prognose für Deutschland (Okt.–Dez. 2026): Klicks +5 % YoY, Suchanfragen -5 % YoY; stärkstes Klickwachstum bei Computer & Unterhaltungselektronik (+9 %) und Haus & Garten (+8 %).",
+    ],
+    emailHookDE: null,
+    pageCount: 60,
+  },
+  {
+    id: "holiday-insights-2026-display-video-de",
+    file: "2026 Display & Video Holiday Insights – DE – Jun2026.pdf",
+    title: "Display & Video Retail Insights (Deutschland, Juni 2026): Die Customer Journey ist nicht linear",
+    // Titelfolie nennt explizit "Germany - June 2026". Auf ausdrücklichen
+    // Wunsch von Angelika (11.08.2026) wird das Anzeige-/Sortierdatum
+    // zusätzlich auf den Upload-Tag gesetzt, damit der Eintrag ganz oben
+    // mit "Neu"-Badge erscheint — keine Aussage über das echte Foliendatum.
+    date: "2026-08-07", dateKnown: true,
+    docType: "Saisonal",
+    summaryDE: "Präsentation des Microsoft-Teams 'Global Measurement & Insights' (Deutschland, Juni 2026) zu Display & Video im Einzelhandel: Wirtschaftsausblick, Profil der High-Intent-Shopper:innen bei Microsoft-Medien, die Consumer Decision Journey vor/während/nach dem Kauf, ein Markov-Attributionsmodell zum letzten Holiday-Peak sowie Content-Konsum-Insights auf MSN.",
+    customerBlurb: "Microsoft zeigt in einer aktuellen Analyse (Juni 2026), dass Display & Video laut Multi-Touch-Attribution für 15 % aller Conversions verantwortlich sind — mehr als doppelt so viel wie eine reine Last-Click-Betrachtung zeigt. Für Kampagnen, die aktuell nur auf Search setzen, lohnt sich daher ein Blick auf ergänzende Display-/Video-Formate.",
+    keyFactsDE: [
+      "Bei Multi-Touch-Attribution (statt Last-Click) tragen Display/Native/Video laut Deck 15 % statt 6 % zu Conversions bei — ein 2,3-facher Einfluss gegenüber der reinen Last-Click-Betrachtung.",
+      "Deutsche Internetnutzer:innen kaufen laut Global-Web-Index-Daten 1,5x wahrscheinlicher online als der durchschnittliche Internetnutzer; 62 % der Microsoft-Media-Nutzer:innen gehen mit der Absicht online, vor dem Kauf zu vergleichen ('Browse-to-buy').",
+      "Für 18 % der Nutzer:innen sind Microsoft-Media-Eigenschaften (MSN, Bing, Outlook.com u. a.) der letzte Touchpoint vor dem Besuch einer Retail-Marken-Website (Microsoft interne Daten, Deutschland).",
+      "Die Customer Journey endet laut Deck nicht mit dem Kauf: Kategorie-Entdeckung und Marken-/Produktbewertung erreichen danach sogar ein höheres Intent-Niveau als davor.",
+      "Shopping-Engagement auf MSN ist laut Deck werktags am Vormittag am höchsten, nicht an Wochenenden oder zu isolierten 'Shopping-Momenten'.",
+    ],
+    emailHookDE: null,
+    pageCount: 25,
+  },
+  {
+    id: "holiday-insights-2026-two-pager-de",
+    file: "2026 Holiday Insights Two Pager – DE – Jun2026.pdf",
+    title: "Trends im Weihnachtshandel Deutschland 2026 (Two-Pager, DE/EN)",
+    // Kein explizites Monatsdatum im Dokument (nur "Deutschland, 2026"),
+    // Juni 2026 aus derselben Upload-Charge wie die anderen "Jun2026"-Decks
+    // übernommen. Auf ausdrücklichen Wunsch von Angelika (11.08.2026) wird
+    // das Anzeige-/Sortierdatum zusätzlich auf den Upload-Tag gesetzt,
+    // damit der Eintrag ganz oben mit "Neu"-Badge erscheint — keine
+    // Aussage über das echte Foliendatum.
+    date: "2026-08-06", dateKnown: true,
+    docType: "Saisonal",
+    summaryDE: "Zweiseitige, zweisprachige (DE/EN) Kompakt-Übersicht zu Weihnachtshandel-Trends in Deutschland 2026: Verbraucherausgaben nach Einkaufskanal, wichtigste Kaufentscheidungsfaktoren, Conversion-/CPA-Veränderungen nach Kategorie sowie ein rollierender Suchindex mit Geräte-, Kategorie- und Keyword-Aufschlüsselung für Juli–Dezember 2025.",
+    customerBlurb: "Diese kompakte Zwei-Seiten-Übersicht von Microsoft fasst die wichtigsten Trends für den deutschen Weihnachtshandel 2026 zusammen — inklusive konkreter Conversion-/CPA-Veränderungen je Kategorie und Empfehlungen zu Performance Max, Dynamic Search Ads und Zielgruppensignalen für nachhaltige Geschenke.",
+    keyFactsDE: [
+      "64 % nutzen laut Shopify-Quelle (2025) KI-Tools für Weihnachtseinkäufe, bei den 18- bis 24-Jährigen sogar 84 %.",
+      "36 % der deutschen Verbraucher:innen bevorzugen laut Mintel (2025) nachhaltige Geschenke — empfohlen werden dafür In-Market-, Similar- und Predictive-Targeting-Audiences.",
+      "Stärkstes Conversion-Wachstum Q4 2025 laut Deck: Bekleidung & Accessoires (+106 %, CPA -42 %), Haustierbedarf (+93 %, CPA -43 %), Spielzeug & Hobby (+62 %, CPA -21 %).",
+      "Black Friday und Cyber Monday gelten laut Mintel (2025) als 'neuer Auftakt' der mehrwöchigen deutschen Weihnachtssaison — empfohlen werden durchgängige statt eintägige Kampagnen.",
+      "Desktop erzielt bei der Produktrecherche eine rund 1,8x höhere Klickrate als Mobil (Microsoft interne Daten, 2025) — bei Wohnmöbeln liegt der Abstand sogar bei 4,5x.",
+    ],
+    emailHookDE: null,
+    pageCount: 4,
+  },
+  {
+    id: "holiday-insights-2026-mobile-tech-telco-de",
+    file: "2026 Mobile Tech Telco Holiday Insights One Pager - DE - Aug2026.pdf",
+    title: "Feiertagsinsights im Mobilfunk (Deutschland 2026): Refurbished, KI und frühe Reichweite",
+    date: "2026-08-01", dateKnown: true,
+    docType: "Saisonal",
+    summaryDE: "Einseitiger, zweisprachiger (DE/EN) Insights-Bogen zu Feiertagstrends im Mobilfunk-/Tech-Segment für Deutschland 2026: Trends zu Refurbished-Smartphones, früher Werbereichweite und KI als Einkaufshelfer, ergänzt um Marken-Rankings nach Suchanfragen sowie eine Such-/Klick-/CPC-Prognose für Mobiltelefone & Zubehör (Aug.–Dez. 2024–2026).",
+    customerBlurb: "Microsoft hat aktuelle Feiertags-Insights für den Mobilfunk-/Tech-Bereich veröffentlicht: 55 % der EU-Verbraucher:innen erwägen den Kauf eines refurbished Smartphones, und die Teilnahme an Black Friday/Cyber Monday ist 2025 in Deutschland weiter gestiegen. Für Mobilfunk- und Elektronik-Kund:innen lohnt sich ein Blick auf die empfohlene frühe Kampagnenausrichtung im November.",
+    keyFactsDE: [
+      "Teilnahme an Black Friday stieg 2025 in Deutschland laut YouGov auf 38 %, an Cyber Monday auf 24 %.",
+      "55 % der EU-Verbraucher:innen beabsichtigen laut Recommerce (2026), ein refurbished Smartphone zu kaufen — Preis ist dabei der wichtigste Kaufgrund; empfohlen werden Shopping-Kampagnen mit Preiserweiterungen.",
+      "66 % der deutschen Verbraucher:innen nutzen laut McKinsey (2026) KI beim Einkaufen zur Produktrecherche, zum Vergleich und zur Kaufplanung.",
+      "iPhone dominiert laut internen Microsoft-Suchdaten (2025) die Suchanfragen bei Mobiltelefonen; die wachstumsstärksten Marken Nov./Dez. gegenüber Sept./Okt. waren jedoch OnePlus (+34 %), Motorola (+23 %) und Aldi Talk (+15 %).",
+      "48 % der Käufer:innen entdecken große Verkaufsaktionen laut YouGov über Online-Werbung — empfohlen wird der frühe Einsatz von Zielgruppenanzeigen zu Monatsbeginn.",
+    ],
+    emailHookDE: null,
+    pageCount: 2,
+  },
   {
     id: "ai-optimization-search",
     file: "AI Optimization for Search (1).pdf",
@@ -213,6 +301,29 @@ const PRESENTATIONS = [
     ],
     emailHookDE: "Kunden können ihre Bidding-, Creative- oder Targeting-Änderungen jetzt auch in Shopping-, Audience- und Performance-Max-Kampagnen per kontrolliertem A/B-Test mit statistischer Absicherung prüfen, bevor sie live geschaltet werden.",
     pageCount: 18,
+  },
+  {
+    id: "pmax-for-holiday-2025",
+    file: "Performance Max for holiday 2025.pdf",
+    title: "Performance Max für die Feiertagssaison: Taktischer Optimierungsfahrplan (August 2025)",
+    // Die Präsentation selbst ist auf der Titelfolie mit "August 2025" datiert
+    // (siehe summaryDE). Auf ausdrücklichen Wunsch von Angelika (11.08.2026)
+    // wird hier abweichend vom Dokumentdatum das Anzeige-/Sortierdatum auf den
+    // Upload-Tag gesetzt, damit der neu hochgeladene Eintrag ganz oben in der
+    // Liste erscheint — keine Aussage über das tatsächliche Präsentationsdatum.
+    date: "2026-08-11", dateKnown: true,
+    docType: "Feature-Guide",
+    summaryDE: "Taktischer Monat-für-Monat-Fahrplan (August bis Dezember) für die Optimierung von Performance-Max-Kampagnen im Einzelhandel während der Feiertagssaison, laut Titelfolie datiert auf August 2025 und damit ursprünglich für die Feiertagssaison 2025 verfasst. Themen: PMax-Grundlagen inkl. Copilot-Placements, Best Practices für kurzfristige Promotions, Checklisten für Asset-Gruppen/Budget/Suchthemen/Audience-Signale, Feed-Audit, Seasonality Adjustments, Conversion Value Rules, Data Exclusions sowie ein Beta-Feature-Fahrplan (Stand August 2025).",
+    customerBlurb: "Dieser Leitfaden von Microsoft bündelt konkrete monatliche To-dos zur Optimierung von Performance-Max-Kampagnen für die Feiertagssaison — von Feed-Pflege im August bis zu Budget-/Zielanpassungen im Dezember. Das Dokument stammt aus August 2025; viele der beschriebenen Best Practices (Seasonality Adjustments, Search Themes, Feed-Checkliste) gelten weiterhin als generelle PMax-Vorgehensweise, konkrete Beta-Termine sollten aber gegengecheckt werden.",
+    keyFactsDE: [
+      "PMax-Anzeigen in Copilot erzielen laut Microsoft-1P-Daten (Feb.–Mai 2025) deutlich höhere Klickraten als in Search: +103 % bei Responsive Search Ads, +267 % bei Shopping Ads, +32 % bei Multimedia Ads; die Conversion-Rate liegt in Copilot um 14 % höher (5 % vs. 4,4 %).",
+      "Laut einer Stichprobe von rund 500.000 Nutzerpfaden aus der Vorsaison stammen 65 % der November- und 44 % der Dezember-Conversions aus Klicks, die bereits im Oktober erfolgten.",
+      "Empfohlener Monatsfahrplan: August/September für neue Launches, Restrukturierungen und Feed-Optimierung; Oktober für saisonales Messaging und Suchthemen; November/Dezember für Asset-Refresh, Seasonality Adjustments und Conversion Value Rules.",
+      "Feeds haben laut Dokument eine 72-Stunden-Rampe, neue Assets bis zu 1 Tag; für die redaktionelle Freigabe sollten neue Creatives mindestens 48 Stunden vorher hochgeladen werden.",
+      "Beta-Fahrplan (Stand August 2025) nennt u. a. 'New customer acquisition goal' im Pilot seit Juli 2025, Share-of-Voice-Metriken für November 2025 sowie Experiments/Incrementality-Testing als Pilot für Q1 2026 — diese Termine sollten mit dem aktuellen Stand gegengecheckt werden.",
+    ],
+    emailHookDE: null,
+    pageCount: 49,
   },
   {
     id: "pmax-checklist",
