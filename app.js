@@ -1429,16 +1429,28 @@
     `;
   }
 
-  function renderTickets(query, statusFilter) {
+  // Layout-Fund (2026-08-11, /impeccable critique P1): nur nach
+  // Erstellungsdatum sortierbar half beim eigentlichen Zweck der Seite
+  // (Triage: "was ist gerade dringend?") nicht weiter. Fälligkeit/
+  // Priorität als echte Sortier-Optionen statt nur Status-Filter.
+  const TICKET_SORTERS = {
+    created: (a, b) => new Date(b.createdDate) - new Date(a.createdDate),
+    due: (a, b) => new Date(a.dueDate) - new Date(b.dueDate),
+    priority: (a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority]),
+  };
+
+  function renderTickets(query, statusFilter, sortBy) {
     const q = (query || "").trim().toLowerCase();
     const st = statusFilter || "all";
+    const sort = TICKET_SORTERS[sortBy] ? sortBy : "created";
 
-    let items = [...TICKETS_DATA].sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
+    let items = [...TICKETS_DATA];
     if (st !== "all") items = items.filter((t) => t.status === st);
     // Kritik-Fund (2026-08-11): assigneeName fehlte hier — "Zuständig"
     // steht sichtbar auf jeder Zeile, eine Suche danach lieferte trotzdem
     // 0 Treffer und der Leerzustand suggerierte fälschlich einen Tippfehler.
     if (q) items = items.filter((t) => [t.subject, t.contactName, t.accountName, t.assigneeName, t.id, t.category].join(" ").toLowerCase().includes(q));
+    items.sort(TICKET_SORTERS[sort]);
 
     const counts = TICKETS_DATA.reduce(
       (acc, t) => {
@@ -1478,6 +1490,14 @@
           <button type="button" class="tabs__item ${st === "completed" ? "is-active" : ""}" data-st="completed">Erledigt<span class="tabs__item-count">${counts.completed || 0}</span></button>
           <button type="button" class="tabs__item ${st === "cancelled" ? "is-active" : ""}" data-st="cancelled">Storniert<span class="tabs__item-count">${counts.cancelled || 0}</span></button>
         </nav>
+        <label class="select-field">
+          <span class="select-field__label">Sortieren</span>
+          <select id="ticket-sort">
+            <option value="created" ${sort === "created" ? "selected" : ""}>Neueste zuerst</option>
+            <option value="due" ${sort === "due" ? "selected" : ""}>Fälligkeit — bald zuerst</option>
+            <option value="priority" ${sort === "priority" ? "selected" : ""}>Priorität — hoch zuerst</option>
+          </select>
+        </label>
       </div>
       <div class="layout-2col">
         <div class="feed">
@@ -1529,10 +1549,11 @@
     `;
 
     wireTopControls(
-      () => renderTickets(document.getElementById("search-input").value, st),
-      (nextSt) => renderTickets(query, nextSt),
+      () => renderTickets(document.getElementById("search-input").value, st, sort),
+      (nextSt) => renderTickets(query, nextSt, sort),
       "st"
     );
+    document.getElementById("ticket-sort").addEventListener("change", (e) => renderTickets(query, st, e.target.value));
   }
 
   function learnRow(it) {
@@ -1736,7 +1757,7 @@
     } else if (path === "/case-studies") {
       renderCaseStudies(params.get("q") || "", params.get("ch") || "all");
     } else if (path === "/tickets") {
-      renderTickets(params.get("q") || "", params.get("st") || "all");
+      renderTickets(params.get("q") || "", params.get("st") || "all", params.get("sort") || "created");
     } else if (path === "/microsoft-learn") {
       renderMicrosoftLearn(params.get("q") || "");
     } else if (path === "/anfragen") {

@@ -1268,6 +1268,25 @@ mark {
 
 .ticket-cats { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 
+/* Sortier-Auswahl (2026-08-11, /impeccable layout: Kritik-Fund P1 —
+   nur Erstellungsdatum sortierbar half bei der eigentlichen Aufgabe der
+   Seite, Dringlichkeit einzuschätzen, nicht weiter). Natives <select>
+   statt Eigenbau — auf einem Operate-Tool zählen native Erwartungen und
+   Tastaturbedienbarkeit mehr als eine individuelle Optik. Style folgt der
+   bestehenden Input-Regel (1px-Rand, 10px-Radius, Warmpapier-Füllung). */
+.select-field { display: inline-flex; align-items: center; gap: var(--space-2); align-self: flex-start; }
+.select-field__label { font-size: 0.82rem; font-weight: 700; color: var(--ink-soft); }
+.select-field select {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  padding: 0.5em var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper-raised);
+  color: var(--ink);
+  cursor: pointer;
+}
+
 /* -- Buttons ---------------------------------------------------------- */
 .btn {
   display: inline-flex;
