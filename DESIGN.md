@@ -346,6 +346,9 @@ Stat-Kacheln, Kategorie-Chips und die "Eigene Anfrage stellen"-Karte waren rein 
 - **Kategorie-Chips** (`<button>` statt `<span>`, scoped auf `.ticket-cats .chip`): Klick nutzt die bestehende Suche (Kategorie ist bereits Teil des Such-Joins) statt eines zweiten, parallelen Filter-Mechanismus. `.chip` bleibt an anderer Stelle (z. B. Case-Studies-Detail) unverändert ein reines, nicht-klickbares Label — die Interaktivität ist bewusst auf den Tickets-Kontext begrenzt. Bekam nachträglich `min-height:44px` (war bei 31px, unter dem Touch-Target-Minimum — galt für ein reines Label nicht, jetzt als Button schon).
 - **"Eigene Anfrage stellen"**: ganze Karte ist jetzt `<a class="info-box--link" href="#/anfragen">`, der vorher separate Button ist ein rein optischer `<span>` innerhalb (keine verschachtelten Links). Rahmenfarbe bleibt Teal bei Hover (Bunte-Rahmen-Regel: Farbe hängt am Komponenten-Typ, nicht am Interaktionszustand) — nur Schatten vertieft sich, Karte hebt sich `3px` an.
 
+### Tickets-Seite: Avatar-Rand statusbasiert statt schwarz (2026-08-11, Nutzer-Feedback)
+Der `2px`-Ink-Rand um die Initialen-Avatare passte laut Nutzer nicht ins Design. Ersetzt durch dieselbe Statusfarbe, die auch im Status-Label derselben Zeile steht (`TICKET_STATUS_META[t.status].var`, inline `border-color` überschreibt nur die Farbe der bestehenden `border`-Shorthand-Regel, Breite/Stil bleiben aus der Klasse) — verstärkt dieselbe Information an zwei Stellen der Zeile, statt eine dritte, unabhängige Farbe einzuführen.
+
 ### Auth-Karte (`login.html`)
 - **Style:** Weiß, `14px` Radius, schlichter `1px`-Linienrand (`--line`), `shadow` (kein Typ-Rahmen/`shadow-glow`) — eigenständiger Seitentyp außerhalb der Bunte-Rahmen-Regel, da die Login-Seite bewusst öffentlich (ohne Session) ausgeliefert wird und nicht Teil der App-Kartenfamilie ist.
 - **Aufbau:** Logo, `h1` (Baloo 2), Hinweistext, Fehlermeldung (`role="alert"`), Google-Login-Button.

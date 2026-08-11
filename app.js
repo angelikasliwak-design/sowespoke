@@ -1407,7 +1407,7 @@
     const prio = TICKET_PRIORITY_META[t.priority];
     return `
       <li class="ticket-row">
-        <span class="ticket-row__avatar" aria-hidden="true" style="background-color: var(${avatarColorVar(t.assigneeInitials)})">${escapeHtml(t.assigneeInitials)}</span>
+        <span class="ticket-row__avatar" aria-hidden="true" style="background-color: var(${avatarColorVar(t.assigneeInitials)}); border-color: var(${status.var})">${escapeHtml(t.assigneeInitials)}</span>
         <span class="ticket-row__body">
           <span class="ticket-row__top">
             <span class="ticket-row__who"><strong>${escapeHtml(t.contactName)}</strong> · ${escapeHtml(t.id)}</span>
