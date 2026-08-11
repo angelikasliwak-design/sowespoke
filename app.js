@@ -1105,6 +1105,12 @@
     }
     const dtVar = DOCTYPE_VAR[p.docType] || "--ink-soft";
     const downloadHref = `content/presentations/${encodeURIComponent(p.file)}`;
+    // PDF.js-Viewer (self-hosted unter assets/pdfjs/, kein externes CDN) zeigt
+    // die Präsentation direkt im Browserfenster an — kein Download, keine
+    // Extension nötig. `file` muss die volle absolute URL sein, weil
+    // viewer.html relative Pfade sonst zu sich selbst statt zur App auflöst.
+    const pdfAbsoluteUrl = `${location.origin}/${downloadHref}`;
+    const viewerHref = `assets/pdfjs/web/viewer.html?file=${encodeURIComponent(pdfAbsoluteUrl)}`;
     pushRecent({ href: `#/praesentationen/${p.id}`, title: p.title, kind: "Präsentation" });
 
     view.innerHTML = `
@@ -1122,6 +1128,13 @@
         <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
               <h2>Kernfakten aus der Präsentation</h2>
               <ul>${p.keyFactsDE.map((f) => `<li>${escapeHtml(f)}</li>`).join("")}</ul>
+            </div>
+            <div class="pdf-viewer">
+              <div class="pdf-viewer__bar">
+                <span class="pdf-viewer__label">${ICONS.fileText} Original-Präsentation</span>
+                <a class="pdf-viewer__expand" href="${viewerHref}" target="_blank" rel="noopener">${ICONS.arrowRight} Groß öffnen</a>
+              </div>
+              <iframe class="pdf-viewer__frame" src="${viewerHref}" title="${escapeHtml(p.title)}" loading="lazy"></iframe>
             </div>
             <a class="btn btn--secondary" href="${downloadHref}" download>${ICONS.download} Original-PDF herunterladen</a>
           </div>

@@ -1,0 +1,18 @@
+# PDF.js liefert seine Module als .mjs aus — Cloudflare Pages' Standard-
+# MIME-Tabelle kennt diese Endung nicht zuverlässig, Browser lehnen
+# <script type="module">-Importe dann als "application/octet-stream" ab.
+# Explizite Content-Type-Header erzwingen hier das korrekte Verhalten.
+/assets/pdfjs/build/pdf.mjs
+  Content-Type: text/javascript; charset=utf-8
+
+/assets/pdfjs/build/pdf.worker.mjs
+  Content-Type: text/javascript; charset=utf-8
+
+/assets/pdfjs/build/pdf.sandbox.mjs
+  Content-Type: text/javascript; charset=utf-8
+
+/assets/pdfjs/web/viewer.mjs
+  Content-Type: text/javascript; charset=utf-8
+
+/assets/pdfjs/web/wasm/*.wasm
+  Content-Type: application/wasm

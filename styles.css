@@ -1197,6 +1197,57 @@ mark {
 }
 .info-box--link:hover .btn--primary { box-shadow: var(--shadow-hover); }
 
+/* -- Präsentations-PDF-Viewer (2026-08-11, Nutzer-Wunsch) ---------------
+   Selbst gehosteter PDF.js-Viewer (assets/pdfjs/, kein externes CDN),
+   damit Präsentationen direkt im Browserfenster lesbar sind — ohne
+   Download und ohne Browser-Extension. Eigener neutraler Rahmen (--line)
+   statt Teal, weil das kein .info-box-Element ist (Bunte-Rahmen-Regel:
+   Farbe hängt am Komponenten-Typ). */
+.pdf-viewer {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  background: var(--paper-raised);
+}
+.pdf-viewer__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+.pdf-viewer__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+.pdf-viewer__label svg { width: 18px; height: 18px; flex: none; }
+.pdf-viewer__expand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+.pdf-viewer__expand svg { width: 14px; height: 14px; }
+.pdf-viewer__expand:hover { color: var(--accent); }
+.pdf-viewer__frame {
+  display: block;
+  width: 100%;
+  height: min(82vh, 900px);
+  border: none;
+  background: var(--paper);
+}
+
 /* -- Tickets (2026-08-11, Beispieldaten) -------------------------------- */
 /* Nutzer-Wunsch (2026-08-11): jede Ticket-Zeile als eigene Karte mit
    Hover+Schatten statt der vorherigen dichten Listenzeile — übernimmt

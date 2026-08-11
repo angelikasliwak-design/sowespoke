@@ -32,6 +32,10 @@ const MIME = {
   ".html": "text/html", ".js": "application/javascript", ".css": "text/css",
   ".json": "application/json", ".png": "image/png", ".svg": "image/svg+xml",
   ".woff2": "font/woff2", ".ico": "image/x-icon",
+  // PDF.js-Viewer (assets/pdfjs/): ohne diese drei bleibt der lokale Test
+  // wirkungslos, weil Browser .mjs sonst als application/octet-stream
+  // bekommen und das <script type="module"> ablehnen (siehe auch _headers).
+  ".mjs": "text/javascript", ".wasm": "application/wasm", ".pdf": "application/pdf",
 };
 
 function mockNews() {
