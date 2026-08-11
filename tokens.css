@@ -42,6 +42,12 @@
   /* Dunkleres Gelb ausschließlich für Halbton-Textur-Punkte auf gelben
      Flächen (Schattierung, keine eigenständige Akzentfarbe). */
   --c-yellow-700: #C98A00;
+  /* Helle Tint-Varianten für großflächige, sehr dezente Farbwolken
+     (page-bg-Hintergrundebene) — auf der Live-Seite nicht als eigener
+     Preset vorhanden, daher rechnerisch aus dem verifizierten 500er-Wert
+     abgeleitet (Mix mit Weiß), nicht selbst bestätigt. */
+  --c-pink-100:   color-mix(in srgb, var(--c-pink-500) 15%, white);
+  --c-yellow-100: color-mix(in srgb, var(--c-yellow-500) 20%, white);
 
   /* -- Interne UI-Tokens (aus dem bestehenden Projekt übernommen, KEINE
      Marken-Werte der Live-Site — Kategorie-/Status-Farben und Tint-Flächen

@@ -274,6 +274,70 @@ mark {
   min-width: 0;
   display: flex;
   flex-direction: column;
+  /* Containing Block UND eigener Stacking-Context für .page-bg
+     (position:absolute; z-index:-1, siehe unten) — position:relative
+     allein erzeugt noch keinen neuen Stacking-Context (CSS2.1 Anhang E),
+     dadurch würde das negative z-index von .page-bg hier "entweichen"
+     und in einem weiter oben liegenden Kontext gegen fremde Geschwister
+     (z. B. die position:sticky-Sidebar) verrechnet — Fund per
+     Screenshot-Selbsttest: selbst 100%-deckendes Rot/Blau blieb komplett
+     unsichtbar, bis dieses z-index ergänzt wurde. */
+  position: relative;
+  z-index: 0;
+}
+
+/* Seitenweite Hintergrundebene (2026-08-10) — löst die frühere Hero-Box
+   ab (eigene Fläche/Rahmen/Schatten, siehe .hero-Kommentar). Rein
+   dekorativ, erstes Kind von .shell__main, scrollt mit dem Content
+   (KEIN position:fixed) und liegt hinter #view (z-index:-1). Randlos bis
+   an die Sidebar und den rechten Fensterrand, da .shell__main selbst
+   schon exakt diese Breite hat (kein zusätzlicher Gutter nötig). */
+.page-bg {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: clamp(420px, 55vh, 760px);
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--c-paper);
+  background-image:
+    radial-gradient(ellipse 55% 45% at 100% 0%, color-mix(in srgb, var(--c-pink-100) 40%, transparent) 0%, transparent 70%),
+    radial-gradient(ellipse 55% 45% at 0% 0%, color-mix(in srgb, var(--c-yellow-100) 40%, transparent) 0%, transparent 70%),
+    radial-gradient(circle, color-mix(in srgb, var(--c-ink) 8%, transparent) 1.4px, transparent 1.6px);
+  background-repeat: no-repeat, no-repeat, repeat;
+  background-size: 100% 100%, 100% 100%, 15px 15px;
+  /* Ein gemeinsames mask-image auf demselben Element sorgt dafür, dass
+     ALLE drei Hintergrund-Ebenen (Punktraster + beide Farbwolken)
+     gleichmäßig im selben Verlauf ausblenden, statt jede Ebene einzeln
+     und potenziell uneinheitlich zu verblassen. */
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 30%,
+    rgba(0, 0, 0, 0.5) 65%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 30%,
+    rgba(0, 0, 0, 0.5) 65%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+@media (max-width: 767px) {
+  .page-bg {
+    height: clamp(280px, 40vh, 420px);
+    background-image:
+      radial-gradient(ellipse 55% 45% at 100% 0%, color-mix(in srgb, var(--c-pink-100) 25%, transparent) 0%, transparent 70%),
+      radial-gradient(ellipse 55% 45% at 0% 0%, color-mix(in srgb, var(--c-yellow-100) 25%, transparent) 0%, transparent 70%),
+      radial-gradient(circle, color-mix(in srgb, var(--c-ink) 8%, transparent) 1.4px, transparent 1.6px);
+  }
+}
+/* Nutzer:innen, die reduzierte Transparenz/Effekte bevorzugen: nur die
+   flache Papier-Fläche, keine Farbwolken/kein Punktraster. */
+@media (prefers-reduced-transparency: reduce) {
+  .page-bg { background-image: none; }
 }
 
 /* -- Layout ------------------------------------------------------------ */
@@ -304,6 +368,13 @@ mark {
    Flex-Kind, begrenzt in der Größe, unterstützt die Headline statt sie
    zu dominieren. Suche+Filter sind in .toolbar ausgelagert (Punkt 11). */
 .hero {
+  /* Box aufgelöst (2026-08-10) — Hero ist jetzt reiner Content-Flex-
+     Container ohne eigene Fläche/Kante. Das Halbton-Punktmuster + die
+     zwei Farbwolken (vorher hier als Element-Hintergrund bzw. als
+     .hero--connected::before/::after) leben jetzt gemeinsam in .page-bg,
+     einer seitenweiten, nach unten ausblendenden Hintergrundebene hinter
+     .shell__main — siehe dort. Kein border-radius/box-shadow/overflow
+     mehr nötig, da keine eigene Fläche mehr geclippt/abgegrenzt wird. */
   position: relative;
   display: flex;
   align-items: center;
@@ -312,19 +383,6 @@ mark {
   flex-wrap: wrap;
   margin-bottom: var(--space-6);
   padding: var(--space-6) var(--space-6);
-  border-radius: var(--radius);
-  overflow: hidden;
-  /* Halbton-Dots jetzt nur noch hier im Hero statt seitenweit (Brief:
-     "nur in ausgewählten Bereichen verwenden"). */
-  background-color: var(--surface-secondary);
-  background-image: radial-gradient(circle, color-mix(in srgb, var(--ink) 7%, transparent) 1.4px, transparent 1.6px);
-  background-size: 15px 15px;
-  /* Bug-Fund (Nutzer-Screenshot 2026-08-10): --surface-secondary ist
-     identisch mit der Seiten-Hintergrundfarbe (beide var(--paper)) — ohne
-     jede weitere Abgrenzung wirkte die Punktmuster-Kante wie ein
-     zufälliger Abbruch statt eine Kartenkante. Schatten macht die
-     Eingrenzung als bewusste Karte lesbar. */
-  box-shadow: var(--shadow);
 }
 .hero__illustration {
   position: relative;
@@ -358,17 +416,9 @@ mark {
   padding: var(--space-5) var(--space-6);
   margin-bottom: var(--space-3);
 }
-.hero--connected::before,
-.hero--connected::after {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-}
-.hero--connected::before { width: 240px; height: 240px; right: -50px; top: -70px; background: radial-gradient(circle, var(--teal-tint) 0%, transparent 72%); }
-.hero--connected::after { width: 180px; height: 180px; right: 140px; bottom: -60px; background: radial-gradient(circle, var(--accent-tint) 0%, transparent 72%); }
-.hero--connected .hero__intro, .hero--connected .hero__scene { position: relative; z-index: 1; }
+/* Die vorherigen ::before/::after-Farbwolken (Teal-/Accent-Tint-Kreise)
+   sind entfallen — dieselbe Funktion (weiche, großflächige Farbwolken)
+   übernimmt jetzt .page-bg für die ganze Seite statt pro Hero-Instanz. */
 
 .hero__eyebrow {
   display: inline-block;
