@@ -162,47 +162,54 @@ const BRAND_BURST = `<svg viewBox="0 0 200 200" aria-hidden="true">
    bewusst füllt, statt eine einzelne Form isoliert in der Ecke schweben zu
    lassen. Alle Teile überlappen/berühren sich — kein verstreuter Einzel-Akzent
    (siehe DESIGN.md, Fassung "Marken-Formen zurückgenommen"). */
-/* Zweite Megafon-Fassung (2026-08-07, spät) — kompakter, gedrungener
-   Marker-Doodle-Stil statt Verlaufs-Glanz-Megafon: dicke Outlines, flache
-   Farbflächen, 45°-Kippung mit Öffnung oben links, Impact-Burst aus 13
-   handgezeichneten Strahlen. Koordinaten programmatisch erzeugt (siehe
-   DESIGN.md), viewBox eng um den Inhalt zugeschnitten (quadratisch statt
-   der vorherigen 300×190-Breitformat-Box — .hero__illustration wurde
-   entsprechend auf ein quadratisches Seitenverhältnis angepasst). */
-const HERO_ILLUSTRATION = `<svg viewBox="0 0 764 770" aria-hidden="true">
-  <g transform="translate(382.2,384.9) rotate(-135) translate(-392.2,8.3)">
-    <g>
-      <path d="M426.5,-188.3 Q418.0,-231.8 406.6,-274.6" stroke="var(--ink)" stroke-width="21.1" fill="none" stroke-linecap="round"/>
-      <path d="M511.4,-186.1 Q521.0,-256.0 542.0,-323.5" stroke="var(--ink)" stroke-width="13.1" fill="none" stroke-linecap="round"/>
-      <path d="M539.3,-188.0 Q552.5,-222.6 565.0,-257.6" stroke="var(--ink)" stroke-width="13.7" fill="none" stroke-linecap="round"/>
-      <path d="M600.6,-147.2 Q625.7,-179.0 654.3,-207.7" stroke="var(--ink)" stroke-width="19.4" fill="none" stroke-linecap="round"/>
-      <path d="M631.5,-108.7 Q679.5,-133.0 720.1,-168.3" stroke="var(--ink)" stroke-width="17.7" fill="none" stroke-linecap="round"/>
-      <path d="M662.6,-58.2 Q729.3,-75.6 794.4,-97.9" stroke="var(--ink)" stroke-width="21.0" fill="none" stroke-linecap="round"/>
-      <path d="M665.6,4.3 Q713.1,1.2 760.4,6.4" stroke="var(--ink)" stroke-width="21.5" fill="none" stroke-linecap="round"/>
-      <path d="M657.2,43.2 Q710.6,62.6 767.0,68.5" stroke="var(--ink)" stroke-width="17.7" fill="none" stroke-linecap="round"/>
-      <path d="M635.8,99.5 Q684.6,138.6 742.1,163.2" stroke="var(--ink)" stroke-width="15.3" fill="none" stroke-linecap="round"/>
-      <path d="M594.6,145.4 Q641.8,198.3 686.8,252.9" stroke="var(--ink)" stroke-width="16.0" fill="none" stroke-linecap="round"/>
-      <path d="M535.3,179.9 Q553.5,218.1 564.0,259.1" stroke="var(--ink)" stroke-width="21.2" fill="none" stroke-linecap="round"/>
-      <path d="M487.0,189.4 Q497.4,247.7 497.5,306.9" stroke="var(--ink)" stroke-width="17.9" fill="none" stroke-linecap="round"/>
-      <path d="M453.3,199.7 Q444.6,234.9 447.3,271.1" stroke="var(--ink)" stroke-width="13.7" fill="none" stroke-linecap="round"/>
-    </g>
-    <g transform="translate(55,25) rotate(58)">
-      <rect x="0" y="-52" width="168" height="104" rx="40" fill="var(--teal)" stroke="var(--ink)" stroke-width="20" stroke-linejoin="round"/>
-    </g>
-    <path d="M28,-42 C60,-52 92,-50 118,-42 L118,42 C92,50 60,52 28,42 Z"
-      fill="var(--accent)" stroke="var(--ink)" stroke-width="18" stroke-linejoin="round"/>
-    <!-- Deutlich ausgeprägte Trichterform (Kritik-Fund 2026-08-10): der
-         schmale Hals (Höhe 90) weitet sich klar sichtbar zur Öffnung
-         (Höhe ~330, verschmilzt mit dem Rand-Ring) statt wie vorher fast
-         parallel zu bleiben (Höhe 236→304, kaum ein Unterschied — sah wie
-         ein Rechteck aus, nicht wie ein Horn). -->
-    <path d="M118,-45 C220,-100 320,-145 396,-165
-             L402,165
-             C320,145 220,100 118,45 Z"
-      fill="var(--c-surface)" stroke="var(--ink)" stroke-width="22" stroke-linejoin="round"/>
-    <ellipse cx="470" cy="0" rx="82" ry="170" fill="var(--accent)" stroke="var(--ink)" stroke-width="22"/>
-    <ellipse cx="476" cy="0" rx="54" ry="140" fill="var(--c-surface)" stroke="var(--ink)" stroke-width="14"/>
-    <circle cx="492" cy="0" r="46" fill="var(--accent)" stroke="var(--ink)" stroke-width="12"/>
+/* Dritte Megafon-Fassung (2026-08-11) — Nutzer-Referenzbild (handgezeichneter,
+   wütend brüllender Megafon-Charakter mit Greifarm) als reine Stil-Inspiration
+   ausgewertet, NICHT kopiert: neu im eigenen Sowespoke-Marker-Doodle-Stil
+   gezeichnet (flache Markenfarben statt Skizzen-Schraffur, andere Proportionen/
+   Pose). Übernommen wurde das Grundprinzip "Megafon als Gesicht" — der
+   Trichter zeigt jetzt frontal nach links (Öffnung = Mund-Andeutung über
+   Weiß-Ellipse), darüber ein kleiner gelber Kopf-Ansatz mit zwei Augen +
+   zornigen Augenbrauen für Ausdruck, den es in der Vorgänger-Fassung nicht
+   gab. Griff endet in einer stilisierten greifenden Faust (Daumen-Andeutung)
+   statt eines reinen Griffstücks — Anspielung auf den Arm im Referenzbild,
+   aber als einfache Pop-Art-Form statt Anatomie.
+   - **Trichteröffnung jetzt auf vertikaler Bild-Mitte**, damit die Sprechblase
+     in `.hero__scene` (Pfeilspitze bei `top:50%`) tatsächlich auf Höhe der
+     Öffnung trifft — behebt die in DESIGN.md dokumentierte, bis hierhin
+     bewusst offen gelassene Ausrichtungs-Unstimmigkeit.
+   - **Kein verschachteltes rotate()-Wrapper-Koordinatensystem mehr** (Ursache
+     des Ausrichtungs-Bugs der Vorgänger-Fassung) — alle Koordinaten stehen
+     direkt in der finalen Bildschirm-Ausrichtung.
+   - Impact-Burst-Strahlen weiterhin programmatisch erzeugt (Seed-Funktion,
+     Node-Skript), diesmal bewusst so gefächert, dass sie den linken Sektor
+     (Richtung Sprechblase) aussparen statt ihn zu überlagern. */
+const HERO_ILLUSTRATION = `<svg viewBox="-66 -24 352 342" aria-hidden="true">
+  <g id="mega-rays">
+    <path d="M26.9,29.3 Q20.1,8.8 20.2,-12.9" stroke="var(--ink)" stroke-width="5.7" fill="none" stroke-linecap="round"/>
+    <path d="M86.3,40.9 Q98.9,15.4 105.9,-12.2" stroke="var(--ink)" stroke-width="5.1" fill="none" stroke-linecap="round"/>
+    <path d="M132.5,67.8 Q151.6,45.4 175.0,27.5" stroke="var(--ink)" stroke-width="4.6" fill="none" stroke-linecap="round"/>
+    <path d="M159.9,112.3 Q177.5,108.7 193.7,101.0" stroke="var(--ink)" stroke-width="4.9" fill="none" stroke-linecap="round"/>
+    <path d="M165.8,167.6 Q184.4,170.5 203.1,173.1" stroke="var(--ink)" stroke-width="6.4" fill="none" stroke-linecap="round"/>
+    <path d="M147.8,212.4 Q167.1,230.0 191.6,239.2" stroke="var(--ink)" stroke-width="6.3" fill="none" stroke-linecap="round"/>
+    <path d="M114.4,244.1 Q133.4,266.8 149.2,291.9" stroke="var(--ink)" stroke-width="3.9" fill="none" stroke-linecap="round"/>
+    <path d="M69.6,264.9 Q68.8,286.9 78.3,306.8" stroke="var(--ink)" stroke-width="5.2" fill="none" stroke-linecap="round"/>
+    <path d="M10.7,266.6 Q8.2,284.5 0.4,300.8" stroke="var(--ink)" stroke-width="5.2" fill="none" stroke-linecap="round"/>
+    <path d="M-29.5,239.7 Q-46.0,251.8 -55.1,270.1" stroke="var(--ink)" stroke-width="3.6" fill="none" stroke-linecap="round"/>
+  </g>
+  <path d="M175,122 C130,108 80,80 40,50 C10,90 10,210 40,250 C80,220 130,192 175,178 Z"
+    fill="var(--accent)" stroke="var(--ink)" stroke-width="16" stroke-linejoin="round"/>
+  <ellipse cx="46" cy="150" rx="24" ry="88" fill="var(--c-surface)" stroke="var(--ink)" stroke-width="9"/>
+  <circle cx="50" cy="150" r="12" fill="var(--ink)" opacity="0.18"/>
+  <ellipse cx="163" cy="100" rx="36" ry="28" fill="var(--yellow)" stroke="var(--ink)" stroke-width="10"/>
+  <path d="M138,84 L156,97" stroke="var(--ink)" stroke-width="7" stroke-linecap="round"/>
+  <path d="M170,97 L188,82" stroke="var(--ink)" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="150" cy="104" r="5" fill="var(--ink)"/>
+  <circle cx="176" cy="104" r="5" fill="var(--ink)"/>
+  <g transform="translate(180,165) rotate(35)">
+    <rect x="0" y="-16" width="95" height="32" rx="16" fill="var(--teal)" stroke="var(--ink)" stroke-width="10" stroke-linejoin="round"/>
+    <circle cx="20" cy="0" r="10" fill="var(--yellow)" stroke="var(--ink)" stroke-width="6"/>
+    <ellipse cx="72" cy="2" rx="26" ry="24" fill="var(--c-surface)" stroke="var(--ink)" stroke-width="10"/>
+    <circle cx="60" cy="-15" r="11" fill="var(--c-surface)" stroke="var(--ink)" stroke-width="8"/>
   </g>
 </svg>`;
 
