@@ -54,6 +54,12 @@ const ICONS = {
   thumbDown: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><path d="M17 13V4h3a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1z"/><path d="M17 13l-4 7a2 2 0 0 1-2-2v-4H5.5a2 2 0 0 1-1.94-2.5l1.5-6A2 2 0 0 1 7 4h8a2 2 0 0 1 2 2"/></svg>`,
 
   trophy: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 5H4v2a3 3 0 0 0 3 3"/><path d="M17 5h3v2a3 3 0 0 1-3 3"/><path d="M12 14v3"/><path d="M8.5 20.5h7"/><path d="M9.5 17.5h5l1 3h-7z"/></svg>`,
+
+  ticket: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><rect x="2.5" y="6" width="19" height="12" rx="2.2"/><path d="M12 6v2.2M12 10.8v2.4M12 15.6v2.4"/></svg>`,
+
+  hourglass: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><path d="M6 3h12"/><path d="M6 21h12"/><path d="M7 3c0 4 3 6 5 8-2 2-5 4-5 8"/><path d="M17 3c0 4-3 6-5 8 2 2 5 4 5 8"/></svg>`,
+
+  xCircle: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><circle cx="12" cy="12" r="8.5"/><path d="M9 9l6 6"/><path d="M15 9l-6 6"/></svg>`,
 };
 
 /* Maskottchen (2026-08-07, live-Feedback: "gefällt mir nicht, süßes

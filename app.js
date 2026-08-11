@@ -16,7 +16,7 @@
     Allgemein: "--ink-soft",
   };
 
-  const NAV_ICON = { news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", "microsoft-learn": "sparkle", anfragen: "mail" };
+  const NAV_ICON = { news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", "microsoft-learn": "sparkle", anfragen: "mail" };
   railLinks.forEach((a) => {
     const iconSlot = a.querySelector(".rail__nav-icon");
     if (iconSlot) iconSlot.innerHTML = ICONS[NAV_ICON[a.dataset.nav]];
@@ -1360,6 +1360,164 @@
     `;
   }
 
+  /* ------------------------------------------------------------ Seite: Tickets */
+  /* Nur Beispieldaten (tickets-data.js, alle isPlaceholder:true) — kein
+     Zoho-Desk-API-Zugriff, siehe DESIGN-MASTERPROMPT.md Abschnitt 8
+     "Einordnung" (fehlende Org-ID/OAuth-Client). Felder bewusst nah an
+     einer echten Zoho-Desk-Antwort, damit ein späterer Umstieg nur
+     tickets-data.js ersetzt, nicht das UI. Zeilen sind absichtlich NICHT
+     klickbar (kein `.row`-Link-Pattern) — es gibt keine echte Detailseite
+     dahinter, ein Link ins Leere wäre eine vorgetäuschte Funktion. */
+
+  const TICKET_STATUS_META = {
+    open: { label: "Offen", var: "--accent" },
+    pending: { label: "In Bearbeitung", var: "--yellow" },
+    completed: { label: "Erledigt", var: "--teal" },
+    cancelled: { label: "Storniert", var: "--ink-soft" },
+  };
+  const TICKET_PRIORITY_META = {
+    high: { label: "Hoch", var: "--accent" },
+    medium: { label: "Mittel", var: "--yellow" },
+    low: { label: "Niedrig", var: "--ink-soft" },
+  };
+  // Systematische statt zufällige Zuweisung (wie CHANNEL_VAR) — dieselben
+  // Initialen bekommen immer dieselbe Farbe, statt bei jedem Render zu wechseln.
+  const AVATAR_VAR_CYCLE = ["--accent", "--teal", "--cat-ai", "--cat-bid", "--cat-creative", "--cat-tracking", "--cat-target"];
+  function avatarColorVar(initials) {
+    const code = initials.split("").reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+    return AVATAR_VAR_CYCLE[code % AVATAR_VAR_CYCLE.length];
+  }
+
+  function ticketRow(t) {
+    const status = TICKET_STATUS_META[t.status];
+    const prio = TICKET_PRIORITY_META[t.priority];
+    return `
+      <li class="ticket-row">
+        <span class="ticket-row__avatar" aria-hidden="true" style="background-color: var(${avatarColorVar(t.assigneeInitials)})">${escapeHtml(t.assigneeInitials)}</span>
+        <span class="ticket-row__body">
+          <span class="ticket-row__top">
+            <span class="ticket-row__who"><strong>${escapeHtml(t.contactName)}</strong> · ${escapeHtml(t.id)}</span>
+            <span class="ticket-row__created">${formatDate(t.createdDate)}</span>
+          </span>
+          <span class="ticket-row__subject">${escapeHtml(t.subject)}</span>
+          <span class="ticket-row__meta">
+            <span class="ticket-row__meta-item"><span class="ticket-row__meta-label">Kunde</span>${escapeHtml(t.accountName)}</span>
+            <span class="ticket-row__meta-item"><span class="ticket-row__meta-label">Zuständig</span>${escapeHtml(t.assigneeName)}</span>
+            <span class="ticket-row__meta-item"><span class="ticket-row__meta-label">Fällig</span>${formatDate(t.dueDate)}</span>
+            <span class="ticket-row__status" style="color: var(${status.var})">
+              ${t.status === "completed" ? ICONS.check : t.status === "cancelled" ? ICONS.xCircle : t.status === "pending" ? ICONS.hourglass : ICONS.flash}
+              ${status.label}
+            </span>
+            <span class="ticket-row__prio" style="color: var(${prio.var})">${escapeHtml(prio.label)}</span>
+          </span>
+        </span>
+      </li>
+    `;
+  }
+
+  function renderTickets(query, statusFilter) {
+    const q = (query || "").trim().toLowerCase();
+    const st = statusFilter || "all";
+
+    let items = [...TICKETS_DATA].sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
+    if (st !== "all") items = items.filter((t) => t.status === st);
+    if (q) items = items.filter((t) => [t.subject, t.contactName, t.accountName, t.id, t.category].join(" ").toLowerCase().includes(q));
+
+    const counts = TICKETS_DATA.reduce(
+      (acc, t) => {
+        acc.all++;
+        acc[t.status] = (acc[t.status] || 0) + 1;
+        return acc;
+      },
+      { all: 0 }
+    );
+    const categoryCounts = TICKETS_DATA.reduce((acc, t) => {
+      acc[t.category] = (acc[t.category] || 0) + 1;
+      return acc;
+    }, {});
+    const topCategories = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const catVarCycle = ["--cat-tracking", "--cat-ai", "--cat-bid", "--cat-creative", "--cat-target"];
+
+    view.innerHTML = `
+      <section class="hero hero--compact">
+        <div class="hero__intro">
+          <span class="hero__eyebrow">Support</span>
+          <h1>Tickets<mark>-Übersicht</mark>.</h1>
+          <p>Alle Anfragen von Kundenagenturen an einem Ort. Diese Ansicht zeigt aktuell Beispieldaten — die Anbindung an das echte Ticketsystem folgt.</p>
+        </div>
+        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
+      </section>
+      <div class="toolbar">
+        <span class="toolbar__label">Was möchtest du finden?</span>
+        <label class="search">
+          ${ICONS.search}
+          <input type="search" id="search-input" placeholder="Tickets durchsuchen …" value="${escapeHtml(query || "")}" aria-label="Tickets durchsuchen" />
+          <button type="button" class="search__submit" id="search-submit" aria-label="Suche fokussieren">${ICONS.search}</button>
+        </label>
+        <nav class="tabs" aria-label="Status">
+          <button type="button" class="tabs__item ${st === "all" ? "is-active" : ""}" data-st="all">Alle</button>
+          <button type="button" class="tabs__item ${st === "open" ? "is-active" : ""}" data-st="open">Offen</button>
+          <button type="button" class="tabs__item ${st === "pending" ? "is-active" : ""}" data-st="pending">In Bearbeitung</button>
+          <button type="button" class="tabs__item ${st === "completed" ? "is-active" : ""}" data-st="completed">Erledigt</button>
+          <button type="button" class="tabs__item ${st === "cancelled" ? "is-active" : ""}" data-st="cancelled">Storniert</button>
+        </nav>
+      </div>
+      <div class="layout-2col">
+        <div class="feed">
+          <h2 class="feed__title">Tickets${items.length ? `<span class="feed__title__count">${items.length} Ergebnisse</span>` : ""}<span class="flash flash--muted">Beispieldaten</span></h2>
+          ${
+            items.length
+              ? `<ul class="ticket-list">${items.map(ticketRow).join("")}</ul>`
+              : `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Begriff oder Filter.</p></div>`
+          }
+        </div>
+        <aside class="side-rail">
+          <div class="ticket-stats">
+            <div class="ticket-stat" style="--stat-color: var(--accent)">
+              <span class="ticket-stat__icon">${ICONS.ticket}</span>
+              <strong>${counts.all}</strong>
+              <span>Alle Tickets</span>
+            </div>
+            <div class="ticket-stat" style="--stat-color: var(--yellow)">
+              <span class="ticket-stat__icon">${ICONS.hourglass}</span>
+              <strong>${counts.pending || 0}</strong>
+              <span>In Bearbeitung</span>
+            </div>
+            <div class="ticket-stat" style="--stat-color: var(--teal)">
+              <span class="ticket-stat__icon">${ICONS.check}</span>
+              <strong>${counts.completed || 0}</strong>
+              <span>Erledigt</span>
+            </div>
+            <div class="ticket-stat" style="--stat-color: var(--ink-soft)">
+              <span class="ticket-stat__icon">${ICONS.xCircle}</span>
+              <strong>${counts.cancelled || 0}</strong>
+              <span>Storniert</span>
+            </div>
+          </div>
+          <div class="side-card">
+            <div class="side-card__illustration">${SIDECARD_ILLUSTRATION}</div>
+            <h2>${ICONS.layoutGrid} Top-Kategorien</h2>
+            <div class="ticket-cats">
+              ${topCategories.map(([cat, count], i) => `<span class="chip" style="background-color: var(${catVarCycle[i % catVarCycle.length]})">${escapeHtml(cat)} · ${count}</span>`).join("")}
+            </div>
+          </div>
+          <div class="info-box">
+            <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
+            <h2>Eigene Anfrage stellen</h2>
+            <p class="pre-line">Du hast selbst ein Anliegen an Microsoft oder ein internes Ticket-Thema? Nutze vorerst unseren bestehenden Anfragen-Bereich.</p>
+            <a class="btn btn--primary" href="#/anfragen" style="margin-top: var(--space-4)">${ICONS.mail} Zu den Anfragen</a>
+          </div>
+        </aside>
+      </div>
+    `;
+
+    wireTopControls(
+      () => renderTickets(document.getElementById("search-input").value, st),
+      (nextSt) => renderTickets(query, nextSt),
+      "st"
+    );
+  }
+
   function learnRow(it) {
     return `
         <li>
@@ -1523,6 +1681,7 @@
         (a.dataset.nav === "praesentationen" && path.startsWith("/praesentationen")) ||
         (a.dataset.nav === "vorlagen" && path.startsWith("/vorlagen")) ||
         (a.dataset.nav === "case-studies" && path.startsWith("/case-studies")) ||
+        (a.dataset.nav === "tickets" && path.startsWith("/tickets")) ||
         (a.dataset.nav === "microsoft-learn" && path.startsWith("/microsoft-learn")) ||
         (a.dataset.nav === "anfragen" && path.startsWith("/anfragen"));
       if (active) a.setAttribute("aria-current", "page");
@@ -1559,6 +1718,8 @@
       renderCaseStudyDetail(path.slice("/case-studies/".length));
     } else if (path === "/case-studies") {
       renderCaseStudies(params.get("q") || "", params.get("ch") || "all");
+    } else if (path === "/tickets") {
+      renderTickets(params.get("q") || "", params.get("st") || "all");
     } else if (path === "/microsoft-learn") {
       renderMicrosoftLearn(params.get("q") || "");
     } else if (path === "/anfragen") {
