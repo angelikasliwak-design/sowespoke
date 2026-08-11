@@ -1187,15 +1187,31 @@ mark {
 }
 
 /* -- Tickets (2026-08-11, Beispieldaten) -------------------------------- */
-.ticket-list { display: flex; flex-direction: column; }
+/* Nutzer-Wunsch (2026-08-11): jede Ticket-Zeile als eigene Karte mit
+   Hover+Schatten statt der vorherigen dichten Listenzeile — übernimmt
+   dafür exakt die bestehende .article-list-Karten-/Hover-Sprache
+   (gleicher Radius/Schatten/Lift), damit keine dritte, neue
+   Karten-Variante im System entsteht. Bewusst OHNE cursor:pointer und
+   ohne Titel-/Pfeil-Farbwechsel bei :hover — die Zeilen bleiben nicht
+   klickbar (kein echtes Ziel dahinter), der Hover dient hier als
+   Lese-Hervorhebung, nicht als Klick-Affordanz. */
+.ticket-list { display: flex; flex-direction: column; gap: var(--space-4); }
 .ticket-row {
   display: flex;
   align-items: flex-start;
   gap: var(--space-4);
-  padding: var(--space-4) 0;
-  border-top: 1px solid var(--line);
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
 }
-.ticket-list li:first-child { border-top: none; padding-top: 0; }
+.ticket-row:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--accent);
+}
 .ticket-row__avatar {
   flex: none;
   width: 40px;
