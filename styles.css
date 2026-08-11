@@ -1298,7 +1298,10 @@ mark {
   height: 32px;
   border-radius: var(--radius-xs);
   background: var(--stat-color);
-  color: var(--c-surface);
+  /* --stat-icon-color pro Kachel überschreibbar (Nutzer-Entscheidung
+     2026-08-11): auf reinem Pop-Art-Gelb muss das Icon dunkel bleiben
+     ("--on-yellow: nie Weiß auf Gelb"), sonst reicht Weiß. */
+  color: var(--stat-icon-color, var(--c-surface));
 }
 .ticket-stat__icon svg { width: 16px; height: 16px; }
 .ticket-stat strong { font-family: var(--font-display); font-size: 1.5rem; line-height: 1; }

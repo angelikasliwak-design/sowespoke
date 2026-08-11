@@ -1381,11 +1381,18 @@
   // bzw. ~3.6:1 Kontrast auf Papier — das Projekt hatte dieses Problem für
   // Türkis bereits gelöst (--teal-text), aber hier nicht wiederverwendet.
   // Jetzt konsequent die Text-sicheren Varianten für beide Farben.
+  //
+  // Nutzer-Entscheidung (2026-08-11, danach): reines Pop-Art-Gelb soll
+  // trotzdem sichtbar bleiben, nur eben nicht als Fließtext (dort bleibt
+  // Kontrast eine harte Grenze, kein Geschmacksthema). Deshalb `borderVar`
+  // getrennt von `var`: `var` bleibt die text-sichere Farbe (Status-Label),
+  // `borderVar` ist die volle Pop-Art-Farbe für Flächen/Ränder (Avatar-Rand,
+  // Stat-Kachel) — bei "pending" bewusst unterschiedlich, sonst identisch.
   const TICKET_STATUS_META = {
-    open: { label: "Offen", var: "--accent" },
-    pending: { label: "In Bearbeitung", var: "--yellow-text" },
-    completed: { label: "Erledigt", var: "--teal-text" },
-    cancelled: { label: "Storniert", var: "--ink-soft" },
+    open: { label: "Offen", var: "--accent", borderVar: "--accent" },
+    pending: { label: "In Bearbeitung", var: "--yellow-text", borderVar: "--yellow" },
+    completed: { label: "Erledigt", var: "--teal-text", borderVar: "--teal-text" },
+    cancelled: { label: "Storniert", var: "--ink-soft", borderVar: "--ink-soft" },
   };
   const TICKET_PRIORITY_META = {
     high: { label: "Hoch", var: "--accent" },
@@ -1407,7 +1414,7 @@
     const prio = TICKET_PRIORITY_META[t.priority];
     return `
       <li class="ticket-row">
-        <span class="ticket-row__avatar" aria-hidden="true" style="background-color: var(${avatarColorVar(t.assigneeInitials)}); border-color: var(${status.var})">${escapeHtml(t.assigneeInitials)}</span>
+        <span class="ticket-row__avatar" aria-hidden="true" style="background-color: var(${avatarColorVar(t.assigneeInitials)}); border-color: var(${status.borderVar})">${escapeHtml(t.assigneeInitials)}</span>
         <span class="ticket-row__body">
           <span class="ticket-row__top">
             <span class="ticket-row__who"><strong>${escapeHtml(t.contactName)}</strong> · ${escapeHtml(t.id)}</span>
@@ -1515,7 +1522,7 @@
               <strong>${counts.all}</strong>
               <span>Alle Tickets</span>
             </button>
-            <button type="button" class="ticket-stat" style="--stat-color: var(--yellow)" data-st="pending" title="Nur „In Bearbeitung“ anzeigen">
+            <button type="button" class="ticket-stat" style="--stat-color: var(--yellow); --stat-icon-color: var(--on-yellow)" data-st="pending" title="Nur „In Bearbeitung“ anzeigen">
               <span class="ticket-stat__icon">${ICONS.hourglass}</span>
               <strong>${counts.pending || 0}</strong>
               <span>In Bearbeitung</span>

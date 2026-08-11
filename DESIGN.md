@@ -349,6 +349,12 @@ Stat-Kacheln, Kategorie-Chips und die "Eigene Anfrage stellen"-Karte waren rein 
 ### Tickets-Seite: Avatar-Rand statusbasiert statt schwarz (2026-08-11, Nutzer-Feedback)
 Der `2px`-Ink-Rand um die Initialen-Avatare passte laut Nutzer nicht ins Design. Ersetzt durch dieselbe Statusfarbe, die auch im Status-Label derselben Zeile steht (`TICKET_STATUS_META[t.status].var`, inline `border-color` überschreibt nur die Farbe der bestehenden `border`-Shorthand-Regel, Breite/Stil bleiben aus der Klasse) — verstärkt dieselbe Information an zwei Stellen der Zeile, statt eine dritte, unabhängige Farbe einzuführen.
 
+### Tickets-Seite: Gelb — Fläche vs. Text (2026-08-11, Nutzer-Entscheidung)
+Nutzer-Feedback: die gedämpfte Gold-Variante (`--yellow-text`) wirkte an der Stat-Kachel/dem Avatar-Rand zu "beige" für die Pop-Art-Identität, reines `--yellow` war dort gewünscht. **Wichtig für künftige Design-Arbeit — das ist keine "Beige ist nie Pop-Art"-Regel, sondern eine Flächen-vs.-Text-Unterscheidung:**
+- Reines `--yellow` (`#FFC600`) ist und bleibt die korrekte Pop-Art-Farbe für **Flächen/Ränder/Icon-Hintergründe** (Stat-Kachel, Avatar-Rand) — dort gilt weiterhin die bestehende Regel `--on-yellow: auf Gelb ausnahmslos dunkler Text, nie Weiß` (jetzt auch auf das Stat-Kachel-Icon angewendet, via neuer `--stat-icon-color`-Custom-Property, Default bleibt Weiß für die anderen drei Kacheln).
+- `--yellow-text` (`#856700`) bleibt ausschließlich für die zwei Stellen reserviert, an denen **Gelb selbst der Fließtext ist** (Status-Label "In Bearbeitung", Prioritäts-Label "Mittel") — dort ist reines `--yellow` unabhängig vom Stil physikalisch fast unlesbar (~1,5:1 Kontrast, siehe Kritik-Fund weiter oben), keine Geschmacksfrage.
+- `TICKET_STATUS_META` in `app.js` trägt seitdem zwei getrennte Felder: `var` (text-sicher, fürs Label) und `borderVar` (volle Pop-Art-Farbe, für Fläche/Rand) — bei "pending" bewusst unterschiedlich, bei den anderen drei Status identisch.
+
 ### Auth-Karte (`login.html`)
 - **Style:** Weiß, `14px` Radius, schlichter `1px`-Linienrand (`--line`), `shadow` (kein Typ-Rahmen/`shadow-glow`) — eigenständiger Seitentyp außerhalb der Bunte-Rahmen-Regel, da die Login-Seite bewusst öffentlich (ohne Session) ausgeliefert wird und nicht Teil der App-Kartenfamilie ist.
 - **Aufbau:** Logo, `h1` (Baloo 2), Hinweistext, Fehlermeldung (`role="alert"`), Google-Login-Button.
