@@ -162,54 +162,70 @@ const BRAND_BURST = `<svg viewBox="0 0 200 200" aria-hidden="true">
    bewusst füllt, statt eine einzelne Form isoliert in der Ecke schweben zu
    lassen. Alle Teile überlappen/berühren sich — kein verstreuter Einzel-Akzent
    (siehe DESIGN.md, Fassung "Marken-Formen zurückgenommen"). */
-/* Dritte Megafon-Fassung (2026-08-11) — Nutzer-Referenzbild (handgezeichneter,
-   wütend brüllender Megafon-Charakter mit Greifarm) als reine Stil-Inspiration
-   ausgewertet, NICHT kopiert: neu im eigenen Sowespoke-Marker-Doodle-Stil
-   gezeichnet (flache Markenfarben statt Skizzen-Schraffur, andere Proportionen/
-   Pose). Übernommen wurde das Grundprinzip "Megafon als Gesicht" — der
-   Trichter zeigt jetzt frontal nach links (Öffnung = Mund-Andeutung über
-   Weiß-Ellipse), darüber ein kleiner gelber Kopf-Ansatz mit zwei Augen +
-   zornigen Augenbrauen für Ausdruck, den es in der Vorgänger-Fassung nicht
-   gab. Griff endet in einer stilisierten greifenden Faust (Daumen-Andeutung)
-   statt eines reinen Griffstücks — Anspielung auf den Arm im Referenzbild,
-   aber als einfache Pop-Art-Form statt Anatomie.
-   - **Trichteröffnung jetzt auf vertikaler Bild-Mitte**, damit die Sprechblase
-     in `.hero__scene` (Pfeilspitze bei `top:50%`) tatsächlich auf Höhe der
-     Öffnung trifft — behebt die in DESIGN.md dokumentierte, bis hierhin
-     bewusst offen gelassene Ausrichtungs-Unstimmigkeit.
-   - **Kein verschachteltes rotate()-Wrapper-Koordinatensystem mehr** (Ursache
-     des Ausrichtungs-Bugs der Vorgänger-Fassung) — alle Koordinaten stehen
-     direkt in der finalen Bildschirm-Ausrichtung.
-   - Impact-Burst-Strahlen weiterhin programmatisch erzeugt (Seed-Funktion,
-     Node-Skript), diesmal bewusst so gefächert, dass sie den linken Sektor
-     (Richtung Sprechblase) aussparen statt ihn zu überlagern. */
-const HERO_ILLUSTRATION = `<svg viewBox="-66 -24 352 342" aria-hidden="true">
+/* Vierte Megafon-Fassung (2026-08-11, Korrekturdurchgang) — Nutzer stellte
+   nach der dritten Fassung klar: nicht nur lose "Stil-Inspiration", sondern
+   eng an der Komposition des Referenzbilds bleiben (Kreuzschraffur-Mund,
+   Gesicht direkt auf dem Trichter-Rand, hochgestreckter Flex-Arm mit Faust),
+   nur in Sowespoke-Farben statt Schwarz-Weiß. Mehrere Selbsttest-Runden
+   nötig (Skript-gestützt, `assemble-v2` bis `-v7` im Scratchpad):
+   - **v2:** Arm als eng gekrümmter Stroke-Pfad — las sich als "Donut"
+     (Kreis-in-Kreis) statt Arm+Faust, weil Kurve zu eng um sich selbst lief.
+   - **v4/v5:** Arm als zwei starre Kapsel-Segmente (Ober-/Unterarm) —
+     Segmente hingen nicht zusammen (Anschlusspunkte nicht exakt verkettet),
+     dann per Trigonometrie exakt verkettet (Ende Segment 1 = Start Segment 2).
+   - **v6:** Verkettete Kapsel-Segmente verliefen QUER durch die Trichter-
+     öffnung und verdeckten den Mund fast vollständig.
+   - **v7 (final):** Arm als weiter, offener Bogen-Pfad, der UNTEN LINKS um
+     den Trichter herumführt statt über sein Gesicht hinweg — Trichter bleibt
+     frei lesbar, Arm+Faust ebenfalls klar erkennbar. Faust = Ellipse +
+     Daumen-Kreis (gleiche Bauweise wie die rechte Greifhand am Griff).
+   - Kein separater Kopf-Aufsatz mehr — Augen/Augenbrauen sitzen jetzt direkt
+     auf dem Trichter-Rand (rotierte Ellipsen), wie im Referenzbild.
+   - Fünf kurze Diagonalstriche im weißen Trichterinneren als Kreuzschraffur-
+     Andeutung (diesmal korrekt innerhalb der weißen Ellipse platziert —
+     der erste Versuch in Fassung 3 hatte sie fälschlich außerhalb sitzen).
+   - **Trichteröffnung bleibt auf vertikaler Bild-Mitte** (unverändert aus
+     Fassung 3 übernommen) — Sprechblasen-Pfeilspitze (`top:50%` in
+     `.hero__scene`) trifft weiterhin auf Höhe der Öffnung.
+   - Farben ausschließlich `var(--accent)`/`var(--teal)`/`var(--yellow)`/
+     `var(--ink)`/`var(--c-surface)` — keine neuen Hex-Werte. */
+const HERO_ILLUSTRATION = `<svg viewBox="-106 -36 378 296" aria-hidden="true">
   <g id="mega-rays">
-    <path d="M26.9,29.3 Q20.1,8.8 20.2,-12.9" stroke="var(--ink)" stroke-width="5.7" fill="none" stroke-linecap="round"/>
-    <path d="M86.3,40.9 Q98.9,15.4 105.9,-12.2" stroke="var(--ink)" stroke-width="5.1" fill="none" stroke-linecap="round"/>
-    <path d="M132.5,67.8 Q151.6,45.4 175.0,27.5" stroke="var(--ink)" stroke-width="4.6" fill="none" stroke-linecap="round"/>
-    <path d="M159.9,112.3 Q177.5,108.7 193.7,101.0" stroke="var(--ink)" stroke-width="4.9" fill="none" stroke-linecap="round"/>
-    <path d="M165.8,167.6 Q184.4,170.5 203.1,173.1" stroke="var(--ink)" stroke-width="6.4" fill="none" stroke-linecap="round"/>
-    <path d="M147.8,212.4 Q167.1,230.0 191.6,239.2" stroke="var(--ink)" stroke-width="6.3" fill="none" stroke-linecap="round"/>
-    <path d="M114.4,244.1 Q133.4,266.8 149.2,291.9" stroke="var(--ink)" stroke-width="3.9" fill="none" stroke-linecap="round"/>
-    <path d="M69.6,264.9 Q68.8,286.9 78.3,306.8" stroke="var(--ink)" stroke-width="5.2" fill="none" stroke-linecap="round"/>
-    <path d="M10.7,266.6 Q8.2,284.5 0.4,300.8" stroke="var(--ink)" stroke-width="5.2" fill="none" stroke-linecap="round"/>
-    <path d="M-29.5,239.7 Q-46.0,251.8 -55.1,270.1" stroke="var(--ink)" stroke-width="3.6" fill="none" stroke-linecap="round"/>
+    <path d="M127.0,39.2 Q114.2,33.0 100.5,29.1" stroke="var(--ink)" stroke-width="3.9" fill="none" stroke-linecap="round"/>
+    <path d="M134.0,25.9 Q123.3,9.9 108.9,-2.9" stroke="var(--ink)" stroke-width="5.6" fill="none" stroke-linecap="round"/>
+    <path d="M147.6,19.0 Q144.4,1.2 139.3,-16.2" stroke="var(--ink)" stroke-width="3.6" fill="none" stroke-linecap="round"/>
+    <path d="M161.2,19.4 Q162.4,7.0 166.2,-4.8" stroke="var(--ink)" stroke-width="4.3" fill="none" stroke-linecap="round"/>
+    <path d="M-74.8,26.9 Q-84.8,19.0 -96.0,12.9" stroke="var(--ink)" stroke-width="3.8" fill="none" stroke-linecap="round"/>
+    <path d="M-69.2,16.8 Q-74.8,2.8 -84.6,-8.5" stroke="var(--ink)" stroke-width="4.4" fill="none" stroke-linecap="round"/>
+    <path d="M-53.5,14.1 Q-49.9,-5.6 -51.1,-25.6" stroke="var(--ink)" stroke-width="6.2" fill="none" stroke-linecap="round"/>
   </g>
+
   <path d="M175,122 C130,108 80,80 40,50 C10,90 10,210 40,250 C80,220 130,192 175,178 Z"
     fill="var(--accent)" stroke="var(--ink)" stroke-width="16" stroke-linejoin="round"/>
   <ellipse cx="46" cy="150" rx="24" ry="88" fill="var(--c-surface)" stroke="var(--ink)" stroke-width="9"/>
-  <circle cx="50" cy="150" r="12" fill="var(--ink)" opacity="0.18"/>
-  <ellipse cx="163" cy="100" rx="36" ry="28" fill="var(--yellow)" stroke="var(--ink)" stroke-width="10"/>
-  <path d="M138,84 L156,97" stroke="var(--ink)" stroke-width="7" stroke-linecap="round"/>
-  <path d="M170,97 L188,82" stroke="var(--ink)" stroke-width="7" stroke-linecap="round"/>
-  <circle cx="150" cy="104" r="5" fill="var(--ink)"/>
-  <circle cx="176" cy="104" r="5" fill="var(--ink)"/>
-  <g transform="translate(180,165) rotate(35)">
-    <rect x="0" y="-16" width="95" height="32" rx="16" fill="var(--teal)" stroke="var(--ink)" stroke-width="10" stroke-linejoin="round"/>
-    <circle cx="20" cy="0" r="10" fill="var(--yellow)" stroke="var(--ink)" stroke-width="6"/>
-    <ellipse cx="72" cy="2" rx="26" ry="24" fill="var(--c-surface)" stroke="var(--ink)" stroke-width="10"/>
-    <circle cx="60" cy="-15" r="11" fill="var(--c-surface)" stroke="var(--ink)" stroke-width="8"/>
+  <path d="M34,108 L54,124" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M30,135 L52,148" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M29,163 L52,174" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M32,190 L54,203" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M38,213 L57,224" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/>
+
+  <path d="M95,225 C40,268 -45,235 -78,140 C-95,90 -78,55 -35,48" stroke="var(--ink)" stroke-width="34" fill="none" stroke-linecap="round"/>
+  <path d="M95,225 C40,268 -45,235 -78,140 C-95,90 -78,55 -35,48" stroke="var(--c-surface)" stroke-width="24" fill="none" stroke-linecap="round"/>
+  <ellipse cx="-35" cy="48" rx="25" ry="23" fill="var(--c-surface)" stroke="var(--ink)" stroke-width="11"/>
+  <circle cx="-14" cy="30" r="12" fill="var(--c-surface)" stroke="var(--ink)" stroke-width="8"/>
+
+  <ellipse cx="118" cy="88" rx="13" ry="10" fill="var(--c-surface)" stroke="var(--ink)" stroke-width="6.5" transform="rotate(-16 118 88)"/>
+  <ellipse cx="150" cy="76" rx="13" ry="10" fill="var(--c-surface)" stroke="var(--ink)" stroke-width="6.5" transform="rotate(-12 150 76)"/>
+  <circle cx="120" cy="89" r="4" fill="var(--ink)"/>
+  <circle cx="152" cy="77" r="4" fill="var(--ink)"/>
+  <path d="M100,70 L124,80" stroke="var(--ink)" stroke-width="8.5" stroke-linecap="round"/>
+  <path d="M132,63 L162,58" stroke="var(--ink)" stroke-width="8.5" stroke-linecap="round"/>
+
+  <g transform="translate(183,168) rotate(28)">
+    <rect x="0" y="-15" width="52" height="30" rx="14" fill="var(--teal)" stroke="var(--ink)" stroke-width="9" stroke-linejoin="round"/>
+    <circle cx="16" cy="0" r="9" fill="var(--yellow)" stroke="var(--ink)" stroke-width="5"/>
+    <ellipse cx="52" cy="1" rx="25" ry="23" fill="var(--c-surface)" stroke="var(--ink)" stroke-width="10"/>
+    <circle cx="40" cy="-15" r="10" fill="var(--c-surface)" stroke="var(--ink)" stroke-width="7"/>
   </g>
 </svg>`;
 
