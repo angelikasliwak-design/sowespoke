@@ -1864,21 +1864,18 @@
           </label>
           <p class="idea-form__hint" id="idea-author-hint"></p>
           <p class="mailgen__warning" id="idea-form-error" role="alert" hidden>${ICONS.flash}<span></span></p>
-          <button type="submit" class="btn btn--primary" id="idea-submit">${ICONS.rocket} Idee abschicken</button>
+          <div class="mailgen__actions">
+            <button type="submit" class="btn btn--primary" id="idea-submit">${ICONS.rocket} Idee abschicken</button>
+            <span class="mailgen__status" id="idea-submit-status">${ICONS.check} Danke, ist eingereicht!</span>
+          </div>
         </form>
 
-        <div class="info-box idea-panel" id="idea-panel">
-          <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
-          <div class="idea-panel__idle">
-            <h2>So funktioniert's</h2>
-            <p>Deine Idee erscheint direkt unten in der Liste, sobald du sie abschickst — für das ganze Team sichtbar, mit deinem Namen oder anonym.</p>
+        <div class="idea-team-panel">
+          <h2 class="feed__title">Ideen aus dem Team<span class="feed__title__count" id="idea-count"></span></h2>
+          <div class="idea-team-panel__list" id="idea-list" aria-live="polite">
+            <p class="idea-list__status">Lädt …</p>
           </div>
         </div>
-      </div>
-
-      <h2 class="feed__title">Ideen aus dem Team<span class="feed__title__count" id="idea-count"></span></h2>
-      <div class="card-grid" id="idea-list" aria-live="polite">
-        <p class="idea-list__status">Lädt …</p>
       </div>
       </div>
     `;
@@ -1891,10 +1888,19 @@
   // auch den DELETE-Endpunkt selbst ab). Frontend zeigt den Button also nur
   // echten Admins, verlässt sich aber nicht allein darauf.
   function ideaCardHtml(idea, i, isAdmin) {
-    const cardColor = i % 2 ? "--teal" : "--accent";
+    // Rahmen wechselt bewusst zwischen Magenta und Gelb (2026-08-14,
+    // Nutzer-Feedback: "nicht alles rosa auf dieser Seite") — echte
+    // Ausnahme von der sonst geltenden Bunte-Rahmen-Regel (Farbe = fester
+    // Komponenten-Typ, siehe DESIGN.md), hier bewusst für Abwechslung
+    // innerhalb EINER Liste gleichwertiger Karten statt für verschiedene
+    // Komponenten-Typen. Icon-Textfarbe folgt mit (--on-yellow auf Gelb,
+    // nie Weiß).
+    const isYellow = i % 2 === 1;
+    const cardColor = isYellow ? "--yellow" : "--accent";
+    const iconTextColor = isYellow ? "var(--on-yellow)" : "var(--c-surface)";
     return `
-      <div class="side-card idea-card">
-        <span class="side-card__icon" style="background-color: var(${cardColor})">${ICONS.lightbulb}</span>
+      <div class="side-card idea-card" style="--idea-accent: var(${cardColor}); border-color: var(--idea-accent)">
+        <span class="side-card__icon" style="background-color: var(${cardColor}); color: ${iconTextColor}">${ICONS.lightbulb}</span>
         ${isAdmin ? `
         <div class="idea-card__admin" data-idea-admin="${escapeHtml(idea.id)}">
           <button type="button" class="idea-card__delete" data-delete-trigger title="Idee löschen" aria-label="Idee löschen">${ICONS.close}</button>
@@ -2003,7 +2009,8 @@
     const form = document.getElementById("idea-form");
     const errorEl = document.getElementById("idea-form-error");
     const submitBtn = document.getElementById("idea-submit");
-    const panel = document.getElementById("idea-panel");
+    const statusEl = document.getElementById("idea-submit-status");
+    let statusTimer;
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -2028,22 +2035,14 @@
         if (!res.ok) throw new Error(data.error || "Einreichen fehlgeschlagen");
         form.reset();
         updateAuthorHint();
-        panel.innerHTML = `
-          <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
-          <div class="idea-panel__success">
-            <div class="idea-panel__rocket"><img src="assets/brand/hero-rakete.png" alt="" /></div>
-            <h2>Danke für deinen Einsatz!</h2>
-            <p>Deine Idee wurde erfolgreich eingereicht und ist jetzt für das Team sichtbar.</p>
-            <button type="button" class="btn btn--secondary" id="idea-panel-reset">${ICONS.arrowLeft} Weitere Idee einreichen</button>
-          </div>`;
-        document.getElementById("idea-panel-reset")?.addEventListener("click", () => {
-          panel.innerHTML = `
-            <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
-            <div class="idea-panel__idle">
-              <h2>So funktioniert's</h2>
-              <p>Deine Idee erscheint direkt unten in der Liste, sobald du sie abschickst — für das ganze Team sichtbar, mit deinem Namen oder anonym.</p>
-            </div>`;
-        });
+        // Distill (2026-08-14, Nutzer-Wunsch): das vorherige "Danke"-Panel
+        // ist weg, an seiner Stelle steht jetzt dauerhaft "Ideen aus dem
+        // Team" — Bestätigung läuft stattdessen als kurzer Inline-Status
+        // neben dem Button, gleiches Muster wie "Kopiert" beim Mail-
+        // Generator (wireMsCopyButton).
+        statusEl.classList.add("is-visible");
+        clearTimeout(statusTimer);
+        statusTimer = setTimeout(() => statusEl.classList.remove("is-visible"), 3200);
         loadIdeaList(isAdmin);
       } catch (err) {
         errorEl.querySelector("span").textContent = err.message || "Einreichen fehlgeschlagen — später erneut versuchen.";

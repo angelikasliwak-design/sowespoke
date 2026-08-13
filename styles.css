@@ -476,8 +476,16 @@ mark {
   padding: 0.3em 0.75em;
   border: 1.5px solid var(--ink);
   border-radius: 999px;
-  box-shadow: 1.5px 1.5px 0 var(--ink);
-  transform: rotate(-4deg);
+  /* Weicher statt hart (2026-08-14, Nutzer-Feedback: "sieht aus, als ob
+     alles nicht eine große Ganze ist") — seit dem Wechsel zu einer echten
+     Foto-Illustration (assets/brand/hero-megafon.png, mit weichem
+     drop-shadow) wirkte der harte, unverwischte Comic-Sticker-Schatten
+     (Versatz ohne Weichzeichnung) neben dem fotorealistischen Megafon wie
+     aus einer anderen, flacheren Bildwelt. Gleicher weicher Schatten-Stil
+     wie das Megafon-Bild selbst, nur noch minimale Drehung statt der
+     vorherigen deutlichen Sticker-Schräglage. */
+  box-shadow: 0 4px 10px -2px color-mix(in srgb, var(--ink) 35%, transparent);
+  transform: rotate(-1.5deg);
 }
 /* Master-Prompt Abschnitt 3.5: "dezenter Puls-Punkt" fürs Live-Badge. */
 .hero__sticker-dot {
@@ -1706,19 +1714,16 @@ code {
 .idea-form__anon input { accent-color: var(--accent); width: 15px; height: 15px; }
 .idea-form__hint { font-size: 0.82rem; color: var(--ink-soft); margin-top: calc(-1 * var(--space-2)); min-height: 1.2em; }
 .idea-form > .btn { align-self: flex-start; }
-.idea-panel { display: flex; flex-direction: column; }
-.idea-panel h2 { font-size: 1rem; font-weight: 700; margin-bottom: var(--space-2); }
-.idea-panel p { color: var(--ink-soft); font-size: 0.92rem; }
-/* Erfolgs-Zustand nach dem Absenden — dieselbe Rakete wie im Hero, hier
-   verkleinert innerhalb des Panels, statt ein zweites Illustrations-Asset
-   zu bauen. Panel wechselt per innerHTML zwischen Leerlauf-/Erfolgstext,
-   kein separates verstecktes Element (ehrlicher Zustand statt einer
-   Erfolgsmeldung, die schon vor dem ersten Absenden sichtbar wäre). */
-.idea-panel__success { text-align: center; }
-.idea-panel__rocket { width: 96px; height: 88px; margin: 0 auto var(--space-3); }
-.idea-panel__rocket img { width: 100%; height: 100%; object-fit: contain; }
-.idea-panel__success .btn { margin-top: var(--space-3); }
-.idea-list__status { color: var(--ink-soft); font-size: 0.92rem; grid-column: 1 / -1; }
+/* "So funktioniert's"-Infobox entfernt (2026-08-14, Nutzer-Feedback: box
+   löschen, "Ideen aus dem Team" stattdessen daneben) — die rechte Spalte
+   zeigt jetzt dauerhaft die Team-Liste statt eines separaten Status-
+   Panels. Bestätigung nach dem Absenden läuft als kurzer Inline-Status
+   neben dem Button (.mailgen__status, siehe app.js), nicht mehr als
+   eigener Panel-Zustand. */
+.idea-team-panel { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
+.idea-team-panel .feed__title { margin: 0; }
+.idea-team-panel__list { display: flex; flex-direction: column; gap: var(--space-4); }
+.idea-list__status { color: var(--ink-soft); font-size: 0.92rem; }
 .idea-card__meta {
   display: flex;
   align-items: center;
@@ -1746,26 +1751,45 @@ code {
    app.js gerendert, nicht in index.html) — anders als .page-bg absichtlich
    nur auf dieser einen Seite, da das Foto "das Team" zeigt und damit
    inhaltlich an "Ideen aus dem Team" gebunden ist, nicht an die ganze App. */
-.ideas-page { position: relative; z-index: 0; }
+/* Bug-Fund (2026-08-14): .ideas-team-bg liegt hinter dem gesamten Inhalt
+   (z-index:-1) — ohne echten Leerraum unter den Karten war praktisch die
+   ganze 400px-Bildfläche von den blickdichten weißen Karten verdeckt,
+   sichtbar blieb nur ein schmaler Streifen direkt über der Fußzeile
+   (zufällig genau der Fuß-Bereich des Fotos). padding-bottom schafft
+   echten, absichtlichen Freiraum, in dem das Foto (inkl. Gesichter)
+   tatsächlich zu sehen ist, statt zufällig nur den untersten Rand zu
+   zeigen. */
+.ideas-page { position: relative; z-index: 0; padding-bottom: clamp(200px, 24vw, 320px); }
 .ideas-team-bg {
   position: absolute;
   inset-inline: 0;
   bottom: 0;
-  height: clamp(200px, 26vw, 340px);
+  height: clamp(260px, 30vw, 400px);
   z-index: -1;
   pointer-events: none;
   background-image: url("assets/brand/ideas-team.png");
   background-repeat: no-repeat;
   background-position: bottom center;
-  background-size: cover;
+  /* Bug-Fund (2026-08-14, Nutzer-Screenshot): "cover" skalierte das Bild
+     bei breiten Viewports so stark hoch, dass vom unten verankerten
+     Ausschnitt nur noch die Füße sichtbar waren — "man sieht keine
+     Gesichter". "contain" zeigt das ganze Foto (Gesichter bis Füße) immer
+     vollständig, notfalls mit unsichtbarem Leerraum an den Seiten (bei der
+     ohnehin sehr geringen Deckkraft kein Problem). */
+  background-size: contain;
   /* 15–20 % Deckkraft (Nutzer-Vorgabe) — bewusst am unteren Ende (16 %),
      damit es als leiser Hintergrund liest statt mit den Karten darüber zu
-     konkurrieren ("nicht vollgeladen, sondern decent"). Weicher Verlauf von
-     oben (unsichtbar) nach unten (volle 16 %) statt einer harten Kante,
-     gleiche Technik wie .page-bg. */
+     konkurrieren ("nicht vollgeladen, sondern decent"). */
   opacity: 0.16;
-  mask-image: linear-gradient(to bottom, transparent 0%, black 55%, black 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 55%, black 100%);
+  /* Bug-Fund (2026-08-14): bei "cover" (großflächig, randlos) ergab ein
+     Verlauf über die oberen 55% Sinn, weil das Bild dort ohnehin nur
+     Freiraum über den Köpfen zeigte. Nach dem Wechsel zu "contain" füllt
+     das Foto (Gesichter bis Füße) die GANZE Boxhöhe — derselbe 55 %-
+     Verlauf hätte also die Gesichter mitmaskiert, exakt das gemeldete
+     Problem. Jetzt nur noch ein kurzer Verlauf über die obersten 15 % als
+     weiche obere Kante, der Rest (inkl. Gesichter) bleibt sichtbar. */
+  mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 100%);
 }
 @media (prefers-reduced-transparency: reduce) {
   .ideas-team-bg { display: none; }
