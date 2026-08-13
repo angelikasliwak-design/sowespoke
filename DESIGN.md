@@ -479,6 +479,14 @@ Nutzer-Feedback: die gedämpfte Gold-Variante (`--yellow-text`) wirkte an der St
 - **Positionierung (`.hero__illustration img`):** `transform: translate(-18px, 20px) rotate(-8deg)` nach Nutzer-Vorgabe ("etwas weiter nach links, 30–50px nach unten, 8–12° nach links unten geneigt") — Werte am unteren Ende der genannten Bereiche gewählt, weil die obere Grenze bei der News-Seite (`.hero--connected`, mit Sprechblase) sonst zu nah an den darunterliegenden Suchfilter kam (per `getBoundingClientRect()` gegengeprüft: sichtbare Pixel überlappen nicht, auch wenn die rotierte Bounding-Box durch transparente PNG-Ecken rechnerisch knapp heranreicht). Basisgröße von 250×254 auf 312×316 erhöht (~25%, `.hero--compact` proportional auf 210×213).
 - **Bewusst NICHT geändert:** die Iterationsgeschichte (Fassungen 2-7) bleibt vollständig oben stehen — dokumentiert eine echte Design-Entscheidungskette, wird nicht rückwirkend gelöscht, obwohl das Endergebnis jetzt kein SVG mehr ist.
 
+### Ideenboard: Team-Foto als dezenter Hintergrund unten (2026-08-14, Nutzer-Wunsch)
+- **Anlass:** Nutzer lieferte ein Halbton-Bild des ganzen Teams (Codex-generiert, Marken-Magenta) mit der Vorgabe "unten als Hintergrund, ~15–20 % Deckkraft... nicht vollgeladen, sondern decent".
+- **Platzierung geklärt statt geraten:** "unten" war mehrdeutig (site-weite Fußzeile vs. nur Ideenboard) — per Rückfrage geklärt: nur die Ideenboard-Seite, da das Foto inhaltlich exakt zu "Ideen aus dem Team" passt, nicht zu allen anderen Seiten.
+- **Technik:** `.ideas-page` (neuer Seiten-Wrapper, nur in `renderIdeas()`, nicht in `index.html`) + `.ideas-team-bg`, gleiche `z-index:-1`-mit-eigenem-Stacking-Context-Technik wie das bestehende, site-weite `.page-bg` (siehe dortiger Kommentar zum Containing-Block-Fund vom 2026-08-10) — aber bewusst NICHT in `.page-bg` selbst integriert, weil dieses Bild nur auf einer Seite Sinn ergibt. Weicher Verlaufs-Maskierung von oben (unsichtbar) nach unten (volle Deckkraft) statt harter Kante, gleiches Prinzip wie `.page-bg`, nur umgekehrte Richtung (dort blendet der Hintergrund nach unten aus, hier blendet er von oben ein, da an der Unterkante der Seite verankert).
+- **Deckkraft:** `0.16` — unteres Ende des Nutzer-Vorgabebereichs (15–20 %), damit es wirklich als leiser Hintergrund liest und nicht mit den Ideen-Karten darüber konkurriert.
+- **Datei-Optimierung:** Original 2007×783/1,9MB auf 900×351/~477KB verkleinert (Canvas-Resize) — bei 16 % Deckkraft ist die feine Halbton-Textur ohnehin kaum wahrnehmbar, volle Auflösung wäre unnötiges Gewicht gewesen.
+- **`prefers-reduced-transparency: reduce`** blendet den Hintergrund komplett aus (gleiche Rücksicht wie bei `.page-bg`).
+
 ## Do's and Don'ts
 
 ### Do:

@@ -1832,6 +1832,8 @@
      (Nutzer-Entscheidung: schlanker erster Wurf). */
   function renderIdeas() {
     view.innerHTML = `
+      <div class="ideas-page">
+      <div class="ideas-team-bg" aria-hidden="true"></div>
       <section class="hero hero--compact">
         <div class="hero__intro">
           <span class="hero__eyebrow">Ideen &amp; Vorschläge</span>
@@ -1877,6 +1879,7 @@
       <h2 class="feed__title">Ideen aus dem Team<span class="feed__title__count" id="idea-count"></span></h2>
       <div class="card-grid" id="idea-list" aria-live="polite">
         <p class="idea-list__status">Lädt …</p>
+      </div>
       </div>
     `;
     wireIdeas();
