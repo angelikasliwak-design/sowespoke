@@ -1154,7 +1154,10 @@
         <h1>${escapeHtml(p.title)}</h1>
         <div class="detail__body">
           <div class="detail__main">
-            <p>${escapeHtml(p.summaryDE)}</p>
+            <div class="detail__summary">
+              <p class="detail__summary-text">${escapeHtml(p.summaryDE)}</p>
+              <button type="button" class="detail__summary-expand" data-expand-summary>Vollständig anzeigen ${ICONS.arrowRight}</button>
+            </div>
             <div class="info-box">
         <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
               <h2>Kernfakten aus der Präsentation</h2>
@@ -1177,6 +1180,28 @@
     `;
 
     wireMailGen(p.id, [], `Neu bei Microsoft Advertising: ${p.title}`, p.customerBlurb, p.emailHookDE);
+    wirePresentationSummary();
+  }
+
+  // Distill (2026-08-13, Nutzer-Feedback: der volle Zusammenfassungstext
+  // ganz oben ist "nicht so wichtig", wirkt als Textwand vor den eigentlich
+  // wichtigen Kernfakten). Gleiches Klammer-Muster wie bei den
+  // Best-Practices-Karten (wireBestPracticeCards): 3 Zeilen geklammert,
+  // Button nur bei tatsächlicher Kürzung sichtbar (scrollHeight-Check statt
+  // geratener Zeichen-Grenze) — der volle, treue Text bleibt bei Bedarf
+  // erreichbar, ist nur nicht mehr die Standardansicht.
+  function wirePresentationSummary() {
+    const text = view.querySelector(".detail__summary-text");
+    const btn = view.querySelector("[data-expand-summary]");
+    if (!text || !btn) return;
+    if (text.scrollHeight <= text.clientHeight + 2) {
+      btn.remove();
+      return;
+    }
+    btn.addEventListener("click", () => {
+      const expanded = text.classList.toggle("is-expanded");
+      btn.innerHTML = expanded ? `Weniger anzeigen ${ICONS.arrowRight}` : `Vollständig anzeigen ${ICONS.arrowRight}`;
+    });
   }
 
   /* ------------------------------------------------------------- Seite: Vorlagen */

@@ -1152,12 +1152,37 @@ mark {
 @media (max-width: 60rem) {
   .detail__body { grid-template-columns: minmax(0, 1fr); }
 }
-.detail__main { display: flex; flex-direction: column; gap: var(--space-5); }
-.detail__main > p { max-width: 68ch; }
+.detail__main { display: flex; flex-direction: column; gap: var(--space-4); }
 .detail__main > .btn { align-self: flex-start; }
 .info-box__preview { max-width: none; white-space: pre-line; }
-.detail__main > p { color: var(--ink); }
 .detail__side { display: flex; flex-direction: column; gap: var(--space-4); }
+/* Distill (2026-08-13): Zusammenfassung ist jetzt bewusst die leiseste
+   Stimme auf der Seite (kleiner, gedämpfte Farbe, geklammert) — die
+   Kernfakten-Box direkt darunter soll die erste wirklich gelesene Fläche
+   sein, nicht der Fließtext. Gleiche Klammer-Mechanik wie
+   .side-card__body/.side-card__expand, eigene Klassen, da eigener
+   Komponenten-Typ (Fließtext-Absatz statt Karte). */
+.detail__summary { max-width: 68ch; }
+.detail__summary-text {
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+.detail__summary-text.is-expanded { display: block; overflow: visible; }
+.detail__summary-expand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  margin-top: var(--space-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+.detail__summary-expand svg { width: 12px; height: 12px; transition: transform 160ms ease; }
+.detail__summary-expand:hover svg { transform: translateX(2px); }
 
 .chip {
   display: inline-flex;
@@ -1178,6 +1203,7 @@ mark {
   border-radius: var(--radius);
   border: 3px solid var(--teal);
   padding: var(--space-4) var(--space-5);
+  margin-top: var(--space-2);
 }
 .info-box > *:not(.info-box__illustration) { position: relative; }
 .info-box h2 { font-size: 0.95rem; font-weight: 700; margin-bottom: var(--space-3); }
