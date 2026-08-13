@@ -16,7 +16,7 @@
     Allgemein: "--ink-soft",
   };
 
-  const NAV_ICON = { news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", "microsoft-learn": "sparkle", anfragen: "mail" };
+  const NAV_ICON = { news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", "microsoft-learn": "sparkle", anfragen: "mail", ideen: "lightbulb" };
   railLinks.forEach((a) => {
     const iconSlot = a.querySelector(".rail__nav-icon");
     if (iconSlot) iconSlot.innerHTML = ICONS[NAV_ICON[a.dataset.nav]];
@@ -395,7 +395,7 @@
     // "/praesentationen" (ohne Slash, die Liste) blockt die schwebende
     // Bubble jetzt zusätzlich (2026-08-13) — dort zeigt .fact-widget schon
     // denselben Hund, siehe Kommentar bei runMascotAnimation weiter oben.
-    return path.startsWith("/praesentationen") || path.startsWith("/vorlagen/") || path === "/anfragen";
+    return path.startsWith("/praesentationen") || path.startsWith("/vorlagen/") || path === "/anfragen" || path === "/ideen";
   }
 
   function showMascot() {
@@ -1748,6 +1748,185 @@
     wireMailGen(t.id, t.extraFields || [], t.subject, t.contentIhr, null);
   }
 
+  /* ------------------------------------------------------------- Seite: Ideen */
+  /* Neues Ideenboard (2026-08-13, Nutzer-Wunsch nach Referenz-Mockup).
+     Echtes Backend (functions/api/ideas.js, Cloudflare KV) statt Demo-Daten
+     — bewusste Nutzer-Entscheidung, damit "ist jetzt für das Team sichtbar"
+     stimmt, siehe DESIGN.md. Autor:in kommt aus der Session (kein freies
+     Namensfeld, siehe Backend-Kommentar), mit bewusst wählbarer
+     "Anonym"-Option. Kein Abstimmen/Voting in dieser ersten Fassung
+     (Nutzer-Entscheidung: schlanker erster Wurf). */
+  function renderIdeas() {
+    view.innerHTML = `
+      <section class="hero hero--compact">
+        <div class="hero__intro">
+          <span class="hero__eyebrow">Ideen &amp; Vorschläge</span>
+          <h1>Hast du eine <mark>Idee</mark>? Dann her damit!</h1>
+          <p>Teile neue Ansätze, Verbesserungsvorschläge oder kreative Impulse mit dem Team. Jede Idee zählt und wird für alle sichtbar.</p>
+        </div>
+        <div class="hero__illustration">${IDEAS_HERO_ILLUSTRATION}</div>
+      </section>
+
+      <div class="ideas-layout">
+        <form class="side-card idea-form" id="idea-form" novalidate>
+          <h2>Neue Idee einreichen</h2>
+          <div class="mailgen__field">
+            <label for="idea-title">Titel deiner Idee</label>
+            <input type="text" id="idea-title" maxlength="120" placeholder="Kurz und treffend formulieren …" required />
+          </div>
+          <div class="mailgen__field">
+            <label for="idea-description">Beschreibe deine Idee</label>
+            <textarea id="idea-description" maxlength="1000" rows="4" placeholder="Erzähl uns kurz, worum es geht und was die Idee bringen würde …" required></textarea>
+          </div>
+          <div class="mailgen__field">
+            <label for="idea-benefit">Welchen Nutzen hätte die Idee? (optional)</label>
+            <input type="text" id="idea-benefit" maxlength="500" placeholder="Welche Vorteile bringt sie dem Team oder unserer Arbeit?" />
+          </div>
+          <label class="idea-form__anon">
+            <input type="checkbox" id="idea-anonymous" />
+            <span>Anonym einreichen</span>
+          </label>
+          <p class="idea-form__hint" id="idea-author-hint"></p>
+          <p class="mailgen__warning" id="idea-form-error" role="alert" hidden>${ICONS.flash}<span></span></p>
+          <button type="submit" class="btn btn--primary" id="idea-submit">${ICONS.rocket} Idee abschicken</button>
+        </form>
+
+        <div class="info-box idea-panel" id="idea-panel">
+          <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
+          <div class="idea-panel__idle">
+            <h2>So funktioniert's</h2>
+            <p>Deine Idee erscheint direkt unten in der Liste, sobald du sie abschickst — für das ganze Team sichtbar, mit deinem Namen oder anonym.</p>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="feed__title">Ideen aus dem Team<span class="feed__title__count" id="idea-count"></span></h2>
+      <div class="card-grid" id="idea-list" aria-live="polite">
+        <p class="idea-list__status">Lädt …</p>
+      </div>
+    `;
+    wireIdeas();
+  }
+
+  function ideaCardHtml(idea, i) {
+    const cardColor = i % 2 ? "--teal" : "--accent";
+    return `
+      <div class="side-card idea-card">
+        <span class="side-card__icon" style="background-color: var(${cardColor})">${ICONS.lightbulb}</span>
+        <h3>${escapeHtml(idea.title)}</h3>
+        <p class="pre-line side-card__body">${escapeHtml(idea.description)}${idea.benefit ? `\n\nNutzen: ${escapeHtml(idea.benefit)}` : ""}</p>
+        <button type="button" class="side-card__expand" data-expand>Vollständig anzeigen ${ICONS.arrowRight}</button>
+        <div class="idea-card__meta">
+          <span>${escapeHtml(idea.authorLabel === "Anonym" ? "Anonym" : idea.authorLabel.split("@")[0])}</span>
+          <span>${formatDate(idea.createdAt)}</span>
+        </div>
+      </div>`;
+  }
+
+  async function loadIdeaList() {
+    const list = document.getElementById("idea-list");
+    const count = document.getElementById("idea-count");
+    if (!list) return;
+    try {
+      const res = await fetch("/api/ideas");
+      const data = await res.json();
+      const items = data.items || [];
+      if (data.error && !items.length) {
+        list.innerHTML = `<p class="idea-list__status">${escapeHtml(data.error)} — Ideen können aktuell nicht geladen werden.</p>`;
+        return;
+      }
+      if (!items.length) {
+        list.innerHTML = `<p class="idea-list__status">Noch keine Ideen eingereicht — sei die erste Person!</p>`;
+        if (count) count.textContent = "";
+        return;
+      }
+      list.innerHTML = items.map(ideaCardHtml).join("");
+      if (count) count.textContent = `${items.length} ${items.length === 1 ? "Idee" : "Ideen"}`;
+      wireBestPracticeCards();
+    } catch {
+      list.innerHTML = `<p class="idea-list__status">Ideen konnten nicht geladen werden — später erneut versuchen.</p>`;
+    }
+  }
+
+  function wireIdeas() {
+    loadIdeaList();
+
+    const authorHint = document.getElementById("idea-author-hint");
+    const anonCheckbox = document.getElementById("idea-anonymous");
+    let currentEmail = "";
+    (async () => {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) currentEmail = (await res.json()).email || "";
+      } catch {
+        // Hint bleibt einfach leer, wenn die Abfrage fehlschlägt.
+      }
+      updateAuthorHint();
+    })();
+    function updateAuthorHint() {
+      if (!authorHint) return;
+      authorHint.textContent = anonCheckbox.checked
+        ? "Wird ohne deinen Namen eingereicht."
+        : currentEmail
+        ? `Wird eingereicht als ${currentEmail}.`
+        : "";
+    }
+    anonCheckbox?.addEventListener("change", updateAuthorHint);
+
+    const form = document.getElementById("idea-form");
+    const errorEl = document.getElementById("idea-form-error");
+    const submitBtn = document.getElementById("idea-submit");
+    const panel = document.getElementById("idea-panel");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorEl.hidden = true;
+      const title = document.getElementById("idea-title").value.trim();
+      const description = document.getElementById("idea-description").value.trim();
+      const benefit = document.getElementById("idea-benefit").value.trim();
+      const anonymous = anonCheckbox.checked;
+      if (!title || !description) {
+        errorEl.querySelector("span").textContent = "Titel und Beschreibung sind erforderlich.";
+        errorEl.hidden = false;
+        return;
+      }
+      submitBtn.disabled = true;
+      try {
+        const res = await fetch("/api/ideas", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, description, benefit, anonymous }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Einreichen fehlgeschlagen");
+        form.reset();
+        updateAuthorHint();
+        panel.innerHTML = `
+          <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
+          <div class="idea-panel__success">
+            <div class="idea-panel__rocket">${IDEAS_HERO_ILLUSTRATION}</div>
+            <h2>Danke für deinen Einsatz!</h2>
+            <p>Deine Idee wurde erfolgreich eingereicht und ist jetzt für das Team sichtbar.</p>
+            <button type="button" class="btn btn--secondary" id="idea-panel-reset">${ICONS.arrowLeft} Weitere Idee einreichen</button>
+          </div>`;
+        document.getElementById("idea-panel-reset")?.addEventListener("click", () => {
+          panel.innerHTML = `
+            <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
+            <div class="idea-panel__idle">
+              <h2>So funktioniert's</h2>
+              <p>Deine Idee erscheint direkt unten in der Liste, sobald du sie abschickst — für das ganze Team sichtbar, mit deinem Namen oder anonym.</p>
+            </div>`;
+        });
+        loadIdeaList();
+      } catch (err) {
+        errorEl.querySelector("span").textContent = err.message || "Einreichen fehlgeschlagen — später erneut versuchen.";
+        errorEl.hidden = false;
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  }
+
   /* ------------------------------------------------------- Zuletzt angesehen */
 
   const RECENT_KEY = "sowespoke-recent";
@@ -1809,7 +1988,8 @@
         (a.dataset.nav === "case-studies" && path.startsWith("/case-studies")) ||
         (a.dataset.nav === "tickets" && path.startsWith("/tickets")) ||
         (a.dataset.nav === "microsoft-learn" && path.startsWith("/microsoft-learn")) ||
-        (a.dataset.nav === "anfragen" && path.startsWith("/anfragen"));
+        (a.dataset.nav === "anfragen" && path.startsWith("/anfragen")) ||
+        (a.dataset.nav === "ideen" && path.startsWith("/ideen"));
       if (active) a.setAttribute("aria-current", "page");
       else a.removeAttribute("aria-current");
     });
@@ -1850,6 +2030,8 @@
       renderMicrosoftLearn(params.get("q") || "");
     } else if (path === "/anfragen") {
       renderMicrosoftRequests();
+    } else if (path === "/ideen") {
+      renderIdeas();
     } else {
       renderNotFound(path);
     }

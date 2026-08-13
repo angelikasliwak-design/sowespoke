@@ -62,6 +62,9 @@ const ICONS = {
   xCircle: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><circle cx="12" cy="12" r="8.5"/><path d="M9 9l6 6"/><path d="M15 9l-6 6"/></svg>`,
 
   info: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5"/><circle cx="12" cy="7.8" r="0.25" fill="currentColor" stroke="currentColor" stroke-width="2.4"/></svg>`,
+
+  lightbulb: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 0-3.2 11.1c.6.4 1.2 1.3 1.2 2.4v.5h4v-.5c0-1.1.6-2 1.2-2.4A6 6 0 0 0 12 3Z"/></svg>`,
+  rocket: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><path d="M12 2c3 2.2 5 6.2 5 10 0 2-1 4-2 5l-3 3-3-3c-1-1-2-3-2-5 0-3.8 2-7.8 5-10Z"/><circle cx="12" cy="10.5" r="2"/><path d="M9 17l-2.5 4.5"/><path d="M15 17l2.5 4.5"/></svg>`,
 };
 
 /* MOMO (Punk-Hund) — vierte Maskottchen-Neuausrichtung (2026-08-13, Nutzer-
@@ -162,6 +165,43 @@ const HERO_ILLUSTRATION = `<svg viewBox="0 0 220 200" aria-hidden="true">
     <rect x="0" y="-15" width="66" height="30" rx="15" fill="var(--teal)" stroke="var(--ink)" stroke-width="11" stroke-linejoin="round"/>
     <circle cx="18" cy="0" r="8" fill="var(--yellow)" stroke="var(--ink)" stroke-width="5"/>
   </g>
+</svg>`;
+
+/* Hero-Illustration für das neue Ideenboard (#/ideen, 2026-08-13). Eigenes
+   Motiv statt Wiederverwendung von HERO_ILLUSTRATION: das Megafon steht
+   fürs Verkünden (News/Vorlagen/Case Studies), passt aber inhaltlich nicht
+   zu "eine Idee einreichen" — Nutzer-Referenzbild zeigte explizit eine
+   startende Rakete. Gleiche Bau-Grammatik wie die übrigen Illustrationen
+   (dicke Ink-Kontur, flache Marken-Farbflächen, Halbton-Punktmuster,
+   Konfetti-Punkte in --cat-*-Tinten) — bewusst kein neuer Stil. Gleicher
+   viewBox wie HERO_ILLUSTRATION (`0 0 220 200`), passt ohne CSS-Änderung in
+   denselben `.hero__illustration`-Slot; wird zusätzlich verkleinert im
+   Erfolgs-Panel nach dem Absenden wiederverwendet (kein zweites Rakete-
+   Asset nötig).
+   Referenzbild bewusst nur als Stimmungs-/Energie-Vorlage genutzt (Rakete,
+   Glühbirne, Sterne, Blitze als Motiv-Familie), nicht 1:1 nachgebaut — die
+   dort gezeigte dichte Sticker-Wand aus Icons hätte gegen "keine
+   Illustrationen als flächendeckendes Muster" verstoßen (DESIGN.md). */
+const IDEAS_HERO_ILLUSTRATION = `<svg viewBox="0 0 220 200" aria-hidden="true">
+  <defs>
+    <pattern id="ideas-dots" width="9" height="9" patternUnits="userSpaceOnUse">
+      <circle cx="2.2" cy="2.2" r="2" fill="var(--c-yellow-700)"/>
+    </pattern>
+  </defs>
+  <circle cx="150" cy="58" r="42" fill="url(#ideas-dots)" opacity="0.55"/>
+  <path d="M78,152 C66,170 68,186 79,198 C86,184 83,170 96,159 C89,173 93,184 102,192 C105,175 100,161 109,149 Z"
+    fill="var(--yellow)" stroke="var(--ink)" stroke-width="6" stroke-linejoin="round"/>
+  <g transform="translate(112,96) rotate(-32)">
+    <path d="M-14,32 L-42,54 L-9,48 Z" fill="var(--teal)" stroke="var(--ink)" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M14,32 L42,54 L9,48 Z" fill="var(--teal)" stroke="var(--ink)" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M0,-72 C23,-51 27,10 18,46 C10,55 -10,55 -18,46 C-27,10 -23,-51 0,-72 Z"
+      fill="var(--accent)" stroke="var(--ink)" stroke-width="8" stroke-linejoin="round"/>
+    <circle cx="0" cy="-20" r="13" fill="var(--yellow)" stroke="var(--ink)" stroke-width="7"/>
+  </g>
+  <path d="M188,26 L192,37 L203,39 L193,46 L196,58 L188,50 L179,58 L182,46 L172,39 L183,37 Z" fill="var(--ink)"/>
+  <circle cx="26" cy="146" r="4.5" fill="var(--cat-target)"/>
+  <circle cx="42" cy="26" r="3.5" fill="var(--cat-ai)"/>
+  <circle cx="196" cy="130" r="3" fill="var(--accent)"/>
 </svg>`;
 
 /* Karten-Eck-Illustrationen: je EIN komponiertes Mini-Cluster pro Karten-

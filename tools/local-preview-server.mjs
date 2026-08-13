@@ -54,7 +54,26 @@ function mockNews() {
   return { generatedAt: new Date().toISOString(), count: items.length, failedSources: [], items };
 }
 
-const server = http.createServer((req, res) => {
+// In-Memory-Mock fürs Ideenboard (#/ideen) — ersetzt hier NUR für den
+// lokalen Vorschau-Server das echte Cloudflare-KV-Backend
+// (functions/api/ideas.js), damit die neue Seite ohne echten Login/echte
+// KV-Bindung visuell und funktional durchgetestet werden kann. Geht beim
+// Server-Neustart verloren, ist reine Test-Hilfe.
+const mockIdeas = [
+  { id: "seed-1", title: "Wissensaustausch leicht gemacht", description: "Eine interne Plattform für kurze How-to-Guides und Best Practices, damit wir schneller voneinander lernen können.", benefit: "", authorLabel: "jan.m@sowespoke.com", createdAt: new Date(Date.now() - 2 * 86400000).toISOString() },
+  { id: "seed-2", title: "Feedback-Kultur stärken", description: "Regelmäßige, kurze Feedback-Runden im Team einführen — wertschätzend und konstruktiv.", benefit: "", authorLabel: "Anonym", createdAt: new Date(Date.now() - 5 * 86400000).toISOString() },
+];
+
+function readBody(req) {
+  return new Promise((resolve, reject) => {
+    let data = "";
+    req.on("data", (chunk) => (data += chunk));
+    req.on("end", () => resolve(data));
+    req.on("error", reject);
+  });
+}
+
+const server = http.createServer(async (req, res) => {
   const urlPath = req.url.split("?")[0].split("#")[0];
 
   if (urlPath === "/api/news") {
@@ -65,6 +84,45 @@ const server = http.createServer((req, res) => {
   if (urlPath === "/api/learn") {
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ items: [] }));
+    return;
+  }
+  if (urlPath === "/api/auth/me") {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ email: "test@sowespoke.com" }));
+    return;
+  }
+  if (urlPath === "/api/ideas" && req.method === "GET") {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ items: [...mockIdeas].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) }));
+    return;
+  }
+  if (urlPath === "/api/ideas" && req.method === "POST") {
+    let body;
+    try {
+      body = JSON.parse(await readBody(req));
+    } catch {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Ungültiger Request-Body" }));
+      return;
+    }
+    const title = String(body?.title || "").trim();
+    const description = String(body?.description || "").trim();
+    if (!title || !description) {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Titel und Beschreibung sind erforderlich" }));
+      return;
+    }
+    const idea = {
+      id: `local-${Date.now()}`,
+      title,
+      description,
+      benefit: String(body?.benefit || "").trim(),
+      authorLabel: body?.anonymous ? "Anonym" : "test@sowespoke.com",
+      createdAt: new Date().toISOString(),
+    };
+    mockIdeas.push(idea);
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ ok: true, idea }));
     return;
   }
 

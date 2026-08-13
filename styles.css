@@ -1661,6 +1661,68 @@ code {
   overflow-y: auto;
 }
 
+/* -- Ideenboard (2026-08-13, Nutzer-Wunsch nach Referenz-Mockup) -------
+   Formular und Status-Panel als .side-card/.info-box (Bunte-Rahmen-Regel:
+   Formular = Seitenkarte-Familie/magenta, Status-Panel = Info-Box-Familie/
+   petrol) — bewusst keine dritte Kartenfarbe erfunden. Ideen-Karten unten
+   nutzen dieselbe .side-card-Optik wie die Best-Practices-Karten inkl.
+   Klammer-/"Vollständig anzeigen"-Mechanik (wireBestPracticeCards, kein
+   neuer Code nötig — die Funktion ist generisch über .side-card gescoped). */
+.ideas-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--space-6);
+  margin-bottom: var(--space-7);
+  align-items: start;
+}
+@media (max-width: 60rem) {
+  .ideas-layout { grid-template-columns: minmax(0, 1fr); }
+}
+.idea-form { display: flex; flex-direction: column; gap: var(--space-4); }
+.idea-form h2 { font-size: 1rem; font-weight: 700; }
+.idea-form__anon {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+.idea-form__anon input { accent-color: var(--accent); width: 15px; height: 15px; }
+.idea-form__hint { font-size: 0.82rem; color: var(--ink-soft); margin-top: calc(-1 * var(--space-2)); min-height: 1.2em; }
+.idea-form > .btn { align-self: flex-start; }
+.idea-panel { display: flex; flex-direction: column; }
+.idea-panel h2 { font-size: 1rem; font-weight: 700; margin-bottom: var(--space-2); }
+.idea-panel p { color: var(--ink-soft); font-size: 0.92rem; }
+/* Erfolgs-Zustand nach dem Absenden — dieselbe Rakete wie im Hero, hier
+   verkleinert innerhalb des Panels, statt ein zweites Illustrations-Asset
+   zu bauen. Panel wechselt per innerHTML zwischen Leerlauf-/Erfolgstext,
+   kein separates verstecktes Element (ehrlicher Zustand statt einer
+   Erfolgsmeldung, die schon vor dem ersten Absenden sichtbar wäre). */
+.idea-panel__success { text-align: center; }
+.idea-panel__rocket { width: 96px; height: 88px; margin: 0 auto var(--space-3); }
+.idea-panel__rocket svg { width: 100%; height: 100%; }
+.idea-panel__success .btn { margin-top: var(--space-3); }
+.idea-list__status { color: var(--ink-soft); font-size: 0.92rem; grid-column: 1 / -1; }
+.idea-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+/* Hover als Lese-Hervorhebung, nicht als Klick-Affordanz — Ideen-Karten
+   sind nicht anklickbar (kein Ziel dahinter), gleiche bewusste Ausnahme
+   wie schon bei .ticket-row begründet. */
+.idea-card { transition: transform 160ms ease, box-shadow 160ms ease; }
+.idea-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover), 0 14px 32px -14px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
 /* -- Responsive ------------------------------------------------------------ */
 @media (max-width: 48rem) {
   .shell { flex-direction: column; }
@@ -1690,10 +1752,16 @@ code {
     border-bottom: none;
   }
   .rail__logo img { width: 32px; height: 42px; }
-  .rail__nav { flex-direction: row; gap: var(--space-2); flex-shrink: 0; }
-  /* Zurück zur schmalen Icon-only-Form auf Mobile — Labels würden die
-     horizontale Leiste sprengen. */
-  .rail__nav a { width: 44px; height: 44px; padding: 0; justify-content: center; }
+  /* Bug-Fund (2026-08-13, beim Ergänzen von "Ideen" als 8. Eintrag
+     aufgefallen): mit `flex-shrink: 0` und ohne Scroll-Mechanik ragten die
+     letzten Einträge (Anfragen, Ideen) auf Mobile schlicht über den
+     Bildschirmrand hinaus — unerreichbar, kein Fehler, einfach nicht
+     scrollbar. `overflow-x: auto` statt starrem Nicht-Schrumpfen, Leiste
+     wird per horizontalem Wisch durchsuchbar (kein sichtbarer Scrollbalken,
+     Touch-Geräte wischen ohnehin nativ). */
+  .rail__nav { flex-direction: row; gap: var(--space-2); flex-shrink: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  .rail__nav::-webkit-scrollbar { display: none; }
+  .rail__nav a { width: 44px; height: 44px; padding: 0; justify-content: center; flex-shrink: 0; }
   .rail__nav a[aria-current="page"] { padding-left: 0; }
   .rail__nav-label { display: none; }
   .rail__profile { display: none; }
