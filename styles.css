@@ -489,14 +489,26 @@ mark {
 
 .hero__intro { position: relative; flex: 1 1 26rem; max-width: 34rem; animation: hero-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both; }
 .hero__intro::before {
-  /* Kleiner Stern-Doodle nahe der Headline (Referenz-Mockup 2026-08-07). */
+  /* Stern-Doodle neu gezeichnet (2026-08-13, Nutzer-Feedback "awful" zur
+     ersten Fassung) — vorher ein gerader 4-Zacken-Diamant mit falschem Gelb
+     (`#ffcc00` statt dem verifizierten Marken-Gelb `#ffc600`, siehe
+     tokens.css) und dünner 1,3px-Kontur, die dem sonst durchgängig dicken
+     Marker-Doodle-Konturgewicht der Illustrationen widersprach. Jetzt: ein
+     "Twinkle"-Stern mit eingezogenen Kurven zwischen den Zacken (statt
+     gerader Linien) und `3px`-Konturstärke, näherungsweise auf HERO_
+     ILLUSTRATION-Niveau. Bewusste, dokumentierte Ausnahme vom "kein Hex
+     außerhalb tokens.css"-Ziel (dieselbe Kategorie wie die E-Mail-Signatur
+     in app.js): ein CSS-`background-image`-Data-URI kann keine
+     `var(--...)`-Tokens auflösen — Werte sind 1:1 aus tokens.css kopiert
+     (`--c-yellow-500`/`--c-ink`), bei einer Token-Änderung hier manuell
+     nachziehen. */
   content: "";
   position: absolute;
   top: -20px;
   left: -8px;
   width: 26px;
   height: 26px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z' fill='%23ffcc00' stroke='%23171717' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M20,3 C22,13 27,18 37,20 C27,22 22,27 20,37 C18,27 13,22 3,20 C13,18 18,13 20,3 Z' fill='%23ffc600' stroke='%23111111' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-size: contain;
   pointer-events: none;
@@ -1696,30 +1708,20 @@ code {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50% { transform: translateY(-6px) rotate(-4deg); }
 }
-/* MOKA-Maskottchen (2026-08-11): Ohren wackeln, Dampf steigt auf. Gilt
-   für beide Stellen, an denen MASCOT_SVG eingebettet wird (schwebende
-   Blase UND das inline Fakten-Widget auf Präsentationen) — Selektoren
-   sind bewusst ID-basiert wie der Rest von MASCOT_SVG, nicht auf einen
-   Container beschränkt, exakt wie bei den bereits bestehenden
-   id="shadow"/"eye-l" usw. */
-#ear-left, #ear-right { transform-box: fill-box; }
-#ear-left { animation: moka-ear-wiggle-l 2.6s ease-in-out infinite; }
-#ear-right { animation: moka-ear-wiggle-r 2.6s ease-in-out infinite; animation-delay: 0.15s; }
-@keyframes moka-ear-wiggle-l {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(-8deg); }
-}
-@keyframes moka-ear-wiggle-r {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(8deg); }
-}
-#steam path { transform-box: fill-box; transform-origin: 50% 100%; animation: moka-steam-rise 2.2s ease-in-out infinite; }
-#steam path:nth-child(2) { animation-delay: 0.5s; }
-@keyframes moka-steam-rise {
-  0% { transform: translateY(2px) scaleY(0.85); opacity: 0.3; }
-  50% { transform: translateY(-3px) scaleY(1.05); opacity: 0.85; }
-  100% { transform: translateY(-7px) scaleY(1); opacity: 0; }
-}
+/* MOMO (2026-08-13): erzwingt, dass das eingebettete SVG die Container-
+   Fläche wirklich ausfüllt. Ohne diese Regel bleibt ein <svg> ohne eigene
+   width/height-Attribute bei seiner Browser-Standardgröße (300×150px),
+   nicht bei der Größe des umgebenden Containers — bei MOKA fiel das nie
+   auf (zufällig ähnliches Seitenverhältnis), bei MOMOs viewBox mit
+   Leerraum rechts (Platz für die Sprüh-Animation) wirkte die Figur in der
+   kleinen Box sichtbar zu klein. */
+.mascot__figure svg, .fact-widget__figure svg { width: 100%; height: 100%; display: block; }
+/* MOMO-Maskottchen (2026-08-13): löst MOKA ab, animiert sich jetzt
+   vollständig selbst über MASCOT_ANIMATION_SCRIPT (app.js) statt über
+   CSS-Keyframes auf benannten IDs — die vorherigen MOKA-spezifischen
+   Regeln (#ear-left/#ear-right/#steam) sind deshalb ersatzlos entfernt,
+   nicht nur weil die IDs im neuen SVG nicht mehr existieren, sondern weil
+   diese Art Animation hier grundsätzlich nicht mehr über CSS läuft. */
 .mascot__bubble {
   position: relative;
   z-index: 1;

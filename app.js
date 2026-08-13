@@ -368,8 +368,34 @@
   let mascotDismissedByUser = false;
   let mascotCycleTimer = null;
 
+  /* MOMO (2026-08-13): ursprünglich versucht, MASCOT_SVG per ID-Suffix
+     mehrfach gleichzeitig instanzierbar zu machen (schwebende Bubble +
+     .fact-widget). Verworfen — das SVGator-Player-Skript nimmt bei
+     geänderten IDs einen anderen internen Codepfad, der ein verschlüsseltes
+     Datenfeld anders (und fehlerhaft) verarbeitet, mit unverändertem Inhalt
+     aber bei nachweislich unverändertem Byte-Inhalt dieses Feldes (per
+     Bisektion verifiziert: Platzierung allein unschuldig, ID-Ersetzung
+     allein reproduziert den Crash) — reines Reverse-Engineering von
+     Fremdcode wäre hier unverhältnismäßig riskant. Stattdessen einfacher:
+     MASCOT_SVG läuft nur noch UNVERÄNDERT und nur als jeweils EINE Instanz
+     pro Seite (siehe routeBlocksMascot: die schwebende Bubble wird auf der
+     Präsentationen-Liste jetzt zusätzlich unterdrückt, weil dort schon
+     .fact-widget denselben Hund zeigt). */
+  /* <script>-Tags werden von Browsern ignoriert, wenn sie per innerHTML
+     eingefügt werden (wie der Rest dieser App das macht) — die Animation
+     muss deshalb über ein echtes, per DOM-API erzeugtes <script>-Element
+     nachträglich ausgeführt werden. */
+  function runMascotAnimation() {
+    const el = document.createElement("script");
+    el.textContent = MASCOT_ANIMATION_SCRIPT;
+    document.body.appendChild(el);
+  }
+
   function routeBlocksMascot(path) {
-    return path.startsWith("/praesentationen/") || path.startsWith("/vorlagen/") || path === "/anfragen";
+    // "/praesentationen" (ohne Slash, die Liste) blockt die schwebende
+    // Bubble jetzt zusätzlich (2026-08-13) — dort zeigt .fact-widget schon
+    // denselben Hund, siehe Kommentar bei runMascotAnimation weiter oben.
+    return path.startsWith("/praesentationen") || path.startsWith("/vorlagen/") || path === "/anfragen";
   }
 
   function showMascot() {
@@ -417,6 +443,7 @@
     scheduleCycle();
     avoidMascotCollision(mascotEl);
     updateMascotCollapse(mascotEl);
+    runMascotAnimation();
   }
 
   // Kritik-Fund (2026-08-10, Assessment A): die Bubble hat pointer-events:
@@ -581,6 +608,7 @@
         textEl.style.opacity = "1";
       }, 160);
     });
+    runMascotAnimation();
   }
 
   /* ---------------------------------------------------------------- Mailgen */
