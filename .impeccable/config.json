@@ -13,7 +13,7 @@
         "rule": "bounce-easing",
         "value": "cubic-bezier(0.34, 1.56, 0.64, 1)",
         "createdAt": "2026-08-11T15:02:10.730Z",
-        "reason": "User confirmed cubic-bezier(0.34, 1.56, 0.64, 1) is intentional for comic mascot pop-in (already accepted for .row__thumb previously)"
+        "reason": "User confirmed cubic-bezier(0.34, 1.56, 0.64, 1) is intentional"
       }
     ]
   }

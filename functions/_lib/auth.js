@@ -9,10 +9,21 @@ export const ALLOWED_DOMAINS = ["sowespoke.com", "sowespoke.de"];
 const SESSION_DAYS = 14;
 export const SESSION_MAX_AGE_SECONDS = SESSION_DAYS * 24 * 60 * 60;
 
+// Admin-Liste (2026-08-13, Nutzer-Wunsch: Ideen im Ideenboard löschen
+// können). Bewusst eine feste Liste im Code statt einer Rollen-Datenbank —
+// es gibt sonst kein Rollenkonzept in der App (siehe PRODUCT.md: keine
+// eigene Nutzerdatenbank), für diesen einen Anwendungsfall wäre das
+// Überbau. Weitere Admin-Adressen einfach ergänzen.
+const ADMIN_EMAILS = ["a.tschirschwitz@sowespoke.com"];
+
 export function isAllowedEmail(email) {
   const match = /^[^\s@]+@([^\s@]+)$/.exec(String(email || "").trim().toLowerCase());
   if (!match) return false;
   return ALLOWED_DOMAINS.includes(match[1]);
+}
+
+export function isAdminEmail(email) {
+  return ADMIN_EMAILS.includes(String(email || "").trim().toLowerCase());
 }
 
 function b64url(bytes) {

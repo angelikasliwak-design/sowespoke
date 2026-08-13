@@ -87,13 +87,25 @@ const server = http.createServer(async (req, res) => {
     return;
   }
   if (urlPath === "/api/auth/me") {
+    // ?admin=0 anhängen, um lokal die Nicht-Admin-Ansicht zu testen
+    // (Standard hier: Admin, damit der Löschen-Button ohne Zusatzschritt
+    // sichtbar ist — echtes Admin-Recht kommt live aus functions/_lib/auth.js).
+    const isAdmin = new URLSearchParams(req.url.split("?")[1] || "").get("admin") !== "0";
     res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ email: "test@sowespoke.com" }));
+    res.end(JSON.stringify({ email: "test@sowespoke.com", isAdmin }));
     return;
   }
   if (urlPath === "/api/ideas" && req.method === "GET") {
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ items: [...mockIdeas].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) }));
+    return;
+  }
+  if (urlPath.startsWith("/api/ideas/") && req.method === "DELETE") {
+    const id = decodeURIComponent(urlPath.slice("/api/ideas/".length));
+    const idx = mockIdeas.findIndex((i) => i.id === id);
+    if (idx !== -1) mockIdeas.splice(idx, 1);
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ ok: true }));
     return;
   }
   if (urlPath === "/api/ideas" && req.method === "POST") {

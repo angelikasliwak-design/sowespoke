@@ -1728,6 +1728,49 @@ code {
   transform: translateY(-3px);
   box-shadow: var(--shadow-hover), 0 14px 32px -14px color-mix(in srgb, var(--accent) 60%, transparent);
 }
+/* Admin-Löschen (2026-08-13) — kein neues Rot erfunden, --warning (bereits
+   für Achtung-Hinweise im Mail-Generator genutzt) passt semantisch für
+   eine vorsichtige, zerstörende Aktion. Inline-Bestätigung statt nativem
+   confirm(), siehe app.js-Kommentar bei wireIdeaDeleteButtons. */
+/* Höhere Spezifität nötig — ".side-card > *:not(.side-card__illustration)"
+   erzwingt sonst position:relative auf jedes direkte Kind (Fund beim
+   ersten Test: Button landete im normalen Textfluss statt oben rechts). */
+.side-card.idea-card > .idea-card__admin { position: absolute; top: 10px; right: 10px; z-index: 1; }
+.idea-card__delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--paper-raised);
+  color: var(--ink-soft);
+  transition: color 160ms ease, border-color 160ms ease;
+}
+.idea-card__delete svg { width: 14px; height: 14px; }
+.idea-card__delete:hover { color: var(--warning); border-color: var(--warning); }
+.idea-card__confirm {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px var(--space-2);
+}
+.idea-card__confirm button {
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.idea-card__confirm [data-delete-confirm] { color: var(--on-accent); background: var(--warning); }
+.idea-card__confirm [data-delete-cancel] { color: var(--ink-soft); background: var(--paper); border: 1px solid var(--line); }
 
 /* -- Responsive ------------------------------------------------------------ */
 @media (max-width: 48rem) {

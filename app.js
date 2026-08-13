@@ -1882,11 +1882,20 @@
     wireIdeas();
   }
 
-  function ideaCardHtml(idea, i) {
+  // Löschen-Button (2026-08-13, Nutzer-Wunsch: Admin soll Ideen löschen
+  // können) nur, wenn isAdmin — serverseitig über functions/_lib/auth.js
+  // geprüft (/api/auth/me liefert isAdmin, dieselbe feste Liste sichert
+  // auch den DELETE-Endpunkt selbst ab). Frontend zeigt den Button also nur
+  // echten Admins, verlässt sich aber nicht allein darauf.
+  function ideaCardHtml(idea, i, isAdmin) {
     const cardColor = i % 2 ? "--teal" : "--accent";
     return `
       <div class="side-card idea-card">
         <span class="side-card__icon" style="background-color: var(${cardColor})">${ICONS.lightbulb}</span>
+        ${isAdmin ? `
+        <div class="idea-card__admin" data-idea-admin="${escapeHtml(idea.id)}">
+          <button type="button" class="idea-card__delete" data-delete-trigger title="Idee löschen" aria-label="Idee löschen">${ICONS.close}</button>
+        </div>` : ""}
         <h3>${escapeHtml(idea.title)}</h3>
         <p class="pre-line side-card__body">${escapeHtml(idea.description)}${idea.benefit ? `\n\nNutzen: ${escapeHtml(idea.benefit)}` : ""}</p>
         <button type="button" class="side-card__expand" data-expand>Vollständig anzeigen ${ICONS.arrowRight}</button>
@@ -1897,7 +1906,38 @@
       </div>`;
   }
 
-  async function loadIdeaList() {
+  // Inline-Bestätigung statt nativem confirm()/alert() — diese App nutzt an
+  // keiner anderen Stelle Browser-Dialoge, ein Löschen-Sonderfall hätte
+  // hier einen fremden Interaktions-Stil eingeführt.
+  function wireIdeaDeleteButtons(isAdmin) {
+    if (!isAdmin) return;
+    document.querySelectorAll("[data-idea-admin]").forEach((box) => {
+      const id = box.dataset.ideaAdmin;
+      box.querySelector("[data-delete-trigger]")?.addEventListener("click", () => {
+        box.innerHTML = `
+          <span class="idea-card__confirm">Wirklich löschen?
+            <button type="button" data-delete-confirm>Ja</button>
+            <button type="button" data-delete-cancel>Abbrechen</button>
+          </span>`;
+        box.querySelector("[data-delete-cancel]").addEventListener("click", () => {
+          box.innerHTML = `<button type="button" class="idea-card__delete" data-delete-trigger title="Idee löschen" aria-label="Idee löschen">${ICONS.close}</button>`;
+          wireIdeaDeleteButtons(isAdmin);
+        });
+        box.querySelector("[data-delete-confirm]").addEventListener("click", async (e) => {
+          e.target.disabled = true;
+          try {
+            const res = await fetch(`/api/ideas/${encodeURIComponent(id)}`, { method: "DELETE" });
+            if (!res.ok) throw new Error();
+            loadIdeaList(isAdmin);
+          } catch {
+            box.innerHTML = `<span class="idea-card__confirm">Löschen fehlgeschlagen.</span>`;
+          }
+        });
+      });
+    });
+  }
+
+  async function loadIdeaList(isAdmin) {
     const list = document.getElementById("idea-list");
     const count = document.getElementById("idea-count");
     if (!list) return;
@@ -1914,29 +1954,20 @@
         if (count) count.textContent = "";
         return;
       }
-      list.innerHTML = items.map(ideaCardHtml).join("");
+      list.innerHTML = items.map((idea, i) => ideaCardHtml(idea, i, isAdmin)).join("");
       if (count) count.textContent = `${items.length} ${items.length === 1 ? "Idee" : "Ideen"}`;
       wireBestPracticeCards();
+      wireIdeaDeleteButtons(isAdmin);
     } catch {
       list.innerHTML = `<p class="idea-list__status">Ideen konnten nicht geladen werden — später erneut versuchen.</p>`;
     }
   }
 
   function wireIdeas() {
-    loadIdeaList();
-
     const authorHint = document.getElementById("idea-author-hint");
     const anonCheckbox = document.getElementById("idea-anonymous");
     let currentEmail = "";
-    (async () => {
-      try {
-        const res = await fetch("/api/auth/me");
-        if (res.ok) currentEmail = (await res.json()).email || "";
-      } catch {
-        // Hint bleibt einfach leer, wenn die Abfrage fehlschlägt.
-      }
-      updateAuthorHint();
-    })();
+    let isAdmin = false;
     function updateAuthorHint() {
       if (!authorHint) return;
       authorHint.textContent = anonCheckbox.checked
@@ -1946,6 +1977,25 @@
         : "";
     }
     anonCheckbox?.addEventListener("change", updateAuthorHint);
+
+    // Erst die Session prüfen (Name fürs Formular, isAdmin fürs Löschen),
+    // dann die Liste laden — sonst müsste die Liste nach dem Auth-Check ein
+    // zweites Mal neu gerendert werden, nur um Löschen-Buttons nachträglich
+    // einzublenden.
+    (async () => {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          currentEmail = data.email || "";
+          isAdmin = !!data.isAdmin;
+        }
+      } catch {
+        // Hint bleibt leer, Löschen-Buttons bleiben aus, wenn die Abfrage fehlschlägt.
+      }
+      updateAuthorHint();
+      loadIdeaList(isAdmin);
+    })();
 
     const form = document.getElementById("idea-form");
     const errorEl = document.getElementById("idea-form-error");
@@ -1991,7 +2041,7 @@
               <p>Deine Idee erscheint direkt unten in der Liste, sobald du sie abschickst — für das ganze Team sichtbar, mit deinem Namen oder anonym.</p>
             </div>`;
         });
-        loadIdeaList();
+        loadIdeaList(isAdmin);
       } catch (err) {
         errorEl.querySelector("span").textContent = err.message || "Einreichen fehlgeschlagen — später erneut versuchen.";
         errorEl.hidden = false;
