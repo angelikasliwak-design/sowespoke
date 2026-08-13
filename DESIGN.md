@@ -457,6 +457,13 @@ Nutzer-Feedback: die gedämpfte Gold-Variante (`--yellow-text`) wirkte an der St
 - **`routeBlocksMascot`** von `path === "/anfragen"` auf `path.startsWith("/anfragen")` erweitert — die schwebende Maskottchen-Bubble störte auf der alten Einzelseite schon bei Formularen, gilt jetzt konsequent für alle vier neuen Unterseiten mit.
 - **Nebenbei gefunden und behoben:** `.info-box > p` (z. B. beim SAP-ID-Formular) lief bei einer Zeile ohne Umbruchpunkt direkt unter die absolut positionierte Eck-Illustration statt vorher umzubrechen — vorbestehendes Problem, auf der neuen, fokussierten Unterseite aber erstmals wirklich auffällig. Fix: `padding-right: 60px` auf den ersten Absatz einer Info-Box, reserviert Platz für die Illustration.
 
+### Vorlagen: Best Practices als eigener Tab statt gemischt (2026-08-13, Nutzer-Wunsch)
+- **Anlass:** Nutzer-Feedback: "bei Vorlagen sollten nur E-Mail-Vorlagen zu sehen sein, die ich gegeben habe" — Best Practices (fachliches Nachschlagewissen, keine versendbare Mail) standen bisher einfach mit auf derselben Seite. Nutzer bat explizit um eine Idee für eine neue Unterkategorie.
+- **Lösung:** zwei Tabs (`.tabs`/`.tabs__item`, exakt dasselbe Muster wie News-Kanäle/Präsentations-Dokumenttyp/Case-Studies-Kanal/Tickets-Status) — "E-Mail-Vorlagen" (Standard, zeigt nur "Eigenständige Vorlagen" + "Vorlagen aus Präsentationen", beides echte, vom Nutzer bereitgestellte E-Mail-Inhalte) und "Best Practices" als neue Unterkategorie. Wortwahl "Unterkategorie" (nicht "eigene Seite") sprach für einen Tab statt eines neuen Sidebar-Eintrags — passt außerdem zum bisherigen Umfang (aktuell nur 1 Best-Practice-Eintrag, ein eigener Menüpunkt wäre für diesen Umfang Überbau).
+- **Seitentitel** von "Vorlagen & Wissensdatenbank" zu "Vorlagen & Wissen" (H1 betont weiterhin "Vorlagen", da das der Haupt-/Standard-Tab ist) — die Trennung passiert jetzt sichtbar über die Tabs, nicht mehr nur über Abschnittsüberschriften auf einer langen Seite.
+- **Kein neuer Zustand in der URL** — folgt demselben, bereits etablierten Muster wie die anderen Tab-Seiten (Kanal/Dokumenttyp/Status werden beim Tab-Wechsel nicht in den Hash geschrieben, nur beim initialen Laden aus der URL gelesen); bewusst konsistent gehalten, kein Sonderfall für diese eine Seite eingeführt.
+- **Datenlage geprüft:** keine `isPlaceholder`-Einträge in `BEST_PRACTICES`/`STANDALONE_TEMPLATES` gefunden — der gesamte Inhalt war schon vorher echt, es ging beim Nutzer-Wunsch also um Struktur/Kategorisierung, nicht um das Entfernen von Platzhalter-Inhalten.
+
 ## Do's and Don'ts
 
 ### Do:

@@ -1262,8 +1262,16 @@
 
   /* ------------------------------------------------------------- Seite: Vorlagen */
 
-  function renderTemplates(query) {
+  /* Distill (2026-08-13, Nutzer-Wunsch): "Vorlagen" soll nur noch echte
+     E-Mail-Vorlagen zeigen — Best Practices (fachliches Nachschlagewissen,
+     keine versendbare Mail) sind konzeptionell etwas anderes und standen
+     bisher einfach mit auf derselben Seite. Neue Unterkategorie über einen
+     zweiten Tab (Muster wie News-Kanäle/Präsentations-Dokumenttyp/Tickets-
+     Status — kein neues UI-Konzept), Standard-Tab zeigt ausschließlich
+     E-Mail-Vorlagen. */
+  function renderTemplates(query, tab) {
     const q = (query || "").trim().toLowerCase();
+    const activeTab = tab === "practices" ? "practices" : "mail";
 
     let bestPractices = BEST_PRACTICES;
     let standalone = STANDALONE_TEMPLATES;
@@ -1276,14 +1284,14 @@
       standalone = standalone.filter((t) => [t.title, t.summary].join(" ").toLowerCase().includes(q));
       linkedTemplates = linkedTemplates.filter((p) => [p.title, p.summaryDE, p.docType].join(" ").toLowerCase().includes(q));
     }
-    const noResults = !bestPractices.length && !standalone.length && !linkedTemplates.length;
+    const noResults = activeTab === "practices" ? !bestPractices.length : !standalone.length && !linkedTemplates.length;
 
     view.innerHTML = `
       <section class="hero hero--compact">
         <div class="hero__intro">
-          <span class="hero__eyebrow">Wissensdatenbank</span>
-          <h1>Vorlagen &amp; <mark>Wissensdatenbank</mark>.</h1>
-          <p>Best Practices und alle E-Mail-Vorlagen an einem Ort — inklusive Vorlagen mit individuellen Zusatzfeldern.</p>
+          <span class="hero__eyebrow">Vorlagen &amp; Wissen</span>
+          <h1><mark>Vorlagen</mark> &amp; Wissen.</h1>
+          <p>E-Mail-Vorlagen zum direkten Versand oder Best Practices zum Nachschlagen — beides an einem Ort, klar getrennt.</p>
         </div>
         <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
       </section>
@@ -1291,27 +1299,18 @@
         <span class="toolbar__label">Was möchtest du finden?</span>
         <label class="search">
           ${ICONS.search}
-          <input type="search" id="search-input" placeholder="Best Practices, Vorlagen durchsuchen …" value="${escapeHtml(query || "")}" aria-label="Vorlagen durchsuchen" />
+          <input type="search" id="search-input" placeholder="${activeTab === "practices" ? "Best Practices durchsuchen …" : "E-Mail-Vorlagen durchsuchen …"}" value="${escapeHtml(query || "")}" aria-label="Vorlagen durchsuchen" />
           <button type="button" class="search__submit" id="search-submit" aria-label="Suche fokussieren">${ICONS.search}</button>
         </label>
+        <nav class="tabs" aria-label="Kategorie">
+          <button type="button" class="tabs__item ${activeTab === "mail" ? "is-active" : ""}" data-view="mail">E-Mail-Vorlagen</button>
+          <button type="button" class="tabs__item ${activeTab === "practices" ? "is-active" : ""}" data-view="practices">Best Practices</button>
+        </nav>
       </div>
 
       ${noResults ? `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Begriff.</p></div>` : ""}
 
-      ${bestPractices.length ? `
-      <h2 class="feed__title">Best Practices<span class="feed__title__count">${bestPractices.length} Ergebnisse</span></h2>
-      <div class="card-grid">
-        ${bestPractices.map(
-          (bp, i) => `
-          <div class="side-card">
-            <span class="side-card__icon" style="background-color: var(${i % 2 ? "--teal" : "--accent"})">${ICONS.flash}</span>
-            <h3>${escapeHtml(bp.title)}</h3>
-            <p class="pre-line side-card__body">${escapeHtml(bp.body)}</p>
-            <button type="button" class="side-card__expand" data-expand>Vollständig anzeigen ${ICONS.arrowRight}</button>
-          </div>`
-        ).join("")}
-      </div>` : ""}
-
+      ${activeTab === "mail" ? `
       ${standalone.length ? `
       <h2 class="feed__title">Eigenständige Vorlagen<span class="feed__title__count">${standalone.length} Ergebnisse</span></h2>
       <ul class="article-list">
@@ -1351,9 +1350,28 @@
           )
           .join("")}
       </ul>` : ""}
+      ` : `
+      ${bestPractices.length ? `
+      <h2 class="feed__title">Best Practices<span class="feed__title__count">${bestPractices.length} Ergebnisse</span></h2>
+      <div class="card-grid">
+        ${bestPractices.map(
+          (bp, i) => `
+          <div class="side-card">
+            <span class="side-card__icon" style="background-color: var(${i % 2 ? "--teal" : "--accent"})">${ICONS.flash}</span>
+            <h3>${escapeHtml(bp.title)}</h3>
+            <p class="pre-line side-card__body">${escapeHtml(bp.body)}</p>
+            <button type="button" class="side-card__expand" data-expand>Vollständig anzeigen ${ICONS.arrowRight}</button>
+          </div>`
+        ).join("")}
+      </div>` : ""}
+      `}
     `;
 
-    wireTopControls(() => renderTemplates(document.getElementById("search-input").value), () => {}, "x");
+    wireTopControls(
+      () => renderTemplates(document.getElementById("search-input").value, activeTab),
+      (nextView) => renderTemplates(document.getElementById("search-input").value, nextView),
+      "view"
+    );
     wireBestPracticeCards();
   }
 
@@ -2075,7 +2093,7 @@
     } else if (path.startsWith("/vorlagen/")) {
       renderStandaloneTemplateDetail(path.slice("/vorlagen/".length));
     } else if (path === "/vorlagen") {
-      renderTemplates(params.get("q") || "");
+      renderTemplates(params.get("q") || "", params.get("t") || "mail");
     } else if (path.startsWith("/case-studies/")) {
       renderCaseStudyDetail(path.slice("/case-studies/".length));
     } else if (path === "/case-studies") {
