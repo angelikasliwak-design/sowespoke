@@ -136,73 +136,21 @@ const BRAND_BURST = `<svg viewBox="0 0 200 200" aria-hidden="true">
   <rect x="0" y="0" width="200" height="200" fill="url(#burstDots)" clip-path="url(#burstClip)" opacity="0.55"/>
 </svg>`;
 
-/* Eck-Illustration für den Hero-Bereich: EIN komponiertes Cluster (Halbton-
-   Punktfeld + Comic-Blitz + Megafon), das den Leerraum neben der Überschrift
-   bewusst füllt, statt eine einzelne Form isoliert in der Ecke schweben zu
-   lassen. Alle Teile überlappen/berühren sich — kein verstreuter Einzel-Akzent
-   (siehe DESIGN.md, Fassung "Marken-Formen zurückgenommen"). */
-/* Sechste Megafon-Fassung (2026-08-13) — Nutzer nach fünf Detail-
-   Korrekturrunden an derselben "wütender Charakter"-Idee: "awful". Statt
-   einer siebten Feinjustierung bewusster Strategiewechsel: weg vom
-   detailreichen Comic-Charakter (Gesicht, Faust, Schraffur, Strahlenkranz),
-   hin zu einem reduzierten, sofort lesbaren Icon-Megafon — passt außerdem
-   besser zum Operate/Read-Ton dieser internen App (siehe PRODUCT.md:
-   "Klarheit vor Show-Effekten"), der ein aufwendig illustrierter Charakter
-   im Header ohnehin nie ganz getroffen hat. Nur Trichter + Griff + vier
-   ruhige Klang-Bögen, volle Konturstärke bleibt (kein Rückfall auf dünne
-   UI-Icon-Linien) — Details siehe DESIGN.md. */
-const HERO_ILLUSTRATION = `<svg viewBox="0 0 220 200" aria-hidden="true">
-  <g id="mega-waves">
-    <path d="M18,100 Q4,80 4,60" stroke="var(--ink)" stroke-width="7" fill="none" stroke-linecap="round"/>
-    <path d="M18,100 Q4,120 4,140" stroke="var(--ink)" stroke-width="7" fill="none" stroke-linecap="round"/>
-    <path d="M30,100 Q10,72 12,38" stroke="var(--ink)" stroke-width="7" fill="none" stroke-linecap="round"/>
-    <path d="M30,100 Q10,128 12,162" stroke="var(--ink)" stroke-width="7" fill="none" stroke-linecap="round"/>
-  </g>
-  <path d="M132,42 C108,54 84,64 60,68 L60,132 C84,136 108,146 132,158 Z"
-    fill="var(--accent)" stroke="var(--ink)" stroke-width="12" stroke-linejoin="round"/>
-  <path d="M60,68 C42,66 42,134 60,132 Z" fill="var(--accent)" stroke="var(--ink)" stroke-width="12" stroke-linejoin="round"/>
-  <g transform="translate(132,100) rotate(28)">
-    <rect x="0" y="-15" width="66" height="30" rx="15" fill="var(--teal)" stroke="var(--ink)" stroke-width="11" stroke-linejoin="round"/>
-    <circle cx="18" cy="0" r="8" fill="var(--yellow)" stroke="var(--ink)" stroke-width="5"/>
-  </g>
-</svg>`;
+/* HERO_ILLUSTRATION (Megafon) entfernt (2026-08-13) — durch ein echtes,
+   vom Nutzer geliefertes PNG ersetzt (assets/brand/hero-megafon.png,
+   eingebunden über ein <img> in .hero__illustration). Ein selbst
+   nachgezeichnetes SVG des Nutzer-Referenzbilds ("siebte Fassung") wurde
+   testweise gebaut, vom Nutzer aber ausdrücklich abgelehnt ("das sieht
+   schlecht aus") — er wollte direkt seine eigene Datei verwendet sehen,
+   nicht meine Nachzeichnung. Ganze Iterationsgeschichte (Fassungen 2-7)
+   bleibt zur Nachvollziehbarkeit in DESIGN.md stehen. */
 
-/* Hero-Illustration für das neue Ideenboard (#/ideen, 2026-08-13). Eigenes
-   Motiv statt Wiederverwendung von HERO_ILLUSTRATION: das Megafon steht
-   fürs Verkünden (News/Vorlagen/Case Studies), passt aber inhaltlich nicht
-   zu "eine Idee einreichen" — Nutzer-Referenzbild zeigte explizit eine
-   startende Rakete. Gleiche Bau-Grammatik wie die übrigen Illustrationen
-   (dicke Ink-Kontur, flache Marken-Farbflächen, Halbton-Punktmuster,
-   Konfetti-Punkte in --cat-*-Tinten) — bewusst kein neuer Stil. Gleicher
-   viewBox wie HERO_ILLUSTRATION (`0 0 220 200`), passt ohne CSS-Änderung in
-   denselben `.hero__illustration`-Slot; wird zusätzlich verkleinert im
-   Erfolgs-Panel nach dem Absenden wiederverwendet (kein zweites Rakete-
-   Asset nötig).
-   Referenzbild bewusst nur als Stimmungs-/Energie-Vorlage genutzt (Rakete,
-   Glühbirne, Sterne, Blitze als Motiv-Familie), nicht 1:1 nachgebaut — die
-   dort gezeigte dichte Sticker-Wand aus Icons hätte gegen "keine
-   Illustrationen als flächendeckendes Muster" verstoßen (DESIGN.md). */
-const IDEAS_HERO_ILLUSTRATION = `<svg viewBox="0 0 220 200" aria-hidden="true">
-  <defs>
-    <pattern id="ideas-dots" width="9" height="9" patternUnits="userSpaceOnUse">
-      <circle cx="2.2" cy="2.2" r="2" fill="var(--c-yellow-700)"/>
-    </pattern>
-  </defs>
-  <circle cx="150" cy="58" r="42" fill="url(#ideas-dots)" opacity="0.55"/>
-  <path d="M78,152 C66,170 68,186 79,198 C86,184 83,170 96,159 C89,173 93,184 102,192 C105,175 100,161 109,149 Z"
-    fill="var(--yellow)" stroke="var(--ink)" stroke-width="6" stroke-linejoin="round"/>
-  <g transform="translate(112,96) rotate(-32)">
-    <path d="M-14,32 L-42,54 L-9,48 Z" fill="var(--teal)" stroke="var(--ink)" stroke-width="7" stroke-linejoin="round"/>
-    <path d="M14,32 L42,54 L9,48 Z" fill="var(--teal)" stroke="var(--ink)" stroke-width="7" stroke-linejoin="round"/>
-    <path d="M0,-72 C23,-51 27,10 18,46 C10,55 -10,55 -18,46 C-27,10 -23,-51 0,-72 Z"
-      fill="var(--accent)" stroke="var(--ink)" stroke-width="8" stroke-linejoin="round"/>
-    <circle cx="0" cy="-20" r="13" fill="var(--yellow)" stroke="var(--ink)" stroke-width="7"/>
-  </g>
-  <path d="M188,26 L192,37 L203,39 L193,46 L196,58 L188,50 L179,58 L182,46 L172,39 L183,37 Z" fill="var(--ink)"/>
-  <circle cx="26" cy="146" r="4.5" fill="var(--cat-target)"/>
-  <circle cx="42" cy="26" r="3.5" fill="var(--cat-ai)"/>
-  <circle cx="196" cy="130" r="3" fill="var(--accent)"/>
-</svg>`;
+/* IDEAS_HERO_ILLUSTRATION (Rakete) entfernt (2026-08-13) — gleicher Fall
+   wie HERO_ILLUSTRATION oben: durch das echte, vom Nutzer gelieferte PNG
+   ersetzt (assets/brand/hero-rakete.png), verwendet im Ideenboard-Hero UND
+   verkleinert im Erfolgs-Panel nach dem Absenden. Selbst gezeichnete
+   SVG-Fassung war hier nie explizit abgelehnt worden, aber aus Konsistenz
+   mit der Megafon-Entscheidung ebenfalls durch die echte Datei ersetzt. */
 
 /* Karten-Eck-Illustrationen: je EIN komponiertes Mini-Cluster pro Karten-
    typ (nicht drei verstreute Einzelpunkte wie zuvor), Farbe folgt der

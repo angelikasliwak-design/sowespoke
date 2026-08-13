@@ -323,7 +323,7 @@
           <h1>Anfragen an <mark>Microsoft</mark>.</h1>
           <p>Vorbereitete E-Mails auf Englisch an ${escapeHtml(MS_CONTACT_NAME)} — nach Anfrage-Art sortiert, jede mit eigenem Formular.</p>
         </div>
-        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
+        <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
       </section>
 
       <ul class="article-list">
@@ -923,7 +923,7 @@
         </div>
         <div class="hero__scene">
           <div class="hero__bubble">Wissen weitergeben.<br>Erfolg vervielfachen.</div>
-          <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
+          <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
           <span class="hero__sticker"><span class="hero__sticker-dot" aria-hidden="true"></span>Live Updates</span>
         </div>
       </section>
@@ -1119,7 +1119,7 @@
         </div>
         <div class="hero__scene">
           <div class="hero__bubble">Wissen, das<br>weiterbringt!</div>
-          <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
+          <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
         </div>
       </section>
       <div class="toolbar">
@@ -1293,7 +1293,7 @@
           <h1><mark>Vorlagen</mark> &amp; Wissen.</h1>
           <p>E-Mail-Vorlagen zum direkten Versand oder Best Practices zum Nachschlagen — beides an einem Ort, klar getrennt.</p>
         </div>
-        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
+        <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
       </section>
       <div class="toolbar">
         <span class="toolbar__label">Was möchtest du finden?</span>
@@ -1415,7 +1415,7 @@
           <h1>Case <mark>Studies</mark>.</h1>
           <p>Echte Ergebnisse und Testresultate aus den Kundenkonten — laufend gepflegt.</p>
         </div>
-        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
+        <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
       </section>
       ${channels.length > 1 ? `
       <div class="toolbar">
@@ -1624,7 +1624,7 @@
           <h1>Tickets<mark>-Übersicht</mark>.</h1>
           <p>Alle Anfragen von Kundenagenturen an einem Ort. Diese Ansicht zeigt aktuell Beispieldaten — die Anbindung an das echte Ticketsystem folgt.</p>
         </div>
-        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
+        <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
       </section>
       <div class="toolbar">
         <span class="toolbar__label">Was möchtest du finden?</span>
@@ -1741,7 +1741,7 @@
           <h1>Von <mark>Microsoft Learn</mark>.</h1>
           <p>Offizielle Kurzbeschreibungen ausgewählter Microsoft-Learn-Seiten, mit Link zur vollständigen Originalseite.</p>
         </div>
-        <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
+        <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
       </section>
       <div class="feed" id="learn-feed">
         <div class="empty-state">${ICONS.book}<strong>Lade Quellen …</strong></div>
@@ -1838,7 +1838,7 @@
           <h1>Hast du eine <mark>Idee</mark>? Dann her damit!</h1>
           <p>Teile neue Ansätze, Verbesserungsvorschläge oder kreative Impulse mit dem Team. Jede Idee zählt und wird für alle sichtbar.</p>
         </div>
-        <div class="hero__illustration">${IDEAS_HERO_ILLUSTRATION}</div>
+        <div class="hero__illustration"><img src="assets/brand/hero-rakete.png" alt="" /></div>
       </section>
 
       <div class="ideas-layout">
@@ -2028,7 +2028,7 @@
         panel.innerHTML = `
           <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
           <div class="idea-panel__success">
-            <div class="idea-panel__rocket">${IDEAS_HERO_ILLUSTRATION}</div>
+            <div class="idea-panel__rocket"><img src="assets/brand/hero-rakete.png" alt="" /></div>
             <h2>Danke für deinen Einsatz!</h2>
             <p>Deine Idee wurde erfolgreich eingereicht und ist jetzt für das Team sichtbar.</p>
             <button type="button" class="btn btn--secondary" id="idea-panel-reset">${ICONS.arrowLeft} Weitere Idee einreichen</button>
