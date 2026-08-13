@@ -60,6 +60,8 @@ const ICONS = {
   hourglass: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><path d="M6 3h12"/><path d="M6 21h12"/><path d="M7 3c0 4 3 6 5 8-2 2-5 4-5 8"/><path d="M17 3c0 4-3 6-5 8 2 2 5 4 5 8"/></svg>`,
 
   xCircle: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><circle cx="12" cy="12" r="8.5"/><path d="M9 9l6 6"/><path d="M15 9l-6 6"/></svg>`,
+
+  info: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5"/><circle cx="12" cy="7.8" r="0.25" fill="currentColor" stroke="currentColor" stroke-width="2.4"/></svg>`,
 };
 
 /* MOMO (Punk-Hund) — vierte Maskottchen-Neuausrichtung (2026-08-13, Nutzer-

@@ -666,7 +666,10 @@
           <button class="btn btn--secondary" data-copy="${topicKey}" type="button">${ICONS.copy} In Zwischenablage kopieren</button>
           <span class="mailgen__status" id="status-${topicKey}">${ICONS.check} Kopiert</span>
         </div>
-        <p class="mailgen__hint">„In Gmail öffnen" öffnet ein neues Gmail-Compose-Fenster mit fertig ausgefüllter Nachricht — du prüfst und schickst sie von dort aus ab, sie landet danach ganz normal in deinem Gesendet-Ordner. Bei sehr langem Text lieber „In Zwischenablage kopieren" nutzen.</p>
+        <details class="mailgen__hint-toggle">
+          <summary aria-label="Hinweis zum Versand anzeigen">${ICONS.info}</summary>
+          <p class="mailgen__hint">„In Gmail öffnen" öffnet ein neues Gmail-Compose-Fenster mit fertig ausgefüllter Nachricht — du prüfst und schickst sie von dort aus ab, sie landet danach ganz normal in deinem Gesendet-Ordner. Bei sehr langem Text lieber „In Zwischenablage kopieren" nutzen.</p>
+        </details>
       </div>
     `;
   }

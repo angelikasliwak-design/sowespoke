@@ -1534,6 +1534,29 @@ code {
    Klassen-Pendant + aria-disabled (JS verhindert zusätzlich die Navigation). */
 .btn.is-disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; pointer-events: none; }
 .mailgen__hint { font-size: 0.82rem; color: var(--ink-soft); margin-top: calc(-1 * var(--space-2)); }
+/* Distill (2026-08-13): der Versand-Hinweis stand vorher als Dauertext unter
+   den Aktions-Buttons — konkurriert dort mit den eigentlichen CTAs um
+   Aufmerksamkeit, obwohl er nur beim ersten Mal wirklich gebraucht wird.
+   Jetzt hinter einem kleinen (i)-Icon, analog zum bereits bestehenden
+   <details>-Muster der Signatur weiter oben im Formular. */
+.mailgen__hint-toggle { align-self: flex-start; }
+.mailgen__hint-toggle summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: var(--ink-soft);
+  cursor: pointer;
+  list-style: none;
+}
+.mailgen__hint-toggle summary::-webkit-details-marker { display: none; }
+.mailgen__hint-toggle summary svg { width: 16px; height: 16px; }
+.mailgen__hint-toggle summary:hover,
+.mailgen__hint-toggle summary:focus-visible { color: var(--accent); }
+.mailgen__hint-toggle[open] summary { color: var(--accent); }
+.mailgen__hint-toggle .mailgen__hint { margin-top: var(--space-2); }
 .mailgen__status {
   display: inline-flex;
   align-items: center;
