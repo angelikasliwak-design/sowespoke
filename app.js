@@ -123,7 +123,7 @@
     });
   }
 
-  function renderMsChecklistSection(key, title, introDE, options) {
+  function renderMsChecklistSection(key, title, introDE, options, includeHeading = true) {
     const iconColor = key === "bulk" ? "--teal" : "--accent";
     const icon = key === "bulk" ? ICONS.layers : ICONS.sparkle;
     // Nach Gruppe sortieren (stabil, erste Erscheinung entscheidet die
@@ -133,7 +133,7 @@
     options.forEach((o) => { if (o.group && !groupOrder.includes(o.group)) groupOrder.push(o.group); });
     const sorted = [...options].sort((a, b) => groupOrder.indexOf(a.group) - groupOrder.indexOf(b.group));
     return `
-      <h2 class="feed__title feed__title--icon"><span class="feed__title__icon" style="background:var(${iconColor})">${icon}</span>${escapeHtml(title)}</h2>
+      ${includeHeading ? `<h2 class="feed__title feed__title--icon"><span class="feed__title__icon" style="background:var(${iconColor})">${icon}</span>${escapeHtml(title)}</h2>` : ""}
       <div class="mailgen msreq">
         <p class="msreq__intro">${escapeHtml(introDE)}</p>
         <div class="msreq__checklist">
@@ -229,9 +229,9 @@
     wireMsCopyButton(key, subjectEl, bodyEl, copyBtn);
   }
 
-  function renderMsAutobiddingSection() {
+  function renderMsAutobiddingSection(includeHeading = true) {
     return `
-      <h2 class="feed__title feed__title--icon"><span class="feed__title__icon" style="background:var(--accent)">${ICONS.gauge}</span>Autobidding Report</h2>
+      ${includeHeading ? `<h2 class="feed__title feed__title--icon"><span class="feed__title__icon" style="background:var(--accent)">${ICONS.gauge}</span>Autobidding Report</h2>` : ""}
       <div class="mailgen msreq">
         <p class="msreq__intro pre-line">${escapeHtml(MS_AUTOBIDDING_REPORT.cautionDE)}</p>
         <details class="msreq__example">
@@ -299,34 +299,90 @@
     wireMsCopyButton("auto", subjectEl, bodyEl, copyBtn);
   }
 
-  function renderMicrosoftRequests() {
+  /* Distill (2026-08-13, Nutzer-Feedback: "zu vollgeladen") — die Seite
+     stapelte vorher vier vollständige Formulare (je mit eigenem Konto-Feld,
+     Betreff, Text, Warnhinweis, Kopieren-Button) untereinander auf einer
+     einzigen, sehr langen Scroll-Seite. Nutzer-Vorschlag direkt umgesetzt:
+     eigene Unterseite pro Anfrage-Art, gleiches Listen→Detail-Muster wie
+     Präsentationen/Vorlagen/Case Studies (Übersicht mit .row-Einträgen,
+     Klick führt zur jeweils EINEN vollständigen Anfrage). Wer eine Beta-
+     Anfrage stellen will, sieht nicht mehr zusätzlich drei fremde
+     Formulare auf demselben Bildschirm. */
+  const MS_REQUEST_TYPES = [
+    { id: "beta", title: "Beta- & Pilot-Programme", short: "Aktueller Nominierungs-Überblick — auswählen, was für den Kunden angefragt werden soll.", icon: "sparkle", color: "--accent" },
+    { id: "bulk", title: "Bulk Team", short: "Aufgaben, die das Bulk Team im Kundenauftrag übernehmen kann.", icon: "layers", color: "--teal" },
+    { id: "autobidding", title: "Autobidding Report", short: "Reporting zur automatisierten Gebotsstrategie für ein Kundenkonto anfordern.", icon: "gauge", color: "--accent" },
+    { id: "sap-id", title: "SAP-ID-Erstellung", short: "Formular zur Anlage einer neuen SAP-ID — Rechnungs-/Kontodaten, VAT, Kundennummer.", icon: "fileText", color: "--teal" },
+  ];
+
+  function renderMicrosoftRequestsHub() {
     view.innerHTML = `
       <section class="hero hero--compact">
         <div class="hero__intro">
           <span class="hero__eyebrow">Service-Anfragen</span>
           <h1>Anfragen an <mark>Microsoft</mark>.</h1>
-          <p>Vorbereitete E-Mails auf Englisch an ${escapeHtml(MS_CONTACT_NAME)} — Beta-/Pilot-Programme, Bulk-Team-Aufgaben, Reports und Formulare.</p>
+          <p>Vorbereitete E-Mails auf Englisch an ${escapeHtml(MS_CONTACT_NAME)} — nach Anfrage-Art sortiert, jede mit eigenem Formular.</p>
         </div>
         <div class="hero__illustration">${HERO_ILLUSTRATION}</div>
       </section>
 
-      ${renderMsChecklistSection("beta", "Beta- & Pilot-Programme", "Aktueller Nominierungs-Überblick (Stand Januar 2026) — auswählen, was für den Kunden angefragt werden soll.", MS_BETA_PROGRAMS)}
+      <ul class="article-list">
+        ${MS_REQUEST_TYPES.map(
+          (t) => `
+        <li>
+          <a class="row" href="#/anfragen/${t.id}">
+            <span class="row__thumb" style="background-color: var(${t.color})">${ICONS[t.icon]}</span>
+            <span class="row__body">
+              <span class="row__title">${escapeHtml(t.title)}</span>
+              <span class="row__summary">${escapeHtml(t.short)}</span>
+            </span>
+            <span class="row__arrow">${ICONS.arrowRight}</span>
+          </a>
+        </li>`
+        ).join("")}
+      </ul>
+    `;
+  }
 
-      ${renderMsChecklistSection("bulk", "Bulk Team", "Aufgaben, die das Bulk Team im Kundenauftrag übernehmen kann.", MS_BULK_TEAM_TASKS)}
+  function renderMicrosoftRequestDetail(id) {
+    const type = MS_REQUEST_TYPES.find((t) => t.id === id);
+    if (!type) {
+      view.innerHTML = `<a class="back-link" href="#/anfragen">${ICONS.arrowLeft} Zu den Anfragen</a>
+        <div class="empty-state">${ICONS.magnifyEmpty}<strong>Anfrage-Art nicht gefunden</strong></div>`;
+      return;
+    }
 
-      ${renderMsAutobiddingSection()}
+    let sectionHtml = "";
+    if (id === "beta") {
+      sectionHtml = renderMsChecklistSection("beta", type.title, "Aktueller Nominierungs-Überblick (Stand Januar 2026) — auswählen, was für den Kunden angefragt werden soll.", MS_BETA_PROGRAMS, false);
+    } else if (id === "bulk") {
+      sectionHtml = renderMsChecklistSection("bulk", type.title, "Aufgaben, die das Bulk Team im Kundenauftrag übernehmen kann.", MS_BULK_TEAM_TASKS, false);
+    } else if (id === "autobidding") {
+      sectionHtml = renderMsAutobiddingSection(false);
+    } else if (id === "sap-id") {
+      sectionHtml = `
+        <div class="info-box">
+          <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
+          <p>Formular zur Anlage einer neuen SAP-ID (Rechnungs-/Kontodaten, VAT, Microsoft-Advertising-Kundennummer). Direkt im Dokument ausfüllen und an ${escapeHtml(MS_CONTACT_NAME)} senden.</p>
+          <a class="btn btn--secondary" href="content/microsoft-anfragen/${encodeURIComponent("SAP ID Creation Form .docx")}" download>${ICONS.download} Formular herunterladen</a>
+        </div>`;
+    }
 
-      <h2 class="feed__title feed__title--icon"><span class="feed__title__icon" style="background:var(--teal)">${ICONS.fileText}</span>SAP-ID-Erstellung</h2>
-      <div class="info-box">
-        <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
-        <p>Formular zur Anlage einer neuen SAP-ID (Rechnungs-/Kontodaten, VAT, Microsoft-Advertising-Kundennummer). Direkt im Dokument ausfüllen und an ${escapeHtml(MS_CONTACT_NAME)} senden.</p>
-        <a class="btn btn--secondary" href="content/microsoft-anfragen/${encodeURIComponent("SAP ID Creation Form .docx")}" download>${ICONS.download} Formular herunterladen</a>
-      </div>
+    view.innerHTML = `
+      <a class="back-link" href="#/anfragen">${ICONS.arrowLeft} Zu den Anfragen</a>
+      <article class="detail">
+        <h1>${escapeHtml(type.title)}</h1>
+        ${sectionHtml}
+      </article>
     `;
 
-    wireMsChecklistSection("beta", MS_BETA_PROGRAMS, "Beta / Pilot Program Request", "I would like to request access to the following beta/pilot program(s):");
-    wireMsChecklistSection("bulk", MS_BULK_TEAM_TASKS, "Bulk Team Support Request", "I would like to request the Bulk Team's support with the following task(s):");
-    wireMsAutobiddingSection();
+    if (id === "beta") {
+      wireMsChecklistSection("beta", MS_BETA_PROGRAMS, "Beta / Pilot Program Request", "I would like to request access to the following beta/pilot program(s):");
+    } else if (id === "bulk") {
+      wireMsChecklistSection("bulk", MS_BULK_TEAM_TASKS, "Bulk Team Support Request", "I would like to request the Bulk Team's support with the following task(s):");
+    } else if (id === "autobidding") {
+      wireMsAutobiddingSection();
+    }
   }
 
   /* ------------------------------------------------------- Kalender-Widget */
@@ -395,7 +451,7 @@
     // "/praesentationen" (ohne Slash, die Liste) blockt die schwebende
     // Bubble jetzt zusätzlich (2026-08-13) — dort zeigt .fact-widget schon
     // denselben Hund, siehe Kommentar bei runMascotAnimation weiter oben.
-    return path.startsWith("/praesentationen") || path.startsWith("/vorlagen/") || path === "/anfragen" || path === "/ideen";
+    return path.startsWith("/praesentationen") || path.startsWith("/vorlagen/") || path.startsWith("/anfragen") || path === "/ideen";
   }
 
   function showMascot() {
@@ -2028,8 +2084,10 @@
       renderTickets(params.get("q") || "", params.get("st") || "all", params.get("sort") || "created");
     } else if (path === "/microsoft-learn") {
       renderMicrosoftLearn(params.get("q") || "");
+    } else if (path.startsWith("/anfragen/")) {
+      renderMicrosoftRequestDetail(path.slice("/anfragen/".length));
     } else if (path === "/anfragen") {
-      renderMicrosoftRequests();
+      renderMicrosoftRequestsHub();
     } else if (path === "/ideen") {
       renderIdeas();
     } else {

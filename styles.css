@@ -1207,6 +1207,12 @@ mark {
 }
 .info-box > *:not(.info-box__illustration) { position: relative; }
 .info-box h2 { font-size: 0.95rem; font-weight: 700; margin-bottom: var(--space-3); }
+/* Bug-Fund (2026-08-13, beim Umbau der Anfragen-Seite aufgefallen): der
+   erste Absatz lief bei breiteren Boxen ohne Endloszeilenumbruch direkt
+   unter die absolut positionierte Eck-Illustration statt vorher
+   umzubrechen — vorbestehendes Problem, nicht durch den Seitenumbau
+   verursacht, aber hier erstmals wirklich sichtbar geworden. */
+.info-box > p:first-of-type { padding-right: 60px; }
 .info-box ul { display: flex; flex-direction: column; gap: var(--space-2); }
 .info-box li {
   font-size: 0.92rem;
