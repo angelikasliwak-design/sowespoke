@@ -626,6 +626,12 @@ Nutzer-Feedback: die gedämpfte Gold-Variante (`--yellow-text`) wirkte an der St
 - **Versand-Pfade lasen vorher lokale Variablen statt der Live-Feldwerte:** `sendBtn.href` ("In Gmail öffnen") wurde aus den frisch berechneten `subject`/`body`-Variablen gebaut, nicht aus `subjectEl.value`/`bodyEl.value` — bei aktivem `contentDirty` hätte der Gmail-Link dadurch die automatisch generierte statt der tatsächlich sichtbaren, handbearbeiteten Version geöffnet. Korrigiert, jetzt werden die Live-Feldwerte gelesen. Kopieren-Button, Gmail-API-Direktversand und Terminieren lasen bereits vorher `subjectEl.value`/`bodyEl.value` live, waren also von Anfang an korrekt.
 - **Verifiziert:** `node --check`, mechanischer Detektor (0 Funde), lokaler Vorschau-Server per direkter DOM-Manipulation (kein Playwright-Klick nötig für Texteingaben) — manuelle Bearbeitung bleibt bei unabhängiger Zusatzfeld-Änderung erhalten, wird bei Moduswechsel und bei echtem Zeilenwechsel zurückgesetzt, bleibt bei erneutem Fokus auf dieselbe Zeile erhalten, "In Gmail öffnen" enthält die handbearbeitete Version, "Vorlage neu einsetzen" stellt die aktuell gültige Vorlagen-Version wieder her (nicht eine veraltete). Screenshots Desktop 1440px + Mobile 390px.
 
+### Mail-Generator: "In Gmail öffnen" ignorierte weitere Empfänger:innen (2026-08-14, Nutzer-Test)
+- **Fund:** bei mehreren, komma-getrennten Adressen im Feld "E-Mail-Adresse(n) der Kundschaft" öffnete "In Gmail öffnen" die Mail nur an die erste Adresse — vom Nutzer selbst beim Ausprobieren entdeckt, nicht vorher aufgefallen.
+- **Root Cause:** `encodeURIComponent()` lief bisher über die gesamte, bereits komma-verbundene Adressliste (`toAddrForSend`) — das kodiert auch das trennende Komma zu `%2C`. Gmails eigener Compose-URL-Parser erkennt `%2C` offenbar nicht zuverlässig als Trennzeichen zwischen mehreren Empfänger:innen, nur ein literales `,` in der URL funktioniert.
+- **Fix:** jede Adresse wird jetzt einzeln kodiert, das trennende Komma bleibt dazwischen bewusst unkodiert — `to=eins%40beispiel.de,zwei%40beispiel.de,drei%40beispiel.de` statt vorher `...de%2Czwei%40...`.
+- **Verifiziert:** `node --check`, mechanischer Detektor (0 Funde), generierte `sendBtn.href` per Playwright mit drei Test-Adressen geprüft (`to`-Parameter enthält alle drei, mit literalen Kommas getrennt).
+
 ## Do's and Don'ts
 
 ### Do:

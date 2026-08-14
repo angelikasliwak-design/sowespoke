@@ -1242,8 +1242,18 @@
       // subject/body-Variablen von oben) — bei contentDirty=true weichen
       // die Feld-Werte vom automatisch generierten Text ab, der Gmail-Link
       // muss die tatsächlich sichtbare, ggf. handbearbeitete Version öffnen.
+      //
+      // Bug-Fund (2026-08-14, Nutzer-Test): bei mehreren, komma-getrennten
+      // Adressen im "to"-Feld öffnete Gmail nur die erste Adresse als
+      // Empfänger:in. Ursache: encodeURIComponent() auf die GESAMTE,
+      // bereits komma-verbundene Adressliste kodiert auch das trennende
+      // Komma zu "%2C" — Gmails eigener Compose-URL-Parser erkennt das
+      // offenbar nicht zuverlässig als Trennzeichen zwischen mehreren
+      // Empfänger:innen. Fix: jede Adresse EINZELN kodieren, das
+      // trennende Komma dazwischen bewusst unkodiert (literal) lassen.
+      const toParam = toAddrForSend ? toAddrForSend.split(",").map((a) => encodeURIComponent(a)).join(",") : "";
       sendBtn.href = ready
-        ? `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(toAddrForSend)}&su=${encodeURIComponent(subjectEl.value)}&body=${encodeURIComponent(bodyEl.value)}`
+        ? `https://mail.google.com/mail/?view=cm&fs=1&to=${toParam}&su=${encodeURIComponent(subjectEl.value)}&body=${encodeURIComponent(bodyEl.value)}`
         : "#";
 
       updateGmailSendLabel(mode);
