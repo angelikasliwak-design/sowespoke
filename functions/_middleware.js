@@ -33,8 +33,33 @@ function isPublicPath(pathname) {
   return false;
 }
 
+// "Zuletzt aktiv"-Tracking (2026-08-14, Nutzer-Wunsch: echte Nutzung sehen,
+// nicht nur Login-Zeitpunkte). Aktualisiert denselben LOGIN_LOG-Eintrag wie
+// functions/api/auth/google/callback.js, aber höchstens einmal pro Person
+// und Tag — ein Cookie merkt sich, ob heute schon aktualisiert wurde, damit
+// nicht jeder einzelne Seiten-/Asset-/API-Aufruf einen KV-Zugriff auslöst.
+// Läuft über context.waitUntil() NACH dem Zurückgeben der Antwort, damit
+// kein einzelner Request durch den KV-Zugriff langsamer wird.
+const LAST_ACTIVE_COOKIE = "last_active_touch";
+
+async function touchLastActive(email, env) {
+  const key = `user:${email}`;
+  const existing = await env.LOGIN_LOG.get(key, "json");
+  const now = new Date().toISOString();
+  await env.LOGIN_LOG.put(
+    key,
+    JSON.stringify({
+      email,
+      firstLoginAt: existing?.firstLoginAt || now,
+      lastLoginAt: existing?.lastLoginAt || now,
+      loginCount: existing?.loginCount || 1,
+      lastActiveAt: now,
+    })
+  );
+}
+
 export async function onRequest(context) {
-  const { request, env, next } = context;
+  const { request, env, next, waitUntil } = context;
   const url = new URL(request.url);
 
   if (isPublicPath(url.pathname)) return next();
@@ -54,5 +79,19 @@ export async function onRequest(context) {
     return Response.redirect(redirectUrl.toString(), 302);
   }
 
-  return next();
+  const response = await next();
+
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
+  const alreadyTouchedToday = getCookie(request, LAST_ACTIVE_COOKIE) === today;
+  if (!alreadyTouchedToday && env.LOGIN_LOG) {
+    waitUntil(touchLastActive(session.email, env));
+    const headers = new Headers(response.headers);
+    headers.append(
+      "Set-Cookie",
+      `${LAST_ACTIVE_COOKIE}=${today}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${2 * 24 * 60 * 60}`
+    );
+    return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+  }
+
+  return response;
 }

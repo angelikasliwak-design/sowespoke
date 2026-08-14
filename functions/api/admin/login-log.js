@@ -19,6 +19,12 @@ export async function onRequestGet(context) {
 
   const list = await env.LOGIN_LOG.list({ prefix: "user:" });
   const values = await Promise.all(list.keys.map((k) => env.LOGIN_LOG.get(k.name, "json")));
-  const items = values.filter(Boolean).sort((a, b) => new Date(b.lastLoginAt) - new Date(a.lastLoginAt));
+  // lastActiveAt (functions/_middleware.js) ist neuer als lastLoginAt und
+  // aussagekräftiger — vor der Einführung dieses Felds bzw. direkt nach
+  // einem frischen Login (bevor die Middleware das erste Mal "berührt" hat)
+  // fällt der Sortier-/Anzeigewert auf lastLoginAt zurück.
+  const items = values
+    .filter(Boolean)
+    .sort((a, b) => new Date(b.lastActiveAt || b.lastLoginAt) - new Date(a.lastActiveAt || a.lastLoginAt));
   return json({ items });
 }

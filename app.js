@@ -3092,10 +3092,11 @@
         <span class="ticket-row__body">
           <span class="ticket-row__top">
             <span class="ticket-row__who"><strong>${escapeHtml(u.email)}</strong></span>
-            <span class="ticket-row__created">Zuletzt: ${formatDateTime(u.lastLoginAt)}</span>
+            <span class="ticket-row__created">Zuletzt aktiv: ${formatDateTime(u.lastActiveAt || u.lastLoginAt)}</span>
           </span>
           <span class="ticket-row__meta">
             <span class="ticket-row__meta-item"><span class="ticket-row__meta-label">Logins</span>${u.loginCount || 1}</span>
+            <span class="ticket-row__meta-item"><span class="ticket-row__meta-label">Letzter Login</span>${formatDateTime(u.lastLoginAt)}</span>
             <span class="ticket-row__meta-item"><span class="ticket-row__meta-label">Erster Login</span>${formatDate(u.firstLoginAt)}</span>
           </span>
         </span>
@@ -3107,7 +3108,7 @@
       <section class="hero hero--compact">
         <div class="hero__intro">
           <h1>Wer <mark>nutzt</mark> Sowespoke?</h1>
-          <p>Nur für Admins sichtbar. "Zuletzt" zeigt den letzten echten Login (Session hält 14 Tage), nicht jeden einzelnen Seitenaufruf.</p>
+          <p>Nur für Admins sichtbar. "Zuletzt aktiv" aktualisiert sich bei echter Nutzung (höchstens einmal pro Tag), "Letzter Login" nur bei einer neuen Anmeldung (Session hält 14 Tage).</p>
         </div>
         <div class="hero__illustration"><img src="assets/brand/hero-rakete.png" alt="" /></div>
       </section>

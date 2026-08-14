@@ -613,6 +613,12 @@ Nutzer-Feedback: die gedämpfte Gold-Variante (`--yellow-text`) wirkte an der St
 - **Zeilenmuster wiederverwendet:** `#/nutzer` nutzt wie `#/serienmails` das bestehende `.ticket-row`/`.ticket-list`-Muster — keine neue Listenform für eine dritte, ähnlich geformte Datentabelle.
 - **Verifiziert:** `node --check`, mechanischer Detektor (0 Funde), lokaler Vorschau-Server (Mock-Endpunkt mit zwei Beispiel-Personen) — Admin-Ansicht (Liste korrekt sortiert/formatiert) und 403-Zustand ("Keine Berechtigung", per Fetch-Override simuliert, da der lokale Mock immer `isAdmin:true` liefert) beide geprüft. Screenshots Desktop 1440px + Mobile 390px.
 
+### Nutzungsübersicht: echte "Zuletzt aktiv" statt nur Login-Zeitpunkt (2026-08-14)
+- **Nutzer-Nachfrage** direkt im Anschluss an `#/nutzer`: "Letzter Login" (nur bei Neu-Authentifizierung, Session hält 14 Tage) reicht nicht als echtes Nutzungssignal. Ergänzt um `lastActiveAt`, das bei tatsächlicher Nutzung mitläuft.
+- **Throttling bewusst über ein Cookie, nicht über einen KV-Read auf jedem Request:** `functions/_middleware.js` prüft zuerst ein `last_active_touch`-Cookie (Wert = heutiges Datum) — nur wenn das fehlt oder veraltet ist, wird der LOGIN_LOG-Eintrag aktualisiert. Dadurch höchstens ein KV-Zugriffspaar pro Person und Tag, nicht pro Request (eine Session erzeugt sonst leicht Dutzende Requests am Tag: Seiten, `/api/*`, Assets).
+- **`context.waitUntil()` statt synchronem `await`:** der KV-Schreibzugriff läuft NACH dem Zurückgeben der Antwort im Hintergrund — kein einzelner Seiten-/API-Aufruf wird dadurch langsamer, das Set-Cookie selbst wird trotzdem synchron auf derselben Antwort gesetzt (unabhängig davon, ob der Hintergrund-Schreibzugriff schon fertig ist).
+- **Verifiziert:** `node --check` auf app.js/_middleware.js/login-log.js, mechanischer Detektor (0 Funde). Die eigentliche Throttle-/waitUntil-Logik lässt sich mit dem lokalen Vorschau-Server nicht nachstellen (der ist ein einfacher Node-HTTP-Server, keine echte Cloudflare-Pages-Middleware) — dafür die Anzeige-Seite mit aktualisierten Mock-Daten (`lastActiveAt` gesetzt) gegengeprüft: Zeile zeigt jetzt "Zuletzt aktiv"/"Letzter Login"/"Erster Login" getrennt, korrekt formatiert, Desktop 1440px + Mobile 390px.
+
 ## Do's and Don'ts
 
 ### Do:

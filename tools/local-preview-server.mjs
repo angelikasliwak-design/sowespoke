@@ -116,8 +116,8 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify({
       items: [
-        { email: "test@sowespoke.com", firstLoginAt: new Date(Date.now() - 20 * 86400000).toISOString(), lastLoginAt: new Date(Date.now() - 3600000).toISOString(), loginCount: 4 },
-        { email: "elina@sowespoke.com", firstLoginAt: new Date(Date.now() - 5 * 86400000).toISOString(), lastLoginAt: new Date(Date.now() - 86400000).toISOString(), loginCount: 1 },
+        { email: "test@sowespoke.com", firstLoginAt: new Date(Date.now() - 20 * 86400000).toISOString(), lastLoginAt: new Date(Date.now() - 3 * 86400000).toISOString(), lastActiveAt: new Date(Date.now() - 1800000).toISOString(), loginCount: 4 },
+        { email: "elina@sowespoke.com", firstLoginAt: new Date(Date.now() - 5 * 86400000).toISOString(), lastLoginAt: new Date(Date.now() - 86400000).toISOString(), lastActiveAt: new Date(Date.now() - 86400000).toISOString(), loginCount: 1 },
       ],
     }));
     return;
