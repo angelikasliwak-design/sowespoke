@@ -15,6 +15,16 @@
      Projekt nirgends auf und die Live-Seite selbst führt keine eigenen
      Cyan-Marken-Presets (nur generische Gutenberg-Standardfarben, die nicht
      zur Marke gehören). Bei Bedarf bitte die echte Quelle nachreichen.
+   - Türkis (--c-turquoise, 2026-08-14) ist die eine Ausnahme von "nur
+     curl-verifizierte Presets": kein eigener WP-Preset auf der Live-Seite,
+     aber vom Nutzer als echte Markenfarbe bestätigt UND direkt aus dem
+     bereits im Projekt verwendeten Logo-Asset (assets/brand/logo-
+     sowespoke-vertical (1).png) per Pixel-Sampling verifiziert (dominante
+     Farbe #11a8bc, ~931 von 1300+ Stichproben) — sehr nah am vom Nutzer
+     genannten #00A6B2 (Abweichung durch PNG-Kompression/Kantenglättung).
+     Der abweichende Verifizierungsweg (Logo-Pixel statt WP-Preset) ist
+     hier dokumentiert, weil er vom sonstigen Protokoll dieser Datei
+     abweicht.
 
    Einzige zulässige Ausnahme von "kein Hex außerhalb dieser Datei": die
    exportierte E-Mail-Signatur in app.js (renderMailGen → copyRichBtn) —
@@ -33,6 +43,7 @@
   --c-ink-30:     #A4A4A4; /* --wp--preset--color--contrast-3 */
   --c-paper:      #F9F9F9; /* --wp--preset--color--base */
   --c-surface:    #FFFFFF; /* --wp--preset--color--base-2 / white */
+  --c-turquoise:  #00A6B2; /* kein WP-Preset — per Logo-Pixel-Sampling verifiziert, siehe Kommentar oben */
 
   /* -- Abgeleitet, nicht als eigener Live-Preset bestätigt --------------- */
   /* green-500 erreicht auf Weiß nur ~3.6:1 Kontrast (< AA 4.5:1) — für
@@ -48,6 +59,11 @@
      deutlich dunklere Stufe nach demselben Muster wie --c-green-700,
      ca. 5.3:1 auf Weiß. */
   --c-yellow-800: #856700;
+  /* --c-turquoise (#00A6B2) selbst erreicht auf Weiß nur ~3.0:1 — zu wenig
+     für Text/Initialen (Avatare), reicht aber für Flächen/Icons (3:1).
+     Um 25% abgedunkelt nach demselben Muster wie --c-green-700 (~5.1:1 auf
+     Weiß, rechnerisch abgeleitet, nicht als eigener Preset bestätigt). */
+  --c-turquoise-700: #007C85;
   /* Helle Tint-Varianten für großflächige, sehr dezente Farbwolken
      (page-bg-Hintergrundebene) — auf der Live-Seite nicht als eigener
      Preset vorhanden, daher rechnerisch aus dem verifizierten 500er-Wert

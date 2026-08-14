@@ -31,6 +31,14 @@
   --on-teal: var(--c-surface);
   --teal-text: var(--c-green-700); /* dunklere Variante nur für Fließtext/Links — WCAG-AA-sicher auf Weiß; --teal bleibt für Rahmen/Icons (nur 3:1 nötig) */
 
+  /* Echtes Türkis (2026-08-14) — nicht zu verwechseln mit --teal oben, das
+     trotz seines Namens Marken-Grün ist (historisch benannt, siehe dessen
+     Kommentar). --turquoise ist die tatsächlich türkise Farbe aus dem
+     Logo-Icon (tokens.css: --c-turquoise, Herkunft/Verifizierung dort). */
+  --turquoise: var(--c-turquoise);
+  --on-turquoise: var(--c-surface);
+  --turquoise-text: var(--c-turquoise-700); /* dunklere Variante für weißen Text auf Türkis-Fläche (z. B. Avatare) — --turquoise selbst nur für Flächen/Icons (3:1 reicht) */
+
   --cat-ai: var(--c-cat-ai);
   --cat-bid: var(--c-cat-bid);
   --cat-target: var(--c-cat-target);
@@ -179,7 +187,9 @@ mark {
   border-bottom: 1px solid var(--line);
   width: 100%;
   display: flex;
-  justify-content: flex-start;
+  /* Zentriert statt linksbündig (2026-08-14, Nutzer-Feedback per
+     Screenshot-Annotation). */
+  justify-content: center;
 }
 .rail__logo img {
   width: 40px;
@@ -440,18 +450,9 @@ mark {
    sind entfallen — dieselbe Funktion (weiche, großflächige Farbwolken)
    übernimmt jetzt .page-bg für die ganze Seite statt pro Hero-Instanz. */
 
-.hero__eyebrow {
-  display: inline-block;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent);
-  background: var(--accent-tint);
-  padding: 0.3em 0.85em;
-  border-radius: 999px;
-  margin-bottom: var(--space-3);
-}
+/* .hero__eyebrow entfernt (2026-08-14) — die kleinen Eyebrow-Tags über den
+   Hero-Headlines wurden site-weit aus dem Markup entfernt (Nutzer-Feedback:
+   "auf allen seiten die kleineboxen bei den überschriften löschen"). */
 
 /* Sprechblase + Illustration als EIN visueller Cluster statt zwei
    getrennter Flex-Kinder — Bubble überlappt die Illustration leicht, damit
@@ -459,86 +460,13 @@ mark {
 .hero__scene { position: relative; flex: none; display: flex; align-items: center; gap: 0; }
 .hero__scene .hero__bubble { margin-right: -14px; z-index: 2; }
 .hero__scene .hero__illustration { z-index: 1; }
-.hero__sticker {
-  position: absolute;
-  top: -10px;
-  right: -4px;
-  z-index: 3;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4em;
-  background: var(--yellow);
-  color: var(--on-yellow);
-  font-size: 0.66rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 0.3em 0.75em;
-  border: 1.5px solid var(--ink);
-  border-radius: 999px;
-  /* Weicher statt hart (2026-08-14, Nutzer-Feedback: "sieht aus, als ob
-     alles nicht eine große Ganze ist") — seit dem Wechsel zu einer echten
-     Foto-Illustration (assets/brand/hero-megafon.png, mit weichem
-     drop-shadow) wirkte der harte, unverwischte Comic-Sticker-Schatten
-     (Versatz ohne Weichzeichnung) neben dem fotorealistischen Megafon wie
-     aus einer anderen, flacheren Bildwelt. Gleicher weicher Schatten-Stil
-     wie das Megafon-Bild selbst, nur noch minimale Drehung statt der
-     vorherigen deutlichen Sticker-Schräglage. */
-  box-shadow: 0 4px 10px -2px color-mix(in srgb, var(--ink) 35%, transparent);
-  transform: rotate(-1.5deg);
-}
-/* Master-Prompt Abschnitt 3.5: "dezenter Puls-Punkt" fürs Live-Badge. */
-.hero__sticker-dot {
-  width: 6px;
-  height: 6px;
-  flex: none;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: sticker-pulse 1.8s ease-in-out infinite;
-}
-@keyframes sticker-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.45; transform: scale(0.7); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .hero__sticker-dot { animation: none; }
-}
-
+/* "Live Updates"-Sticker + Stern-Doodle entfernt (2026-08-14, Nutzer-
+   Feedback per Screenshot-Annotation: beide wirkten neben der jetzt
+   fotorealistischen Megafon-Illustration "nicht wie eine große Ganze").
+   Stern saß an .hero__intro::before, also site-weit auf jedem Hero, nicht
+   nur News — bewusst konsequent überall entfernt statt nur auf einer
+   Seite, sonst wäre die Uneinheitlichkeit nur verschoben worden. */
 .hero__intro { position: relative; flex: 1 1 26rem; max-width: 34rem; animation: hero-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-.hero__intro::before {
-  /* Stern-Doodle neu gezeichnet (2026-08-13, Nutzer-Feedback "awful" zur
-     ersten Fassung) — vorher ein gerader 4-Zacken-Diamant mit falschem Gelb
-     (`#ffcc00` statt dem verifizierten Marken-Gelb `#ffc600`, siehe
-     tokens.css) und dünner 1,3px-Kontur, die dem sonst durchgängig dicken
-     Marker-Doodle-Konturgewicht der Illustrationen widersprach. Jetzt: ein
-     "Twinkle"-Stern mit eingezogenen Kurven zwischen den Zacken (statt
-     gerader Linien) und `3px`-Konturstärke, näherungsweise auf HERO_
-     ILLUSTRATION-Niveau. Bewusste, dokumentierte Ausnahme vom "kein Hex
-     außerhalb tokens.css"-Ziel (dieselbe Kategorie wie die E-Mail-Signatur
-     in app.js): ein CSS-`background-image`-Data-URI kann keine
-     `var(--...)`-Tokens auflösen — Werte sind 1:1 aus tokens.css kopiert
-     (`--c-yellow-500`/`--c-ink`), bei einer Token-Änderung hier manuell
-     nachziehen. */
-  content: "";
-  position: absolute;
-  top: -20px;
-  left: -8px;
-  width: 26px;
-  height: 26px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M20,3 C22,13 27,18 37,20 C27,22 22,27 20,37 C18,27 13,22 3,20 C13,18 18,13 20,3 Z' fill='%23ffc600' stroke='%23111111' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-size: contain;
-  pointer-events: none;
-  transform-origin: center;
-  /* Sanftes Funkeln (Nutzer-Vorschlag 2026-08-10) — dezent genug, um beim
-     Lesen der Headline nicht abzulenken, aber genug Leben für ein
-     Comic-Detail. Pausiert unter prefers-reduced-motion, siehe unten. */
-  animation: star-twinkle 3.4s ease-in-out infinite;
-}
-@keyframes star-twinkle {
-  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
-  50% { transform: scale(0.82) rotate(-8deg); opacity: 0.75; }
-}
 
 /* Comic-Sprechblase als echtes HTML-Element statt SVG-Text (lesbar bei
    jeder Größe) — sitzt zwischen Intro-Text und Megafon-Illustration. */
@@ -2162,5 +2090,4 @@ code {
 @media (prefers-reduced-motion: reduce) {
   * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
   .mascot { animation: none; }
-  .hero__intro::before { animation: none; }
 }

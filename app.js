@@ -4,16 +4,24 @@
   const view = document.getElementById("view");
   const railLinks = document.querySelectorAll(".rail__nav a");
 
+  // Auf reine Marken-Farben umgestellt (2026-08-14, Nutzer-Feedback: "die
+  // Farben passen überhaupt nicht" — die --cat-*-Töne (Lila/Oliv/Rost/
+  // Dunkelblau) waren nie echte Sowespoke-Farben, sondern eine separate
+  // Kategorisierungs-Palette). Zyklus aus den vier echten Marken-Farben
+  // (Magenta/Türkis/Grün/Gelb, siehe tokens.css) statt neun individueller
+  // Töne — der sichtbare Quellen-Name daneben bleibt die eigentliche
+  // Unterscheidung, Farbe ist nur noch ein Akzent, kein zweites
+  // Label-System. Kein Schwarz/Grau/Weiß für diese Boxen (Nutzer-Vorgabe).
   const CHANNEL_VAR = {
     Microsoft: "--teal",
-    Google: "--cat-tracking",
-    Meta: "--cat-ai",
-    TikTok: "--cat-target",
-    Snapchat: "--cat-creative",
-    Rechtliches: "--cat-target",
-    KI: "--cat-ai",
-    CRO: "--cat-bid",
-    Allgemein: "--ink-soft",
+    Google: "--accent",
+    Meta: "--turquoise",
+    TikTok: "--teal",
+    Snapchat: "--accent",
+    Rechtliches: "--turquoise",
+    KI: "--teal",
+    CRO: "--accent",
+    Allgemein: "--turquoise",
   };
 
   const NAV_ICON = { news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", "microsoft-learn": "sparkle", anfragen: "mail", ideen: "lightbulb" };
@@ -319,7 +327,6 @@
     view.innerHTML = `
       <section class="hero hero--compact">
         <div class="hero__intro">
-          <span class="hero__eyebrow">Service-Anfragen</span>
           <h1>Anfragen an <mark>Microsoft</mark>.</h1>
           <p>Vorbereitete E-Mails auf Englisch an ${escapeHtml(MS_CONTACT_NAME)} — nach Anfrage-Art sortiert, jede mit eigenem Formular.</p>
         </div>
@@ -917,14 +924,12 @@
     view.innerHTML = `
       <section class="hero hero--connected">
         <div class="hero__intro">
-          <span class="hero__eyebrow">News &amp; Insights</span>
           <h1>Neuigkeiten aus der<br>Online-<mark>Marketing-Welt</mark>.</h1>
           <p>Aktuelle Trends, Updates &amp; Insights aus der Online-Marketing-Welt – mit besonderem Fokus auf Microsoft Advertising.</p>
         </div>
         <div class="hero__scene">
           <div class="hero__bubble">Wissen weitergeben.<br>Erfolg vervielfachen.</div>
           <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
-          <span class="hero__sticker"><span class="hero__sticker-dot" aria-hidden="true"></span>Live Updates</span>
         </div>
       </section>
       <div class="toolbar">
@@ -1113,7 +1118,6 @@
     view.innerHTML = `
       <section class="hero hero--connected">
         <div class="hero__intro">
-          <span class="hero__eyebrow">Offizielle Quelle</span>
           <h1>Offizielle <mark>Microsoft-Präsentationen</mark>.</h1>
           <p>Zusammenfassungen, Beta-/Feature-Guides und Kunden-Mails direkt aus den echten Präsentationsfolien — neueste zuerst, Einträge ohne bekanntes Datum am Ende.</p>
         </div>
@@ -1289,7 +1293,6 @@
     view.innerHTML = `
       <section class="hero hero--compact">
         <div class="hero__intro">
-          <span class="hero__eyebrow">Vorlagen &amp; Wissen</span>
           <h1><mark>Vorlagen</mark> &amp; Wissen.</h1>
           <p>E-Mail-Vorlagen zum direkten Versand oder Best Practices zum Nachschlagen — beides an einem Ort, klar getrennt.</p>
         </div>
@@ -1411,7 +1414,6 @@
     view.innerHTML = `
       <section class="hero hero--compact">
         <div class="hero__intro">
-          <span class="hero__eyebrow">Kundenergebnisse</span>
           <h1>Case <mark>Studies</mark>.</h1>
           <p>Echte Ergebnisse und Testresultate aus den Kundenkonten — laufend gepflegt.</p>
         </div>
@@ -1545,8 +1547,14 @@
   // Systematische statt zufällige Zuweisung (wie CHANNEL_VAR) — dieselben
   // Initialen bekommen immer dieselbe Farbe, statt bei jedem Render zu wechseln.
   // --teal-text statt --teal: weißer Avatar-Text auf rohem --teal maß nur
-  // 3.58:1 (Kritik-Fund), die Text-sichere Variante schafft ~5.2:1.
-  const AVATAR_VAR_CYCLE = ["--accent", "--teal-text", "--cat-ai", "--cat-bid", "--cat-creative", "--cat-tracking", "--cat-target"];
+  // 3.58:1 (Kritik-Fund), die Text-sichere Variante schafft ~5.2:1. Gleicher
+  // Grund für --turquoise-text (roh nur ~3.0:1, siehe tokens.css).
+  // Auf reine Marken-Farben reduziert (2026-08-14, Nutzer-Feedback zu
+  // --cat-*-Farben, die nicht zur Marke passen, UND explizit kein
+  // Schwarz/Grau/Weiß für diese Boxen) — --yellow ausgelassen, weil
+  // weißer Avatar-Text darauf keinen Kontrast hätte (--on-yellow verlangt
+  // dunklen Text, hier aber fest weiß).
+  const AVATAR_VAR_CYCLE = ["--accent", "--teal-text", "--turquoise-text"];
   function avatarColorVar(initials) {
     const code = initials.split("").reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
     return AVATAR_VAR_CYCLE[code % AVATAR_VAR_CYCLE.length];
@@ -1615,12 +1623,15 @@
       return acc;
     }, {});
     const topCategories = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
-    const catVarCycle = ["--cat-tracking", "--cat-ai", "--cat-bid", "--cat-creative", "--cat-target"];
+    // Auf reine Marken-Farben umgestellt (2026-08-14, Nutzer-Feedback per
+    // Screenshot: Abrechnung/Zugriffsrechte-Chips in Oliv/Rost passten
+    // "überhaupt nicht", plus explizit kein Schwarz/Grau/Weiß) — gleicher
+    // Drei-Farben-Zyklus wie AVATAR_VAR_CYCLE.
+    const catVarCycle = ["--accent", "--teal-text", "--turquoise-text"];
 
     view.innerHTML = `
       <section class="hero hero--compact">
         <div class="hero__intro">
-          <span class="hero__eyebrow">Support</span>
           <h1>Tickets<mark>-Übersicht</mark>.</h1>
           <p>Alle Anfragen von Kundenagenturen an einem Ort. Diese Ansicht zeigt aktuell Beispieldaten — die Anbindung an das echte Ticketsystem folgt.</p>
         </div>
@@ -1737,7 +1748,6 @@
     view.innerHTML = `
       <section class="hero hero--compact">
         <div class="hero__intro">
-          <span class="hero__eyebrow">Microsoft Learn</span>
           <h1>Von <mark>Microsoft Learn</mark>.</h1>
           <p>Offizielle Kurzbeschreibungen ausgewählter Microsoft-Learn-Seiten, mit Link zur vollständigen Originalseite.</p>
         </div>
@@ -1836,7 +1846,6 @@
       <div class="ideas-team-bg" aria-hidden="true"></div>
       <section class="hero hero--compact">
         <div class="hero__intro">
-          <span class="hero__eyebrow">Ideen &amp; Vorschläge</span>
           <h1>Hast du eine <mark>Idee</mark>? Dann her damit!</h1>
           <p>Teile neue Ansätze, Verbesserungsvorschläge oder kreative Impulse mit dem Team. Jede Idee zählt und wird für alle sichtbar.</p>
         </div>
@@ -2056,13 +2065,17 @@
   /* ------------------------------------------------------- Zuletzt angesehen */
 
   const RECENT_KEY = "sowespoke-recent";
+  // Auf 2 Einträge gekürzt (2026-08-14, Nutzer-Feedback: "reicht auch nur
+  // zwei Positionen") — war vorher 5, wirkte als eigene lange Liste neben
+  // der Sidebar zu dominant für einen reinen Schnellzugriff.
+  const RECENT_LIMIT = 2;
 
   function pushRecent(entry) {
     let list = [];
     try { list = JSON.parse(localStorage.getItem(RECENT_KEY)) || []; } catch { list = []; }
     list = list.filter((e) => e.href !== entry.href);
     list.unshift(entry);
-    localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, 5)));
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, RECENT_LIMIT)));
   }
 
   function getRecent() {
@@ -2070,7 +2083,10 @@
   }
 
   function renderRecentCard() {
-    const items = getRecent();
+    // .slice() zusätzlich zum Kürzen beim Speichern — schützt auch gegen
+    // altes localStorage mit noch bis zu 5 Einträgen aus der Zeit vor
+    // RECENT_LIMIT.
+    const items = getRecent().slice(0, RECENT_LIMIT);
     if (!items.length) return "";
     return `
       <div class="side-card">

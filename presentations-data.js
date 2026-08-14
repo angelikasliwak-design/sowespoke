@@ -6,13 +6,20 @@
  * Datei-Zeitstempel und dient nur der Sortierung, nicht als Aussage.
  */
 
+// Auf reine Marken-Farben umgestellt (2026-08-14, gleicher Anlass wie
+// CHANNEL_VAR in app.js: die --cat-*-Töne waren nie echte Sowespoke-Farben).
+// Diese Map speist sowohl das Listen-Icon (.row__thumb, nur 3:1 nötig) als
+// auch den Detail-Chip (Klartext-Badge, braucht volle 4.5:1) — deshalb
+// durchgehend die dunkleren -text-Varianten, die für beide Kontexte sicher
+// sind. Fällt "Sonstiges" bewusst nicht auf Grau/Schwarz zurück (Nutzer-
+// Vorgabe: kein Weiß/Schwarz für diese Boxen).
 const DOCTYPE_VAR = {
   "Beta-Feature": "--accent",
-  "Feature-Guide": "--teal",
-  "Strategie-Trend": "--cat-ai",
-  "Saisonal": "--cat-creative",
-  "Rechtliches": "--cat-target",
-  "Sonstiges": "--ink-soft",
+  "Feature-Guide": "--teal-text",
+  "Strategie-Trend": "--turquoise-text",
+  "Saisonal": "--accent",
+  "Rechtliches": "--teal-text",
+  "Sonstiges": "--turquoise-text",
 };
 
 const PRESENTATIONS = [
