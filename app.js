@@ -1553,7 +1553,10 @@
       </article>
     `;
 
-    if (c.performanceData) wireChartCard(c.performanceData);
+    if (c.performanceData) {
+      wireChartCard(c.performanceData);
+      wireChartModal(c.performanceData);
+    }
   }
 
   // Performance-Chart-Karte (2026-08-14, Nutzer-Wunsch: Reporting aus dem
@@ -1577,16 +1580,187 @@
         <p class="chart-card__callout" id="chart-callout"></p>
         <div class="chart-card__canvas-wrap"><canvas id="case-study-chart"></canvas></div>
         <p class="chart-card__note">${ICONS.flash} ${escapeHtml(perf.changeLabel)} am ${formatDate(perf.changeDate)} — gestrichelte Linie markiert die Umstellung.</p>
+        <button type="button" class="chart-card__expand" data-open-chart-modal>${ICONS.external} Vollständige Übersicht — alle Kennzahlen</button>
+      </div>
+      ${chartModalHtml(perf)}
+    `;
+  }
+
+  // Overlay (2026-08-14, Nutzer-Wunsch: "man sollte zwei[Kennzahlen
+  // gleichzeitig sehen können], anpassbar" — als "mehr Kennzahlen
+  // gleichzeitig" statt frei verschiebbarem Vergleichszeitraum eingegrenzt,
+  // per Rückfrage). Erstes Modal/Overlay in dieser App überhaupt — bisher
+  // löste jede bestätigungspflichtige Aktion das inline statt mit einem
+  // Dialogfenster (siehe Ideenboard-Löschen). Hier bewusst doch ein echtes
+  // Overlay, weil es um zusätzliche Information geht, nicht um eine
+  // Bestätigung — eine Kachel-Übersicht lässt sich nicht sinnvoll inline in
+  // die schmale Kartenspalte quetschen. Heller Sowespoke-Stil statt des vom
+  // Nutzer als Referenz gezeigten Dark-Mode-Dashboards (per Rückfrage
+  // bewusst so entschieden) — kein Stilbruch mitten in der App.
+  function chartModalHtml(perf) {
+    return `
+      <div class="chart-modal" id="chart-modal" hidden>
+        <div class="chart-modal__backdrop" data-modal-close></div>
+        <div class="chart-modal__panel" role="dialog" aria-modal="true" aria-labelledby="chart-modal-title">
+          <button type="button" class="chart-modal__close" data-modal-close aria-label="Schließen">${ICONS.close}</button>
+          <h2 id="chart-modal-title">Performance-Übersicht</h2>
+          <p class="chart-modal__sub">${ICONS.flash} ${escapeHtml(perf.changeLabel)} am ${formatDate(perf.changeDate)}</p>
+          <div class="chart-modal__tiles" id="chart-modal-tiles"></div>
+          <div class="chart-modal__summary">
+            <div class="chart-modal__summary-head">
+              <h3>Automatisch generierte Zusammenfassung</h3>
+              <span class="mailgen__status" id="chart-modal-copy-status">${ICONS.check} Kopiert</span>
+            </div>
+            <p id="chart-modal-summary-text"></p>
+            <button type="button" class="btn btn--secondary" id="chart-modal-copy">${ICONS.copy} In Zwischenablage kopieren</button>
+          </div>
+        </div>
       </div>
     `;
+  }
+
+  // m.plural (Conversions/Impressionen/Klicks) steuert die Verbform — sonst
+  // liest sich der Auto-Text falsch ("Impressionen stieg" statt "stiegen").
+  function metricClause(stat) {
+    const beforeStr = formatMetricValue(stat.m, stat.beforeAvg);
+    const afterStr = formatMetricValue(stat.m, stat.afterAvg);
+    if (Math.abs(stat.pct) < 5) {
+      const bleiben = stat.m.plural ? "blieben" : "blieb";
+      return `${stat.m.label} ${bleiben} mit ${beforeStr} → ${afterStr} nahezu stabil`;
+    }
+    const verb = stat.pct >= 0 ? (stat.m.plural ? "stiegen" : "stieg") : (stat.m.plural ? "sanken" : "sank");
+    return `${stat.m.label} ${verb} um ${Math.abs(stat.pct).toFixed(0)} % (${beforeStr} → ${afterStr})`;
+  }
+
+  function joinList(arr) {
+    if (arr.length === 0) return "";
+    if (arr.length === 1) return arr[0];
+    return `${arr.slice(0, -1).join(", ")} und ${arr[arr.length - 1]}`;
+  }
+
+  // Reiner Text-Baustein aus vorhandenen Zahlen zusammengesetzt (keine
+  // KI-Textgenerierung — die App hat keine LLM-Anbindung), aber genau der
+  // Text, den man sonst von Hand in eine Case-Study-Zusammenfassung
+  // schreiben würde. "Seit der {changeLabel}" setzt grammatisch eine
+  // "-ung"-Endung voraus (Autobidding-Umstellung, Einführung, …) — passt zu
+  // allen bisherigen und realistisch erwartbaren changeLabel-Werten.
+  function generateChangeSummary(perf, stats) {
+    const outcome = stats.filter((s) => !s.m.neutral);
+    const neutral = stats.filter((s) => s.m.neutral);
+    let text = `Seit der ${perf.changeLabel} am ${formatDate(perf.changeDate)} entwickelten sich die wichtigsten Kennzahlen wie folgt: ${joinList(outcome.map(metricClause))}.`;
+    if (neutral.length) {
+      const neutralText = joinList(neutral.map(metricClause));
+      text += ` ${neutralText.charAt(0).toUpperCase()}${neutralText.slice(1)}.`;
+    }
+    return text;
+  }
+
+  function wireChartModal(perf) {
+    const modal = view.querySelector("#chart-modal");
+    const openBtn = view.querySelector("[data-open-chart-modal]");
+    if (!modal || !openBtn) return;
+    const tilesEl = modal.querySelector("#chart-modal-tiles");
+    const summaryEl = modal.querySelector("#chart-modal-summary-text");
+    const copyBtn = modal.querySelector("#chart-modal-copy");
+    const copyStatus = modal.querySelector("#chart-modal-copy-status");
+    let lastFocused = null;
+    let copyTimer;
+
+    function renderTiles() {
+      const stats = perf.metrics.map((m) => computeMetricStat(perf, m));
+      tilesEl.innerHTML = stats
+        .map((s) => {
+          const deltaClass = s.favorable === null ? "" : s.favorable ? "kpi-tile__delta--good" : "kpi-tile__delta--bad";
+          const sign = s.pct > 0 ? "+" : "";
+          return `
+            <div class="kpi-tile">
+              <span class="kpi-tile__label">${escapeHtml(s.m.label)}</span>
+              <div class="kpi-tile__value-row">
+                <strong class="kpi-tile__value">${formatMetricValue(s.m, s.afterAvg)}</strong>
+                <span class="kpi-tile__delta ${deltaClass}">${sign}${s.pct.toFixed(0)}%</span>
+              </div>
+              <span class="kpi-tile__hint">vorher ${formatMetricValue(s.m, s.beforeAvg)}</span>
+            </div>
+          `;
+        })
+        .join("");
+      summaryEl.textContent = generateChangeSummary(perf, stats);
+    }
+
+    function onKeydown(e) {
+      if (e.key === "Escape") closeModal();
+    }
+    function openModal() {
+      renderTiles();
+      lastFocused = document.activeElement;
+      modal.hidden = false;
+      document.body.style.overflow = "hidden";
+      // Maskottchen überlappte auf Mobile die Kacheln (Screenshot-Selbsttest
+      // 2026-08-14) — die bestehende Kollisions-/Kollaps-Logik kennt nur
+      // .feed/.chart-card, nicht dieses neue Overlay. Einfacher als eine
+      // dritte Prüfung: solange ein Modal offen ist, blendet die App das
+      // Maskottchen komplett aus (es konkurriert ohnehin nicht mit einem
+      // fokussierten Dialog um Aufmerksamkeit).
+      document.getElementById("mascot-root")?.classList.add("is-modal-hidden");
+      modal.querySelector(".chart-modal__close").focus();
+      document.addEventListener("keydown", onKeydown);
+    }
+    function closeModal() {
+      document.getElementById("mascot-root")?.classList.remove("is-modal-hidden");
+      modal.hidden = true;
+      document.body.style.overflow = "";
+      document.removeEventListener("keydown", onKeydown);
+      if (lastFocused && document.contains(lastFocused)) lastFocused.focus();
+    }
+
+    openBtn.addEventListener("click", openModal);
+    modal.querySelectorAll("[data-modal-close]").forEach((el) => el.addEventListener("click", closeModal));
+
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(summaryEl.textContent);
+        copyStatus.innerHTML = `${ICONS.check} Kopiert`;
+      } catch {
+        copyStatus.textContent = "Bitte Text manuell markieren und kopieren";
+      }
+      copyStatus.classList.add("is-visible");
+      clearTimeout(copyTimer);
+      copyTimer = setTimeout(() => copyStatus.classList.remove("is-visible"), 2600);
+    });
   }
 
   function cssVar(name) {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
 
+  // de-DE statt .toFixed() (2026-08-14, beim Ergänzen von Impressionen/
+  // Klicks nötig geworden) — .toFixed() liefert weder Tausendertrennzeichen
+  // ("225000" statt "225.000") noch das im Rest der App durchgängig
+  // genutzte Dezimalkomma. Gilt rückwirkend auch für ROAS/CPA/CTR, nicht
+  // nur die neuen groß-zahligen Kennzahlen — einheitliches Format, kein
+  // Sonderfall pro Kennzahl.
   function formatMetricValue(m, value) {
-    return `${m.prefix || ""}${value.toFixed(m.decimals)}${m.suffix || ""}`;
+    const formatted = value.toLocaleString("de-DE", { minimumFractionDigits: m.decimals, maximumFractionDigits: m.decimals });
+    return `${m.prefix || ""}${formatted}${m.suffix || ""}`;
+  }
+
+  // Vorher/Nachher-Kennwerte EINER Kennzahl — gemeinsame Grundlage für den
+  // Callout in der kompakten Chart-Karte UND die KPI-Kacheln im Overlay,
+  // damit beide garantiert dieselbe Zahl zeigen statt zwei leicht
+  // abweichender Berechnungen zu pflegen.
+  function computeMetricStat(perf, m) {
+    const changeIndex = m.points.findIndex((p) => p.date >= perf.changeDate);
+    const before = m.points.slice(0, changeIndex);
+    const after = m.points.slice(changeIndex);
+    const avg = (arr) => arr.reduce((s, p) => s + p.value, 0) / arr.length;
+    const beforeAvg = avg(before);
+    const afterAvg = avg(after);
+    const pct = ((afterAvg - beforeAvg) / beforeAvg) * 100;
+    // neutral: true (Spend/Impressionen/Klicks) hat keine eindeutige
+    // "mehr/weniger ist besser"-Richtung — favorable bleibt null, die
+    // Kachel/das Callout färbt dann bewusst nicht ein.
+    const favorable = m.neutral ? null : m.lowerIsBetter ? pct < 0 : pct > 0;
+    return { m, changeIndex, beforeAvg, afterAvg, pct, favorable };
   }
 
   function wireChartCard(perf) {
@@ -1623,23 +1797,18 @@
       },
     };
 
-    function updateCallout(m, changeIndex) {
-      const before = m.points.slice(0, changeIndex);
-      const after = m.points.slice(changeIndex);
-      const avg = (arr) => arr.reduce((s, p) => s + p.value, 0) / arr.length;
-      const beforeAvg = avg(before);
-      const afterAvg = avg(after);
-      const pct = ((afterAvg - beforeAvg) / beforeAvg) * 100;
-      const favorable = m.lowerIsBetter ? pct < 0 : pct > 0;
+    function updateCallout(stat) {
+      const { m, pct, beforeAvg, afterAvg, favorable } = stat;
       callout.textContent = `${pct > 0 ? "+" : ""}${pct.toFixed(0)}% seit der Umstellung (${formatMetricValue(m, beforeAvg)} → ${formatMetricValue(m, afterAvg)})`;
-      callout.classList.toggle("chart-card__callout--good", favorable);
+      callout.classList.toggle("chart-card__callout--good", favorable === true);
     }
 
     function renderMetric(key) {
       const m = metrics.find((x) => x.key === key) || metrics[0];
-      const changeIndex = m.points.findIndex((p) => p.date >= perf.changeDate);
+      const stat = computeMetricStat(perf, m);
+      const changeIndex = stat.changeIndex;
       const labels = m.points.map((p) => formatShortDate(p.date));
-      updateCallout(m, changeIndex);
+      updateCallout(stat);
 
       if (chart) chart.destroy();
       chart = new Chart(canvas, {

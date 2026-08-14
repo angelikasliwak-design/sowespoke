@@ -78,6 +78,7 @@ const CASE_STUDIES = [
           key: "conversions",
           label: "Conversions",
           decimals: 0,
+          plural: true,
           points: [
             { date: "2026-03-23", value: 82 },
             { date: "2026-03-30", value: 88 },
@@ -111,6 +112,78 @@ const CASE_STUDIES = [
             { date: "2026-05-25", value: 2.42 },
             { date: "2026-06-01", value: 2.45 },
             { date: "2026-06-08", value: 2.48 },
+          ],
+        },
+        // Drei weitere Kennzahlen (2026-08-14, Nutzer-Wunsch: "mehr
+        // Kennzahlen gleichzeitig" in der Detail-Übersicht) — bewusst NICHT
+        // frei erfunden, sondern rechnerisch aus den vier Kennzahlen oben
+        // abgeleitet (Spend = Conversions × CPA, Klicks = Impressionen ×
+        // CTR), damit die Zahlen untereinander konsistent bleiben, wie es
+        // bei echten Konto-Exports der Fall wäre. `neutral: true` markiert
+        // Kennzahlen ohne eindeutige "mehr/weniger ist besser"-Richtung
+        // (anders als ROAS/CPA/Conversions/CTR) — Delta wird angezeigt,
+        // aber nicht als positiv/negativ eingefärbt.
+        {
+          key: "spend",
+          label: "Spend",
+          prefix: "€",
+          decimals: 0,
+          neutral: true,
+          points: [
+            { date: "2026-03-23", value: 3362 },
+            { date: "2026-03-30", value: 3784 },
+            { date: "2026-04-06", value: 3360 },
+            { date: "2026-04-13", value: 3784 },
+            { date: "2026-04-20", value: 3588 },
+            { date: "2026-04-27", value: 3528 },
+            { date: "2026-05-04", value: 3536 },
+            { date: "2026-05-11", value: 3456 },
+            { date: "2026-05-18", value: 3360 },
+            { date: "2026-05-25", value: 3335 },
+            { date: "2026-06-01", value: 3304 },
+            { date: "2026-06-08", value: 3600 },
+          ],
+        },
+        {
+          key: "impressions",
+          label: "Impressionen",
+          decimals: 0,
+          neutral: true,
+          plural: true,
+          points: [
+            { date: "2026-03-23", value: 175000 },
+            { date: "2026-03-30", value: 182000 },
+            { date: "2026-04-06", value: 178000 },
+            { date: "2026-04-13", value: 185000 },
+            { date: "2026-04-20", value: 190000 },
+            { date: "2026-04-27", value: 198000 },
+            { date: "2026-05-04", value: 205000 },
+            { date: "2026-05-11", value: 210000 },
+            { date: "2026-05-18", value: 215000 },
+            { date: "2026-05-25", value: 218000 },
+            { date: "2026-06-01", value: 220000 },
+            { date: "2026-06-08", value: 225000 },
+          ],
+        },
+        {
+          key: "clicks",
+          label: "Klicks",
+          decimals: 0,
+          neutral: true,
+          plural: true,
+          points: [
+            { date: "2026-03-23", value: 3587 },
+            { date: "2026-03-30", value: 3858 },
+            { date: "2026-04-06", value: 3702 },
+            { date: "2026-04-13", value: 3978 },
+            { date: "2026-04-20", value: 4180 },
+            { date: "2026-04-27", value: 4455 },
+            { date: "2026-05-04", value: 4715 },
+            { date: "2026-05-11", value: 4935 },
+            { date: "2026-05-18", value: 5160 },
+            { date: "2026-05-25", value: 5276 },
+            { date: "2026-06-01", value: 5390 },
+            { date: "2026-06-08", value: 5580 },
           ],
         },
       ],
