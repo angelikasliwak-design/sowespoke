@@ -990,6 +990,46 @@ mark {
 .side-card__list li:first-child .side-card__recent { border-top: none; padding-top: 0; }
 .side-card__recent:hover strong { color: var(--accent); }
 
+/* Performance-Chart-Karte (2026-08-14, Case-Study-Detailseite) — eigener,
+   neuer Komponenten-Typ, deshalb eigene Rahmenfarbe statt eine der drei
+   bestehenden zu recyceln (Seitenkarte=magenta, Info-Box=petrol, Mail-
+   Generator=gelb sind an ihren jeweiligen Typ gebunden, siehe Bunte-
+   Rahmen-Regel). Türkis passt inhaltlich zu "Daten/Reporting" und war
+   bisher kaum genutzt. Zwei Klassen kombiniert (.side-card.chart-card)
+   für höhere Spezifität statt auf Quellreihenfolge zu vertrauen. */
+.side-card.chart-card {
+  border-color: var(--turquoise);
+  box-shadow: var(--shadow), 0 14px 32px -14px color-mix(in srgb, var(--turquoise) 50%, transparent);
+}
+.chart-card__head { margin-bottom: var(--space-3); }
+.chart-card__tabs { margin-top: var(--space-2); }
+.chart-card__callout {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35em 0.9em;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  background: var(--paper);
+  margin-bottom: var(--space-4);
+}
+.chart-card__callout--good { color: var(--success); background: var(--success-tint); }
+/* Chart.js braucht einen Elternrahmen mit EXPLIZITER Größe (responsive:true
+   + maintainAspectRatio:false füllt den Elternrahmen, berechnet daraus aber
+   nicht selbst eine Höhe) — ohne festes height hier würde der Canvas auf
+   0px kollabieren. */
+.chart-card__canvas-wrap { position: relative; height: 220px; }
+.chart-card__note {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-top: var(--space-4);
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+.chart-card__note svg { width: 14px; height: 14px; flex: none; color: var(--turquoise); }
+
 .event-row { display: flex; flex-direction: column; gap: var(--space-2); }
 .event-row__top {
   display: flex;

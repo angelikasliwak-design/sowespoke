@@ -43,6 +43,15 @@
     return d.toLocaleDateString("de-DE", { day: "numeric", month: "short", year: "numeric" });
   }
 
+  // Kurzform ohne Jahr, nur für Chart-Achsenbeschriftungen (Performance-
+  // Chart-Karte) — die Datenpunkte liegen alle im selben Jahr, das
+  // Jahr sechsmal auf der x-Achse zu wiederholen wäre reiner Ballast.
+  function formatShortDate(iso) {
+    const d = new Date(iso + "T00:00:00");
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("de-DE", { day: "numeric", month: "short" });
+  }
+
   function formatTime(iso) {
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return "";
@@ -515,11 +524,17 @@
   // schieben, klappt sie beim Überlappen mit .feed auf ein kleines,
   // weiterhin schwebendes Icon zusammen (viel kleinere Trefffläche),
   // sobald keine Überlappung mehr besteht, klappt sie automatisch wieder auf.
+  // .chart-card ergänzt (2026-08-14): die Performance-Chart-Karte auf
+  // Case-Study-Seiten sitzt (anders als .side-rail/.toolbar/.ticket-list,
+  // die schon oben im Viewport liegen) weiter unten im Fließtext — genau
+  // der Fall, für den avoidEls/avoidMascotCollision NICHT gedacht ist (nur
+  // eine einmalige Prüfung beim ersten Erscheinen, nicht bei jedem Scroll).
+  // Gehört deshalb zur Kollaps-Logik hier, nicht zur Lift-Logik oben.
   function mascotOverlapsFeed(mascotEl) {
-    const feed = document.querySelector(".feed");
-    if (!feed) return false;
+    const target = document.querySelector(".feed, .chart-card");
+    if (!target) return false;
     const mRect = mascotEl.getBoundingClientRect();
-    const fRect = feed.getBoundingClientRect();
+    const fRect = target.getBoundingClientRect();
     return mRect.left < fRect.right && mRect.right > fRect.left && mRect.top < fRect.bottom && mRect.bottom > fRect.top;
   }
   function updateMascotCollapse(mascotEl) {
@@ -547,6 +562,11 @@
     // bei .side-rail/.toolbar: wegschieben statt nur verkleinern; wird der
     // nötige Versatz unrealistisch groß, bleibt die Blase bis zum nächsten
     // Scroll unsichtbar (bestehendes, bereits etabliertes Verhalten).
+    // .chart-card bewusst NICHT hier (sondern in mascotOverlapsFeed unten) —
+    // sitzt wie .feed weiter unten im Fließtext, nicht oben im Viewport wie
+    // die drei hier geprüften Elemente; eine einmalige Prüfung beim ersten
+    // Erscheinen würde eine erst später beim Scrollen entstehende
+    // Überlappung nicht erfassen.
     const avoidEls = document.querySelectorAll(".side-rail, .toolbar, .ticket-list");
     const mRect = mascotEl.getBoundingClientRect();
     let maxLift = 0;
@@ -1526,9 +1546,149 @@
               <ul>${c.keyFactsDE.map((f) => `<li>${escapeHtml(f)}</li>`).join("")}</ul>
             </div>
           </div>
+          <div class="detail__side">
+            ${c.performanceData ? chartCardHtml(c.performanceData) : ""}
+          </div>
         </div>
       </article>
     `;
+
+    if (c.performanceData) wireChartCard(c.performanceData);
+  }
+
+  // Performance-Chart-Karte (2026-08-14, Nutzer-Wunsch: Reporting aus dem
+  // Microsoft-Konto zeigen, wie sich die Performance nach Einführung eines
+  // Beta/Features entwickelt hat, um daraus eine Case Study abzuleiten).
+  // Erstmal nur Leser-Interaktivität (Metrik umschalten) mit Beispieldaten
+  // — echte Konto-Zahlen und ein Eingabe-Werkzeug fürs Team sind ein
+  // späterer Schritt (per Rückfrage bewusst so eingegrenzt). Standard-
+  // Bestandteil von renderCaseStudyDetail, nicht nur dieser einen Seite —
+  // jede künftige Case Study kann `performanceData` mitliefern.
+  function chartCardHtml(perf) {
+    const metrics = perf.metrics;
+    return `
+      <div class="side-card chart-card">
+        <div class="chart-card__head">
+          <h2>Performance-Entwicklung</h2>
+          <nav class="tabs chart-card__tabs" role="tablist" aria-label="Kennzahl">
+            ${metrics.map((m, i) => `<button type="button" class="tabs__item ${i === 0 ? "is-active" : ""}" data-chart-metric="${m.key}" role="tab" aria-selected="${i === 0}">${escapeHtml(m.label)}</button>`).join("")}
+          </nav>
+        </div>
+        <p class="chart-card__callout" id="chart-callout"></p>
+        <div class="chart-card__canvas-wrap"><canvas id="case-study-chart"></canvas></div>
+        <p class="chart-card__note">${ICONS.flash} ${escapeHtml(perf.changeLabel)} am ${formatDate(perf.changeDate)} — gestrichelte Linie markiert die Umstellung.</p>
+      </div>
+    `;
+  }
+
+  function cssVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  function formatMetricValue(m, value) {
+    return `${m.prefix || ""}${value.toFixed(m.decimals)}${m.suffix || ""}`;
+  }
+
+  function wireChartCard(perf) {
+    const canvas = view.querySelector("#case-study-chart");
+    const tabs = view.querySelectorAll("[data-chart-metric]");
+    const callout = view.querySelector("#chart-callout");
+    if (!canvas || typeof Chart === "undefined") return;
+
+    const metrics = perf.metrics;
+    const beforeColor = cssVar("--ink-soft");
+    const afterColor = cssVar("--turquoise");
+    let chart = null;
+
+    // Vertikale Trennlinie am Umstellungs-Tag — kein Annotation-Plugin
+    // nachgeladen (weiterer selbst zu hostender Fremdcode für eine einzige
+    // gestrichelte Linie wäre unverhältnismäßig), stattdessen ein simples
+    // eigenes Chart.js-Plugin, das direkt auf den Canvas-Kontext zeichnet.
+    const changeLinePlugin = {
+      id: "changeLine",
+      afterDraw(c) {
+        const idx = c.$changeIndex;
+        if (idx == null) return;
+        const { ctx, chartArea, scales } = c;
+        const x = scales.x.getPixelForValue(idx);
+        ctx.save();
+        ctx.strokeStyle = beforeColor;
+        ctx.setLineDash([4, 4]);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(x, chartArea.top);
+        ctx.lineTo(x, chartArea.bottom);
+        ctx.stroke();
+        ctx.restore();
+      },
+    };
+
+    function updateCallout(m, changeIndex) {
+      const before = m.points.slice(0, changeIndex);
+      const after = m.points.slice(changeIndex);
+      const avg = (arr) => arr.reduce((s, p) => s + p.value, 0) / arr.length;
+      const beforeAvg = avg(before);
+      const afterAvg = avg(after);
+      const pct = ((afterAvg - beforeAvg) / beforeAvg) * 100;
+      const favorable = m.lowerIsBetter ? pct < 0 : pct > 0;
+      callout.textContent = `${pct > 0 ? "+" : ""}${pct.toFixed(0)}% seit der Umstellung (${formatMetricValue(m, beforeAvg)} → ${formatMetricValue(m, afterAvg)})`;
+      callout.classList.toggle("chart-card__callout--good", favorable);
+    }
+
+    function renderMetric(key) {
+      const m = metrics.find((x) => x.key === key) || metrics[0];
+      const changeIndex = m.points.findIndex((p) => p.date >= perf.changeDate);
+      const labels = m.points.map((p) => formatShortDate(p.date));
+      updateCallout(m, changeIndex);
+
+      if (chart) chart.destroy();
+      chart = new Chart(canvas, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [{
+            data: m.points.map((p) => p.value),
+            borderWidth: 2.5,
+            tension: 0.3,
+            fill: false,
+            pointRadius: 3,
+            pointBackgroundColor: (ctx) => (ctx.dataIndex >= changeIndex ? afterColor : beforeColor),
+            pointBorderColor: (ctx) => (ctx.dataIndex >= changeIndex ? afterColor : beforeColor),
+            segment: {
+              borderColor: (ctx) => (ctx.p1DataIndex <= changeIndex ? beforeColor : afterColor),
+            },
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: { duration: 260 },
+          plugins: { legend: { display: false }, tooltip: {
+            callbacks: { label: (ctx) => formatMetricValue(m, ctx.parsed.y) },
+          } },
+          scales: {
+            y: { ticks: { callback: (v) => formatMetricValue(m, v) } },
+            x: { ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 6 } },
+          },
+        },
+        plugins: [changeLinePlugin],
+      });
+      chart.$changeIndex = changeIndex;
+      chart.update();
+    }
+
+    renderMetric(metrics[0].key);
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((t) => {
+          const active = t === tab;
+          t.classList.toggle("is-active", active);
+          t.setAttribute("aria-selected", String(active));
+        });
+        renderMetric(tab.dataset.chartMetric);
+      });
+    });
   }
 
   /* ------------------------------------------------------------ Seite: Tickets */
