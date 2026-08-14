@@ -50,16 +50,18 @@ const STANDALONE_TEMPLATES = [
   {
     id: "quartalsende-hinweis",
     title: "Quartalsende-Hinweis: Konten ohne Änderungen",
-    summary: "Freundlicher, allgemeiner Hinweis kurz vor Quartalsende — ohne konkrete Konten zu nennen, bewusst zurückhaltend statt auffordernd formuliert.",
-    // Bewusst zurückgestellte Alternative zu "no-change-konten" (2026-08-14,
-    // Nutzer-Wunsch): für den Fall, dass noch keine konkrete Konten-Liste
-    // vorliegt oder ein sanfterer erster Hinweis vor der eigentlichen
-    // Erinnerung gewünscht ist. Kein Konten-Feld — "ohne Konten zu nennen"
-    // war eine explizite Vorgabe, kein Versehen.
+    summary: "Erinnerung kurz vor Quartalsende, ohne konkrete Konten zu nennen — mit derselben Anleitung/Struktur wie die Vorlage mit Konten-Liste.",
+    // Zweite Überarbeitung (2026-08-14, Nutzer-Wunsch nach erneutem Blick auf
+    // die Original-Vorlage): sollte inhaltlich/strukturell "genau so wie" die
+    // Original-Vorlage (Anleitung, Beispiel-Änderungen, Frist-Begründung,
+    // Rückmeldebitte, Dankeschön) sein — nur ohne die konkrete Konten-Liste
+    // — und als echte Erinnerungs-Mail wirken, nicht mehr als weicher,
+    // zurückhaltender "Hinweis" (erste Fassung, jetzt ersetzt). Kein
+    // Konten-Feld — "ohne Konten zu nennen" bleibt explizite Vorgabe.
     extraFields: [
       { key: "Quartal", label: "Quartal", placeholder: "z. B. 1/2026" },
     ],
-    subject: "Hinweis: Kontoänderungen im Quartal {Quartal}",
+    subject: "Erinnerung: Kontoänderungen im Quartal {Quartal}",
     // Schlusssatz "Bei Fragen dazu sind wir gerne für euch da." entfernt
     // (2026-08-14, Nutzer-Test per Screenshot): composeMail() hängt über
     // GREETING[mode].close ohnehin automatisch eine inhaltsgleiche
@@ -69,7 +71,7 @@ const STANDALONE_TEMPLATES = [
     // "Kontoänderungen" umgestellt (Nutzer-Wunsch), statt nur "Quartal
     // neigt sich dem Ende zu" — beschreibt den eigentlichen Inhalt direkter.
     contentIhr:
-      "Das Quartal {Quartal} neigt sich in Kürze dem Ende zu.\n\nEin kurzer Hinweis dazu: Microsoft berücksichtigt für die Quartalsauswertung nur Konten, in denen im laufenden Zeitraum mindestens eine manuelle Änderung vorgenommen wurde — zum Beispiel eine Anpassung bei Keywords, Zielgruppen oder Gebotsstrategie/Budget. Ein Blick in eure Konten könnte sich daher lohnen, falls dort in diesem Quartal noch nichts angepasst wurde.",
+      "Wir haben soeben die Liste von Microsoft erhalten, die zeigt, in welchen Konten bislang keine Änderungen durch eure Agentur durchgeführt wurden. Für das Quartal {Quartal} könnte das auch eure Konten betreffen.\n\nFalls dort in diesem Quartal noch nichts angepasst wurde, bitten wir euch um eine manuelle Änderung durch den Login über euer Agentur-Konto.\n\nAnleitung zur Änderung:\n1. Schritt: Mit der E-Mail-Adresse eurer Agentur im Manager-Konto anmelden.\n2. Schritt: Vom Manager-Konto in das jeweils betroffene Unterkonto wechseln.\n3. Schritt: Eine manuelle Änderung an der Kampagne vornehmen — klein oder groß spielt keine Rolle, zum Beispiel:\n- Hinzufügen einer Labelsetzung\n- Aufnahme neuer Keywords\n- Anpassung der Zielgruppen\n- Änderung der Gebotsstrategie oder des Budgets\n\nDiese Änderungen sollten bis spätestens Ende des Quartals {Quartal} vorgenommen werden, damit der Ad-Spend und die Betreuung noch für das komplette Quartal {Quartal} eurer Agentur angerechnet werden können.\n\nKurze Rückmeldung ist willkommen, sobald die Änderungen umgesetzt wurden — oder falls es nicht möglich sein sollte.\n\nVielen Dank für eure Unterstützung! :-)",
   },
   {
     id: "neue-konto-erstellung",

@@ -632,6 +632,12 @@ Nutzer-Feedback: die gedämpfte Gold-Variante (`--yellow-text`) wirkte an der St
 - **Fix:** jede Adresse wird jetzt einzeln kodiert, das trennende Komma bleibt dazwischen bewusst unkodiert — `to=eins%40beispiel.de,zwei%40beispiel.de,drei%40beispiel.de` statt vorher `...de%2Czwei%40...`.
 - **Verifiziert:** `node --check`, mechanischer Detektor (0 Funde), generierte `sendBtn.href` per Playwright mit drei Test-Adressen geprüft (`to`-Parameter enthält alle drei, mit literalen Kommas getrennt).
 
+### Quartalsende-Hinweis: zweite Überarbeitung + Klarstellung "einzeln"-Modus (2026-08-14)
+- **Nutzer-Wunsch (erneuter Blick auf die Original-Vorlage):** die "ohne Konten"-Variante sollte inhaltlich/strukturell "genau so wie" die Original-Vorlage sein (Anleitung, Beispiel-Änderungen, Frist-Begründung, Rückmeldebitte, Dankeschön), nur ohne die konkrete Konten-Liste, und als echte Erinnerung wirken statt als weicher "Hinweis" (erste Fassung von vorhin, jetzt ersetzt). Betreff entsprechend von "Hinweis: …" auf "Erinnerung: …" angepasst. Zusätzlich ergänzt: Schritt 1 nennt jetzt explizit die E-Mail-Adresse der Agentur ("Mit der E-Mail-Adresse eurer Agentur im Manager-Konto anmelden") — fehlte bisher in beiden Vorlagen, obwohl in der User-Quelle mehrfach danach gefragt.
+- **Grammatik-Sicherheit erneut angewendet:** wie bei `no-change-konten` komplett auf Infinitiv-Instruktionen/ihr-Register umgeschrieben (toDu() ersetzt nur Wortformen, keine Verbkonjugation) — in beiden Anrede-Modi per Playwright gegengeprüft, keine Mischformen.
+- **Nutzer-Verwirrung beim Testen:** "In Gmail öffnen" öffnete im Modus "einzeln" bei zwei eingetragenen Personen nur ein Fenster für eine Adresse — kein Bug, sondern beabsichtigtes Verhalten (wirkt nur auf die aktive Zeile, das IST der Mechanismus für getrennte Mails), aber offensichtlich nicht selbsterklärend genug. Neuer Hinweistext direkt über den Empfänger-Zeilen ergänzt, erklärt explizit den Pro-Zeile-Workflow und verweist auf "Alle jetzt per Gmail senden" als automatische Alternative.
+- **Verifiziert:** `node --check`, mechanischer Detektor (0 Funde), Playwright-Test beider Anrede-Modi (Text/Betreff korrekt, keine Dopplung), Screenshots Desktop 1440px + Mobile 390px für den neuen Empfänger-Hinweistext.
+
 ## Do's and Don'ts
 
 ### Do:

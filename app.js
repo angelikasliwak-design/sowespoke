@@ -751,6 +751,7 @@
         </div>
         <div class="mailgen__field mailgen__recipients" id="recipients-${topicKey}" hidden>
           <span class="mailgen__radiogroup-label">Empfänger:innen — jede Person bekommt eine eigene, separate Mail</span>
+          <p class="mailgen__hint">"In Gmail öffnen" und "In Zwischenablage kopieren" wirken immer nur auf die gerade aktive Zeile (unten als "Vorschau für: …" markiert) — für jede weitere Person erst in ihre Zeile klicken, dann erneut "In Gmail öffnen". "Alle jetzt per Gmail senden" verschickt stattdessen automatisch an alle auf einmal.</p>
           <div class="mailgen__recipient-rows" data-recip-rows>
             ${recipientRowHtml(topicKey, crypto.randomUUID())}
             ${recipientRowHtml(topicKey, crypto.randomUUID())}
