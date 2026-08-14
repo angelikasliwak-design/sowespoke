@@ -781,12 +781,13 @@
           .join("")}
         <div class="mailgen__field">
           <label for="subject-${topicKey}">Betreff</label>
-          <input type="text" id="subject-${topicKey}" readonly />
+          <input type="text" id="subject-${topicKey}" />
         </div>
         <div class="mailgen__field">
           <label for="body-${topicKey}">Text</label>
-          <textarea id="body-${topicKey}" readonly></textarea>
+          <textarea id="body-${topicKey}"></textarea>
         </div>
+        <p class="mailgen__hint mailgen__reset-row" data-reset-row hidden>Manuell bearbeitet — Änderungen an Name/Feldern oben aktualisieren Betreff/Text jetzt nicht mehr automatisch. <button type="button" class="mailgen__reset-link" data-reset-content>Vorlage neu einsetzen</button></p>
         <p class="mailgen__warning" id="warning-${topicKey}" hidden>${ICONS.flash}<span>Noch nicht ausgefüllt: <strong></strong> — wird sonst als Platzhalter mitkopiert.</span></p>
         <details class="mailgen__signature">
           <summary>Signatur<span class="mailgen__signature-status" id="sig-status-${topicKey}"></span></summary>
@@ -832,6 +833,18 @@
     const extraInputs = extraFields.map((f) => document.getElementById(`f-${topicKey}-${f.key}`));
     const subjectEl = document.getElementById(`subject-${topicKey}`);
     const bodyEl = document.getElementById(`body-${topicKey}`);
+    // Nur ein .mailgen-Block pro Seite (siehe Aufrufstellen von wireMailGen)
+    // — view.querySelector() ist hier eindeutig, kein Scoping-Risiko.
+    const resetRowEl = view.querySelector("[data-reset-row]");
+    const resetBtn = resetRowEl.querySelector("[data-reset-content]");
+    // Betreff/Text frei editierbar (2026-08-14, Nutzer-Wunsch) — solange
+    // contentDirty false ist, überschreibt fill() beide Felder bei jeder
+    // Eingabe weiterhin automatisch aus der Vorlage (bisheriges Verhalten).
+    // Sobald jemand direkt in Betreff/Text tippt, wird contentDirty true und
+    // fill() lässt die Felder danach in Ruhe, bis "Vorlage neu einsetzen"
+    // geklickt wird oder sich der Kontext grundlegend ändert (Anrede-Modus-
+    // Wechsel, andere aktive Empfänger-Zeile bei "einzeln").
+    let contentDirty = false;
     const warningEl = document.getElementById(`warning-${topicKey}`);
     const copyBtn = view.querySelector(`[data-copy="${topicKey}"]`);
     const sendBtn = view.querySelector(`[data-send="${topicKey}"]`);
@@ -1059,6 +1072,11 @@
     recipRowsEl.addEventListener("focusin", (e) => {
       const row = e.target.closest("[data-recip-row]");
       if (!row) return;
+      // Nur bei echtem Zeilenwechsel zurücksetzen — sonst würde schon das
+      // Klicken ins Namens-/E-Mail-Feld DERSELBEN, bereits aktiven Zeile
+      // (die auch ein focusin auslöst) eine gerade laufende manuelle
+      // Bearbeitung von Betreff/Text verwerfen.
+      if (row.dataset.recipRow !== activeRecipRowId) contentDirty = false;
       activeRecipRowId = row.dataset.recipRow;
       updateRecipHighlight();
       fill();
@@ -1203,9 +1221,12 @@
         ready = recipientsValid && !missing.length;
       }
 
-      const { subject, body } = composeForName(content, subjectFilled, mode === "einzeln" ? "single" : mode, previewName);
-      subjectEl.value = subject;
-      bodyEl.value = body;
+      if (!contentDirty) {
+        const { subject, body } = composeForName(content, subjectFilled, mode === "einzeln" ? "single" : mode, previewName);
+        subjectEl.value = subject;
+        bodyEl.value = body;
+      }
+      resetRowEl.hidden = !contentDirty;
       lastToAddr = toAddrForSend;
 
       sendBtn.classList.toggle("is-disabled", !ready);
@@ -1217,8 +1238,12 @@
       // Google Workspace läuft, ist Gmail der echte Mail-Dienst aller
       // Nutzer:innen — die Compose-URL öffnet Gmail direkt im Browser-Tab,
       // umgeht das Standard-Handler-Problem komplett.
+      // Liest bewusst subjectEl.value/bodyEl.value (nicht die lokalen
+      // subject/body-Variablen von oben) — bei contentDirty=true weichen
+      // die Feld-Werte vom automatisch generierten Text ab, der Gmail-Link
+      // muss die tatsächlich sichtbare, ggf. handbearbeitete Version öffnen.
       sendBtn.href = ready
-        ? `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(toAddrForSend)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+        ? `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(toAddrForSend)}&su=${encodeURIComponent(subjectEl.value)}&body=${encodeURIComponent(bodyEl.value)}`
         : "#";
 
       updateGmailSendLabel(mode);
@@ -1227,8 +1252,14 @@
     }
     nameEl.addEventListener("input", fill);
     toEl.addEventListener("input", fill);
-    modeEls.forEach((r) => r.addEventListener("change", () => { updateModeVisibility(); fill(); }));
+    // Moduswechsel = grundlegend anderer Kontext (anderer Empfängerkreis/
+    // Anrede) — eine manuelle Bearbeitung von vorher passt danach meist
+    // nicht mehr, deshalb contentDirty zurücksetzen statt sie zu behalten.
+    modeEls.forEach((r) => r.addEventListener("change", () => { contentDirty = false; updateModeVisibility(); fill(); }));
     extraInputs.forEach((el) => el.addEventListener("input", fill));
+    subjectEl.addEventListener("input", () => { contentDirty = true; fill(); });
+    bodyEl.addEventListener("input", () => { contentDirty = true; fill(); });
+    resetBtn.addEventListener("click", () => { contentDirty = false; fill(); });
     updateModeVisibility();
     updateRecipHighlight();
 
