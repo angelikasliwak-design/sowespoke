@@ -1553,6 +1553,42 @@ code {
    generische 12rem-Textarea (Signatur/Mail-Text), weil hier realistisch
    nur wenige Kontozeilen stehen, nicht ein langer Fließtext. */
 .mailgen__field-textarea--compact { min-height: 4.5rem; }
+/* Personalisierter Mehrfach-Versand (2026-08-14) — Empfänger-Zeilen als
+   3-Spalten-Grid (Name | E-Mail | Entfernen), Inputs erben Basis-Optik von
+   ".mailgen__field input" oben (Nachfahren-Selektor greift auch hier, kein
+   eigenes Redeklarieren von Rahmen/Hintergrund/Schrift nötig). */
+.mailgen__single-fields { display: flex; flex-direction: column; gap: var(--space-4); }
+.mailgen__recipient-rows { display: flex; flex-direction: column; gap: var(--space-2); }
+.mailgen__recipient-row {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr auto;
+  gap: var(--space-2);
+  align-items: center;
+}
+/* Dezente Hervorhebung der Zeile, deren Betreff/Text gerade in der
+   gemeinsamen Vorschau darunter angezeigt wird — sonst wäre bei mehr als
+   einer Zeile unklar, wessen Mail man gerade sieht. */
+.mailgen__recipient-row.is-active { background: var(--accent-tint); border-radius: var(--radius-sm); box-shadow: 0 0 0 1px var(--accent); }
+.mailgen__recipient-row.is-active input { background: var(--c-surface); }
+.mailgen__recipient-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  color: var(--ink-soft);
+  border-radius: 50%;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+.mailgen__recipient-remove:hover { background: var(--paper); color: var(--warning); }
+.mailgen__recipient-remove svg { width: 14px; height: 14px; }
+.mailgen__recipients-listactions { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.mailgen__recipients-preview-label { font-weight: 600; color: var(--ink); }
+@media (max-width: 30rem) {
+  .mailgen__recipient-row { grid-template-columns: 1fr; }
+  .mailgen__recipient-remove { justify-self: end; }
+}
 .mailgen__warning {
   display: flex;
   align-items: flex-start;

@@ -64,6 +64,11 @@ const mockIdeas = [
   { id: "seed-2", title: "Feedback-Kultur stärken", description: "Regelmäßige, kurze Feedback-Runden im Team einführen — wertschätzend und konstruktiv.", benefit: "", authorLabel: "Anonym", createdAt: new Date(Date.now() - 5 * 86400000).toISOString() },
 ];
 
+// In-Memory-Mock für die serverseitige Empfänger-Liste im Mail-Generator
+// (functions/api/recipients.js) — ersetzt hier nur den echten
+// RECIPIENT_LISTS-KV-Namespace, geht beim Server-Neustart verloren.
+let mockRecipients = [];
+
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let data = "";
@@ -135,6 +140,27 @@ const server = http.createServer(async (req, res) => {
     mockIdeas.push(idea);
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ ok: true, idea }));
+    return;
+  }
+  if (urlPath === "/api/recipients" && req.method === "GET") {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ items: mockRecipients }));
+    return;
+  }
+  if (urlPath === "/api/recipients" && req.method === "POST") {
+    let body;
+    try {
+      body = JSON.parse(await readBody(req));
+    } catch {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Ungültiger Request-Body" }));
+      return;
+    }
+    mockRecipients = (Array.isArray(body?.items) ? body.items : [])
+      .map((r) => ({ name: String(r?.name || "").trim(), email: String(r?.email || "").trim() }))
+      .filter((r) => r.name || r.email);
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ ok: true, items: mockRecipients }));
     return;
   }
 

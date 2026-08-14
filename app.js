@@ -696,6 +696,28 @@
 
   /* ---------------------------------------------------------------- Mailgen */
 
+  // Personalisierter Mehrfach-Versand (2026-08-14, Nutzer-Wunsch, Phase A
+  // aus dem Serienmail-Plan — siehe DESIGN.md-Eintrag vom selben Tag).
+  // Dritter Anrede-Modus additiv zu den bestehenden zwei ("Mehrere
+  // Personen (ihr)" bleibt für den Fall einer echten Gruppen-Mail an ein
+  // Team, das ohnehin weiß, dass es eine gemeinsame Mail ist — kein
+  // Ersatz, ein eigener Anwendungsfall). Jede Zeile bekommt eine stabile
+  // ID (crypto.randomUUID(), gleiche Grundtechnik wie schon in
+  // functions/api/ideas.js), damit Entfernen/Fokus-Tracking nicht auf den
+  // Array-Index angewiesen ist, der sich beim Löschen einer mittleren
+  // Zeile verschieben würde.
+  function recipientRowHtml(topicKey, id, prefill) {
+    const name = (prefill && prefill.name) || "";
+    const email = (prefill && prefill.email) || "";
+    return `
+      <div class="mailgen__recipient-row" data-recip-row="${id}">
+        <input type="text" data-recip-name placeholder="Name (optional)" aria-label="Name der Ansprechperson" value="${escapeHtml(name)}" />
+        <input type="text" data-recip-email placeholder="name@kunde.de" aria-label="E-Mail-Adresse" autocomplete="off" value="${escapeHtml(email)}" />
+        <button type="button" class="mailgen__recipient-remove" data-recip-remove aria-label="Empfänger:in entfernen">${ICONS.close}</button>
+      </div>
+    `;
+  }
+
   function renderMailGen(topicKey, extraFields, subjectBase, contentIhr, extra) {
     return `
       <div class="mailgen">
@@ -706,15 +728,33 @@
           <div class="mailgen__radiogroup" role="radiogroup" aria-label="Anzahl Empfänger:innen">
             <label><input type="radio" name="mode-${topicKey}" value="multi" /> Mehrere Personen (ihr)</label>
             <label><input type="radio" name="mode-${topicKey}" value="single" checked /> Eine Person (du)</label>
+            <label><input type="radio" name="mode-${topicKey}" value="einzeln" /> Mehrere Personen, einzeln personalisiert</label>
           </div>
         </div>
-        <div class="mailgen__field">
-          <label for="to-${topicKey}">E-Mail-Adresse(n) der Kundschaft</label>
-          <input type="text" id="to-${topicKey}" placeholder="name@kunde.de — mehrere mit Komma trennen" autocomplete="off" />
+        <div class="mailgen__single-fields" id="single-fields-${topicKey}">
+          <div class="mailgen__field">
+            <label for="to-${topicKey}">E-Mail-Adresse(n) der Kundschaft</label>
+            <input type="text" id="to-${topicKey}" placeholder="name@kunde.de — mehrere mit Komma trennen" autocomplete="off" />
+          </div>
+          <div class="mailgen__field">
+            <label for="f-${topicKey}-name">Name der Ansprechperson (optional)</label>
+            <input type="text" id="f-${topicKey}-name" placeholder="z. B. Frau Meyer" />
+          </div>
         </div>
-        <div class="mailgen__field">
-          <label for="f-${topicKey}-name">Name der Ansprechperson (optional)</label>
-          <input type="text" id="f-${topicKey}-name" placeholder="z. B. Frau Meyer" />
+        <div class="mailgen__field mailgen__recipients" id="recipients-${topicKey}" hidden>
+          <span class="mailgen__radiogroup-label">Empfänger:innen — jede Person bekommt eine eigene, separate Mail</span>
+          <div class="mailgen__recipient-rows" data-recip-rows>
+            ${recipientRowHtml(topicKey, crypto.randomUUID())}
+            ${recipientRowHtml(topicKey, crypto.randomUUID())}
+          </div>
+          <div class="mailgen__recipients-listactions">
+            <button type="button" class="btn btn--secondary mailgen__recipients-add" data-recip-add>+ Empfänger:in hinzufügen</button>
+            <button type="button" class="btn btn--secondary" data-recip-load>Gespeicherte Liste laden</button>
+            <span class="mailgen__signature-status" data-recip-save-status></span>
+          </div>
+          <p class="mailgen__hint">Die Liste wird beim Tippen automatisch gespeichert — an dein Konto gebunden, für alle Vorlagen und auf jedem Gerät wiederverwendbar.</p>
+          <p class="mailgen__warning" data-recip-warning hidden>${ICONS.flash}<span>Eine oder mehrere Zeilen haben keine gültige E-Mail-Adresse — diese Empfänger:innen bekommen keine Mail.</span></p>
+          <p class="mailgen__hint mailgen__recipients-preview-label" data-recip-preview-label></p>
         </div>
         ${extraFields
           .map(
@@ -773,6 +813,77 @@
     const sendBtn = view.querySelector(`[data-send="${topicKey}"]`);
     const sigEl = document.getElementById(`sig-${topicKey}`);
     const sigStatusEl = document.getElementById(`sig-status-${topicKey}`);
+    const singleFieldsEl = document.getElementById(`single-fields-${topicKey}`);
+    const recipientsEl = document.getElementById(`recipients-${topicKey}`);
+    const recipRowsEl = recipientsEl.querySelector("[data-recip-rows]");
+    const recipAddBtn = recipientsEl.querySelector("[data-recip-add]");
+    const recipPreviewLabel = recipientsEl.querySelector("[data-recip-preview-label]");
+    const recipWarningEl = recipientsEl.querySelector("[data-recip-warning]");
+    const recipLoadBtn = recipientsEl.querySelector("[data-recip-load]");
+    const recipSaveStatusEl = recipientsEl.querySelector("[data-recip-save-status]");
+    let activeRecipRowId = recipRowsEl.querySelector("[data-recip-row]").dataset.recipRow;
+
+    // Empfänger-Liste dauerhaft UND geräteübergreifend speichern (2026-08-14,
+    // Nutzer-Wunsch: "einmal hochladen, bleibt für immer, pro Person
+    // einzeln" — bewusst NICHT localStorage wie die Signatur darunter,
+    // sondern serverseitig via /api/recipients, an die Login-E-Mail
+    // gebunden (functions/api/recipients.js, Cloudflare-KV-Namespace
+    // RECIPIENT_LISTS, gleiches Muster wie IDEAS_BOARD bei ideas.js).
+    // Automatisches Speichern (debounced, kein Speichern-Button nötig) bei
+    // jeder Eingabe sowie beim Hinzufügen/Entfernen einer Zeile.
+    let recipSaveTimer;
+    async function saveRecipientsToServer() {
+      const rows = getRecipRows()
+        .map((row) => ({
+          name: row.querySelector("[data-recip-name]").value.trim(),
+          email: row.querySelector("[data-recip-email]").value.trim(),
+        }))
+        .filter((r) => r.name || r.email);
+      try {
+        const res = await fetch("/api/recipients", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ items: rows }),
+        });
+        if (!res.ok) throw new Error();
+        recipSaveStatusEl.textContent = rows.length ? `✓ ${rows.length} gespeichert` : "";
+      } catch {
+        recipSaveStatusEl.textContent = "Speichern fehlgeschlagen";
+      }
+    }
+    function scheduleRecipientsSave() {
+      clearTimeout(recipSaveTimer);
+      recipSaveStatusEl.textContent = "Speichert …";
+      recipSaveTimer = setTimeout(saveRecipientsToServer, 700);
+    }
+    async function loadRecipientsFromServer(showEmptyState) {
+      try {
+        const res = await fetch("/api/recipients");
+        const data = await res.json();
+        const items = Array.isArray(data.items) ? data.items : [];
+        if (!items.length) {
+          if (showEmptyState) recipSaveStatusEl.textContent = "Keine gespeicherte Liste vorhanden";
+          return items;
+        }
+        recipSaveStatusEl.textContent = `✓ ${items.length} gespeichert`;
+        return items;
+      } catch {
+        if (showEmptyState) recipSaveStatusEl.textContent = "Laden fehlgeschlagen";
+        return [];
+      }
+    }
+    recipLoadBtn.addEventListener("click", async () => {
+      const items = await loadRecipientsFromServer(true);
+      if (!items.length) return;
+      recipRowsEl.innerHTML = items.map((r) => recipientRowHtml(topicKey, crypto.randomUUID(), r)).join("");
+      activeRecipRowId = getRecipRows()[0].dataset.recipRow;
+      updateRecipHighlight();
+      fill();
+    });
+    // Beim ersten Öffnen der Seite still im Hintergrund prüfen, ob schon
+    // eine gespeicherte Liste existiert, damit der Status sofort stimmt,
+    // ohne dass man extra auf "Laden" klicken muss, um das zu erfahren.
+    loadRecipientsFromServer(false);
 
     // Signatur ist bewusst EIN geteilter localStorage-Wert für alle
     // Vorlagen (Nutzer-Feedback 2026-08-10: Gmail übernimmt beim Öffnen
@@ -833,6 +944,66 @@
       return { addrs, valid: addrs.length > 0 && valid };
     }
 
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    function getRecipRows() {
+      return Array.from(recipRowsEl.querySelectorAll("[data-recip-row]"));
+    }
+    function getActiveRecipRow() {
+      const rows = getRecipRows();
+      return rows.find((r) => r.dataset.recipRow === activeRecipRowId) || rows[0];
+    }
+    function updateRecipHighlight() {
+      const active = getActiveRecipRow();
+      getRecipRows().forEach((row) => row.classList.toggle("is-active", row === active));
+    }
+    function updateModeVisibility() {
+      const mode = (modeEls.find((r) => r.checked) || {}).value || "single";
+      const isEinzeln = mode === "einzeln";
+      singleFieldsEl.hidden = isEinzeln;
+      recipientsEl.hidden = !isEinzeln;
+    }
+
+    // Event-Delegation auf dem Zeilen-Container statt pro-Zeile-Listener —
+    // funktioniert automatisch auch für per "+ Empfänger:in hinzufügen"
+    // nachträglich eingefügte Zeilen, ohne erneutes Verdrahten.
+    recipRowsEl.addEventListener("focusin", (e) => {
+      const row = e.target.closest("[data-recip-row]");
+      if (!row) return;
+      activeRecipRowId = row.dataset.recipRow;
+      updateRecipHighlight();
+      fill();
+    });
+    recipRowsEl.addEventListener("input", (e) => {
+      if (!e.target.closest("[data-recip-row]")) return;
+      fill();
+      scheduleRecipientsSave();
+    });
+    recipRowsEl.addEventListener("click", (e) => {
+      const removeBtn = e.target.closest("[data-recip-remove]");
+      if (!removeBtn) return;
+      const rows = getRecipRows();
+      if (rows.length <= 1) return; // mindestens eine Zeile muss stehen bleiben
+      const row = removeBtn.closest("[data-recip-row]");
+      const wasActive = row.dataset.recipRow === activeRecipRowId;
+      row.remove();
+      if (wasActive) activeRecipRowId = getRecipRows()[0].dataset.recipRow;
+      updateRecipHighlight();
+      fill();
+      scheduleRecipientsSave();
+    });
+    recipAddBtn.addEventListener("click", () => {
+      recipRowsEl.insertAdjacentHTML("beforeend", recipientRowHtml(topicKey, crypto.randomUUID()));
+      fill();
+    });
+
+    // Modus "einzeln": jede Zeile bekommt beim Versand ihren eigenen
+    // composeMail()-Aufruf im du-Register (toDu() kennt keine Verbformen,
+    // siehe Kommentar dort — eine "individuelle" Mail ist deshalb immer
+    // du-Register, nie "ihr"). "In Gmail öffnen"/"Kopieren" wirken auf die
+    // gerade AKTIVE Zeile (die zuletzt fokussierte) — für jede weitere
+    // Person wird die jeweilige Zeile fokussiert und der Button erneut
+    // geklickt, exakt wie man zuvor auch einmalig geklickt hat.
     function fill() {
       const mode = (modeEls.find((r) => r.checked) || {}).value || "single";
       let content = contentIhr;
@@ -848,11 +1019,6 @@
         // Konten ohne Änderungen" (subject enthält {Quartal}).
         subjectFilled = subjectFilled.replaceAll(`{${f.key}}`, val || `{${f.key}}`);
       });
-      const { subject, body: bodyBase } = composeMail(subjectFilled, content, extra, mode, nameEl.value.trim());
-      const signature = sigEl.value.trim();
-      const body = signature ? `${bodyBase}\n\n--\n${signature}` : bodyBase;
-      subjectEl.value = subject;
-      bodyEl.value = body;
 
       if (missing.length) {
         warningEl.querySelector("strong").textContent = missing.join(", ");
@@ -863,11 +1029,40 @@
         copyBtn.disabled = false;
       }
 
-      // "E-Mail senden" braucht zusätzlich eine gültige Empfänger-Adresse —
-      // "In Zwischenablage kopieren" kam schon vorher ohne aus (Nutzer
-      // trägt die Adresse dann selbst im E-Mail-Programm ein).
-      const { addrs, valid: recipientsValid } = parseRecipients(toEl.value.trim());
-      const ready = recipientsValid && !missing.length;
+      let previewName = nameEl.value.trim();
+      let toAddrForSend = null;
+      let ready;
+
+      if (mode === "einzeln") {
+        const rows = getRecipRows().map((row) => ({
+          row,
+          name: row.querySelector("[data-recip-name]").value.trim(),
+          email: row.querySelector("[data-recip-email]").value.trim(),
+        }));
+        const hasInvalidRow = rows.some((r) => (r.email && !EMAIL_RE.test(r.email)) || (!r.email && r.name));
+        recipWarningEl.hidden = !hasInvalidRow;
+
+        const activeData = rows.find((r) => r.row === getActiveRecipRow()) || rows[0];
+        recipPreviewLabel.textContent = activeData ? `Vorschau für: ${activeData.name || activeData.email || "(neue Zeile)"}` : "";
+        previewName = activeData ? activeData.name : "";
+        toAddrForSend = activeData && EMAIL_RE.test(activeData.email) ? activeData.email : null;
+        ready = !!toAddrForSend && !missing.length;
+      } else {
+        recipWarningEl.hidden = true;
+        // "E-Mail senden" braucht zusätzlich eine gültige Empfänger-Adresse —
+        // "In Zwischenablage kopieren" kam schon vorher ohne aus (Nutzer
+        // trägt die Adresse dann selbst im E-Mail-Programm ein).
+        const { addrs, valid: recipientsValid } = parseRecipients(toEl.value.trim());
+        toAddrForSend = recipientsValid ? addrs.join(",") : null;
+        ready = recipientsValid && !missing.length;
+      }
+
+      const { subject, body: bodyBase } = composeMail(subjectFilled, content, extra, mode === "einzeln" ? "single" : mode, previewName);
+      const signature = sigEl.value.trim();
+      const body = signature ? `${bodyBase}\n\n--\n${signature}` : bodyBase;
+      subjectEl.value = subject;
+      bodyEl.value = body;
+
       sendBtn.classList.toggle("is-disabled", !ready);
       sendBtn.setAttribute("aria-disabled", String(!ready));
       // Gmail-Compose-URL statt mailto: (Nutzer-Feedback 2026-08-10):
@@ -878,13 +1073,15 @@
       // Nutzer:innen — die Compose-URL öffnet Gmail direkt im Browser-Tab,
       // umgeht das Standard-Handler-Problem komplett.
       sendBtn.href = ready
-        ? `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(addrs.join(","))}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+        ? `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(toAddrForSend)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
         : "#";
     }
     nameEl.addEventListener("input", fill);
     toEl.addEventListener("input", fill);
-    modeEls.forEach((r) => r.addEventListener("change", fill));
+    modeEls.forEach((r) => r.addEventListener("change", () => { updateModeVisibility(); fill(); }));
     extraInputs.forEach((el) => el.addEventListener("input", fill));
+    updateModeVisibility();
+    updateRecipHighlight();
     fill();
 
     const statusEl = document.getElementById(`status-${topicKey}`);
