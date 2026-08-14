@@ -602,6 +602,11 @@ Nutzer-Feedback: die gedämpfte Gold-Variante (`--yellow-text`) wirkte an der St
 - **Icon-ohne-Größe-Fund** (eigenständiger, neuer Bug-Typ, nicht derselbe wie oben): `${ICONS.hourglass}` roh in einem `<a>` innerhalb `.mailgen__hint` platziert rendert ohne CSS-Kontext riesig (SVG ohne eigenes width/height fällt auf den Browser-Fallback zurück, keine Layout-Referenz vorhanden) — beim ersten Live-Screenshot dieser Sitzung sofort aufgefallen (nicht erst nach einem Nutzer-Bericht). `.mailgen__hint svg { width:14px; height:14px; }` + `.mailgen__hint a { display:inline-flex; align-items:center; gap:0.35em; }` ergänzt, damit Icon und Text zusammen inline bleiben statt umzubrechen.
 - **Verifiziert:** `node --check` auf allen neuen/geänderten JS-Dateien (app.js, drei neue `functions/api/mail-schedule/*`-Dateien, `functions/_lib/gmail.js`), CSS-Klammerbalance, mechanischer Detektor (0 Funde). Lokaler Vorschau-Server mit Mock-Endpunkten — Terminieren im Mail-Generator, Anzeige auf `#/serienmails` (zwei Einträge, Status "Geplant", korrekte Uhrzeit über `formatDateTime()`), Stornieren (Zeile verschwindet, Leerzustand korrekt) je einmal durchgeklickt. Screenshots Desktop 1440px + Mobile 390px für Mail-Generator-Block und Serienmails-Seite, kein Overflow.
 
+### Mail-Generator: "Im Aufbau"-Hinweis am Gmail-Direktversand (2026-08-14)
+- **Nutzer-Wunsch:** klar machen, dass die Gmail-API-Verbindung noch nicht bei jeder Person zuverlässig läuft (Cloudflare-KV/GitHub-Actions-Setup für Phase C steht noch aus). Rückfrage per `AskUserQuestion`, ob das Badge auf die einzelne Vorlagen-Karte oder in den Mail-Generator soll — Nutzer wählte den Mail-Generator, da das Feature überall gleich unfertig ist, nicht nur bei einer Vorlage.
+- **Umsetzung:** `.flash` (bestehende Comic-Sticker-Komponente, schon für "Beispieldaten" auf der Tickets-Seite verwendet) wiederverwendet statt eines neuen Badge-Stils — "Im Aufbau" steht jetzt direkt im Hinweistext über dem Gmail-Direktversand-Block, gilt für alle Vorlagen gleichermaßen. Hinweistext selbst ergänzt: "Die Verbindung zur Gmail-API wird gerade eingerichtet — kann daher noch nicht bei jeder Person zuverlässig funktionieren."
+- **Verifiziert:** `node --check`, mechanischer Detektor (0 Funde), Screenshots Desktop 1440px + Mobile 390px.
+
 ## Do's and Don'ts
 
 ### Do:

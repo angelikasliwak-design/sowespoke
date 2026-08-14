@@ -804,7 +804,7 @@
           <span class="mailgen__status" id="status-${topicKey}">${ICONS.check} Kopiert</span>
         </div>
         <div class="mailgen__gmail-send">
-          <p class="mailgen__hint">Direkter Versand über die Gmail-API — verschickt sofort im Hintergrund, ohne Gmail-Compose-Fenster zum letzten Check. Vorschau oben vorher genau prüfen.</p>
+          <p class="mailgen__hint"><span class="flash">${ICONS.hourglass} Im Aufbau</span> Direkter Versand über die Gmail-API — verschickt sofort im Hintergrund, ohne Gmail-Compose-Fenster zum letzten Check. Vorschau oben vorher genau prüfen. Die Verbindung zur Gmail-API wird gerade eingerichtet — kann daher noch nicht bei jeder Person zuverlässig funktionieren.</p>
           <div class="mailgen__gmail-send-row">
             <button type="button" class="btn btn--secondary" data-gmail-connect hidden>${ICONS.mail} Mit Gmail verbinden</button>
             <button type="button" class="btn btn--primary" data-gmail-send-btn hidden disabled>${ICONS.mail} Jetzt per Gmail senden</button>
