@@ -721,7 +721,11 @@
             (f) => `
           <div class="mailgen__field">
             <label for="f-${topicKey}-${f.key}">${escapeHtml(f.label)}</label>
-            <input type="text" id="f-${topicKey}-${f.key}" data-field="${f.key}" placeholder="${escapeHtml(f.placeholder || "")}" />
+            ${
+              f.multiline
+                ? `<textarea id="f-${topicKey}-${f.key}" data-field="${f.key}" class="mailgen__field-textarea--compact" rows="3" placeholder="${escapeHtml(f.placeholder || "")}"></textarea>`
+                : `<input type="text" id="f-${topicKey}-${f.key}" data-field="${f.key}" placeholder="${escapeHtml(f.placeholder || "")}" />`
+            }
           </div>`
           )
           .join("")}

@@ -1546,6 +1546,13 @@ code {
   overflow-wrap: anywhere;
 }
 .mailgen__field textarea { min-height: 12rem; }
+/* Bug-Fund (2026-08-14): das "Betroffene Konten (eine Zeile pro Konto)"-
+   Feld war ein einzeiliges <input>, obwohl das eigene Label mehrere Zeilen
+   verspricht — <input> kann per Definition keinen Zeilenumbruch enthalten,
+   das Label war für Nutzer:innen also nie einlösbar. Kleinere Höhe als die
+   generische 12rem-Textarea (Signatur/Mail-Text), weil hier realistisch
+   nur wenige Kontozeilen stehen, nicht ein langer Fließtext. */
+.mailgen__field-textarea--compact { min-height: 4.5rem; }
 .mailgen__warning {
   display: flex;
   align-items: flex-start;

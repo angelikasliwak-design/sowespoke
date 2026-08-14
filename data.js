@@ -26,11 +26,42 @@ const STANDALONE_TEMPLATES = [
     summary: "Erinnert Kund:innen, in gemeldeten Konten ohne Aktivität eine manuelle Änderung vorzunehmen, damit das Quartal angerechnet wird.",
     extraFields: [
       { key: "Quartal", label: "Quartal", placeholder: "z. B. 1/2026" },
-      { key: "Konten", label: "Betroffene Konten (eine Zeile pro Konto)", placeholder: "z. B.\nKonto A (F1104JH6)\nKonto B (X7598960)" },
+      { key: "Konten", label: "Betroffene Konten (eine Zeile pro Konto)", placeholder: "z. B.\nKonto A (F1104JH6)\nKonto B (X7598960)", multiline: true },
     ],
     subject: "Erinnerung: Manuelle Änderung für Quartal {Quartal} nötig",
+    // Umstrukturiert (2026-08-14) — zwei Runden: erst grob umgegliedert
+    // ("Text muss besser formatiert werden"), dann exakt an die vom Nutzer
+    // eingefügte Original-Vorlage angeglichen (Reihenfolge Anleitung→
+    // Konten-Liste→Frist, "N. Schritt:"-Präfix, "egal ob klein oder groß"-
+    // Hinweis vor den vier Beispiel-Änderungen als eigene Liste statt
+    // Kommasatz, "und die Betreuung" bei der Quartals-Anrechnung ergänzt,
+    // abschließendes Dankeschön). Inhaltlich 1:1 die Nutzer-Vorlage, nur
+    // grammatisch auf Infinitiv/ihr-Register umgestellt (Original nutzte
+    // Du-Imperative wie "Melde dich an") — toDu() in app.js wandelt nur
+    // einzelne ihr-Wörter (euch/eure/eurem/…) in die Du-Form um, keine
+    // Verbformen; jede Konstruktion mit konjugiertem Verb + "ihr"/"du" als
+    // Subjekt bliebe im jeweils anderen Anrede-Modus falsch stehen (siehe
+    // toDu()-Kommentar in app.js). Faktisch identisch, nur so geschrieben,
+    // dass "Mehrere Personen (ihr)" UND "Eine Person (du)" beide korrekt
+    // herauskommen.
     contentIhr:
-      "Wir haben soeben die Liste von Microsoft erhalten, die zeigt, in welchen Konten im Quartal {Quartal} keine Änderungen durch eure Agentur durchgeführt wurden.\n\nBitte über den Login in eurem Agentur-Konto eine manuelle Änderung an den folgenden Konten vornehmen:\n\n{Konten}\n\nAnleitung zur Änderung:\n1. Im Manager-Konto anmelden.\n2. Vom Manager-Konto in das jeweilige Unterkonto wechseln.\n3. Eine manuelle Änderung an der Kampagne vornehmen, z. B. Hinzufügen einer Labelsetzung, neue Keywords, Anpassung der Zielgruppen, oder Änderung von Gebotsstrategie/Budget.\n\nDie Änderungen sollten bis spätestens Ende des Quartals {Quartal} vorgenommen werden, damit der Ad-Spend für das komplette Quartal eurer Agentur angerechnet werden kann. Kurze Rückmeldung ist willkommen, sobald das erledigt ist — oder falls es bei einem Konto nicht möglich sein sollte.",
+      "Wir haben soeben die Liste von Microsoft erhalten, die zeigt, in welchen Konten im Quartal {Quartal} keine Änderungen durch eure Agentur durchgeführt wurden. Bitte über den Login in eurem Agentur-Konto eine manuelle Änderung an den unten genannten Konten vornehmen.\n\nAnleitung zur Änderung:\n1. Schritt: Im Manager-Konto anmelden.\n2. Schritt: Vom Manager-Konto in das jeweils genannte Unterkonto wechseln.\n3. Schritt: Eine manuelle Änderung an der Kampagne vornehmen — ob klein oder groß, spielt keine Rolle, zum Beispiel:\n- Hinzufügen einer Labelsetzung\n- Aufnahme neuer Keywords\n- Anpassung der Zielgruppen\n- Änderung der Gebotsstrategie oder des Budgets\n\nKonten:\n{Konten}\n\nDiese Änderungen sollten bis spätestens Ende des Quartals {Quartal} vorgenommen werden, damit der Ad-Spend und die Betreuung noch für das komplette Quartal {Quartal} eurer Agentur angerechnet werden können.\n\nKurze Rückmeldung ist willkommen, sobald die Änderungen umgesetzt wurden — oder falls es bei einem Konto nicht möglich sein sollte.\n\nVielen Dank für eure Unterstützung! :-)",
+  },
+  {
+    id: "quartalsende-hinweis",
+    title: "Quartalsende-Hinweis: Konten ohne Änderungen",
+    summary: "Freundlicher, allgemeiner Hinweis kurz vor Quartalsende — ohne konkrete Konten zu nennen, bewusst zurückhaltend statt auffordernd formuliert.",
+    // Bewusst zurückgestellte Alternative zu "no-change-konten" (2026-08-14,
+    // Nutzer-Wunsch): für den Fall, dass noch keine konkrete Konten-Liste
+    // vorliegt oder ein sanfterer erster Hinweis vor der eigentlichen
+    // Erinnerung gewünscht ist. Kein Konten-Feld — "ohne Konten zu nennen"
+    // war eine explizite Vorgabe, kein Versehen.
+    extraFields: [
+      { key: "Quartal", label: "Quartal", placeholder: "z. B. 1/2026" },
+    ],
+    subject: "Hinweis: Quartal {Quartal} neigt sich dem Ende zu",
+    contentIhr:
+      "Das Quartal {Quartal} neigt sich in Kürze dem Ende zu.\n\nEin kurzer Hinweis dazu: Microsoft berücksichtigt für die Quartalsauswertung nur Konten, in denen im laufenden Zeitraum mindestens eine manuelle Änderung vorgenommen wurde — zum Beispiel eine Anpassung bei Keywords, Zielgruppen oder Gebotsstrategie/Budget. Ein Blick in eure Konten könnte sich daher lohnen, falls dort in diesem Quartal noch nichts angepasst wurde.\n\nBei Fragen dazu sind wir gerne für euch da.",
   },
   {
     id: "neue-konto-erstellung",
