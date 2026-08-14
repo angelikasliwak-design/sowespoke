@@ -1214,23 +1214,27 @@
         <h1>${escapeHtml(p.title)}</h1>
         <div class="detail__body">
           <div class="detail__main">
-            <div class="detail__summary">
-              <p class="detail__summary-text">${escapeHtml(p.summaryDE)}</p>
-              <button type="button" class="detail__summary-expand" data-expand-summary>Vollständig anzeigen ${ICONS.arrowRight}</button>
-            </div>
-            <div class="info-box">
-        <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
-              <h2>Kernfakten aus der Präsentation</h2>
-              <ul>${p.keyFactsDE.map((f) => `<li>${escapeHtml(f)}</li>`).join("")}</ul>
-            </div>
-            <div class="pdf-viewer">
-              <div class="pdf-viewer__bar">
-                <span class="pdf-viewer__label">${ICONS.fileText} Original-Präsentation</span>
-                <a class="pdf-viewer__expand" href="${viewerHref}" target="_blank" rel="noopener">${ICONS.arrowRight} Groß öffnen</a>
+            <nav class="tabs detail__tabs" aria-label="Ansicht" role="tablist">
+              <button type="button" class="tabs__item is-active" data-detail-tab="facts" role="tab" aria-selected="true">Kernfakten</button>
+              <button type="button" class="tabs__item" data-detail-tab="pdf" role="tab" aria-selected="false">Original-Präsentation</button>
+            </nav>
+            <div class="detail__tab-panel" data-detail-panel="facts">
+              <div class="info-box">
+                <div class="info-box__illustration">${INFOBOX_ILLUSTRATION}</div>
+                <h2>Kernfakten aus der Präsentation</h2>
+                <ul>${p.keyFactsDE.map((f) => `<li>${escapeHtml(f)}</li>`).join("")}</ul>
               </div>
-              <iframe class="pdf-viewer__frame" src="${viewerHref}" title="${escapeHtml(p.title)}" loading="lazy"></iframe>
             </div>
-            <a class="btn btn--secondary" href="${downloadHref}" download>${ICONS.download} Original-PDF herunterladen</a>
+            <div class="detail__tab-panel" data-detail-panel="pdf" hidden>
+              <div class="pdf-viewer">
+                <div class="pdf-viewer__bar">
+                  <span class="pdf-viewer__label">${ICONS.fileText} Original-Präsentation</span>
+                  <a class="pdf-viewer__expand" href="${viewerHref}" target="_blank" rel="noopener">${ICONS.arrowRight} Groß öffnen</a>
+                </div>
+                <iframe class="pdf-viewer__frame" data-src="${viewerHref}" title="${escapeHtml(p.title)}" loading="lazy"></iframe>
+              </div>
+              <a class="btn btn--secondary" href="${downloadHref}" download>${ICONS.download} Original-PDF herunterladen</a>
+            </div>
           </div>
           <div class="detail__side">
             ${renderMailGen(p.id, [], `Neu bei Microsoft Advertising: ${p.title}`, p.customerBlurb, p.emailHookDE)}
@@ -1240,27 +1244,42 @@
     `;
 
     wireMailGen(p.id, [], `Neu bei Microsoft Advertising: ${p.title}`, p.customerBlurb, p.emailHookDE);
-    wirePresentationSummary();
+    wireDetailTabs();
   }
 
-  // Distill (2026-08-13, Nutzer-Feedback: der volle Zusammenfassungstext
-  // ganz oben ist "nicht so wichtig", wirkt als Textwand vor den eigentlich
-  // wichtigen Kernfakten). Gleiches Klammer-Muster wie bei den
-  // Best-Practices-Karten (wireBestPracticeCards): 3 Zeilen geklammert,
-  // Button nur bei tatsächlicher Kürzung sichtbar (scrollHeight-Check statt
-  // geratener Zeichen-Grenze) — der volle, treue Text bleibt bei Bedarf
-  // erreichbar, ist nur nicht mehr die Standardansicht.
-  function wirePresentationSummary() {
-    const text = view.querySelector(".detail__summary-text");
-    const btn = view.querySelector("[data-expand-summary]");
-    if (!text || !btn) return;
-    if (text.scrollHeight <= text.clientHeight + 2) {
-      btn.remove();
-      return;
-    }
-    btn.addEventListener("click", () => {
-      const expanded = text.classList.toggle("is-expanded");
-      btn.innerHTML = expanded ? `Weniger anzeigen ${ICONS.arrowRight}` : `Vollständig anzeigen ${ICONS.arrowRight}`;
+  // Tabs statt Stapel (2026-08-14, Nutzer-Feedback: Detailseite wirkte
+  // "zu voll geladen" — Kernfakten UND der komplette eingebettete PDF-
+  // Viewer standen gleichzeitig sichtbar untereinander, der Viewer war mit
+  // Abstand der schwerste Block auf der Seite). Der zusammenfassende
+  // Fließtext-Absatz (`.detail__summary`, seit 2026-08-13 nur noch geklammert
+  // sichtbar) wurde dabei ganz entfernt statt weiter geklammert — er
+  // duplizierte ohnehin nur, was die Kernfakten-Liste besser sagt.
+  // Reiner Client-Side-Umschalter (kein renderPresentationDetail-Re-Render
+  // beim Tab-Wechsel!) — sonst würde ein Wechsel auf "Original-Präsentation"
+  // den Mail-Generator daneben zurücksetzen, falls dort schon getippt wurde.
+  // iframe bekommt ihre src erst beim ersten Öffnen des PDF-Tabs (nicht
+  // beim Laden der Seite) — PDF.js + die PDF-Datei selbst laden dadurch nur,
+  // wenn tatsächlich gebraucht, nicht bei jedem Seitenaufruf.
+  function wireDetailTabs() {
+    const tabs = view.querySelectorAll("[data-detail-tab]");
+    const panels = view.querySelectorAll("[data-detail-panel]");
+    if (!tabs.length) return;
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const key = tab.dataset.detailTab;
+        tabs.forEach((t) => {
+          const active = t === tab;
+          t.classList.toggle("is-active", active);
+          t.setAttribute("aria-selected", String(active));
+        });
+        panels.forEach((panel) => {
+          panel.hidden = panel.dataset.detailPanel !== key;
+        });
+        if (key === "pdf") {
+          const frame = view.querySelector(".pdf-viewer__frame");
+          if (frame && !frame.src) frame.src = frame.dataset.src;
+        }
+      });
     });
   }
 

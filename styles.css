@@ -1110,33 +1110,11 @@ mark {
 .detail__main > .btn { align-self: flex-start; }
 .info-box__preview { max-width: none; white-space: pre-line; }
 .detail__side { display: flex; flex-direction: column; gap: var(--space-4); }
-/* Distill (2026-08-13): Zusammenfassung ist jetzt bewusst die leiseste
-   Stimme auf der Seite (kleiner, gedämpfte Farbe, geklammert) — die
-   Kernfakten-Box direkt darunter soll die erste wirklich gelesene Fläche
-   sein, nicht der Fließtext. Gleiche Klammer-Mechanik wie
-   .side-card__body/.side-card__expand, eigene Klassen, da eigener
-   Komponenten-Typ (Fließtext-Absatz statt Karte). */
-.detail__summary { max-width: 68ch; }
-.detail__summary-text {
-  color: var(--ink-soft);
-  font-size: 0.92rem;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
-}
-.detail__summary-text.is-expanded { display: block; overflow: visible; }
-.detail__summary-expand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35em;
-  margin-top: var(--space-2);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--accent);
-}
-.detail__summary-expand svg { width: 12px; height: 12px; transition: transform 160ms ease; }
-.detail__summary-expand:hover svg { transform: translateX(2px); }
+/* .detail__summary/-text/-expand entfernt (2026-08-14) — der geklammerte
+   Zusammenfassungs-Absatz auf der Präsentations-Detailseite wurde komplett
+   gestrichen, siehe app.js-Kommentar bei wireDetailTabs. War ausschließlich
+   dort verwendet (Case-Study-Detail nutzt einen ungestylten <p>). */
+.detail__tab-panel > .btn { margin-top: var(--space-4); }
 
 .chip {
   display: inline-flex;
