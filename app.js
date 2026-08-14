@@ -31,6 +31,25 @@
     else a.innerHTML = ICONS[NAV_ICON[a.dataset.nav]];
   });
 
+  // Aufklappbares Untermenü (2026-08-14, Nutzer-Wunsch: Serienmails als
+  // Unterkategorie von Vorlagen) — erstes verschachteltes Nav-Element in
+  // dieser App, deshalb bewusst generisch über data-nav-group gebaut statt
+  // hart auf "vorlagen" verdrahtet, falls später weitere Gruppen dazukommen.
+  // Auf/Zu bleibt reiner DOM-Zustand (kein localStorage) — die Nav-Leiste
+  // selbst wird von render() nie neu erzeugt (nur #view ändert sich), der
+  // Zustand übersteht also jeden Routenwechsel von allein.
+  const navGroups = document.querySelectorAll("[data-nav-group]");
+  navGroups.forEach((group) => {
+    const toggle = group.querySelector("[data-nav-toggle]");
+    const sub = group.querySelector("[data-nav-sub]");
+    toggle.innerHTML = ICONS.arrowRight;
+    toggle.addEventListener("click", () => {
+      const expanded = toggle.getAttribute("aria-expanded") === "true";
+      toggle.setAttribute("aria-expanded", String(!expanded));
+      sub.classList.toggle("is-expanded", !expanded);
+    });
+  });
+
   function escapeHtml(str) {
     return String(str).replace(/[&<>"']/g, (c) => ({
       "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
@@ -3266,6 +3285,18 @@
         (a.dataset.nav === "nutzer" && path.startsWith("/nutzer"));
       if (active) a.setAttribute("aria-current", "page");
       else a.removeAttribute("aria-current");
+    });
+
+    // Untermenü automatisch aufklappen, wenn die aktuelle Route zur Gruppe
+    // gehört (z. B. direkt auf #/serienmails gelandet) — klappt aber nie
+    // von allein wieder zu, wenn man weiternavigiert (kein nervöses
+    // Zuspringen; manuelles Zuklappen bleibt der Person selbst überlassen).
+    navGroups.forEach((group) => {
+      const belongsToGroup = Array.from(group.querySelectorAll("[data-nav]")).some((a) => path.startsWith(`/${a.dataset.nav}`));
+      if (belongsToGroup) {
+        group.querySelector("[data-nav-toggle]").setAttribute("aria-expanded", "true");
+        group.querySelector("[data-nav-sub]").classList.add("is-expanded");
+      }
     });
   }
 

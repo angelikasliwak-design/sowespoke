@@ -242,6 +242,44 @@ mark {
   background: var(--accent);
 }
 
+/* Aufklappbares Untermenü (2026-08-14) — .rail__nav-group-link erbt die
+   Basis-Optik über den ".rail__nav a"-Nachfahren-Selektor oben automatisch
+   mit, hier nur das Gruppen-Layout selbst (Link+Toggle nebeneinander,
+   Untermenü als eigene Zeile darunter — flex-wrap statt Zusatz-Markup). */
+.rail__nav-group { display: flex; flex-wrap: wrap; align-items: center; }
+/* .rail__nav a { width: 100%; } hat höhere Spezifität (Element+Klasse)
+   als eine einzelne Klasse — erster Versuch mit nur ".rail__nav-group-link"
+   wurde deshalb überschrieben und ist trotzdem auf 100% geblieben (beim
+   Testen selbst aufgefallen). ".rail__nav a.rail__nav-group-link" gleicht
+   die Spezifität an, sonst beansprucht der Link die volle Gruppenbreite
+   und der Toggle-Button rutscht auf eine neue Zeile statt daneben zu sitzen. */
+.rail__nav a.rail__nav-group-link { flex: 1 1 auto; width: auto; min-width: 0; }
+.rail__nav-toggle {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-soft);
+  border-radius: 50%;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+.rail__nav-toggle:hover { background: var(--paper); color: var(--ink); }
+.rail__nav-toggle svg { width: 14px; height: 14px; transition: transform 200ms ease; }
+.rail__nav-toggle[aria-expanded="true"] svg { transform: rotate(90deg); }
+.rail__nav-sub {
+  flex-basis: 100%;
+  display: none;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-left: var(--space-5);
+  margin-top: var(--space-2);
+}
+.rail__nav-sub.is-expanded { display: flex; }
+.rail__nav-sub a { height: 38px; font-size: 0.86rem; }
+.rail__nav-sub a .rail__nav-icon svg { width: 16px; height: 16px; }
+
 /* Profil-Bereich unten in der Sidebar (Referenz-Mockup) — nur E-Mail
    bekannt (Google liefert kein Name/Foto/Rolle), daher Avatar-Kreis mit
    Anfangsbuchstabe statt erfundenem Foto. Leer, bis /api/auth/me antwortet. */
@@ -2027,6 +2065,23 @@ code {
   .rail__nav { flex-direction: row; gap: var(--space-2); flex-shrink: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
   .rail__nav::-webkit-scrollbar { display: none; }
   .rail__nav a { width: 44px; height: 44px; padding: 0; justify-content: center; flex-shrink: 0; }
+  /* Untermenü hat auf der schmalen horizontalen Icon-Leiste keinen Platz für
+     Einrückung/Aufklappen — display:contents "entfernt" die Gruppen-/
+     Untermenü-Wrapper rein fürs Layout, ihre <a>-Kinder werden dadurch zu
+     direkten Kindern von .rail__nav und verhalten sich wie alle anderen
+     Icons in der Leiste (immer sichtbar, kein Auf-/Zuklappen nötig). */
+  .rail__nav-group, .rail__nav-sub { display: contents; }
+  .rail__nav-toggle { display: none; }
+  .rail__nav-sub a { width: 44px; height: 44px; font-size: inherit; }
+  .rail__nav-sub a .rail__nav-icon svg { width: 20px; height: 20px; }
+  /* Die Desktop-Regel ".rail__nav a.rail__nav-group-link" (Element+2
+     Klassen) ist spezifischer als die einfache Basisregel ".rail__nav a"
+     oben in diesem Media Query — ohne diese Zeile bleibt der Vorlagen-Link
+     auf Mobile bei width:auto/flex:1 1 auto hängen und schrumpft dadurch
+     faktisch auf 0 Breite (beim Testen selbst aufgefallen: Icon fehlte
+     komplett in der Leiste). Gleiche Spezifität wie die Desktop-Regel,
+     gewinnt hier per späterer Position in der Cascade. */
+  .rail__nav a.rail__nav-group-link { width: 44px; flex: none; }
   .rail__nav a[aria-current="page"] { padding-left: 0; }
   .rail__nav-label { display: none; }
   .rail__profile { display: none; }

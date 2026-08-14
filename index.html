@@ -23,13 +23,26 @@
     <nav class="rail__nav" aria-label="Hauptnavigation">
       <a href="#/" data-nav="news" aria-label="Neuigkeiten" title="Neuigkeiten"><span class="rail__nav-icon"></span><span class="rail__nav-label">News</span></a>
       <a href="#/praesentationen" data-nav="praesentationen" aria-label="Präsentationen" title="Präsentationen"><span class="rail__nav-icon"></span><span class="rail__nav-label">Präsentationen</span></a>
-      <a href="#/vorlagen" data-nav="vorlagen" aria-label="Vorlagen &amp; Wissensdatenbank" title="Vorlagen &amp; Wissensdatenbank"><span class="rail__nav-icon"></span><span class="rail__nav-label">Vorlagen</span></a>
+      <!-- Serienmails als aufklappbares Untermenü unter Vorlagen (2026-08-14,
+           Nutzer-Wunsch) — existiert nur, weil es aus dem Mail-Generator
+           innerhalb von Vorlagen entsteht. Erstes verschachteltes Nav-
+           Element in dieser App, siehe app.js (wireNavSubmenu) für die
+           Auf-/Zuklapp-Logik und Auto-Aufklappen auf passender Route. Auf
+           Mobile (horizontale Icon-Leiste, siehe styles.css) rendert die
+           Gruppe stattdessen flach — kein Platz für Einrückung/Aufklappen
+           in einer schmalen Zeile. -->
+      <div class="rail__nav-group" data-nav-group="vorlagen">
+        <a href="#/vorlagen" data-nav="vorlagen" aria-label="Vorlagen &amp; Wissensdatenbank" title="Vorlagen &amp; Wissensdatenbank" class="rail__nav-group-link"><span class="rail__nav-icon"></span><span class="rail__nav-label">Vorlagen</span></a>
+        <button type="button" class="rail__nav-toggle" data-nav-toggle aria-expanded="false" aria-controls="rail-nav-sub-vorlagen" aria-label="Untermenü Vorlagen ein-/ausblenden"></button>
+        <div class="rail__nav-sub" id="rail-nav-sub-vorlagen" data-nav-sub>
+          <a href="#/serienmails" data-nav="serienmails" aria-label="Geplante Serienmails" title="Geplante Serienmails"><span class="rail__nav-icon"></span><span class="rail__nav-label">Serienmails</span></a>
+        </div>
+      </div>
       <a href="#/case-studies" data-nav="case-studies" aria-label="Case Studies" title="Case Studies"><span class="rail__nav-icon"></span><span class="rail__nav-label">Case Studies</span></a>
       <a href="#/tickets" data-nav="tickets" aria-label="Tickets" title="Tickets"><span class="rail__nav-icon"></span><span class="rail__nav-label">Tickets</span></a>
       <a href="#/microsoft-learn" data-nav="microsoft-learn" aria-label="Von Microsoft Learn" title="Von Microsoft Learn"><span class="rail__nav-icon"></span><span class="rail__nav-label">Microsoft Learn</span></a>
       <a href="#/anfragen" data-nav="anfragen" aria-label="Anfragen an Microsoft" title="Anfragen an Microsoft"><span class="rail__nav-icon"></span><span class="rail__nav-label">Anfragen</span></a>
       <a href="#/ideen" data-nav="ideen" aria-label="Ideen &amp; Vorschläge" title="Ideen &amp; Vorschläge"><span class="rail__nav-icon"></span><span class="rail__nav-label">Ideen</span></a>
-      <a href="#/serienmails" data-nav="serienmails" aria-label="Geplante Serienmails" title="Geplante Serienmails"><span class="rail__nav-icon"></span><span class="rail__nav-label">Serienmails</span></a>
       <!-- Nur für Admins (2026-08-14) — per JS eingeblendet, siehe app.js
            (rail-profile-IIFE prüft isAdmin über /api/auth/me). Standardmäßig
            versteckt, damit nicht jedes Teammitglied einen Link auf eine
