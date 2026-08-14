@@ -24,7 +24,7 @@
     Allgemein: "--turquoise",
   };
 
-  const NAV_ICON = { news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", "microsoft-learn": "sparkle", anfragen: "mail", ideen: "lightbulb" };
+  const NAV_ICON = { news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", "microsoft-learn": "sparkle", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass" };
   railLinks.forEach((a) => {
     const iconSlot = a.querySelector(".rail__nav-icon");
     if (iconSlot) iconSlot.innerHTML = ICONS[NAV_ICON[a.dataset.nav]];
@@ -41,6 +41,14 @@
     const d = new Date(iso + (iso.length === 10 ? "T00:00:00" : ""));
     if (Number.isNaN(d.getTime())) return "";
     return d.toLocaleDateString("de-DE", { day: "numeric", month: "short", year: "numeric" });
+  }
+
+  // Mit Uhrzeit, für Serienmail-Termine (2026-08-14, Phase C) — formatDate()
+  // reicht dort nicht, die Uhrzeit ist der eigentliche Sinn der Terminierung.
+  function formatDateTime(iso) {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toLocaleString("de-DE", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
   }
 
   // Kurzform ohne Jahr, nur für Chart-Achsenbeschriftungen (Performance-
@@ -802,6 +810,12 @@
             <button type="button" class="btn btn--primary" data-gmail-send-btn hidden disabled>${ICONS.mail} Jetzt per Gmail senden</button>
             <span class="mailgen__signature-status" data-gmail-status></span>
           </div>
+          <div class="mailgen__gmail-send-row" data-schedule-row hidden>
+            <input type="datetime-local" data-gmail-schedule-at aria-label="Zeitpunkt für den terminierten Versand" />
+            <button type="button" class="btn btn--secondary" data-gmail-schedule-btn disabled>${ICONS.hourglass} Terminieren</button>
+            <span class="mailgen__signature-status" data-schedule-status></span>
+          </div>
+          <p class="mailgen__hint" data-schedule-link hidden><a href="#/serienmails">${ICONS.hourglass} Geplante Mails ansehen</a></p>
         </div>
         <details class="mailgen__hint-toggle">
           <summary aria-label="Hinweis zum Versand anzeigen">${ICONS.info}</summary>
@@ -839,6 +853,11 @@
     const gmailConnectBtn = view.querySelector("[data-gmail-connect]");
     const gmailSendBtn = view.querySelector("[data-gmail-send-btn]");
     const gmailStatusEl = view.querySelector("[data-gmail-status]");
+    const scheduleRowEl = view.querySelector("[data-schedule-row]");
+    const scheduleAtInput = view.querySelector("[data-gmail-schedule-at]");
+    const scheduleBtn = view.querySelector("[data-gmail-schedule-btn]");
+    const scheduleStatusEl = view.querySelector("[data-schedule-status]");
+    const scheduleLinkEl = view.querySelector("[data-schedule-link]");
     let gmailConnected = false;
     let lastToAddr = null;
 
@@ -1204,6 +1223,7 @@
 
       updateGmailSendLabel(mode);
       gmailSendBtn.disabled = !ready;
+      scheduleBtn.disabled = !ready || !scheduleAtInput.value;
     }
     nameEl.addEventListener("input", fill);
     toEl.addEventListener("input", fill);
@@ -1228,6 +1248,12 @@
     function updateGmailUi() {
       gmailConnectBtn.hidden = gmailConnected;
       gmailSendBtn.hidden = !gmailConnected;
+      // Terminieren setzt serverseitig ebenfalls eine bestehende Gmail-
+      // Verbindung voraus (siehe functions/api/mail-schedule/jobs.js) — ein
+      // Job ohne Verbindung würde beim Fälligwerden zwangsläufig scheitern,
+      // deshalb dieselbe Sichtbarkeitsbedingung wie beim Sofortversand.
+      scheduleRowEl.hidden = !gmailConnected;
+      scheduleLinkEl.hidden = !gmailConnected;
     }
     (async () => {
       try {
@@ -1330,6 +1356,74 @@
       }
       gmailSendBtn.disabled = false;
       fill();
+    });
+
+    // Phase C (2026-08-14): Terminierung. Der Client komponiert wie beim
+    // Sofortversand fertigen Betreff/Text pro Empfänger:in und schickt sie
+    // fertig gerendert an /api/mail-schedule/jobs — der Server löst zur
+    // Sendezeit KEINE Platzhalter mehr auf, sondern verschickt exakt das,
+    // was hier steht (siehe Kommentar in functions/api/mail-schedule/jobs.js).
+    scheduleAtInput.addEventListener("input", fill);
+    // "Jetzt" als Minimum, damit die Datumsauswahl nicht trivial in die
+    // Vergangenheit zeigen kann — der Server prüft das zusätzlich noch
+    // einmal (Client-Validierung ist nur Komfort, kein Sicherheitsnetz).
+    scheduleAtInput.min = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    scheduleBtn.addEventListener("click", async () => {
+      if (scheduleBtn.disabled) return;
+      const sendAtLocal = scheduleAtInput.value;
+      if (!sendAtLocal) return;
+      const sendAtIso = new Date(sendAtLocal).toISOString();
+      if (new Date(sendAtIso).getTime() <= Date.now()) {
+        scheduleStatusEl.textContent = "Zeitpunkt liegt in der Vergangenheit";
+        return;
+      }
+      const mode = (modeEls.find((r) => r.checked) || {}).value || "single";
+      scheduleBtn.disabled = true;
+      scheduleStatusEl.textContent = "Terminiere …";
+
+      let items;
+      if (mode === "einzeln") {
+        const { content, subjectFilled, missing } = getFilledTemplate();
+        if (missing.length) {
+          scheduleStatusEl.textContent = `Erst ausfüllen: ${missing.join(", ")}`;
+          scheduleBtn.disabled = false;
+          return;
+        }
+        const rows = getRecipRows()
+          .map((row) => ({
+            name: row.querySelector("[data-recip-name]").value.trim(),
+            email: row.querySelector("[data-recip-email]").value.trim(),
+          }))
+          .filter((r) => EMAIL_RE.test(r.email));
+        items = rows.map((r) => {
+          const { subject, body } = composeForName(content, subjectFilled, "single", r.name);
+          return { to: r.email, subject, body, sendAt: sendAtIso, label: r.name || r.email };
+        });
+      } else if (lastToAddr) {
+        items = [{ to: lastToAddr, subject: subjectEl.value, body: bodyEl.value, sendAt: sendAtIso, label: nameEl.value.trim() }];
+      } else {
+        items = [];
+      }
+
+      if (!items.length) {
+        scheduleStatusEl.textContent = "Keine gültigen Empfänger:innen";
+        scheduleBtn.disabled = false;
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/mail-schedule/jobs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ items }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || "Terminieren fehlgeschlagen");
+        scheduleStatusEl.innerHTML = `✓ ${data.items.length} ${data.items.length === 1 ? "Mail" : "Mails"} terminiert für ${escapeHtml(formatDateTime(sendAtIso))} — <a href="#/serienmails">ansehen</a>`;
+      } catch (err) {
+        scheduleStatusEl.textContent = err.message || "Terminieren fehlgeschlagen";
+      }
+      scheduleBtn.disabled = false;
     });
 
     fill();
@@ -2888,6 +2982,102 @@
     });
   }
 
+  /* ------------------------------------------------------ Seite: Serienmails */
+  /* Phase C (2026-08-14) — Übersicht der über den Mail-Generator
+     terminierten Sendungen (functions/api/mail-schedule/*). Struktur folgt
+     bewusst dem bestehenden Tickets-Zeilenmuster (.ticket-row/.ticket-list)
+     statt neuer CSS: gleiche Form (Zeile mit Titel/Meta/Status-Pille), nur
+     ohne Avatar-Spalte — Wiederverwendung statt Neuerfindung. Status-Farben
+     übernehmen 1:1 die Bedeutung aus TICKET_STATUS_META ("pending" = gelb/
+     in Bearbeitung, "completed"-Äquivalent = türkis, "braucht Aufmerksamkeit"
+     = Akzent-Magenta), keine neue Farbsprache. */
+
+  const SCHEDULE_STATUS_META = {
+    pending: { label: "Geplant", var: "--yellow-text", icon: ICONS.hourglass },
+    sent: { label: "Gesendet", var: "--teal-text", icon: ICONS.check },
+    failed: { label: "Fehlgeschlagen", var: "--accent", icon: ICONS.flash },
+  };
+
+  function scheduleRowHtml(job) {
+    const meta = SCHEDULE_STATUS_META[job.status] || SCHEDULE_STATUS_META.pending;
+    return `
+      <li class="ticket-row">
+        <span class="ticket-row__body">
+          <span class="ticket-row__top">
+            <span class="ticket-row__who"><strong>${escapeHtml(job.to)}</strong>${job.label ? ` · ${escapeHtml(job.label)}` : ""}</span>
+            <span class="ticket-row__created">${formatDateTime(job.sendAt)}</span>
+          </span>
+          <span class="ticket-row__subject">${escapeHtml(job.subject)}</span>
+          <span class="ticket-row__meta">
+            <span class="ticket-row__status" style="color: var(${meta.var})">${meta.icon} ${meta.label}</span>
+            ${job.status === "failed" && job.error ? `<span class="ticket-row__meta-item"><span class="ticket-row__meta-label">Fehler</span>${escapeHtml(job.error)}</span>` : ""}
+            ${job.status === "pending" ? `<button type="button" class="schedule-row__cancel" data-cancel-job="${escapeHtml(job.id)}">${ICONS.close} Stornieren</button>` : ""}
+          </span>
+        </span>
+      </li>`;
+  }
+
+  function renderScheduledMails() {
+    view.innerHTML = `
+      <section class="hero hero--compact">
+        <div class="hero__intro">
+          <h1>Geplante <mark>Serienmails</mark>.</h1>
+          <p>Über den Mail-Generator terminierte Nachrichten — werden automatisch zum gewählten Zeitpunkt über deine verbundene Gmail-Adresse verschickt.</p>
+        </div>
+        <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
+      </section>
+      <div class="feed">
+        <h2 class="feed__title">Deine geplanten Mails<span class="feed__title__count" id="schedule-count"></span></h2>
+        <div id="schedule-list" aria-live="polite"><p class="idea-list__status">Lädt …</p></div>
+      </div>
+    `;
+    wireScheduledMails();
+  }
+
+  function wireScheduleCancelButtons() {
+    document.querySelectorAll("[data-cancel-job]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        btn.disabled = true;
+        try {
+          const res = await fetch(`/api/mail-schedule/jobs/${encodeURIComponent(btn.dataset.cancelJob)}`, { method: "DELETE" });
+          if (!res.ok) throw new Error();
+          loadScheduleList();
+        } catch {
+          btn.disabled = false;
+        }
+      });
+    });
+  }
+
+  async function loadScheduleList() {
+    const list = document.getElementById("schedule-list");
+    const count = document.getElementById("schedule-count");
+    if (!list) return;
+    try {
+      const res = await fetch("/api/mail-schedule/jobs");
+      const data = await res.json();
+      const items = data.items || [];
+      if (data.error && !items.length) {
+        list.innerHTML = `<p class="idea-list__status">${escapeHtml(data.error)} — geplante Mails können aktuell nicht geladen werden.</p>`;
+        return;
+      }
+      if (!items.length) {
+        list.innerHTML = `<div class="empty-state">${ICONS.hourglass}<strong>Noch keine Mail geplant</strong><p>Im Mail-Generator unten bei "Direkter Versand" ein Datum wählen und auf "Terminieren" klicken.</p></div>`;
+        if (count) count.textContent = "";
+        return;
+      }
+      list.innerHTML = `<ul class="ticket-list">${items.map(scheduleRowHtml).join("")}</ul>`;
+      if (count) count.textContent = `${items.length} ${items.length === 1 ? "Mail" : "Mails"}`;
+      wireScheduleCancelButtons();
+    } catch {
+      list.innerHTML = `<p class="idea-list__status">Geplante Mails konnten nicht geladen werden — später erneut versuchen.</p>`;
+    }
+  }
+
+  function wireScheduledMails() {
+    loadScheduleList();
+  }
+
   /* ------------------------------------------------------- Zuletzt angesehen */
 
   const RECENT_KEY = "sowespoke-recent";
@@ -2957,7 +3147,8 @@
         (a.dataset.nav === "tickets" && path.startsWith("/tickets")) ||
         (a.dataset.nav === "microsoft-learn" && path.startsWith("/microsoft-learn")) ||
         (a.dataset.nav === "anfragen" && path.startsWith("/anfragen")) ||
-        (a.dataset.nav === "ideen" && path.startsWith("/ideen"));
+        (a.dataset.nav === "ideen" && path.startsWith("/ideen")) ||
+        (a.dataset.nav === "serienmails" && path.startsWith("/serienmails"));
       if (active) a.setAttribute("aria-current", "page");
       else a.removeAttribute("aria-current");
     });
@@ -3002,6 +3193,8 @@
       renderMicrosoftRequestsHub();
     } else if (path === "/ideen") {
       renderIdeas();
+    } else if (path === "/serienmails") {
+      renderScheduledMails();
     } else {
       renderNotFound(path);
     }

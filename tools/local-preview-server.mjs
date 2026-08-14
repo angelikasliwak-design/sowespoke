@@ -75,6 +75,12 @@ let mockRecipients = [];
 // wäre der Versand erfolgreich, verschickt aber natürlich nichts wirklich.
 let mockGmailConnected = true;
 
+// Mock für terminierte Serienmails (functions/api/mail-schedule/*, Phase C)
+// — In-Memory-Liste, geht beim Server-Neustart verloren. Es gibt hier
+// keinen echten Cron-Lauf, der "gesendet" markiert — genügt für den
+// visuellen/funktionalen Test von Terminieren/Anzeigen/Stornieren.
+let mockScheduleJobs = [];
+
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let data = "";
@@ -201,6 +207,51 @@ const server = http.createServer(async (req, res) => {
     }
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ ok: true, id: `mock-${Date.now()}` }));
+    return;
+  }
+  if (urlPath === "/api/mail-schedule/jobs" && req.method === "GET") {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ items: [...mockScheduleJobs].sort((a, b) => new Date(a.sendAt) - new Date(b.sendAt)) }));
+    return;
+  }
+  if (urlPath === "/api/mail-schedule/jobs" && req.method === "POST") {
+    let body;
+    try {
+      body = JSON.parse(await readBody(req));
+    } catch {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Ungültiger Request-Body" }));
+      return;
+    }
+    if (!mockGmailConnected) {
+      res.writeHead(409, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "not_connected" }));
+      return;
+    }
+    const items = (Array.isArray(body?.items) ? body.items : [])
+      .filter((r) => r?.to && r?.subject && r?.body && r?.sendAt)
+      .map((r) => ({
+        id: `mock-${Math.random().toString(36).slice(2)}`,
+        to: String(r.to),
+        subject: String(r.subject),
+        body: String(r.body),
+        label: String(r.label || ""),
+        sendAt: new Date(r.sendAt).toISOString(),
+        status: "pending",
+        createdAt: new Date().toISOString(),
+        sentAt: null,
+        error: null,
+      }));
+    mockScheduleJobs.push(...items);
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ ok: true, items }));
+    return;
+  }
+  if (urlPath.startsWith("/api/mail-schedule/jobs/") && req.method === "DELETE") {
+    const id = decodeURIComponent(urlPath.slice("/api/mail-schedule/jobs/".length));
+    mockScheduleJobs = mockScheduleJobs.filter((j) => j.id !== id);
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ ok: true }));
     return;
   }
 

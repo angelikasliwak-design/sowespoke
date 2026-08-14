@@ -9,49 +9,13 @@
  *
  * Erfordert die KV-Bindung GMAIL_SEND_TOKENS (siehe functions/api/auth/
  * gmail/callback.js) sowie GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET (dieselben
- * wie beim Login).
+ * wie beim Login). Der eigentliche Versand-Mechanismus (Token-Refresh, rohe
+ * MIME-Nachricht) liegt in functions/_lib/gmail.js — geteilt mit dem
+ * Terminierungs-Endpunkt (Phase C, functions/api/mail-schedule/run.js).
  */
 
 import { verifySessionToken, getCookie, json } from "../../_lib/auth.js";
-
-const EMAIL_RE = /^[^\s@,]+@[^\s@,]+\.[^\s@,]+$/;
-
-function bytesToBase64(bytes) {
-  let binary = "";
-  const chunkSize = 0x8000;
-  for (let i = 0; i < bytes.length; i += chunkSize) {
-    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
-  }
-  return btoa(binary);
-}
-
-function base64UrlEncode(bytes) {
-  return bytesToBase64(bytes).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-}
-
-// RFC 2047: kodiert den Betreff als =?UTF-8?B?...?=, damit Umlaute (ä/ü/ö)
-// nicht roh im Header stehen — als Nebeneffekt macht das Header-Injection
-// über den Betreff unmöglich, ein eingeschleustes \r\n landet als Base64-
-// Bytes in der kodierten Wortfolge, nie als echtes Zeilenende im Header.
-function mimeEncodeHeader(str) {
-  return `=?UTF-8?B?${bytesToBase64(new TextEncoder().encode(str))}?=`;
-}
-
-async function refreshAccessToken(refreshToken, env) {
-  const res = await fetch("https://oauth2.googleapis.com/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      client_id: env.GOOGLE_CLIENT_ID,
-      client_secret: env.GOOGLE_CLIENT_SECRET,
-      refresh_token: refreshToken,
-      grant_type: "refresh_token",
-    }),
-  });
-  if (!res.ok) return null;
-  const data = await res.json();
-  return data.access_token || null;
-}
+import { EMAIL_RE, refreshAccessToken, sendGmailMessage } from "../../_lib/gmail.js";
 
 export async function onRequestPost(context) {
   const { env, request } = context;
@@ -96,34 +60,7 @@ export async function onRequestPost(context) {
     return json({ error: "Gmail-Verbindung ungültig oder widerrufen — bitte neu verbinden" }, 409);
   }
 
-  const rawLines = [
-    `To: ${addrs.join(", ")}`,
-    `Subject: ${mimeEncodeHeader(subject)}`,
-    "MIME-Version: 1.0",
-    'Content-Type: text/plain; charset="UTF-8"',
-    "Content-Transfer-Encoding: base64",
-    "",
-    bytesToBase64(new TextEncoder().encode(text)),
-  ];
-  const raw = base64UrlEncode(new TextEncoder().encode(rawLines.join("\r\n")));
-
-  const sendRes = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/messages/send", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ raw }),
-  });
-  if (!sendRes.ok) {
-    let detail = "";
-    try {
-      detail = (await sendRes.json())?.error?.message || "";
-    } catch {
-      /* keine JSON-Fehlerantwort, detail bleibt leer */
-    }
-    return json({ error: "Versand fehlgeschlagen", detail }, 502);
-  }
-  const result = await sendRes.json();
+  const result = await sendGmailMessage({ accessToken, to: addrs.join(", "), subject, text });
+  if (!result.ok) return json({ error: "Versand fehlgeschlagen", detail: result.error }, 502);
   return json({ ok: true, id: result.id });
 }

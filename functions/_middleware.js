@@ -23,6 +23,13 @@ function isPublicPath(pathname) {
   if (pathname.startsWith("/assets/fonts/")) return true;
   if (pathname.startsWith("/assets/brand/")) return true;
   if (pathname.startsWith("/api/auth/")) return true;
+  // Cron-getriggerter Versand fälliger Serienmails (Phase C, 2026-08-14) —
+  // hat keine Login-Session (Aufrufer ist ein GitHub-Actions-Workflow,
+  // nicht eine eingeloggte Person), schützt sich stattdessen selbst über
+  // einen Bearer-Token-Header (siehe functions/api/mail-schedule/run.js).
+  // Bewusst ein exakter Pfad, kein Präfix — /api/mail-schedule/jobs* bleibt
+  // ganz normal session-gated.
+  if (pathname === "/api/mail-schedule/run") return true;
   return false;
 }
 

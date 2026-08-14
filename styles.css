@@ -1388,6 +1388,23 @@ mark {
 }
 .ticket-row__status svg { width: 14px; height: 14px; }
 
+/* Serienmails-Übersicht (Phase C, 2026-08-14) — Zeilen reisen bewusst auf
+   .ticket-row/.ticket-list mit (Wiederverwendung statt neuer Listenform),
+   nur der Stornieren-Button ist neu. */
+.schedule-row__cancel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  border-radius: 999px;
+  padding: 2px var(--space-3);
+  transition: color 150ms ease, background-color 150ms ease;
+}
+.schedule-row__cancel:hover { color: var(--warning); background: var(--paper); }
+.schedule-row__cancel svg { width: 13px; height: 13px; }
+
 .ticket-stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1654,12 +1671,33 @@ code {
 .mailgen__actions { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
 .mailgen__gmail-send { display: flex; flex-direction: column; gap: var(--space-2); }
 .mailgen__gmail-send-row { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+/* Terminierungs-Zeile (Phase C, 2026-08-14) trägt dieselbe Klasse wie die
+   Sofortversand-Zeile darüber und wird per hidden-Attribut umgeschaltet —
+   ohne diese Zeile derselbe Cascade-Fallstrick wie schon dreimal an diesem
+   Tag (.mailgen__field/.mailgen__single-fields/.btn, siehe DESIGN.md). */
+.mailgen__gmail-send-row[hidden] { display: none; }
+.mailgen__gmail-send-row input[type="datetime-local"] {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--ink);
+}
 .btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; transform: none; }
 /* .btn kann auch ein <a> sein ("E-Mail senden" braucht einen echten Link
    für mailto:, kein <button>) — <a> kennt kein natives disabled, daher
    Klassen-Pendant + aria-disabled (JS verhindert zusätzlich die Navigation). */
 .btn.is-disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; pointer-events: none; }
 .mailgen__hint { font-size: 0.82rem; color: var(--ink-soft); margin-top: calc(-1 * var(--space-2)); }
+/* Bug-Fund (2026-08-14, Phase C): der "Geplante Mails ansehen"-Link ist der
+   erste .mailgen__hint mit eingebettetem Icon — ohne explizite Größe rendert
+   ein <svg> ohne eigenes width/height riesig (Browser-Fallback, keine
+   Layout-Referenz). Icon-Links in anderen Listen (z. B. .ticket-row__status)
+   haben dasselbe Muster längst gelöst, hier nachgezogen statt neu erfunden. */
+.mailgen__hint svg { width: 14px; height: 14px; vertical-align: -2px; }
+.mailgen__hint a { display: inline-flex; align-items: center; gap: 0.35em; font-weight: 600; color: var(--accent); }
 /* Distill (2026-08-13): der Versand-Hinweis stand vorher als Dauertext unter
    den Aktions-Buttons — konkurriert dort mit den eigentlichen CTAs um
    Aufmerksamkeit, obwohl er nur beim ersten Mal wirklich gebraucht wird.
