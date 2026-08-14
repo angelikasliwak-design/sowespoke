@@ -942,6 +942,15 @@ mark {
   height: 52px;
   pointer-events: none;
 }
+/* Seit 2026-08-14 echte PNGs statt SVG-Markup (siehe icons.js-Kommentar) —
+   Quelldateien sind unterschiedlich beschnitten (Ringe eher breit, Blitz/
+   Sterne eher hoch), object-fit:contain verhindert Verzerrung/Beschnitt
+   innerhalb des festen 52×52-Rahmens. */
+.side-card__illustration img, .info-box__illustration img, .mailgen__illustration img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 .side-card > *:not(.side-card__illustration) { position: relative; }
 .side-card__icon {
   display: flex;
