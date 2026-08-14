@@ -1555,65 +1555,49 @@
 
     if (c.performanceData) {
       wireChartCard(c.performanceData);
-      wireChartModal(c.performanceData);
+      wireChartTilesAndSummary(c.performanceData);
     }
   }
 
   // Performance-Chart-Karte (2026-08-14, Nutzer-Wunsch: Reporting aus dem
   // Microsoft-Konto zeigen, wie sich die Performance nach Einführung eines
   // Beta/Features entwickelt hat, um daraus eine Case Study abzuleiten).
-  // Erstmal nur Leser-Interaktivität (Metrik umschalten) mit Beispieldaten
-  // — echte Konto-Zahlen und ein Eingabe-Werkzeug fürs Team sind ein
-  // späterer Schritt (per Rückfrage bewusst so eingegrenzt). Standard-
-  // Bestandteil von renderCaseStudyDetail, nicht nur dieser einen Seite —
-  // jede künftige Case Study kann `performanceData` mitliefern.
+  // Zwei Korrekturrunden am ursprünglichen Entwurf: (1) Tabs sind keine
+  // Single-Select-Tabs mehr, sondern Toggle-Buttons für bis zu ZWEI
+  // gleichzeitig aktive Kennzahlen ("ROAS und Spend auf der Grafik sehen"),
+  // Chart bekommt bei zwei aktiven Kennzahlen eine zweite Y-Achse (unter-
+  // schiedliche Einheiten/Skalen, z. B. "x" vs. "€", lassen sich nicht auf
+  // einer Achse sinnvoll vergleichen). (2) Die "Vollständige Übersicht"
+  // (KPI-Kacheln + Auto-Text) war zunächst ein Modal, ist jetzt fest
+  // Bestandteil der Karte — kein Popup mehr. Standard-Bestandteil von
+  // renderCaseStudyDetail, nicht nur dieser einen Seite — jede künftige
+  // Case Study kann `performanceData` mitliefern.
   function chartCardHtml(perf) {
     const metrics = perf.metrics;
     return `
       <div class="side-card chart-card">
         <div class="chart-card__head">
           <h2>Performance-Entwicklung</h2>
-          <nav class="tabs chart-card__tabs" role="tablist" aria-label="Kennzahl">
-            ${metrics.map((m, i) => `<button type="button" class="tabs__item ${i === 0 ? "is-active" : ""}" data-chart-metric="${m.key}" role="tab" aria-selected="${i === 0}">${escapeHtml(m.label)}</button>`).join("")}
+          <p class="chart-card__hint">Bis zu zwei Kennzahlen gleichzeitig vergleichen</p>
+          <nav class="tabs chart-card__tabs" role="group" aria-label="Kennzahlen auswählen">
+            ${metrics.map((m) => `<button type="button" class="tabs__item" data-chart-metric="${m.key}" aria-pressed="false">${escapeHtml(m.label)}</button>`).join("")}
           </nav>
         </div>
-        <p class="chart-card__callout" id="chart-callout"></p>
+        <div class="chart-card__callouts" id="chart-callouts"></div>
         <div class="chart-card__canvas-wrap"><canvas id="case-study-chart"></canvas></div>
         <p class="chart-card__note">${ICONS.flash} ${escapeHtml(perf.changeLabel)} am ${formatDate(perf.changeDate)} — gestrichelte Linie markiert die Umstellung.</p>
-        <button type="button" class="chart-card__expand" data-open-chart-modal>${ICONS.external} Vollständige Übersicht — alle Kennzahlen</button>
-      </div>
-      ${chartModalHtml(perf)}
-    `;
-  }
 
-  // Overlay (2026-08-14, Nutzer-Wunsch: "man sollte zwei[Kennzahlen
-  // gleichzeitig sehen können], anpassbar" — als "mehr Kennzahlen
-  // gleichzeitig" statt frei verschiebbarem Vergleichszeitraum eingegrenzt,
-  // per Rückfrage). Erstes Modal/Overlay in dieser App überhaupt — bisher
-  // löste jede bestätigungspflichtige Aktion das inline statt mit einem
-  // Dialogfenster (siehe Ideenboard-Löschen). Hier bewusst doch ein echtes
-  // Overlay, weil es um zusätzliche Information geht, nicht um eine
-  // Bestätigung — eine Kachel-Übersicht lässt sich nicht sinnvoll inline in
-  // die schmale Kartenspalte quetschen. Heller Sowespoke-Stil statt des vom
-  // Nutzer als Referenz gezeigten Dark-Mode-Dashboards (per Rückfrage
-  // bewusst so entschieden) — kein Stilbruch mitten in der App.
-  function chartModalHtml(perf) {
-    return `
-      <div class="chart-modal" id="chart-modal" hidden>
-        <div class="chart-modal__backdrop" data-modal-close></div>
-        <div class="chart-modal__panel" role="dialog" aria-modal="true" aria-labelledby="chart-modal-title">
-          <button type="button" class="chart-modal__close" data-modal-close aria-label="Schließen">${ICONS.close}</button>
-          <h2 id="chart-modal-title">Performance-Übersicht</h2>
-          <p class="chart-modal__sub">${ICONS.flash} ${escapeHtml(perf.changeLabel)} am ${formatDate(perf.changeDate)}</p>
-          <div class="chart-modal__tiles" id="chart-modal-tiles"></div>
-          <div class="chart-modal__summary">
-            <div class="chart-modal__summary-head">
-              <h3>Automatisch generierte Zusammenfassung</h3>
-              <span class="mailgen__status" id="chart-modal-copy-status">${ICONS.check} Kopiert</span>
-            </div>
-            <p id="chart-modal-summary-text"></p>
-            <button type="button" class="btn btn--secondary" id="chart-modal-copy">${ICONS.copy} In Zwischenablage kopieren</button>
+        <div class="chart-card__divider"></div>
+        <h3 class="chart-card__section-title">Alle Kennzahlen im Überblick</h3>
+        <div class="chart-card__tiles" id="chart-tiles"></div>
+
+        <div class="chart-card__summary">
+          <div class="chart-card__summary-head">
+            <h3>Automatisch generierte Zusammenfassung</h3>
+            <span class="mailgen__status" id="chart-copy-status">${ICONS.check} Kopiert</span>
           </div>
+          <p id="chart-summary-text"></p>
+          <button type="button" class="btn btn--secondary" id="chart-copy">${ICONS.copy} In Zwischenablage kopieren</button>
         </div>
       </div>
     `;
@@ -1655,68 +1639,37 @@
     return text;
   }
 
-  function wireChartModal(perf) {
-    const modal = view.querySelector("#chart-modal");
-    const openBtn = view.querySelector("[data-open-chart-modal]");
-    if (!modal || !openBtn) return;
-    const tilesEl = modal.querySelector("#chart-modal-tiles");
-    const summaryEl = modal.querySelector("#chart-modal-summary-text");
-    const copyBtn = modal.querySelector("#chart-modal-copy");
-    const copyStatus = modal.querySelector("#chart-modal-copy-status");
-    let lastFocused = null;
+  // Ersetzt das frühere wireChartModal (2026-08-14) — Kacheln + Auto-Text
+  // rendern jetzt einmal beim Laden und bleiben fest sichtbar, kein Öffnen/
+  // Schließen, kein Fokus-Trap, kein Maskottchen-Ausblenden mehr nötig.
+  function wireChartTilesAndSummary(perf) {
+    const tilesEl = view.querySelector("#chart-tiles");
+    const summaryEl = view.querySelector("#chart-summary-text");
+    const copyBtn = view.querySelector("#chart-copy");
+    const copyStatus = view.querySelector("#chart-copy-status");
+    if (!tilesEl || !summaryEl) return;
     let copyTimer;
 
-    function renderTiles() {
-      const stats = perf.metrics.map((m) => computeMetricStat(perf, m));
-      tilesEl.innerHTML = stats
-        .map((s) => {
-          const deltaClass = s.favorable === null ? "" : s.favorable ? "kpi-tile__delta--good" : "kpi-tile__delta--bad";
-          const sign = s.pct > 0 ? "+" : "";
-          return `
-            <div class="kpi-tile">
-              <span class="kpi-tile__label">${escapeHtml(s.m.label)}</span>
-              <div class="kpi-tile__value-row">
-                <strong class="kpi-tile__value">${formatMetricValue(s.m, s.afterAvg)}</strong>
-                <span class="kpi-tile__delta ${deltaClass}">${sign}${s.pct.toFixed(0)}%</span>
-              </div>
-              <span class="kpi-tile__hint">vorher ${formatMetricValue(s.m, s.beforeAvg)}</span>
+    const stats = perf.metrics.map((m) => computeMetricStat(perf, m));
+    tilesEl.innerHTML = stats
+      .map((s) => {
+        const deltaClass = s.favorable === null ? "" : s.favorable ? "kpi-tile__delta--good" : "kpi-tile__delta--bad";
+        const sign = s.pct > 0 ? "+" : "";
+        return `
+          <div class="kpi-tile">
+            <span class="kpi-tile__label">${escapeHtml(s.m.label)}</span>
+            <div class="kpi-tile__value-row">
+              <strong class="kpi-tile__value">${formatMetricValue(s.m, s.afterAvg)}</strong>
+              <span class="kpi-tile__delta ${deltaClass}">${sign}${s.pct.toFixed(0)}%</span>
             </div>
-          `;
-        })
-        .join("");
-      summaryEl.textContent = generateChangeSummary(perf, stats);
-    }
+            <span class="kpi-tile__hint">vorher ${formatMetricValue(s.m, s.beforeAvg)}</span>
+          </div>
+        `;
+      })
+      .join("");
+    summaryEl.textContent = generateChangeSummary(perf, stats);
 
-    function onKeydown(e) {
-      if (e.key === "Escape") closeModal();
-    }
-    function openModal() {
-      renderTiles();
-      lastFocused = document.activeElement;
-      modal.hidden = false;
-      document.body.style.overflow = "hidden";
-      // Maskottchen überlappte auf Mobile die Kacheln (Screenshot-Selbsttest
-      // 2026-08-14) — die bestehende Kollisions-/Kollaps-Logik kennt nur
-      // .feed/.chart-card, nicht dieses neue Overlay. Einfacher als eine
-      // dritte Prüfung: solange ein Modal offen ist, blendet die App das
-      // Maskottchen komplett aus (es konkurriert ohnehin nicht mit einem
-      // fokussierten Dialog um Aufmerksamkeit).
-      document.getElementById("mascot-root")?.classList.add("is-modal-hidden");
-      modal.querySelector(".chart-modal__close").focus();
-      document.addEventListener("keydown", onKeydown);
-    }
-    function closeModal() {
-      document.getElementById("mascot-root")?.classList.remove("is-modal-hidden");
-      modal.hidden = true;
-      document.body.style.overflow = "";
-      document.removeEventListener("keydown", onKeydown);
-      if (lastFocused && document.contains(lastFocused)) lastFocused.focus();
-    }
-
-    openBtn.addEventListener("click", openModal);
-    modal.querySelectorAll("[data-modal-close]").forEach((el) => el.addEventListener("click", closeModal));
-
-    copyBtn.addEventListener("click", async () => {
+    copyBtn?.addEventListener("click", async () => {
       try {
         await navigator.clipboard.writeText(summaryEl.textContent);
         copyStatus.innerHTML = `${ICONS.check} Kopiert`;
@@ -1763,21 +1716,33 @@
     return { m, changeIndex, beforeAvg, afterAvg, pct, favorable };
   }
 
+  // Bis zu zwei gleichzeitig aktive Kennzahlen (2026-08-14, Nutzer-Wunsch:
+  // "ROAS und Spend auf der Grafik sehen"). Ein Klick auf eine inaktive
+  // Kennzahl fügt sie hinzu (bei bereits zwei aktiven ersetzt sie die
+  // älteste); ein Klick auf eine aktive Kennzahl entfernt sie, außer es
+  // wäre die letzte verbleibende — ein leerer Chart ist kein sinnvoller
+  // Zustand. Bei genau EINER aktiven Kennzahl bleibt die bisherige, fein
+  // abgestimmte Vorher/Nachher-Einfärbung erhalten (grau→türkis pro
+  // Linien-Segment); bei ZWEI aktiven bekommt jede Kennzahl eine eigene
+  // Volltonfarbe + eigene Y-Achse (unterschiedliche Einheiten/Skalen, z. B.
+  // "x" vs. "€", lassen sich nicht auf einer gemeinsamen Achse ablesen) und
+  // eine Legende, weil Farbe allein die beiden Linien nicht eindeutig genug
+  // benennt (WCAG "color-not-only").
   function wireChartCard(perf) {
     const canvas = view.querySelector("#case-study-chart");
-    const tabs = view.querySelectorAll("[data-chart-metric]");
-    const callout = view.querySelector("#chart-callout");
+    const tabs = [...view.querySelectorAll("[data-chart-metric]")];
+    const calloutsEl = view.querySelector("#chart-callouts");
     if (!canvas || typeof Chart === "undefined") return;
 
     const metrics = perf.metrics;
     const beforeColor = cssVar("--ink-soft");
-    const afterColor = cssVar("--turquoise");
+    const singleColor = cssVar("--turquoise");
+    const primaryColor = cssVar("--accent");
+    const secondaryColor = cssVar("--turquoise");
+    const gridColor = cssVar("--line");
     let chart = null;
+    let activeKeys = [metrics[0].key];
 
-    // Vertikale Trennlinie am Umstellungs-Tag — kein Annotation-Plugin
-    // nachgeladen (weiterer selbst zu hostender Fremdcode für eine einzige
-    // gestrichelte Linie wäre unverhältnismäßig), stattdessen ein simples
-    // eigenes Chart.js-Plugin, das direkt auf den Canvas-Kontext zeichnet.
     const changeLinePlugin = {
       id: "changeLine",
       afterDraw(c) {
@@ -1797,48 +1762,95 @@
       },
     };
 
-    function updateCallout(stat) {
-      const { m, pct, beforeAvg, afterAvg, favorable } = stat;
-      callout.textContent = `${pct > 0 ? "+" : ""}${pct.toFixed(0)}% seit der Umstellung (${formatMetricValue(m, beforeAvg)} → ${formatMetricValue(m, afterAvg)})`;
-      callout.classList.toggle("chart-card__callout--good", favorable === true);
+    function renderCallouts(activeMetrics, stats) {
+      calloutsEl.innerHTML = activeMetrics
+        .map((m, i) => {
+          const s = stats[i];
+          const goodClass = s.favorable === true ? "chart-card__callout--good" : "";
+          const swatchColor = activeMetrics.length === 2 ? (i === 0 ? primaryColor : secondaryColor) : singleColor;
+          return `
+            <span class="chart-card__callout ${goodClass}" style="--callout-swatch: ${swatchColor}">
+              ${escapeHtml(m.label)}: ${s.pct > 0 ? "+" : ""}${s.pct.toFixed(0)}% (${formatMetricValue(m, s.beforeAvg)} → ${formatMetricValue(m, s.afterAvg)})
+            </span>
+          `;
+        })
+        .join("");
     }
 
-    function renderMetric(key) {
-      const m = metrics.find((x) => x.key === key) || metrics[0];
-      const stat = computeMetricStat(perf, m);
-      const changeIndex = stat.changeIndex;
-      const labels = m.points.map((p) => formatShortDate(p.date));
-      updateCallout(stat);
+    function renderChart() {
+      const activeMetrics = activeKeys.map((k) => metrics.find((m) => m.key === k));
+      const stats = activeMetrics.map((m) => computeMetricStat(perf, m));
+      const isDual = activeMetrics.length === 2;
+      const changeIndex = stats[0].changeIndex;
+      const labels = activeMetrics[0].points.map((p) => formatShortDate(p.date));
 
-      if (chart) chart.destroy();
-      chart = new Chart(canvas, {
-        type: "line",
-        data: {
-          labels,
-          datasets: [{
+      renderCallouts(activeMetrics, stats);
+
+      const datasets = activeMetrics.map((m, i) => {
+        if (!isDual) {
+          return {
             data: m.points.map((p) => p.value),
             borderWidth: 2.5,
             tension: 0.3,
             fill: false,
             pointRadius: 3,
-            pointBackgroundColor: (ctx) => (ctx.dataIndex >= changeIndex ? afterColor : beforeColor),
-            pointBorderColor: (ctx) => (ctx.dataIndex >= changeIndex ? afterColor : beforeColor),
-            segment: {
-              borderColor: (ctx) => (ctx.p1DataIndex <= changeIndex ? beforeColor : afterColor),
-            },
-          }],
+            pointBackgroundColor: (ctx) => (ctx.dataIndex >= changeIndex ? singleColor : beforeColor),
+            pointBorderColor: (ctx) => (ctx.dataIndex >= changeIndex ? singleColor : beforeColor),
+            segment: { borderColor: (ctx) => (ctx.p1DataIndex <= changeIndex ? beforeColor : singleColor) },
+            yAxisID: "y",
+          };
+        }
+        const color = i === 0 ? primaryColor : secondaryColor;
+        return {
+          label: m.label,
+          data: m.points.map((p) => p.value),
+          borderWidth: 2.5,
+          tension: 0.3,
+          fill: false,
+          pointRadius: 3,
+          borderColor: color,
+          backgroundColor: color,
+          pointBackgroundColor: color,
+          pointBorderColor: color,
+          yAxisID: i === 0 ? "y" : "y1",
+        };
+      });
+
+      const scales = {
+        x: { ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 6 }, grid: { color: gridColor } },
+        y: {
+          position: "left",
+          ticks: { callback: (v) => formatMetricValue(activeMetrics[0], v) },
+          grid: { color: gridColor },
+          title: isDual ? { display: true, text: activeMetrics[0].label, color: primaryColor, font: { weight: "700" } } : undefined,
         },
+      };
+      if (isDual) {
+        scales.y1 = {
+          position: "right",
+          ticks: { callback: (v) => formatMetricValue(activeMetrics[1], v) },
+          grid: { drawOnChartArea: false },
+          title: { display: true, text: activeMetrics[1].label, color: secondaryColor, font: { weight: "700" } },
+        };
+      }
+
+      if (chart) chart.destroy();
+      chart = new Chart(canvas, {
+        type: "line",
+        data: { labels, datasets },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           animation: { duration: 260 },
-          plugins: { legend: { display: false }, tooltip: {
-            callbacks: { label: (ctx) => formatMetricValue(m, ctx.parsed.y) },
-          } },
-          scales: {
-            y: { ticks: { callback: (v) => formatMetricValue(m, v) } },
-            x: { ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 6 } },
+          plugins: {
+            legend: { display: isDual, position: "top", align: "start", labels: { usePointStyle: true, boxWidth: 8, font: { size: 12 } } },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${isDual ? `${ctx.dataset.label}: ` : ""}${formatMetricValue(activeMetrics[ctx.datasetIndex], ctx.parsed.y)}`,
+              },
+            },
           },
+          scales,
         },
         plugins: [changeLinePlugin],
       });
@@ -1846,17 +1858,32 @@
       chart.update();
     }
 
-    renderMetric(metrics[0].key);
+    function updateTabStates() {
+      tabs.forEach((tab) => {
+        const idx = activeKeys.indexOf(tab.dataset.chartMetric);
+        tab.classList.toggle("chart-card__tab--1", idx === 0);
+        tab.classList.toggle("chart-card__tab--2", idx === 1);
+        tab.setAttribute("aria-pressed", String(idx !== -1));
+      });
+    }
+
+    function toggleMetric(key) {
+      const idx = activeKeys.indexOf(key);
+      if (idx !== -1) {
+        if (activeKeys.length > 1) activeKeys.splice(idx, 1);
+      } else {
+        activeKeys.push(key);
+        if (activeKeys.length > 2) activeKeys.shift();
+      }
+      updateTabStates();
+      renderChart();
+    }
+
+    updateTabStates();
+    renderChart();
 
     tabs.forEach((tab) => {
-      tab.addEventListener("click", () => {
-        tabs.forEach((t) => {
-          const active = t === tab;
-          t.classList.toggle("is-active", active);
-          t.setAttribute("aria-selected", String(active));
-        });
-        renderMetric(tab.dataset.chartMetric);
-      });
+      tab.addEventListener("click", () => toggleMetric(tab.dataset.chartMetric));
     });
   }
 

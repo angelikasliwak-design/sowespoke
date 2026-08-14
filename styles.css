@@ -1002,17 +1002,40 @@ mark {
   box-shadow: var(--shadow), 0 14px 32px -14px color-mix(in srgb, var(--turquoise) 50%, transparent);
 }
 .chart-card__head { margin-bottom: var(--space-3); }
-.chart-card__tabs { margin-top: var(--space-2); }
+.chart-card__hint { font-size: 0.82rem; color: var(--ink-soft); margin-top: var(--space-1); }
+.chart-card__tabs { margin-top: var(--space-3); }
+/* Zweite Farbe für die zweite gleichzeitig aktive Kennzahl (2026-08-14,
+   Zwei-Kennzahlen-Vergleich) — überschreibt die generische
+   .tabs__item.is-active-Regel (die dieser Tab-Leiste seit dem Umbau auf
+   Toggle-Buttons gar nicht mehr zugewiesen wird) mit zwei eigenen
+   Modifier-Klassen, damit am Tab selbst schon erkennbar ist, welche Farbe
+   im Chart zu welcher Kennzahl gehört. */
+.chart-card__tabs .tabs__item.chart-card__tab--1 { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
+.chart-card__tabs .tabs__item.chart-card__tab--2 { background: var(--turquoise); border-color: var(--turquoise); color: var(--on-turquoise); font-weight: 600; }
+.chart-card__callouts { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-4); }
 .chart-card__callout {
   display: inline-flex;
   align-items: center;
+  gap: 0.5em;
   padding: 0.35em 0.9em;
   border-radius: 999px;
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--ink-soft);
   background: var(--paper);
-  margin-bottom: var(--space-4);
+}
+/* Kleiner Farbpunkt vor dem Text (2026-08-14) — bindet das Callout optisch
+   an seine Linie/seinen Tab, sonst wäre bei zwei gleichzeitig aktiven
+   Kennzahlen unklar, welches Callout zu welcher Linie gehört (Farbe allein
+   im Text wäre nicht barrierefrei genug, WCAG "color-not-only" — der Text
+   selbst nennt die Kennzahl deshalb ohnehin schon beim Namen). */
+.chart-card__callout::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--callout-swatch, var(--ink-soft));
+  flex: none;
 }
 .chart-card__callout--good { color: var(--success); background: var(--success-tint); }
 /* Chart.js braucht einen Elternrahmen mit EXPLIZITER Größe (responsive:true
@@ -1029,92 +1052,14 @@ mark {
   color: var(--ink-soft);
 }
 .chart-card__note svg { width: 14px; height: 14px; flex: none; color: var(--turquoise); }
-.chart-card__expand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4em;
-  margin-top: var(--space-4);
-  padding: 0.55em 1em;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--on-turquoise);
-  background: var(--turquoise);
-  border-radius: 999px;
-  transition: transform 150ms ease, box-shadow 150ms ease;
-}
-.chart-card__expand:hover { transform: translateY(-1px); box-shadow: var(--shadow-hover); }
-.chart-card__expand svg { width: 14px; height: 14px; }
 
-/* Performance-Übersicht-Overlay (2026-08-14) — erstes echtes Modal dieser
-   App (bisherige bestätigungspflichtige Aktionen lösen das inline, siehe
-   Ideenboard-Löschen-Kommentar in app.js). Heller Sowespoke-Stil bewusst
-   statt des vom Nutzer als Referenz gezeigten Dark-Mode-Dashboards. */
-.chart-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-5);
-}
-/* Bug-Fund (2026-08-14, Playwright-Selbsttest): ein Author-Stylesheet mit
-   "display:flex" auf .chart-modal überschreibt IMMER die UA-Standardregel
-   "[hidden]{display:none}", unabhängig von Spezifität — Cascade-Origin
-   (User-Agent < Author) schlägt Spezifität. Ohne diese Regel blieb das
-   Overlay unsichtbar, aber sein Backdrop weiter klickfähig über der
-   gesamten Seite ("element intercepts pointer events"). */
-.chart-modal[hidden] { display: none; }
-.chart-modal__backdrop {
-  position: absolute;
-  inset: 0;
-  background: color-mix(in srgb, var(--ink) 55%, transparent);
-}
-.chart-modal__panel {
-  position: relative;
-  z-index: 1;
-  width: min(46rem, 100%);
-  max-height: min(85vh, 46rem);
-  overflow-y: auto;
-  background: var(--paper-raised);
-  border-radius: var(--radius);
-  border: 3px solid var(--turquoise);
-  /* Stärker als die üblichen Karten-Schatten (--shadow/--shadow-hover) —
-     gleiches Muster wie .mascot__bubble: zwei Ebenen, weicher/größerer
-     Wurf, weil das Panel als echtes Overlay über allem schwebt. */
-  box-shadow: 0 10px 18px color-mix(in srgb, var(--ink) 6%, transparent), 0 32px 64px -24px color-mix(in srgb, var(--ink) 28%, transparent);
-  padding: var(--space-6);
-  /* Gleiche Pop-in-Logik wie das Maskottchen (bewusst dieselbe, bereits
-     geprüfte Bounce-Kurve) — passt zum sonst durchgängig comic-haften
-     Auftritt neuer Elemente in dieser App. */
-  animation: mascot-in 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.chart-modal__close {
-  position: absolute;
-  top: var(--space-4);
-  right: var(--space-4);
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--ink-soft);
-  border-radius: 50%;
-  transition: background-color 150ms ease, color 150ms ease;
-}
-.chart-modal__close:hover { background: var(--paper); color: var(--ink); }
-.chart-modal__close svg { width: 16px; height: 16px; }
-.chart-modal__sub {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-  color: var(--ink-soft);
-  font-size: 0.88rem;
-  margin-top: var(--space-1);
-  margin-bottom: var(--space-5);
-}
-.chart-modal__sub svg { width: 14px; height: 14px; flex: none; color: var(--turquoise); }
-.chart-modal__tiles {
+/* Vormals ein Modal (siehe Git-Historie) — jetzt fest Bestandteil der
+   Karte (2026-08-14, Nutzer-Wunsch: "nicht als Popup sondern mit
+   einbauen"), deckt sich auch mit dem impeccable-Craft-Floor-Ban "A modal
+   for a task that needs neither interruption nor protected focus". */
+.chart-card__divider { height: 1px; background: var(--line); margin: var(--space-5) 0; }
+.chart-card__section-title { font-size: 0.92rem; font-weight: 700; margin-bottom: var(--space-3); }
+.chart-card__tiles {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
   gap: var(--space-3);
@@ -1133,17 +1078,15 @@ mark {
 .kpi-tile__delta--good { color: var(--success); }
 .kpi-tile__delta--bad { color: var(--warning); }
 .kpi-tile__hint { display: block; font-size: 0.76rem; color: var(--ink-soft); margin-top: var(--space-1); }
-.chart-modal__summary {
+.chart-card__summary {
   padding-top: var(--space-4);
   border-top: 1px solid var(--line);
 }
-.chart-modal__summary-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-2); }
-.chart-modal__summary-head h3 { font-size: 0.92rem; font-weight: 700; }
-.chart-modal__summary p { font-size: 0.9rem; line-height: 1.55; color: var(--ink); margin-bottom: var(--space-3); }
+.chart-card__summary-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-2); }
+.chart-card__summary-head h3 { font-size: 0.92rem; font-weight: 700; }
+.chart-card__summary p { font-size: 0.9rem; line-height: 1.55; color: var(--ink); margin-bottom: var(--space-3); }
 @media (max-width: 30rem) {
-  .chart-modal { padding: var(--space-3); }
-  .chart-modal__panel { padding: var(--space-4); max-height: 90vh; }
-  .chart-modal__tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .chart-card__tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 .event-row { display: flex; flex-direction: column; gap: var(--space-2); }
@@ -1987,11 +1930,6 @@ code {
 }
 
 /* -- Maskottchen ---------------------------------------------------------- */
-/* Blendet das Maskottchen komplett aus, solange ein Modal offen ist
-   (2026-08-14, Performance-Übersicht-Overlay) — die vorhandene Kollisions-/
-   Kollaps-Logik kennt gezielt nur .feed/.chart-card, kein generisches
-   "irgendein Overlay ist gerade offen". */
-#mascot-root.is-modal-hidden { display: none; }
 .mascot {
   position: fixed;
   /* Mehr Abstand zum Bildschirmrand (Brief 2026-08-07) — wirkte vorher
