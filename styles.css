@@ -1485,6 +1485,12 @@ mark {
   text-decoration: none;
   transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
 }
+/* Vorsorglich gegen den [hidden]-Cascade-Fallstrick (zweimal gefunden am
+   2026-08-14, siehe DESIGN.md): jede Author-Regel mit display:flex/grid/…
+   überschreibt sonst die Browser-Standardregel [hidden]{display:none},
+   unabhängig von Spezifität. .btn setzt display:inline-flex — ohne diese
+   Zeile bliebe ein per hidden-Attribut versteckter Button sichtbar. */
+.btn[hidden] { display: none; }
 .btn svg { width: 17px; height: 17px; }
 .btn--primary { background: var(--accent); color: var(--on-accent); box-shadow: var(--shadow); }
 .btn--primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-hover); }
@@ -1646,6 +1652,8 @@ code {
   resize: vertical;
 }
 .mailgen__actions { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.mailgen__gmail-send { display: flex; flex-direction: column; gap: var(--space-2); }
+.mailgen__gmail-send-row { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; transform: none; }
 /* .btn kann auch ein <a> sein ("E-Mail senden" braucht einen echten Link
    für mailto:, kein <button>) — <a> kennt kein natives disabled, daher

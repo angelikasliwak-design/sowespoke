@@ -795,6 +795,14 @@
           <button class="btn btn--secondary" data-copy="${topicKey}" type="button">${ICONS.copy} In Zwischenablage kopieren</button>
           <span class="mailgen__status" id="status-${topicKey}">${ICONS.check} Kopiert</span>
         </div>
+        <div class="mailgen__gmail-send">
+          <p class="mailgen__hint">Direkter Versand über die Gmail-API — verschickt sofort im Hintergrund, ohne Gmail-Compose-Fenster zum letzten Check. Vorschau oben vorher genau prüfen.</p>
+          <div class="mailgen__gmail-send-row">
+            <button type="button" class="btn btn--secondary" data-gmail-connect hidden>${ICONS.mail} Mit Gmail verbinden</button>
+            <button type="button" class="btn btn--primary" data-gmail-send-btn hidden disabled>${ICONS.mail} Jetzt per Gmail senden</button>
+            <span class="mailgen__signature-status" data-gmail-status></span>
+          </div>
+        </div>
         <details class="mailgen__hint-toggle">
           <summary aria-label="Hinweis zum Versand anzeigen">${ICONS.info}</summary>
           <p class="mailgen__hint">„In Gmail öffnen" öffnet ein neues Gmail-Compose-Fenster mit fertig ausgefüllter Nachricht — du prüfst und schickst sie von dort aus ab, sie landet danach ganz normal in deinem Gesendet-Ordner. Bei sehr langem Text lieber „In Zwischenablage kopieren" nutzen.</p>
@@ -826,6 +834,13 @@
     const recipLoadBtn = recipientsEl.querySelector("[data-recip-load]");
     const recipSaveStatusEl = recipientsEl.querySelector("[data-recip-save-status]");
     let activeRecipRowId = recipRowsEl.querySelector("[data-recip-row]").dataset.recipRow;
+    // Nur ein .mailgen-Block pro Seite (siehe Aufrufstellen von wireMailGen)
+    // — view.querySelector() ist hier eindeutig, kein Scoping-Risiko.
+    const gmailConnectBtn = view.querySelector("[data-gmail-connect]");
+    const gmailSendBtn = view.querySelector("[data-gmail-send-btn]");
+    const gmailStatusEl = view.querySelector("[data-gmail-status]");
+    let gmailConnected = false;
+    let lastToAddr = null;
 
     // Empfänger-Liste dauerhaft UND geräteübergreifend speichern (2026-08-14,
     // Nutzer-Wunsch: "einmal hochladen, bleibt für immer, pro Person
@@ -1101,8 +1116,11 @@
     // gerade AKTIVE Zeile (die zuletzt fokussierte) — für jede weitere
     // Person wird die jeweilige Zeile fokussiert und der Button erneut
     // geklickt, exakt wie man zuvor auch einmalig geklickt hat.
-    function fill() {
-      const mode = (modeEls.find((r) => r.checked) || {}).value || "single";
+    // Aus fill() herausgezogen (2026-08-14, Phase B: Gmail-API-Direktversand)
+    // — der "Alle jetzt per Gmail senden"-Lauf im Modus "einzeln" braucht
+    // dieselbe Platzhalter-Ersetzung und Betreff/Text-Zusammensetzung pro
+    // Empfänger:in, nicht nur für die gerade aktive Vorschau-Zeile.
+    function getFilledTemplate() {
       let content = contentIhr;
       let subjectFilled = subjectBase;
       const missing = [];
@@ -1116,6 +1134,18 @@
         // Konten ohne Änderungen" (subject enthält {Quartal}).
         subjectFilled = subjectFilled.replaceAll(`{${f.key}}`, val || `{${f.key}}`);
       });
+      return { content, subjectFilled, missing };
+    }
+    function composeForName(content, subjectFilled, mode, name) {
+      const { subject, body: bodyBase } = composeMail(subjectFilled, content, extra, mode, name);
+      const signature = sigEl.value.trim();
+      const body = signature ? `${bodyBase}\n\n--\n${signature}` : bodyBase;
+      return { subject, body };
+    }
+
+    function fill() {
+      const mode = (modeEls.find((r) => r.checked) || {}).value || "single";
+      const { content, subjectFilled, missing } = getFilledTemplate();
 
       if (missing.length) {
         warningEl.querySelector("strong").textContent = missing.join(", ");
@@ -1154,11 +1184,10 @@
         ready = recipientsValid && !missing.length;
       }
 
-      const { subject, body: bodyBase } = composeMail(subjectFilled, content, extra, mode === "einzeln" ? "single" : mode, previewName);
-      const signature = sigEl.value.trim();
-      const body = signature ? `${bodyBase}\n\n--\n${signature}` : bodyBase;
+      const { subject, body } = composeForName(content, subjectFilled, mode === "einzeln" ? "single" : mode, previewName);
       subjectEl.value = subject;
       bodyEl.value = body;
+      lastToAddr = toAddrForSend;
 
       sendBtn.classList.toggle("is-disabled", !ready);
       sendBtn.setAttribute("aria-disabled", String(!ready));
@@ -1172,6 +1201,9 @@
       sendBtn.href = ready
         ? `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(toAddrForSend)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
         : "#";
+
+      updateGmailSendLabel(mode);
+      gmailSendBtn.disabled = !ready;
     }
     nameEl.addEventListener("input", fill);
     toEl.addEventListener("input", fill);
@@ -1179,6 +1211,127 @@
     extraInputs.forEach((el) => el.addEventListener("input", fill));
     updateModeVisibility();
     updateRecipHighlight();
+
+    // Phase B (2026-08-14): echter Versand über die Gmail-API, zusätzlich
+    // zum bestehenden "In Gmail öffnen"/"Kopieren" (die bleiben unverändert
+    // als manueller Weg bestehen). Erfordert einen einmaligen, separaten
+    // Zustimmungs-Flow für den gmail.send-Scope (functions/api/auth/gmail/
+    // start.js+callback.js) — bewusst NICHT Teil des normalen Logins, damit
+    // niemand ungefragt den erweiterten Scope bekommt. Läuft in einem Popup
+    // statt per Redirect, weil diese App eine Hash-Router-SPA ist — ein
+    // vollständiger Redirect zurück würde den aktuellen Hash-Pfad verlieren.
+    function updateGmailSendLabel(mode) {
+      gmailSendBtn.innerHTML = mode === "einzeln"
+        ? `${ICONS.mail} Alle jetzt per Gmail senden`
+        : `${ICONS.mail} Jetzt per Gmail senden`;
+    }
+    function updateGmailUi() {
+      gmailConnectBtn.hidden = gmailConnected;
+      gmailSendBtn.hidden = !gmailConnected;
+    }
+    (async () => {
+      try {
+        const res = await fetch("/api/gmail/status");
+        const data = await res.json();
+        gmailConnected = !!data.connected;
+      } catch {
+        gmailConnected = false;
+      }
+      updateGmailUi();
+    })();
+    gmailConnectBtn.addEventListener("click", () => {
+      gmailStatusEl.textContent = "Verbindung wird geöffnet …";
+      const popup = window.open("/api/auth/gmail/start", "sowespoke-gmail-connect", "width=480,height=640");
+      if (!popup) {
+        gmailStatusEl.textContent = "Popup wurde blockiert — bitte Popups für diese Seite erlauben";
+        return;
+      }
+      function onMessage(e) {
+        if (e.origin !== location.origin || e.data?.source !== "sowespoke-gmail-connect") return;
+        cleanup();
+        if (e.data.ok) {
+          gmailConnected = true;
+          updateGmailUi();
+          gmailStatusEl.textContent = "✓ Mit Gmail verbunden";
+        } else {
+          gmailStatusEl.textContent = "Verbindung fehlgeschlagen — bitte erneut versuchen";
+        }
+      }
+      // Falls das Popup ohne Rückmeldung geschlossen wird (Nutzer bricht ab,
+      // o. Ä.) — sonst bliebe "Verbindung wird geöffnet …" für immer stehen.
+      const pollClosed = setInterval(() => {
+        if (popup.closed) cleanup();
+      }, 500);
+      function cleanup() {
+        window.removeEventListener("message", onMessage);
+        clearInterval(pollClosed);
+      }
+      window.addEventListener("message", onMessage);
+    });
+    async function sendOne(to, subject, body) {
+      try {
+        const res = await fetch("/api/gmail/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ to, subject, body }),
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          if (data.error === "not_connected") {
+            gmailConnected = false;
+            updateGmailUi();
+          }
+          return false;
+        }
+        return true;
+      } catch {
+        return false;
+      }
+    }
+    async function sendAllRows() {
+      const { content, subjectFilled, missing } = getFilledTemplate();
+      if (missing.length) {
+        gmailStatusEl.textContent = `Erst ausfüllen: ${missing.join(", ")}`;
+        return;
+      }
+      const rows = getRecipRows()
+        .map((row) => ({
+          name: row.querySelector("[data-recip-name]").value.trim(),
+          email: row.querySelector("[data-recip-email]").value.trim(),
+        }))
+        .filter((r) => EMAIL_RE.test(r.email));
+      if (!rows.length) {
+        gmailStatusEl.textContent = "Keine gültigen Empfänger:innen in der Liste";
+        return;
+      }
+      let sent = 0;
+      const failed = [];
+      for (const r of rows) {
+        gmailStatusEl.textContent = `Sende … (${sent + failed.length + 1}/${rows.length})`;
+        const { subject, body } = composeForName(content, subjectFilled, "single", r.name);
+        const ok = await sendOne(r.email, subject, body);
+        if (ok) sent++;
+        else failed.push(r);
+      }
+      gmailStatusEl.textContent = failed.length
+        ? `✓ ${sent} gesendet · ${failed.length} fehlgeschlagen (${failed.map((f) => f.email || f.name).join(", ")})`
+        : `✓ ${sent} E-Mail(s) gesendet`;
+    }
+    gmailSendBtn.addEventListener("click", async () => {
+      if (gmailSendBtn.disabled) return;
+      const mode = (modeEls.find((r) => r.checked) || {}).value || "single";
+      gmailSendBtn.disabled = true;
+      if (mode === "einzeln") {
+        await sendAllRows();
+      } else if (lastToAddr) {
+        gmailStatusEl.textContent = "Sende …";
+        const ok = await sendOne(lastToAddr, subjectEl.value, bodyEl.value);
+        gmailStatusEl.textContent = ok ? "✓ Gesendet" : "Versand fehlgeschlagen";
+      }
+      gmailSendBtn.disabled = false;
+      fill();
+    });
+
     fill();
 
     const statusEl = document.getElementById(`status-${topicKey}`);

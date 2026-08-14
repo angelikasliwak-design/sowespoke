@@ -69,6 +69,12 @@ const mockIdeas = [
 // RECIPIENT_LISTS-KV-Namespace, geht beim Server-Neustart verloren.
 let mockRecipients = [];
 
+// Mock für den Gmail-Direktversand (functions/api/gmail/status.js+send.js,
+// Phase B) — standardmäßig "verbunden", damit sich der "Jetzt per Gmail
+// senden"-Pfad lokal ohne echtes OAuth durchklicken lässt. POST tut so, als
+// wäre der Versand erfolgreich, verschickt aber natürlich nichts wirklich.
+let mockGmailConnected = true;
+
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let data = "";
@@ -161,6 +167,40 @@ const server = http.createServer(async (req, res) => {
       .filter((r) => r.name || r.email);
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ ok: true, items: mockRecipients }));
+    return;
+  }
+  if (urlPath === "/api/gmail/status" && req.method === "GET") {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ connected: mockGmailConnected }));
+    return;
+  }
+  if (urlPath === "/api/gmail/status" && req.method === "DELETE") {
+    mockGmailConnected = false;
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ ok: true }));
+    return;
+  }
+  if (urlPath === "/api/gmail/send" && req.method === "POST") {
+    let body;
+    try {
+      body = JSON.parse(await readBody(req));
+    } catch {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Ungültiger Request-Body" }));
+      return;
+    }
+    if (!mockGmailConnected) {
+      res.writeHead(409, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "not_connected" }));
+      return;
+    }
+    if (!body?.to || !body?.subject || !body?.body) {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Ungültige Anfrage" }));
+      return;
+    }
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ ok: true, id: `mock-${Date.now()}` }));
     return;
   }
 
