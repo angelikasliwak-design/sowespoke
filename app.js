@@ -749,10 +749,12 @@
           </div>
           <div class="mailgen__recipients-listactions">
             <button type="button" class="btn btn--secondary mailgen__recipients-add" data-recip-add>+ Empfänger:in hinzufügen</button>
+            <button type="button" class="btn btn--secondary" data-recip-csv-btn>CSV hochladen</button>
+            <input type="file" accept=".csv,text/csv" data-recip-csv-input hidden />
             <button type="button" class="btn btn--secondary" data-recip-load>Gespeicherte Liste laden</button>
             <span class="mailgen__signature-status" data-recip-save-status></span>
           </div>
-          <p class="mailgen__hint">Die Liste wird beim Tippen automatisch gespeichert — an dein Konto gebunden, für alle Vorlagen und auf jedem Gerät wiederverwendbar.</p>
+          <p class="mailgen__hint">Die Liste wird beim Tippen automatisch gespeichert — an dein Konto gebunden, für alle Vorlagen und auf jedem Gerät wiederverwendbar. CSV-Datei: eine Zeile pro Person, Spalten „Name" (optional) und „E-Mail" — mit oder ohne Kopfzeile, Komma oder Semikolon als Trennzeichen.</p>
           <p class="mailgen__warning" data-recip-warning hidden>${ICONS.flash}<span>Eine oder mehrere Zeilen haben keine gültige E-Mail-Adresse — diese Empfänger:innen bekommen keine Mail.</span></p>
           <p class="mailgen__hint mailgen__recipients-preview-label" data-recip-preview-label></p>
         </div>
@@ -817,6 +819,8 @@
     const recipientsEl = document.getElementById(`recipients-${topicKey}`);
     const recipRowsEl = recipientsEl.querySelector("[data-recip-rows]");
     const recipAddBtn = recipientsEl.querySelector("[data-recip-add]");
+    const recipCsvBtn = recipientsEl.querySelector("[data-recip-csv-btn]");
+    const recipCsvInput = recipientsEl.querySelector("[data-recip-csv-input]");
     const recipPreviewLabel = recipientsEl.querySelector("[data-recip-preview-label]");
     const recipWarningEl = recipientsEl.querySelector("[data-recip-warning]");
     const recipLoadBtn = recipientsEl.querySelector("[data-recip-load]");
@@ -946,6 +950,57 @@
 
     const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    // CSV-Import für die Empfänger-Liste (2026-08-14, Nutzer-Wunsch): bewusst
+    // ein eigener, kleiner Parser statt einer Library — Trennzeichen wird aus
+    // der ersten Zeile geraten (Semikolon vs. Komma, je nachdem was häufiger
+    // vorkommt, deckt deutsche Excel-Exporte ab), Kopfzeile wird erkannt,
+    // indem geprüft wird, ob überhaupt eine Zelle wie eine E-Mail aussieht.
+    function parseCsvLine(line, delimiter) {
+      const cells = [];
+      let cur = "";
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (inQuotes) {
+          if (ch === '"') {
+            if (line[i + 1] === '"') { cur += '"'; i++; }
+            else inQuotes = false;
+          } else cur += ch;
+        } else if (ch === '"') {
+          inQuotes = true;
+        } else if (ch === delimiter) {
+          cells.push(cur);
+          cur = "";
+        } else {
+          cur += ch;
+        }
+      }
+      cells.push(cur);
+      return cells.map((c) => c.trim());
+    }
+    function parseCsvRecipients(text) {
+      const lines = text.split(/\r\n|\r|\n/).map((l) => l.trim()).filter(Boolean);
+      if (!lines.length) return { rows: [], skipped: 0 };
+      const delimiter = (lines[0].match(/;/g) || []).length > (lines[0].match(/,/g) || []).length ? ";" : ",";
+      const firstCells = parseCsvLine(lines[0], delimiter);
+      const dataLines = firstCells.some((c) => EMAIL_RE.test(c)) ? lines : lines.slice(1);
+      const rows = [];
+      let skipped = 0;
+      for (const line of dataLines) {
+        const cells = parseCsvLine(line, delimiter).filter((c) => c !== "");
+        if (!cells.length) continue;
+        const emailIdx = cells.findIndex((c) => EMAIL_RE.test(c));
+        if (emailIdx === -1) {
+          skipped++;
+          continue;
+        }
+        const email = cells[emailIdx];
+        const name = cells.find((c, i) => i !== emailIdx) || "";
+        rows.push({ name, email });
+      }
+      return { rows, skipped };
+    }
+
     function getRecipRows() {
       return Array.from(recipRowsEl.querySelectorAll("[data-recip-row]"));
     }
@@ -995,6 +1050,48 @@
     recipAddBtn.addEventListener("click", () => {
       recipRowsEl.insertAdjacentHTML("beforeend", recipientRowHtml(topicKey, crypto.randomUUID()));
       fill();
+    });
+
+    const RECIP_MAX_ROWS = 200; // gleiche Grenze wie die serverseitige Validierung, functions/api/recipients.js
+    recipCsvBtn.addEventListener("click", () => recipCsvInput.click());
+    recipCsvInput.addEventListener("change", async () => {
+      const file = recipCsvInput.files[0];
+      recipCsvInput.value = ""; // erlaubt erneutes Auswählen derselben Datei
+      if (!file) return;
+      const text = await file.text();
+      const { rows: parsed, skipped } = parseCsvRecipients(text);
+      if (!parsed.length) {
+        recipSaveStatusEl.textContent = "Keine gültigen E-Mail-Adressen in der Datei gefunden";
+        return;
+      }
+      const existing = getRecipRows()
+        .map((row) => ({
+          name: row.querySelector("[data-recip-name]").value.trim(),
+          email: row.querySelector("[data-recip-email]").value.trim(),
+        }))
+        .filter((r) => r.name || r.email);
+      const seen = new Set(existing.map((r) => r.email.toLowerCase()).filter(Boolean));
+      const added = [];
+      for (const r of parsed) {
+        const key = r.email.toLowerCase();
+        if (!key || seen.has(key)) continue;
+        seen.add(key);
+        added.push(r);
+      }
+      const combined = [...existing, ...added].slice(0, RECIP_MAX_ROWS);
+      const truncated = existing.length + added.length > RECIP_MAX_ROWS;
+      recipRowsEl.innerHTML = combined.map((r) => recipientRowHtml(topicKey, crypto.randomUUID(), r)).join("");
+      activeRecipRowId = getRecipRows()[0].dataset.recipRow;
+      updateRecipHighlight();
+      fill();
+      recipSaveStatusEl.textContent = "Speichert …";
+      await saveRecipientsToServer();
+      const dupSkipped = parsed.length - added.length;
+      const parts = [`✓ ${added.length} aus CSV importiert`];
+      if (skipped) parts.push(`${skipped} Zeile(n) ohne gültige E-Mail übersprungen`);
+      if (dupSkipped) parts.push(`${dupSkipped} bereits vorhanden`);
+      if (truncated) parts.push(`Liste auf ${RECIP_MAX_ROWS} gekürzt`);
+      recipSaveStatusEl.textContent = parts.join(" · ");
     });
 
     // Modus "einzeln": jede Zeile bekommt beim Versand ihren eigenen
