@@ -1509,6 +1509,17 @@ mark {
 .mailgen > *:not(.mailgen__illustration) { position: relative; }
 .mailgen h2 { font-size: 1rem; font-weight: 700; }
 .mailgen__field { display: flex; flex-direction: column; gap: var(--space-2); }
+/* Bug-Fund (2026-08-14, Nutzer-Screenshot): ".mailgen__field { display:flex }"
+   überschrieb IMMER die Browser-Standardregel "[hidden]{display:none}",
+   unabhängig von Spezifität — Autor-Regeln schlagen User-Agent-Regeln in
+   der Cascade, komplett unabhängig vom Selektor-Gewicht. Betraf
+   .mailgen__recipients (trägt beide Klassen): JS setzte .hidden korrekt
+   auf true beim Zurückwechseln auf "Eine Person"/"Mehrere Personen (ihr)",
+   das Element blieb aber sichtbar. Exakt derselbe Fallstrick wie schon bei
+   .chart-modal am selben Tag (siehe dortiger Kommentar) — hier zusätzlich
+   dokumentiert, weil er offenbar leicht wiederkehrt, sobald eine Klasse
+   mit display:flex/grid auf ein potenziell verstecktes Element trifft. */
+.mailgen__field[hidden] { display: none; }
 .mailgen__field label { font-weight: 600; font-size: 0.88rem; }
 .mailgen__radiogroup-label { font-weight: 600; font-size: 0.88rem; }
 .mailgen__radiogroup {
@@ -1558,6 +1569,7 @@ code {
    ".mailgen__field input" oben (Nachfahren-Selektor greift auch hier, kein
    eigenes Redeklarieren von Rahmen/Hintergrund/Schrift nötig). */
 .mailgen__single-fields { display: flex; flex-direction: column; gap: var(--space-4); }
+.mailgen__single-fields[hidden] { display: none; } /* gleicher Fallstrick wie .mailgen__field[hidden] oben */
 .mailgen__recipient-rows { display: flex; flex-direction: column; gap: var(--space-2); }
 .mailgen__recipient-row {
   display: grid;

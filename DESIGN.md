@@ -577,6 +577,12 @@ Nutzer-Feedback: die gedämpfte Gold-Variante (`--yellow-text`) wirkte an der St
 - **Lokal vollständig testbar:** `tools/local-preview-server.mjs` bekam einen In-Memory-Mock für `/api/recipients` (gleiches Muster wie `mockIdeas`) — kein Deploy nötig, um Speichern/Laden/Status zu prüfen.
 - **Verifiziert:** `node --check` auf allen geänderten/neuen JS-Dateien, CSS-Klammerbalance, mechanischer Detektor (0 Funde). Live-Screenshots Desktop 1440px (Zeilen hinzufügen, aktive Zeile per Fokuswechsel bestätigt — Vorschau wechselte korrekt von "Frau Meyer" zu "Herr Schmidt", Speichern-Laden-Rundlauf per `fetch` gegengeprüft, Warnbanner bei ungültiger E-Mail, Entfernen bis auf eine Zeile blockiert das letzte Entfernen) + Mobile 390px (Zeilen stapeln sich einspaltig, Entfernen-Button rechtsbündig).
 
+### Mail-Generator: `[hidden]`-Bug beim Moduswechsel (2026-08-14, Nutzer-Screenshot)
+- **Fund:** Nutzer schickte zwei annotierte Screenshots — beim Zurückwechseln von "Mehrere Personen, einzeln personalisiert" auf "Eine Person (du)" blieb die Empfänger-Liste sichtbar, obwohl gleichzeitig auch die Einzelfelder ("E-Mail-Adresse(n) der Kundschaft"/"Name der Ansprechperson") zu sehen waren — beide Zustände gleichzeitig, statt sich gegenseitig auszuschließen.
+- **Root Cause, per Playwright verifiziert statt geraten:** `.hidden`-Property in JS stand korrekt auf `true`, das Element war aber trotzdem sichtbar (`getComputedStyle(...).display` blieb `"flex"`). Exakt derselbe Fallstrick wie beim `.chart-modal`-Bug vom selben Tag: `.mailgen__field { display: flex; … }` (bzw. `.mailgen__single-fields` mit eigenem `display: flex`) überschreibt als Autor-Regel IMMER die Browser-Standardregel `[hidden]{display:none}`, unabhängig von Selektor-Spezifität — Cascade-Origin (User-Agent < Author) schlägt Spezifität. Zweite Instanz desselben Musters am selben Tag — beim nächsten `display:flex/grid` auf einem potenziell versteckten Element vorsorglich gleich mitdenken.
+- **Fix:** `.mailgen__field[hidden] { display: none; }` und `.mailgen__single-fields[hidden] { display: none; }` ergänzt.
+- **Verifiziert:** alle drei Anrede-Modi durchgeklickt (`du`→`einzeln`→`ihr`→zurück), `getComputedStyle(...).display` für beide Container bei jedem Modus geprüft — genau ein Container sichtbar, nie beide gleichzeitig. CSS-Klammerbalance, mechanischer Detektor (0 Funde).
+
 ## Do's and Don'ts
 
 ### Do:
