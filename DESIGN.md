@@ -607,6 +607,12 @@ Nutzer-Feedback: die gedämpfte Gold-Variante (`--yellow-text`) wirkte an der St
 - **Umsetzung:** `.flash` (bestehende Comic-Sticker-Komponente, schon für "Beispieldaten" auf der Tickets-Seite verwendet) wiederverwendet statt eines neuen Badge-Stils — "Im Aufbau" steht jetzt direkt im Hinweistext über dem Gmail-Direktversand-Block, gilt für alle Vorlagen gleichermaßen. Hinweistext selbst ergänzt: "Die Verbindung zur Gmail-API wird gerade eingerichtet — kann daher noch nicht bei jeder Person zuverlässig funktionieren."
 - **Verifiziert:** `node --check`, mechanischer Detektor (0 Funde), Screenshots Desktop 1440px + Mobile 390px.
 
+### Nutzungsübersicht `#/nutzer` (2026-08-14)
+- **Nutzer-Kontext:** Frage, ob der Login "mit Google-Konto statt nur Domain" umgebaut werden könne, damit Nutzung sichtbar wird — geklärt, dass der Login schon echtes Google-OAuth ist, die eigentliche Lücke war fehlende Sichtbarkeit, wer sich einloggt. Zusätzlich eingeordnet: der bevorstehende Wechsel von Google Workspace zu Microsoft (in 1–2 Monaten) bedeutet, dass der gesamte Gmail-API-Direktversand (Phasen A–C) beim Anbieterwechsel komplett neu gebaut werden müsste — bewusste Empfehlung, jetzt nur das günstige, anbieter-unabhängige Login-Log zu bauen statt weiterer Google-spezifischer Investition.
+- **Sechster `[hidden]`-Fund am selben Tag, präventiv behoben:** `.rail__nav a` setzt `display:flex` — der neue, nur für Admins per JS eingeblendete Nav-Link hätte denselben Cascade-Fallstrick reproduziert wie `.mailgen__field`/`.mailgen__single-fields`/`.btn`/`.mailgen__gmail-send-row` zuvor am selben Tag. `.rail__nav a[hidden] { display: none; }` vor dem ersten Einsatz ergänzt.
+- **Zeilenmuster wiederverwendet:** `#/nutzer` nutzt wie `#/serienmails` das bestehende `.ticket-row`/`.ticket-list`-Muster — keine neue Listenform für eine dritte, ähnlich geformte Datentabelle.
+- **Verifiziert:** `node --check`, mechanischer Detektor (0 Funde), lokaler Vorschau-Server (Mock-Endpunkt mit zwei Beispiel-Personen) — Admin-Ansicht (Liste korrekt sortiert/formatiert) und 403-Zustand ("Keine Berechtigung", per Fetch-Override simuliert, da der lokale Mock immer `isAdmin:true` liefert) beide geprüft. Screenshots Desktop 1440px + Mobile 390px.
+
 ## Do's and Don'ts
 
 ### Do:

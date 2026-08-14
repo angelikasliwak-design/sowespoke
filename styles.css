@@ -221,6 +221,12 @@ mark {
 .rail__nav-icon { flex: none; display: flex; }
 .rail__nav-icon svg { width: 20px; height: 20px; }
 .rail__nav-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Admin-only Nav-Link (2026-08-14, Nutzungsübersicht) wird per hidden-
+   Attribut ein-/ausgeblendet — .rail__nav a setzt display:flex, ohne diese
+   Zeile bliebe er trotz hidden sichtbar (gleicher Cascade-Fallstrick wie
+   mehrfach am selben Tag bei .mailgen__field/.btn/.mailgen__gmail-send-row
+   dokumentiert, hier präventiv vor dem ersten Einsatz behoben). */
+.rail__nav a[hidden] { display: none; }
 .rail__nav a:hover { background: var(--paper); color: var(--ink); }
 .rail__nav a[aria-current="page"] { background: var(--accent-tint); color: var(--accent); padding-left: calc(var(--space-3) + 6px); }
 .rail__nav a[aria-current="page"]::before {

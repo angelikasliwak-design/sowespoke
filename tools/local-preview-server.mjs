@@ -112,6 +112,16 @@ const server = http.createServer(async (req, res) => {
     res.end(JSON.stringify({ email: "test@sowespoke.com", isAdmin }));
     return;
   }
+  if (urlPath === "/api/admin/login-log" && req.method === "GET") {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({
+      items: [
+        { email: "test@sowespoke.com", firstLoginAt: new Date(Date.now() - 20 * 86400000).toISOString(), lastLoginAt: new Date(Date.now() - 3600000).toISOString(), loginCount: 4 },
+        { email: "elina@sowespoke.com", firstLoginAt: new Date(Date.now() - 5 * 86400000).toISOString(), lastLoginAt: new Date(Date.now() - 86400000).toISOString(), loginCount: 1 },
+      ],
+    }));
+    return;
+  }
   if (urlPath === "/api/ideas" && req.method === "GET") {
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ items: [...mockIdeas].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) }));

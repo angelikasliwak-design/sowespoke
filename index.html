@@ -30,6 +30,11 @@
       <a href="#/anfragen" data-nav="anfragen" aria-label="Anfragen an Microsoft" title="Anfragen an Microsoft"><span class="rail__nav-icon"></span><span class="rail__nav-label">Anfragen</span></a>
       <a href="#/ideen" data-nav="ideen" aria-label="Ideen &amp; Vorschläge" title="Ideen &amp; Vorschläge"><span class="rail__nav-icon"></span><span class="rail__nav-label">Ideen</span></a>
       <a href="#/serienmails" data-nav="serienmails" aria-label="Geplante Serienmails" title="Geplante Serienmails"><span class="rail__nav-icon"></span><span class="rail__nav-label">Serienmails</span></a>
+      <!-- Nur für Admins (2026-08-14) — per JS eingeblendet, siehe app.js
+           (rail-profile-IIFE prüft isAdmin über /api/auth/me). Standardmäßig
+           versteckt, damit nicht jedes Teammitglied einen Link auf eine
+           403-Seite sieht. -->
+      <a href="#/nutzer" data-nav="nutzer" aria-label="Nutzungsübersicht (nur Admins)" title="Nutzungsübersicht (nur Admins)" hidden><span class="rail__nav-icon"></span><span class="rail__nav-label">Nutzung</span></a>
     </nav>
     <div class="rail__profile" id="rail-profile"></div>
   </aside>

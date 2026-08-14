@@ -65,6 +65,28 @@ export async function onRequestGet(context) {
   const email = String(info.email || "").toLowerCase();
   if (!isAllowedEmail(email)) return toLogin(origin, "domain");
 
+  // Login-Log (2026-08-14, Nutzer-Wunsch: sehen, wer die Seite nutzt) — ein
+  // Eintrag PRO PERSON statt eines endlos wachsenden Rohlogs, siehe
+  // functions/api/admin/login-log.js. Läuft nur beim tatsächlichen
+  // OAuth-Roundtrip (Erst-Login bzw. nach Ablauf der 14-Tage-Session), nicht
+  // bei jedem Seitenaufruf — "zuletzt eingeloggt" heißt also "zuletzt neu
+  // authentifiziert", nicht "zuletzt aktiv geklickt". Graceful: ohne
+  // LOGIN_LOG-Bindung läuft der Login normal weiter, nur ohne Protokoll.
+  if (env.LOGIN_LOG) {
+    const key = `user:${email}`;
+    const existing = await env.LOGIN_LOG.get(key, "json");
+    const now = new Date().toISOString();
+    await env.LOGIN_LOG.put(
+      key,
+      JSON.stringify({
+        email,
+        firstLoginAt: existing?.firstLoginAt || now,
+        lastLoginAt: now,
+        loginCount: (existing?.loginCount || 0) + 1,
+      })
+    );
+  }
+
   const token = await createSessionToken(email, env.SESSION_SECRET);
   const headers = new Headers({ Location: new URL(next, origin).toString() });
   headers.append("Set-Cookie", sessionCookie(token));

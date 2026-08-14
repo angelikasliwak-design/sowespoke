@@ -24,7 +24,7 @@
     Allgemein: "--turquoise",
   };
 
-  const NAV_ICON = { news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", "microsoft-learn": "sparkle", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass" };
+  const NAV_ICON = { news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", "microsoft-learn": "sparkle", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass", nutzer: "gauge" };
   railLinks.forEach((a) => {
     const iconSlot = a.querySelector(".rail__nav-icon");
     if (iconSlot) iconSlot.innerHTML = ICONS[NAV_ICON[a.dataset.nav]];
@@ -3078,6 +3078,77 @@
     loadScheduleList();
   }
 
+  /* --------------------------------------------------- Seite: Nutzungsübersicht */
+  /* Nur für Admins (2026-08-14, Nutzer-Wunsch: "sehen wer das nutzt") —
+     Server prüft isAdminEmail (functions/api/admin/login-log.js), Frontend
+     blendet den Nav-Link zusätzlich nur für Admins ein (siehe IIFE ganz
+     unten), reine UX-Höflichkeit, keine echte Zugriffsschranke. Direkter
+     URL-Aufruf durch Nicht-Admins zeigt serverseitig korrekt "Keine
+     Berechtigung" statt Daten preiszugeben. */
+
+  function loginRowHtml(u) {
+    return `
+      <li class="ticket-row">
+        <span class="ticket-row__body">
+          <span class="ticket-row__top">
+            <span class="ticket-row__who"><strong>${escapeHtml(u.email)}</strong></span>
+            <span class="ticket-row__created">Zuletzt: ${formatDateTime(u.lastLoginAt)}</span>
+          </span>
+          <span class="ticket-row__meta">
+            <span class="ticket-row__meta-item"><span class="ticket-row__meta-label">Logins</span>${u.loginCount || 1}</span>
+            <span class="ticket-row__meta-item"><span class="ticket-row__meta-label">Erster Login</span>${formatDate(u.firstLoginAt)}</span>
+          </span>
+        </span>
+      </li>`;
+  }
+
+  function renderLoginLog() {
+    view.innerHTML = `
+      <section class="hero hero--compact">
+        <div class="hero__intro">
+          <h1>Wer <mark>nutzt</mark> Sowespoke?</h1>
+          <p>Nur für Admins sichtbar. "Zuletzt" zeigt den letzten echten Login (Session hält 14 Tage), nicht jeden einzelnen Seitenaufruf.</p>
+        </div>
+        <div class="hero__illustration"><img src="assets/brand/hero-rakete.png" alt="" /></div>
+      </section>
+      <div class="feed">
+        <h2 class="feed__title">Eingeloggte Personen<span class="feed__title__count" id="login-log-count"></span></h2>
+        <div id="login-log-list" aria-live="polite"><p class="idea-list__status">Lädt …</p></div>
+      </div>
+    `;
+    wireLoginLog();
+  }
+
+  function wireLoginLog() {
+    const list = document.getElementById("login-log-list");
+    const count = document.getElementById("login-log-count");
+    if (!list) return;
+    (async () => {
+      try {
+        const res = await fetch("/api/admin/login-log");
+        const data = await res.json();
+        if (res.status === 403) {
+          list.innerHTML = `<div class="empty-state">${ICONS.xCircle}<strong>Keine Berechtigung</strong><p>Diese Übersicht ist nur für Admins sichtbar.</p></div>`;
+          return;
+        }
+        const items = data.items || [];
+        if (!res.ok) {
+          list.innerHTML = `<p class="idea-list__status">${escapeHtml(data.error || "Konnte nicht geladen werden")}</p>`;
+          return;
+        }
+        if (!items.length) {
+          list.innerHTML = `<div class="empty-state">${ICONS.gauge}<strong>Noch keine Logins protokolliert</strong><p>Sobald sich jemand einloggt, erscheint die Person hier.</p></div>`;
+          if (count) count.textContent = "";
+          return;
+        }
+        list.innerHTML = `<ul class="ticket-list">${items.map(loginRowHtml).join("")}</ul>`;
+        if (count) count.textContent = `${items.length} ${items.length === 1 ? "Person" : "Personen"}`;
+      } catch {
+        list.innerHTML = `<p class="idea-list__status">Konnte nicht geladen werden — später erneut versuchen.</p>`;
+      }
+    })();
+  }
+
   /* ------------------------------------------------------- Zuletzt angesehen */
 
   const RECENT_KEY = "sowespoke-recent";
@@ -3148,7 +3219,8 @@
         (a.dataset.nav === "microsoft-learn" && path.startsWith("/microsoft-learn")) ||
         (a.dataset.nav === "anfragen" && path.startsWith("/anfragen")) ||
         (a.dataset.nav === "ideen" && path.startsWith("/ideen")) ||
-        (a.dataset.nav === "serienmails" && path.startsWith("/serienmails"));
+        (a.dataset.nav === "serienmails" && path.startsWith("/serienmails")) ||
+        (a.dataset.nav === "nutzer" && path.startsWith("/nutzer"));
       if (active) a.setAttribute("aria-current", "page");
       else a.removeAttribute("aria-current");
     });
@@ -3195,6 +3267,8 @@
       renderIdeas();
     } else if (path === "/serienmails") {
       renderScheduledMails();
+    } else if (path === "/nutzer") {
+      renderLoginLog();
     } else {
       renderNotFound(path);
     }
@@ -3228,7 +3302,7 @@
     try {
       const res = await fetch("/api/auth/me");
       if (!res.ok) return;
-      const { email } = await res.json();
+      const { email, isAdmin } = await res.json();
       const initial = (email || "?").charAt(0).toUpperCase();
       root.innerHTML = `
         <span class="rail__profile-avatar">${escapeHtml(initial)}</span>
@@ -3238,6 +3312,13 @@
         </span>
         <span class="rail__profile-chevron">${ICONS.arrowRight}</span>
       `;
+      // Nutzungsübersicht (2026-08-14) nur für Admins im Nav einblenden —
+      // Standardzustand ist hidden (siehe index.html), reine UX-Höflichkeit,
+      // die echte Schranke steht serverseitig in login-log.js.
+      if (isAdmin) {
+        const nutzerLink = document.querySelector('[data-nav="nutzer"]');
+        if (nutzerLink) nutzerLink.hidden = false;
+      }
     } catch {
       // Profil-Bereich bleibt einfach leer, wenn die Abfrage fehlschlägt.
     }
