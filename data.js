@@ -59,9 +59,17 @@ const STANDALONE_TEMPLATES = [
     extraFields: [
       { key: "Quartal", label: "Quartal", placeholder: "z. B. 1/2026" },
     ],
-    subject: "Hinweis: Quartal {Quartal} neigt sich dem Ende zu",
+    subject: "Hinweis: Kontoänderungen im Quartal {Quartal}",
+    // Schlusssatz "Bei Fragen dazu sind wir gerne für euch da." entfernt
+    // (2026-08-14, Nutzer-Test per Screenshot): composeMail() hängt über
+    // GREETING[mode].close ohnehin automatisch eine inhaltsgleiche
+    // Abschluss-Zeile an ("Falls ihr/du Fragen habt/hast, könnt/kannst
+    // ihr/du mich jederzeit kontaktieren.") — beide hintereinander lasen
+    // sich wie eine unbeabsichtigte Dopplung. Betreff zugleich auf
+    // "Kontoänderungen" umgestellt (Nutzer-Wunsch), statt nur "Quartal
+    // neigt sich dem Ende zu" — beschreibt den eigentlichen Inhalt direkter.
     contentIhr:
-      "Das Quartal {Quartal} neigt sich in Kürze dem Ende zu.\n\nEin kurzer Hinweis dazu: Microsoft berücksichtigt für die Quartalsauswertung nur Konten, in denen im laufenden Zeitraum mindestens eine manuelle Änderung vorgenommen wurde — zum Beispiel eine Anpassung bei Keywords, Zielgruppen oder Gebotsstrategie/Budget. Ein Blick in eure Konten könnte sich daher lohnen, falls dort in diesem Quartal noch nichts angepasst wurde.\n\nBei Fragen dazu sind wir gerne für euch da.",
+      "Das Quartal {Quartal} neigt sich in Kürze dem Ende zu.\n\nEin kurzer Hinweis dazu: Microsoft berücksichtigt für die Quartalsauswertung nur Konten, in denen im laufenden Zeitraum mindestens eine manuelle Änderung vorgenommen wurde — zum Beispiel eine Anpassung bei Keywords, Zielgruppen oder Gebotsstrategie/Budget. Ein Blick in eure Konten könnte sich daher lohnen, falls dort in diesem Quartal noch nichts angepasst wurde.",
   },
   {
     id: "neue-konto-erstellung",
