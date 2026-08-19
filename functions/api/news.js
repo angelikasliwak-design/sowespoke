@@ -22,9 +22,17 @@ const SOURCES = [
 // Einzelne, von Hand kuratierte Artikel ohne RSS-Feed (z. B. der
 // "Discover"-Ressourcenbereich von Microsoft Advertising hat keinen Feed) —
 // werden per Titel + Meta-Description ins News-Format gebracht.
+// curatedAt = fester Fallback, falls die Seite selbst kein Datum liefert
+// (siehe fetchArticle) — beide Artikel unten haben tatsächlich KEIN
+// article:published_time-Meta-Tag (per curl nachgeprüft), das Datum
+// entsprach vorher also bei jedem Abruf "jetzt" statt einem festen Wert.
+// Bug-Fund (2026-08-19, Nutzer-Beobachtung): dadurch sprang der Artikel bei
+// jedem 15-Minuten-Cache-Refresh mit neuem Datum wieder ganz nach oben, als
+// wäre er gerade neu erschienen. curatedAt bleibt jetzt stabil auf dem Tag,
+// an dem der Artikel in dieses Repo aufgenommen wurde (Initial commit).
 const ARTICLES = [
-  { name: "Microsoft Advertising", url: "https://about.ads.microsoft.com/en/resources/discover/insights/search-first-audience-campaign", channel: "Microsoft", lang: "en" },
-  { name: "Microsoft Advertising", url: "https://about.ads.microsoft.com/en/resources/discover/case-studies/lenovo-customer-success-story", channel: "Microsoft", lang: "en" },
+  { name: "Microsoft Advertising", url: "https://about.ads.microsoft.com/en/resources/discover/insights/search-first-audience-campaign", channel: "Microsoft", lang: "en", curatedAt: "2026-08-02" },
+  { name: "Microsoft Advertising", url: "https://about.ads.microsoft.com/en/resources/discover/case-studies/lenovo-customer-success-story", channel: "Microsoft", lang: "en", curatedAt: "2026-08-02" },
 ];
 
 function extractTag(xml, tag) {
@@ -87,14 +95,19 @@ async function fetchArticle(article) {
     const description = descMatch ? decodeHtmlEntities(descMatch[1]).trim() : "";
     if (!title) return { error: true, source: article.name, message: "Kein Titel gefunden" };
     const parsed = dateMatch ? Date.parse(dateMatch[1]) : NaN;
-    // Keine Datumsangabe im Artikel selbst gefunden -> Abrufdatum als
-    // Fallback, damit kuratierte Artikel nicht unsichtbar ganz unten landen.
+    // Fallback bei fehlender Datumsangabe auf der Seite selbst: fester
+    // curatedAt-Wert (siehe ARTICLES oben) statt new Date() — new Date()
+    // ändert sich bei jedem Abruf, das ließ den Artikel bei jedem
+    // 15-Minuten-Cache-Refresh wieder als "gerade neu erschienen" nach oben
+    // rutschen (Bug-Fund 2026-08-19). curatedAt bleibt stabil.
+    const curatedParsed = Date.parse(article.curatedAt);
+    const fallback = Number.isNaN(curatedParsed) ? new Date().toISOString() : new Date(curatedParsed).toISOString();
     return {
       error: false,
       items: [{
         title,
         link: article.url,
-        pubDate: Number.isNaN(parsed) ? new Date().toISOString() : new Date(parsed).toISOString(),
+        pubDate: Number.isNaN(parsed) ? fallback : new Date(parsed).toISOString(),
         description,
         source: article.name,
         channel: article.channel,

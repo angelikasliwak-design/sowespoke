@@ -645,6 +645,12 @@ Nutzer-Feedback: die gedämpfte Gold-Variante (`--yellow-text`) wirkte an der St
   2. Genau diese jetzt-spezifischere Desktop-Regel (`width: auto; flex: 1 1 auto`) leckte auf Mobile durch und ließ den Vorlagen-Link auf 0 Breite schrumpfen (fehlte komplett in der Icon-Leiste). Fix: dieselbe Spezifität nochmal innerhalb des Mobile-Media-Querys mit `width: 44px; flex: none` überschrieben — späterer Cascade-Platz gewinnt bei gleicher Spezifität.
 - **Verifiziert:** `node --check`, CSS-Klammerbalance, mechanischer Detektor (0 Funde). Per Playwright: Toggle-Klick (auf-/zuklappen inkl. Chevron-Rotation), Auto-Aufklappen bei direktem Laden von `#/serienmails`, `getBoundingClientRect()`-Messung von Link/Toggle-Positionen zur Fehlersuche bei beiden Spezifitäts-Bugs, Icon-Breite auf Mobile nach dem Fix bestätigt (44×44, nicht mehr 0). Screenshots Desktop 1440px (kollabiert + aufgeklappt) und Mobile 390px.
 
+### Fix: kuratierte News-Artikel sprangen bei jedem Refresh nach oben (2026-08-19, Nutzer-Beobachtung)
+- **Fund:** "Lenovo Customer Success Story" (und "How Search is evolving with AI") tauchten in den News immer wieder mit einem neuen, aktuellen Datum auf — vom Nutzer per Screenshot bemerkt ("taucht immer wieder auf und immer wieder mit neuem Datum").
+- **Root Cause, per curl gegen die echten Microsoft-Advertising-Seiten verifiziert statt geraten:** beide handkuratierten Artikel (`functions/api/news.js`, `ARTICLES`) haben auf ihrer eigenen Seite **kein** `article:published_time`-Meta-Tag. `fetchArticle()` fiel deshalb auf `new Date()` (den Abrufzeitpunkt) zurück — bei jedem 15-Minuten-Cache-Refresh des News-Feeds also ein neues "jetzt", der Artikel rutschte dadurch immer wieder als scheinbar frisch erschienen ganz nach oben.
+- **Fix:** neues Feld `curatedAt` pro Artikel (fester ISO-Datumsstring, `2026-08-02` — das Datum des Initial-Commits, in dem diese Artikel aufgenommen wurden, per `git log -S` ermittelt statt geraten) ersetzt `new Date()` als Fallback. Das Datum bleibt jetzt über jeden Cache-Refresh hinweg stabil.
+- **Verifiziert:** `node --check`, mechanischer Detektor (0 Funde), Fallback-Logik isoliert in Node nachgestellt (bestätigt: liefert jetzt `2026-08-02T00:00:00.000Z` statt eines sich ständig ändernden `new Date().toISOString()`).
+
 ## Do's and Don'ts
 
 ### Do:
