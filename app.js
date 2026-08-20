@@ -3532,6 +3532,11 @@
           <div class="msads-callout">
             <strong>Nächste Schritte</strong>
             <ul>${result.actions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+            ${
+              result.needsSapForm
+                ? `<a class="btn btn--secondary" href="content/microsoft-anfragen/${encodeURIComponent("SAP ID Creation Form .docx")}" download>${ICONS.download} SAP-ID-Formular herunterladen</a>`
+                : ""
+            }
           </div>
           <div class="msads-callout">
             <strong>${escapeHtml(msadsDeadlineNote(route).title)}</strong>
@@ -3663,6 +3668,7 @@
               "Danach Bill-to und SAP-ID erneut prüfen.",
             ]
           : ["Bill-to auf den Kunden ändern.", "Danach die Prüfung erneut durchführen."],
+        needsSapForm: agencyPays,
       };
       stage = "result";
       renderStage();

@@ -2161,6 +2161,7 @@ code {
 .msads-callout ol, .msads-callout ul { margin: var(--space-2) 0 0; padding-left: 1.2em; }
 .msads-callout li { margin-bottom: 0.3em; }
 .msads-callout p:last-child { margin-bottom: 0; }
+.msads-callout .btn { margin-top: var(--space-4); }
 
 .msads-protocol__row { display: flex; justify-content: space-between; gap: var(--space-2); font-size: 0.85rem; padding: var(--space-2) 0; border-bottom: 1px solid var(--line); }
 .msads-protocol__row dt { color: var(--ink-soft); margin: 0; }
