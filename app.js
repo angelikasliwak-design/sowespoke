@@ -3264,12 +3264,12 @@
     help: "Entscheidend ist auf derselben Hierarchieebene das jüngste Verknüpfungsdatum.",
     log: `${subject.charAt(0).toUpperCase()}${subject.slice(1)} ist bei Gleichstand zuletzt verknüpft.`,
   });
-  const msadsMccLevelQuestion = (level) => ({
-    title: "Verknüpfte MCC prüfen",
-    question: "Ist auf dieser Ebene die mit uns verknüpfte Agentur-MCC als Direct Manager sichtbar?",
-    help: "Den Namen der Agentur-MCC und ihre MCC-Nummer prüfen – nicht die SOWESPOKE-Daten. Es muss genau die Shell sein, die mit uns verknüpft ist, nicht eine andere Shell derselben Agentur.",
-    log: `Richtige, mit uns verknüpfte Agentur-MCC ist auf Ebene ${level} Direct Manager; Name und Nummer stimmen.`,
-  });
+  /* Nur die oberste (SOWESPOKE↔Agentur-Shell) und die unterste Ebene (die
+     mit uns verknüpfte Agentur-MCC↔tatsächliches Advertiser-Konto) werden
+     geprüft – dazwischen liegende MCCs sind reine Durchgangsstationen ohne
+     eigene Prüfung (Nutzer-Bestätigung 2026-08-20: "es zählt immer die
+     unterste Ebene", selbst wenn eine Zwischenebene den falschen Direct
+     Manager zeigt). */
   const MSADS_ACCOUNT_LEVEL_QUESTION = {
     title: "Advertiser-Konto prüfen",
     question: "Ist auf dem eigentlichen Advertiser-Konto die mit uns verknüpfte Agentur-MCC als Direct Manager sichtbar?",
@@ -3331,7 +3331,8 @@
     let route = null;
     let level = 1;
     let levelQuestions = [];
-    let isLeafLevel = false;
+    let atLeafCheck = false;
+    let intermediateLevels = 0;
     let questionIndex = 0;
     let checks = [];
     let failedQuestion = "";
@@ -3387,6 +3388,7 @@
               : checks.map((item) => `<div class="msads-protocol__item">${ICONS.check}<p>${escapeHtml(item)}</p></div>`).join("")
           }
         </div>
+        ${intermediateLevels > 0 ? `<dl class="msads-protocol__row"><dt>Zwischenebenen durchlaufen</dt><dd>${intermediateLevels} (ungeprüft, zählen nicht)</dd></dl>` : ""}
         ${billTo ? `<dl class="msads-protocol__row"><dt>Bill-to</dt><dd>${escapeHtml(billTo)}</dd></dl>` : ""}
         ${owner ? `<dl class="msads-protocol__row"><dt>Besitzer</dt><dd>${escapeHtml(owner)}</dd></dl>` : ""}
         <p class="msads-protocol__note"><strong>Reihenfolge merken:</strong> Direct Manager und MCC zuerst. Bill-to erst nach bestandenem Gate 1.</p>
@@ -3442,17 +3444,17 @@
         panelEl.querySelector('[data-msads-answer="no"]').addEventListener("click", () => answerManager(false));
       } else if (stage === "manager-depth") {
         panelEl.innerHTML = `
-          <div class="msads-step-label">SCHRITT 2 VON 3 · EBENE ${level} BESTANDEN</div>
+          <div class="msads-step-label">SCHRITT 2 VON 3 · EBENE ${level}</div>
           <h2>Geht die Hierarchie noch weiter?</h2>
-          <p class="msads-lead">Manchmal hängt unter einer Agentur-MCC nicht direkt das Advertiser-Konto, sondern eine weitere Kunden-/Verwaltungs-MCC. Es zählt immer die unterste Ebene.</p>
+          <p class="msads-lead">Manchmal hängt unter einer Agentur-MCC nicht direkt das Advertiser-Konto, sondern eine weitere Kunden-/Verwaltungs-MCC. Diese Zwischenebenen werden nicht einzeln geprüft – wer dort als Direct Manager steht, spielt keine Rolle. Es zählt immer nur die unterste Ebene.</p>
           <div class="msads-choice-grid">
             <button type="button" class="msads-choice-card msads-choice-card--accent" data-msads-depth="deeper">
               <span class="msads-choice-letter">+</span>
-              <span><strong>Weitere Manager-MCC</strong><small>Darunter hängt noch eine MCC, kein Endkonto</small></span>
+              <span><strong>Weitere Manager-MCC</strong><small>Darunter hängt noch eine MCC, kein Endkonto – wird übersprungen</small></span>
             </button>
             <button type="button" class="msads-choice-card msads-choice-card--teal" data-msads-depth="account">
               <span class="msads-choice-letter">✓</span>
-              <span><strong>Das ist das Advertiser-Konto</strong><small>Hier liegt das eigentliche Endkonto</small></span>
+              <span><strong>Das ist das Advertiser-Konto</strong><small>Hier liegt das eigentliche Endkonto – jetzt wird geprüft</small></span>
             </button>
           </div>
         `;
@@ -3559,7 +3561,8 @@
       route = value;
       checks = [];
       level = 1;
-      isLeafLevel = value === "account";
+      intermediateLevels = 0;
+      atLeafCheck = value === "account";
       levelQuestions = [MSADS_TOP_LEVEL_QUESTION[value], msadsRecencyQuestion("SOWESPOKE")];
       questionIndex = 0;
       stage = "manager";
@@ -3578,7 +3581,7 @@
       checks = [...checks, q.log];
       if (questionIndex + 1 < levelQuestions.length) {
         questionIndex += 1;
-      } else if (route === "account" || isLeafLevel) {
+      } else if (route === "account" || atLeafCheck) {
         stage = "billto";
       } else {
         stage = "manager-depth";
@@ -3586,12 +3589,19 @@
       renderStage();
     }
 
+    /* Zwischenebenen sind reine Navigation ohne eigene Prüfung: bei
+       "weitere MCC" bleiben wir in derselben Stufe (nur Ebenen-Zähler
+       hoch), keine Fragen, keine Protokoll-Einträge. Erst bei "das ist
+       das Konto" beginnt die eigentliche, einzig zählende Prüfung. */
     function chooseDepth(hasDeeper) {
       level += 1;
-      isLeafLevel = !hasDeeper;
-      levelQuestions = hasDeeper
-        ? [msadsMccLevelQuestion(level), msadsRecencyQuestion("unsere verknüpfte Agentur-MCC")]
-        : [MSADS_ACCOUNT_LEVEL_QUESTION, msadsRecencyQuestion("unsere verknüpfte Agentur-MCC")];
+      if (hasDeeper) {
+        intermediateLevels += 1;
+        renderStage();
+        return;
+      }
+      atLeafCheck = true;
+      levelQuestions = [MSADS_ACCOUNT_LEVEL_QUESTION, msadsRecencyQuestion("unsere verknüpfte Agentur-MCC")];
       questionIndex = 0;
       stage = "manager";
       renderStage();
@@ -3665,7 +3675,8 @@
       route = null;
       level = 1;
       levelQuestions = [];
-      isLeafLevel = false;
+      atLeafCheck = false;
+      intermediateLevels = 0;
       questionIndex = 0;
       checks = [];
       failedQuestion = "";

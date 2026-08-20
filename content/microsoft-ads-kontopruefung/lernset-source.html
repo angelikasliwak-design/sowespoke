@@ -260,10 +260,10 @@
     <div class="route-card route-card--a">
       <div class="route-card__head">A · Ganze Agentur-Shell</div>
       <div class="route-card__body">
-        <p>SOWESPOKE wird mit der Agentur-Shell verknüpft. Danach wird jedes Advertiser-Konto unter dieser Shell geprüft — die Kette kann mehrere Ebenen tief sein.</p>
+        <p>SOWESPOKE wird mit der Agentur-Shell verknüpft. Danach wird jedes Advertiser-Konto unter dieser Shell geprüft — die Kette kann mehrere Ebenen tief sein, aber nur die unterste zählt.</p>
         <div class="route-step"><span class="route-step__badge">1</span><div><strong>Agentur-Shell</strong><span>SOWESPOKE als Direct Manager; MCC-Name und MCC-Nummer prüfen.</span></div></div>
-        <div class="route-step"><span class="route-step__badge">2</span><div><strong>Jede weitere Ebene</strong><span>Richtige, mit uns verknüpfte Agentur-MCC als Direct Manager; Name und Nummer prüfen — wiederholen, solange darunter noch eine Manager-MCC hängt.</span></div></div>
-        <div class="route-step"><span class="route-step__badge">3</span><div><strong>Auf derselben Ebene</strong><span>Bei mehreren Direct Managern muss unsere Agentur-MCC die zuletzt verknüpfte sein.</span></div></div>
+        <div class="route-step"><span class="route-step__badge">2</span><div><strong>Zwischenebenen überspringen</strong><span>Weitere Kunden-/Verwaltungs-MCCs dazwischen werden nicht einzeln geprüft — einfach weiter nach unten navigieren, bis das Konto erreicht ist.</span></div></div>
+        <div class="route-step"><span class="route-step__badge">3</span><div><strong>Unterste Ebene zählt</strong><span>Erst auf dem tatsächlichen Advertiser-Konto: richtige Agentur-MCC als Direct Manager, bei Gleichstand zuletzt verknüpft.</span></div></div>
       </div>
     </div>
     <div class="route-card route-card--b">
@@ -296,25 +296,25 @@
     <div class="step-num">2</div>
     <div class="step-head">
       <h1>Direct Manager und MCC prüfen</h1>
-      <p>Gate 1 muss vollständig bestanden sein, bevor Bill-to bewertet wird. Bei Route A wird dieselbe Prüfung so oft wiederholt, wie es Ebenen gibt.</p>
+      <p>Gate 1 hat immer nur zwei echte Prüfpunkte: ganz oben und ganz unten. Alles dazwischen wird nur durchlaufen, nicht bewertet.</p>
     </div>
   </div>
 
-  <div class="rule-note"><strong>Grundregel:</strong> Zwischen Agentur-Shell und dem tatsächlichen Advertiser-Konto können weitere Kunden-/Verwaltungs-MCCs hängen. Es zählt immer die <strong>unterste Ebene</strong> — und auf jeder Ebene muss es wirklich <strong>die mit uns verknüpfte</strong> Shell sein, nicht irgendeine andere Shell derselben Agentur.</div>
+  <div class="rule-note"><strong>Grundregel:</strong> Zwischen Agentur-Shell und dem tatsächlichen Advertiser-Konto können weitere Kunden-/Verwaltungs-MCCs hängen. Diese Zwischenebenen zählen <strong>nicht</strong> — selbst wenn dort eine falsche oder fremde Agentur als Direct Manager steht, ist das kein Fehler. Es zählt ausschließlich die <strong>unterste Ebene</strong>.</div>
 
   <div class="ladder">
-    <div class="ladder__node"><b>Agentur-Shell</b><small>SOWESPOKE ist Direct Manager</small></div>
+    <div class="ladder__node"><b>Agentur-Shell</b><small>Geprüft: SOWESPOKE ist Direct Manager</small></div>
     <div class="ladder__arrow">→</div>
-    <div class="ladder__node ladder__node--variable"><b>Weitere MCC?</b><small>Manchmal 0, manchmal mehrere Ebenen — jede genauso prüfen</small></div>
+    <div class="ladder__node ladder__node--variable"><b>Zwischenebenen</b><small>Ungeprüft — auch bei falschem Direct Manager einfach weiter nach unten</small></div>
     <div class="ladder__arrow">→</div>
-    <div class="ladder__node ladder__node--leaf"><b>Advertiser-Konto</b><small>Unterste Ebene — hier zählt die Prüfung</small></div>
+    <div class="ladder__node ladder__node--leaf"><b>Advertiser-Konto</b><small>Geprüft: unsere Agentur-MCC ist Direct Manager</small></div>
   </div>
 
   <ul class="checklist">
-    <li>Name und MCC-Nummer der verknüpften Stelle stimmen mit unseren Daten überein.</li>
-    <li>Es ist genau die Shell, die mit uns verknüpft ist — nicht eine andere Shell derselben Agentur.</li>
-    <li>Bei mehreren Direct Managern auf derselben Ebene: unsere Stelle ist die zuletzt verknüpfte.</li>
-    <li>Solange darunter noch eine weitere Manager-MCC hängt: dieselbe Prüfung eine Ebene tiefer wiederholen.</li>
+    <li>Oben (Agentur-Shell): SOWESPOKE ist Direct Manager, Name und MCC-Nummer stimmen — das ist unser Einstiegspunkt in die Hierarchie.</li>
+    <li>Unten (tatsächliches Advertiser-Konto): die mit uns verknüpfte Agentur-MCC ist Direct Manager — genau diese Shell, nicht eine andere Shell derselben Agentur.</li>
+    <li>Bei mehreren Direct Managern auf derselben Ebene: unsere Stelle ist jeweils die zuletzt verknüpfte — gilt nur oben und unten, nicht dazwischen.</li>
+    <li>Solange darunter noch eine weitere Manager-MCC hängt: einfach eine Ebene tiefer weiterschauen, ohne dort zu bewerten.</li>
   </ul>
 
   <div class="warn-box">
