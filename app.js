@@ -3464,10 +3464,6 @@
             <ol><li>Die andere Agentur entknüpft sich.</li><li>Die betroffene Agentur-Shell entknüpft sich und verknüpft sich erneut.</li></ol>
             <p>SOWESPOKE ist in diesem Korrekturschritt nicht die Stelle, die sich neu verknüpft.</p>
           </div>
-          <div class="msads-callout">
-            <strong>Hinweis: Kontoklärungsliste</strong>
-            <p>Steht dieses Konto auf der Kontoklärungsliste, die wir von Microsoft erhalten (Konten, die aus Microsofts Sicht falsch verknüpft sind und deshalb keinen Spend angerechnet bekommen): bei Microsoft über Elina flaggen, die es an Anne-Celine weitergibt.</p>
-          </div>
           <button type="button" class="btn btn--primary" data-msads-reset>Neue Prüfung starten</button>
         `;
         panelEl.querySelector("[data-msads-reset]").addEventListener("click", resetAll);
@@ -3541,10 +3537,14 @@
             <strong>${escapeHtml(msadsDeadlineNote(route).title)}</strong>
             <p>${escapeHtml(msadsDeadlineNote(route).text)}</p>
           </div>
-          <div class="msads-callout">
+          ${
+            result.kind === "action"
+              ? ""
+              : `<div class="msads-callout">
             <strong>Kontoklärungsliste</strong>
-            <p>Unabhängig vom obigen Ergebnis: Steht dieses Konto auf der Kontoklärungsliste, die wir von Microsoft erhalten (aus Microsofts Sicht falsch verknüpfte Konten ohne Spend-Zurechnung), trotzdem über Elina bei Microsoft flaggen, sie gibt es an Anne-Celine weiter.</p>
-          </div>
+            <p>Dieses Konto ist korrekt verknüpft. Steht es trotzdem auf der Kontoklärungsliste, die wir von Microsoft erhalten (aus Microsofts Sicht falsch verknüpfte Konten ohne Spend-Zurechnung): über Elina bei Microsoft flaggen, sie gibt es an Anne-Celine weiter.</p>
+          </div>`
+          }
           <div class="msads-yesno">
             <button type="button" class="btn btn--primary" data-msads-copy>${ICONS.copy} Ergebnis kopieren</button>
             <button type="button" class="btn btn--secondary" data-msads-reset>Neue Prüfung</button>
