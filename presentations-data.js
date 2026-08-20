@@ -24,6 +24,29 @@ const DOCTYPE_VAR = {
 
 const PRESENTATIONS = [
   {
+    id: "product-roadmap-q3-2026",
+    file: "Product Roadmap Q3 2026.pdf",
+    title: "Product Roadmap Q3 2026: Microsoft-Advertising-Plattform-Fähigkeiten und Performance-Max-Neuerungen",
+    // Titelfolie datiert nur auf das Quartal ("Q3, 2026"), kein exaktes
+    // Erstellungsdatum im Dokument. Wie bei den anderen frisch hochgeladenen
+    // Decks wird das Anzeige-/Sortierdatum auf den Upload-Tag gesetzt, damit
+    // der Eintrag ganz oben erscheint — keine Aussage über ein echtes
+    // Foliendatum.
+    date: "2026-08-20", dateKnown: true,
+    docType: "Beta-Feature",
+    summaryDE: "Offizielle Microsoft-Advertising-Produkt-Roadmap für Q3 2026, gegliedert in zwei Teile: (01) Roadmap nach Plattform-Fähigkeit entlang sechs Investitionsbereichen — Show up in more places, Reach the right audiences, Maximize results with smarter bidding, Build performant creative, Transparent reporting & optimization, Simplify your workflows — sowie (02) Roadmap speziell nach Kampagnentyp für Performance Max. Jedes Feature ist mit Geo-Verfügbarkeit, unterstützten Kampagnentypen und Timeline (Closed/Open Pilot, GA-Datum oder bereits GA) versehen.",
+    customerBlurb: "Microsoft hat die Produkt-Roadmap für Q3 2026 veröffentlicht — von neuen KI-Shopping-Erlebnissen (Brand Agents) über LinkedIn-Zielgruppen-Funktionen bis zu einem MCP-Server für KI-gestützte Kampagnenauswertung. Gerne gehen wir gemeinsam durch, welche der anstehenden Features für eure Konten und Timeline relevant sind.",
+    keyFactsDE: [
+      "Brand Agents: personalisierter KI-Shopping-Assistent, der Produkte in Microsoft Copilot und Bing auffindbar macht und Käufer:innen direkt auf der eigenen Website konvertiert; Geo: Global, Kampagnentyp: alle, aktuell Open Pilot, GA im August 2026.",
+      "Bulk Company List Upload für LinkedIn-Profil-Targeting: bis zu 10.000 Firmennamen pro Kampagnen-Setup hochladen, Gebote auf Listenebene anpassen; Open Pilot, GA im September 2026 (zugrunde liegende Konsumentendaten schließen EWR-Länder aus).",
+      "Cross-account Portfolio Bidding: Portfolio-Gebotsstrategien über mehrere Konten hinweg anwenden; GA mit einem Limit von 11.000 Kampagnen, im Pilotbetrieb bereits für bis zu 100.000 Kampagnen.",
+      "Microsoft Advertising MCP Server: Kampagnenreports, Audits und Keyword-Recherche direkt aus KI-Assistenten wie M365 Copilot, Claude, ChatGPT oder Gemini heraus, in vier Schritten ohne Entwickler-Aufwand einzurichten; Open Pilot, global außer China und Indien.",
+      "Verpflichtende Advertiser Identity Verification (AIV) für Australien und Vietnam: muss innerhalb von 30 Tagen nach Anmeldung abgeschlossen werden, damit Anzeigen ab dem 1. Juli 2026 ohne Unterbrechung weiterlaufen; Status GA.",
+    ],
+    emailHookDE: null,
+    pageCount: 19,
+  },
+  {
     id: "holiday-insights-2026-core-de",
     file: "2026 Core Holiday Insights – DE – Jun2026.pdf",
     title: "Retail Peak 2026 (Deutschland): Wirtschaftsausblick, KI in der Suche und Performance-Max-Empfehlungen",
