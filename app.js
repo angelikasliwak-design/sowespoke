@@ -3461,8 +3461,7 @@
           <p class="msads-lead">Die Prüfung wurde bei „${escapeHtml(failedQuestion)}" gestoppt. Bill-to wird noch nicht bewertet.</p>
           <div class="msads-callout">
             <strong>Zwei mögliche Wege</strong>
-            <ol><li>Die andere Agentur entknüpft sich.</li><li>Die betroffene Agentur-Shell entknüpft sich und verknüpft sich erneut.</li></ol>
-            <p>SOWESPOKE ist in diesem Korrekturschritt nicht die Stelle, die sich neu verknüpft.</p>
+            <ol><li>Die andere Agentur entknüpft sich.</li><li>Die betroffene Agentur-Shell entknüpft sich und verknüpft sich erneut, um die zuletzt verknüpfte zu sein.</li></ol>
           </div>
           <button type="button" class="btn btn--primary" data-msads-reset>Neue Prüfung starten</button>
         `;

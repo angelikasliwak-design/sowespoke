@@ -106,10 +106,11 @@
   .route-card__body { padding: 5mm 6mm 6mm; }
   .route-card__body > p { margin: 0 0 4mm; font-size: 9.5pt; color: var(--ink-60); }
   .route-step { display: flex; gap: 3.5mm; margin-bottom: 3.5mm; }
-  .route-step__badge {
+  .route-step .route-step__badge {
     flex: none; width: 7mm; height: 7mm; border-radius: 999px;
     display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 10pt; color: #fff;
+    font-family: "Exo 2", sans-serif; font-weight: 800; font-size: 10pt; line-height: 1;
+    color: #fff;
   }
   .route-card--a .route-step__badge { background: var(--teal); }
   .route-card--b .route-step__badge { background: var(--accent); }
@@ -304,12 +305,12 @@
     </div>
   </div>
 
-  <div class="rule-note"><strong>Grundregel:</strong> Zwischen Agentur-Shell und dem tatsächlichen Advertiser-Konto können weitere Kunden-/Verwaltungs-MCCs hängen. Diese Zwischenebenen zählen <strong>nicht</strong> — selbst wenn dort eine falsche oder fremde Agentur als Direct Manager steht, ist das kein Fehler. Es zählt ausschließlich die <strong>unterste Ebene</strong>.</div>
+  <div class="rule-note"><strong>Grundregel:</strong> Zwischen Agentur-Shell und dem tatsächlichen Advertiser-Konto können weitere Kunden-/Verwaltungs-MCCs hängen. Für uns zählt dabei immer die <strong>unterste Ebene</strong> — auch wenn dort zwischendurch eine falsche oder fremde Agentur als Direct Manager steht.</div>
 
   <div class="ladder">
     <div class="ladder__node"><b>Agentur-Shell</b><small>Geprüft: SOWESPOKE ist Direct Manager</small></div>
     <div class="ladder__arrow">→</div>
-    <div class="ladder__node ladder__node--variable"><b>Zwischenebenen</b><small>Ungeprüft — auch bei falschem Direct Manager einfach weiter nach unten</small></div>
+    <div class="ladder__node ladder__node--variable"><b>Zwischenebenen</b><small>Nur unterste Ebene zählt für uns – einfach weiter nach unten</small></div>
     <div class="ladder__arrow">→</div>
     <div class="ladder__node ladder__node--leaf"><b>Advertiser-Konto</b><small>Geprüft: unsere Agentur-MCC ist Direct Manager</small></div>
   </div>
@@ -323,7 +324,7 @@
 
   <div class="warn-box">
     <strong>WENN NEIN</strong>
-    Andere Agentur entknüpft sich – oder die betroffene Agentur-Shell entknüpft sich und verknüpft sich erneut. SOWESPOKE ist in diesem Korrekturschritt nicht die Stelle, die sich neu verknüpft.
+    Andere Agentur entknüpft sich – oder die betroffene Agentur-Shell entknüpft sich und verknüpft sich erneut, um die zuletzt verknüpfte zu sein.
   </div>
 
   <div class="pass-banner">GATE 1 BESTANDEN → Jetzt „Rechnung an Kunde" / Bill-to prüfen</div>
@@ -383,15 +384,9 @@
 
   <div class="memo"><b>Merksatz</b><span>Eine alte Shell ist nur dann als Ausnahme korrekt, wenn genau diese alte Shell auch Besitzer des Kontos ist.</span></div>
 
-  <div class="footnote-grid" style="margin-top:5mm">
-    <div class="footnote-box">
-      <strong>Warum dauert eine SAP-Korrektur manchmal länger?</strong>
-      Microsoft vergibt ungern zwei SAP-IDs für dieselbe Agentur — eine neue SAP-ID für eine neue Agentur-Shell zu beantragen, ist deshalb kein reiner Selbstlauf.
-    </div>
-    <div class="footnote-box">
-      <strong>Reihenfolge merken</strong>
-      Direct Manager und MCC zuerst (Gate 1) — Bill-to wird erst danach bewertet, nie parallel oder vorher.
-    </div>
+  <div class="footnote-box" style="margin-top:5mm">
+    <strong>Warum dauert eine SAP-Korrektur manchmal länger?</strong>
+    Microsoft vergibt ungern zwei SAP-IDs für dieselbe Agentur — eine neue SAP-ID für eine neue Agentur-Shell zu beantragen, ist deshalb kein reiner Selbstlauf.
   </div>
 
   <p class="side-note"><strong>Kontoklärungsliste:</strong> nur bei den beiden OK-Ergebnissen oben (nicht bei NICHT OK) – ist dieses Konto korrekt verknüpft und steht trotzdem auf der Liste, die wir von Microsoft erhalten (aus Microsofts Sicht falsch verknüpfte Konten ohne Spend-Zurechnung), über Elina bei Microsoft flaggen, sie gibt es an Anne-Celine weiter.</p>
@@ -432,15 +427,9 @@
     </div>
   </div>
 
-  <div class="footnote-grid">
-    <div class="footnote-box footnote-box--tool">
-      <strong>Interaktives Prüf-Tool</strong>
-      Dieselbe Prüfung Schritt für Schritt, mit Live-Protokoll und kopierbarem Ergebnis: Sowespoke Wissenszentrum → „Kontoprüfung" in der linken Navigation.
-    </div>
-    <div class="footnote-box">
-      <strong>Diese Seite ergänzt, ersetzt aber nicht</strong>
-      Fristen sind reine Terminplanung — sie ersetzen nicht die Direct-Manager- und Bill-to-Prüfung aus den Schritten 2 und 3.
-    </div>
+  <div class="footnote-box footnote-box--tool">
+    <strong>Interaktives Prüf-Tool</strong>
+    Dieselbe Prüfung Schritt für Schritt, mit Live-Protokoll und kopierbarem Ergebnis: Sowespoke Wissenszentrum → „Kontoprüfung" in der linken Navigation.
   </div>
 
   <div class="foot">
