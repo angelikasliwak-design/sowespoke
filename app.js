@@ -594,7 +594,11 @@
     // die drei hier geprüften Elemente; eine einmalige Prüfung beim ersten
     // Erscheinen würde eine erst später beim Scrollen entstehende
     // Überlappung nicht erfassen.
-    const avoidEls = document.querySelectorAll(".side-rail, .toolbar, .ticket-list");
+    // .msads-workspace zusätzlich (2026-08-20, Nutzer-Fund): auf 600–768px-
+    // Viewports überlappte die Blase strukturell die Route-/Frage-Karten der
+    // Kontoprüfung-Seite (.msads-panel/.msads-choice-card) — dieselbe Art
+    // Überlappung wie bei .toolbar, nie in dieser Liste geprüft worden.
+    const avoidEls = document.querySelectorAll(".side-rail, .toolbar, .ticket-list, .msads-workspace");
     const mRect = mascotEl.getBoundingClientRect();
     let maxLift = 0;
     avoidEls.forEach((avoidEl) => {
