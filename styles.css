@@ -2050,8 +2050,11 @@ code {
   border: 1px solid var(--line);
   background: var(--surface);
   color: var(--ink-soft);
-  font-size: 0.85rem;
-  font-weight: 700;
+  /* Auf .tabs__item-Maß angeglichen (Nutzer-Fund: wirkte "wie eine andere
+     Schriftart" — war zwar dieselbe Familie, aber deutlich fetter/größer
+     als die Pillen sonst im Projekt, siehe .tabs__item oben). */
+  font-size: 0.88rem;
+  font-weight: 500;
   transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
 }
 .msads-progress__num {
@@ -2066,7 +2069,7 @@ code {
   font-size: 0.72rem;
 }
 .msads-progress__num svg { width: 12px; height: 12px; }
-.msads-progress__step.is-active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.msads-progress__step.is-active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
 .msads-progress__step.is-active .msads-progress__num { background: rgba(255, 255, 255, 0.28); color: var(--on-accent); }
 .msads-progress__step.is-complete { color: var(--teal-text); border-color: var(--teal-text); }
 

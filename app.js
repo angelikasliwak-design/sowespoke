@@ -3308,7 +3308,7 @@
       <div class="msads">
         <section class="hero hero--compact">
           <div class="hero__intro">
-            <h1>Microsoft Ads <mark>Kontoprüfung</mark>.</h1>
+            <h1><mark>Kontoverknüpfungen</mark> prüfen.</h1>
             <p>Eine Frage nach der anderen – zuerst die Direct-Manager-Verknüpfung, danach der Rechnungsempfänger.</p>
           </div>
         </section>
