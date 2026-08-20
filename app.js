@@ -3541,6 +3541,10 @@
             <strong>${escapeHtml(msadsDeadlineNote(route).title)}</strong>
             <p>${escapeHtml(msadsDeadlineNote(route).text)}</p>
           </div>
+          <div class="msads-callout">
+            <strong>Kontoklärungsliste</strong>
+            <p>Unabhängig vom obigen Ergebnis: Steht dieses Konto auf der Kontoklärungsliste, die wir von Microsoft erhalten (aus Microsofts Sicht falsch verknüpfte Konten ohne Spend-Zurechnung), trotzdem über Elina bei Microsoft flaggen, sie gibt es an Anne-Celine weiter.</p>
+          </div>
           <div class="msads-yesno">
             <button type="button" class="btn btn--primary" data-msads-copy>${ICONS.copy} Ergebnis kopieren</button>
             <button type="button" class="btn btn--secondary" data-msads-reset>Neue Prüfung</button>
