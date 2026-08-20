@@ -47,6 +47,45 @@ const PRESENTATIONS = [
     pageCount: 19,
   },
   {
+    id: "pmax-upgrade-uplift-experiments",
+    file: "PMax_experiments_pilot_overview.pdf",
+    title: "Performance Max: Upgrade- und Uplift-Experimente (Feature Guide)",
+    // Kein Datum im Dokument selbst enthalten (reiner Feature Guide ohne
+    // Zeitangabe); wie bei den anderen frisch hochgeladenen Decks auf den
+    // Upload-Tag gesetzt, damit der Eintrag mit "Neu"-Badge erscheint.
+    date: "2026-08-20", dateKnown: true,
+    docType: "Beta-Feature",
+    summaryDE: "Feature Guide zu zwei neuen PMax-Experiment-Typen, mit denen sich Performance Max ohne komplexes Conversion-Lift-Setup gegen bestehende Kampagnen testen lässt: Upgrade-Experimente (1 PMax- vs. 1 Nicht-PMax-Kampagne, variable Traffic-Aufteilung) und Uplift-Experimente (PMax zusätzlich zu einem Set vergleichbarer Nicht-PMax-Kampagnen, feste 50/50-Aufteilung). Beide laufen auf Nutzerebene ohne Geo-Splits, empfohlene Laufzeit ca. 8 Wochen, Ergebnisse direkt in der Microsoft-Advertising-Oberfläche. Enthält Einrichtungsschritte, Voraussetzungen und eine ausführliche FAQ-Sektion.",
+    customerBlurb: "Microsoft hat ein neues Experiment-Feature für Performance Max veröffentlicht: Statt eines aufwendigen Conversion-Lift-Tests lässt sich in rund 8 Wochen direkt in der Oberfläche messen, ob und wie stark PMax gegenüber bestehenden Kampagnen abschneidet. Gerne prüfen wir gemeinsam, ob sich das für euer Konto anbietet.",
+    keyFactsDE: [
+      "Zwei Experiment-Typen: Upgrade-Experimente vergleichen 1 PMax- gegen 1 Nicht-PMax-Kampagne (Search, Shopping oder Audience); Uplift-Experimente messen den zusätzlichen Beitrag von PMax neben einem festen Set vergleichbarer Kampagnen (feste 50/50-Traffic-Aufteilung).",
+      "Deutlich schlankeres Setup als klassische Conversion-Lift-Tests: kein Geo-Split, keine Ad-Suppression nötig, Aufteilung erfolgt rein auf Nutzerebene; empfohlene Laufzeit ca. 8 Wochen statt der oft 6–8-wöchigen Lernphase bei Conversion Lift.",
+      "Status: Open Beta, nur für PMax-Kampagnen, verfügbar in NA, LATAM, EMEA und APAC; Zugang über Online-Oberfläche, MAE oder API, auf allen Geräten im Microsoft Advertising Network.",
+      "Voraussetzungen für teilnehmende Kampagnen: gleiches Konto, überschneidendes Audience-Targeting und überschneidende Conversion-Ziele, vergleichbares Tagesbudget sowie mindestens 100 Conversions in einem typischen 7-Tage-Fenster.",
+      "SLA laut Deck: eine Woche Reaktionszeit auf die initiale Experiment-Anfrage, danach eine weitere Woche für Ergebnisanalyse und Empfehlungen nach Experiment-Ende; interne Anfragen laufen über ein Formular an GMI.",
+    ],
+    emailHookDE: null,
+    pageCount: 16,
+  },
+  {
+    id: "audience-generation-feature-guide",
+    file: "Audience_generation_-_Feature_Guide_-_Copy.pdf",
+    title: "Audience Generation: Zielgruppen per KI-Prompt erstellen (Feature Guide)",
+    date: "2026-08-20", dateKnown: true,
+    docType: "Beta-Feature",
+    summaryDE: "Feature Guide zu Audience Generation: Werbetreibende beschreiben ihre Zielgruppe in einem natürlichsprachigen Prompt, Copilot übersetzt das in fertige Audience-Targeting-Vorschläge (Demografie, In-Market-Zielgruppen, plus eine eigens generierte Zielgruppe), die vor der Übernahme geprüft werden können. Closed Beta, aktuell nur für Audience-Kampagnen über die Microsoft-Advertising-Oberfläche am Desktop. Enthält Einrichtungs-Schritt-für-Schritt-Anleitung, Prompting-Best-Practices und eine ausführliche FAQ sowie eine Übersicht der kombinierbaren Targeting-Dimensionen.",
+    customerBlurb: "Microsoft testet ein neues KI-Feature: Zielgruppen für Audience-Kampagnen lassen sich künftig einfach in einem Satz beschreiben, Copilot schlägt daraus passende Zielgruppen-Segmente vor. Aktuell in geschlossener Beta — wir behalten das für relevante Konten im Blick.",
+    keyFactsDE: [
+      "Closed Beta in den USA, Kanada, Großbritannien und Australien, nur auf Englisch, nur über die Microsoft-Advertising-Oberfläche am Desktop, aktuell ausschließlich für Audience-Kampagnen (nicht für Search oder Performance Max).",
+      "Ablauf: Zielgruppe in einem Textfeld frei beschreiben (max. 1000 Zeichen), auf \"Generate\" klicken, Copilot schlägt Demografie, In-Market-Zielgruppen und eine eigens generierte Zielgruppe vor; Prompt lässt sich vor dem Speichern beliebig anpassen und neu generieren.",
+      "Es kann bis zu 72 Stunden dauern, bis erste Auslieferung gegen eine von Copilot generierte Zielgruppe sichtbar wird.",
+      "Bekannte Einschränkungen im frühen Pilotbetrieb: LinkedIn-Zielgruppen werden noch nicht vorgeschlagen, Lift-Studies werden für Copilot-generierte Zielgruppen noch nicht unterstützt — beides laut Deck für später geplant. Audience Generation empfiehlt nur Ziel-, keine Ausschluss-Zielgruppen.",
+      "Targeting-Dimensionen lassen sich mit \"AND\" kombinieren (verkleinert die Zielgruppe, z. B. Alter AND In-Market), Optionen innerhalb einer Dimension mit \"OR\" (vergrößert sie, z. B. PC OR Mobile) — je mehr Dimensionen kombiniert werden, desto kleiner die erreichbare Zielgruppe.",
+    ],
+    emailHookDE: null,
+    pageCount: 17,
+  },
+  {
     id: "holiday-insights-2026-core-de",
     file: "2026 Core Holiday Insights – DE – Jun2026.pdf",
     title: "Retail Peak 2026 (Deutschland): Wirtschaftsausblick, KI in der Suche und Performance-Max-Empfehlungen",
