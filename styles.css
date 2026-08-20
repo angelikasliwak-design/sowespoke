@@ -2026,6 +2026,155 @@ code {
 .idea-card__confirm [data-delete-confirm] { color: var(--on-accent); background: var(--warning); }
 .idea-card__confirm [data-delete-cancel] { color: var(--ink-soft); background: var(--paper); border: 1px solid var(--line); }
 
+/* -- Microsoft Ads Kontoprüfung (2026-08-20) -------------------------------
+   Ausschließlich bestehende Bausteine: .side-card fürs Protokoll (3px-
+   Akzent-Rahmen, siehe .side-card oben — passt exakt zur Vorgabe "deutlich
+   sichtbare magentafarbene Kontur"), dasselbe Rahmen/Schatten-Vokabular wie
+   .article-list li/.ticket-row für die Fragekarte (.msads-panel), .btn für
+   alle Aktionen. Alles unter .msads-Präfix gekapselt. */
+.msads-toolbar { display: flex; justify-content: flex-end; margin: calc(-1 * var(--space-3)) 0 var(--space-5); }
+.msads-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-5);
+}
+.msads-progress__step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+.msads-progress__num {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--paper);
+  font-size: 0.72rem;
+}
+.msads-progress__num svg { width: 12px; height: 12px; }
+.msads-progress__step.is-active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.msads-progress__step.is-active .msads-progress__num { background: rgba(255, 255, 255, 0.28); color: var(--on-accent); }
+.msads-progress__step.is-complete { color: var(--teal-text); border-color: var(--teal-text); }
+
+.msads-workspace { align-items: start; }
+.msads-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--space-6);
+}
+.msads-protocol { padding: var(--space-5); }
+.msads-protocol h2 { font-size: 1.05rem; }
+
+.msads-step-label { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: var(--space-2); }
+.msads-step-label--danger { color: var(--accent); }
+.msads-step-label--success { color: var(--teal-text); }
+.msads-lead { color: var(--ink-soft); margin: 0 0 var(--space-5); }
+
+.msads-choice-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4); }
+.msads-choice-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  text-align: left;
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+.msads-choice-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+.msads-choice-card--teal:hover { border-color: var(--teal-text); }
+.msads-choice-card--accent:hover, .msads-choice-card--action:hover { border-color: var(--accent); }
+.msads-choice-letter {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-weight: 800;
+  background: var(--paper);
+  color: var(--ink);
+}
+.msads-choice-card small { display: block; color: var(--ink-soft); font-weight: 400; margin-top: 0.2em; }
+
+.msads-question-box {
+  display: flex;
+  gap: var(--space-3);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+.msads-question-box svg { flex: none; width: 22px; height: 22px; color: var(--accent); }
+.msads-question-box h3 { margin: 0 0 0.3em; font-size: 1.05rem; }
+.msads-question-box p { margin: 0; color: var(--ink-soft); font-size: 0.9rem; }
+
+.msads-yesno { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+
+.msads-billto-grid { display: flex; flex-direction: column; gap: var(--space-3); }
+.msads-billto-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: left;
+  padding: var(--space-4) var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+.msads-billto-card:hover { border-color: var(--accent); background: var(--accent-tint); }
+.msads-radio { flex: none; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line); }
+.msads-billto-card small { display: block; color: var(--ink-soft); font-weight: 400; }
+
+.msads-status-symbol { display: flex; margin-bottom: var(--space-3); }
+.msads-status-symbol svg { width: 32px; height: 32px; }
+.msads-status-symbol--action svg { color: var(--accent); }
+
+.msads-callout {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4) var(--space-5);
+  margin: var(--space-4) 0 var(--space-5);
+}
+.msads-callout ol, .msads-callout ul { margin: var(--space-2) 0 0; padding-left: 1.2em; }
+.msads-callout li { margin-bottom: 0.3em; }
+.msads-callout p:last-child { margin-bottom: 0; }
+
+.msads-protocol__row { display: flex; justify-content: space-between; gap: var(--space-2); font-size: 0.85rem; padding: var(--space-2) 0; border-bottom: 1px solid var(--line); }
+.msads-protocol__row dt { color: var(--ink-soft); margin: 0; }
+.msads-protocol__row dd { font-weight: 700; margin: 0; text-align: right; }
+.msads-protocol__list { display: flex; flex-direction: column; gap: var(--space-2); margin: var(--space-3) 0; }
+.msads-protocol__item { display: flex; gap: var(--space-2); align-items: flex-start; font-size: 0.85rem; }
+.msads-protocol__item svg { flex: none; width: 15px; height: 15px; color: var(--teal-text); margin-top: 2px; }
+.msads-protocol__item p { margin: 0; }
+.msads-protocol__empty { color: var(--ink-soft); font-size: 0.85rem; margin: var(--space-3) 0; }
+.msads-protocol__note { font-size: 0.8rem; color: var(--ink-soft); margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--line); }
+.msads-protocol__note p { margin: 0.3em 0 0; }
+
+.msads-disclaimer { font-size: 0.78rem; color: var(--ink-soft); text-align: center; margin-top: var(--space-6); }
+
 /* -- Responsive ------------------------------------------------------------ */
 @media (max-width: 48rem) {
   .shell { flex-direction: column; }
@@ -2098,6 +2247,9 @@ code {
   .row { gap: var(--space-3); }
   .row__thumb { width: 44px; height: 44px; }
   .row__thumb svg { width: 20px; height: 20px; }
+  .msads-panel { padding: var(--space-5); }
+  .msads-choice-grid { grid-template-columns: 1fr; }
+  .msads-toolbar { justify-content: flex-start; }
 }
 
 /* -- Maskottchen ---------------------------------------------------------- */

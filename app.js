@@ -24,7 +24,7 @@
     Allgemein: "--turquoise",
   };
 
-  const NAV_ICON = { news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", "microsoft-learn": "sparkle", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass", nutzer: "gauge" };
+  const NAV_ICON = { news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", "microsoft-learn": "sparkle", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass", nutzer: "gauge", "microsoft-ads-kontopruefung": "crosshair" };
   railLinks.forEach((a) => {
     const iconSlot = a.querySelector(".rail__nav-icon");
     if (iconSlot) iconSlot.innerHTML = ICONS[NAV_ICON[a.dataset.nav]];
@@ -3211,6 +3211,486 @@
     })();
   }
 
+  /* ------------------------------------------------ Seite: Microsoft Ads Kontoprüfung */
+  /* Interaktiver Prüfassistent für Direct-Manager-/Bill-to-Kontoprüfungen
+     (2026-08-20, Nutzer-Wunsch). Fachliche Logik/Texte 1:1 aus einer bereits
+     fertigen externen Referenz portiert (React/TSX, useState-Zustandsmaschine)
+     — hier auf das in dieser App etablierte Closure-State-plus-manuelles-
+     Re-Render-Muster übertragen (gleiches Prinzip wie fill() im Mail-
+     Generator, nur für eine mehrstufige Sequenz statt ein einzelnes
+     Formular). Läuft komplett im Browser, keine Function/kein KV — "Ergebnis
+     kopieren" nutzt dieselbe Zwischenablage-API wie an anderen Stellen der
+     App. Visuell ausschließlich bestehende Bausteine (siehe DESIGN.md-
+     Eintrag): .side-card für das Prüfprotokoll (3px-Akzent-Rahmen passt
+     exakt zur Nutzer-Vorgabe "deutlich sichtbare magentafarbene Kontur"),
+     dasselbe Rahmen/Schatten-Vokabular wie .article-list li/.ticket-row für
+     die große Fragekarte, .btn für alle Aktionen — keine neue Designwelt.
+
+     Ergebnis-Farben bewusst auf das schon etablierte Dreier-Schema gemappt
+     (wie Tickets/Serienmails: --teal-text = erledigt/korrekt, --yellow-text
+     = Zwischenzustand/Ausnahme, --accent = braucht Aufmerksamkeit) statt
+     neuer Farben — auch Rot/Grün aus der Referenz hätten hier keine echte
+     Bedeutung gehabt, die nicht schon durch dieses Schema abgedeckt ist. */
+
+  /* Direct-Manager-Prüfung ist eine Ebenen-Schleife, kein fester
+     2-/3-Fragen-Block (Nutzer-Klärung 2026-08-20, anhand realer Microsoft-
+     Advertising-Hierarchie-Screenshots: zwischen Agentur-Shell und dem
+     tatsächlich geprüften Advertiser-Konto können beliebig viele weitere
+     Kunden-/Verwaltungs-MCCs hängen – "es zählt immer die unterste
+     Verknüpfung"). Route B ("einzelnes Advertiser-Konto") bleibt bewusst
+     einstufig: dort ist das zu prüfende Konto per Definition bereits als
+     konkretes Leaf-Konto bekannt, keine Tiefenschleife nötig. Route A
+     ("ganze Agentur-Shell") startet immer mit dem SOWESPOKE-Check auf der
+     Shell, danach wird nach jeder bestandenen Ebene gefragt, ob darunter
+     noch eine weitere Manager-MCC hängt oder das Advertiser-Konto erreicht
+     ist – erst bei "das ist das Konto" endet die Schleife. */
+  const MSADS_TOP_LEVEL_QUESTION = {
+    agency: {
+      title: "Agentur-Shell prüfen",
+      question: "Ist SOWESPOKE auf der Agentur-Shell als Direct Manager sichtbar?",
+      help: "Dabei den Namen SOWESPOKE und die MCC-Nummer kontrollieren.",
+      log: "SOWESPOKE ist Direct Manager der Agentur-Shell; MCC-Name und Nummer stimmen.",
+    },
+    account: {
+      title: "Advertiser-Konto prüfen",
+      question: "Ist SOWESPOKE auf dem Advertiser-Konto als Direct Manager sichtbar?",
+      help: "Dabei den Namen SOWESPOKE und die MCC-Nummer kontrollieren.",
+      log: "SOWESPOKE ist Direct Manager des Advertiser-Kontos; MCC-Name und Nummer stimmen.",
+    },
+  };
+  const msadsRecencyQuestion = (subject) => ({
+    title: "Reihenfolge prüfen",
+    question: `Ist ${subject} bei mehreren Direct Managern auf dieser Ebene der zuletzt verknüpfte?`,
+    help: "Entscheidend ist auf derselben Hierarchieebene das jüngste Verknüpfungsdatum.",
+    log: `${subject.charAt(0).toUpperCase()}${subject.slice(1)} ist bei Gleichstand zuletzt verknüpft.`,
+  });
+  const msadsMccLevelQuestion = (level) => ({
+    title: "Verknüpfte MCC prüfen",
+    question: "Ist auf dieser Ebene die mit uns verknüpfte Agentur-MCC als Direct Manager sichtbar?",
+    help: "Den Namen der Agentur-MCC und ihre MCC-Nummer prüfen – nicht die SOWESPOKE-Daten. Es muss genau die Shell sein, die mit uns verknüpft ist, nicht eine andere Shell derselben Agentur.",
+    log: `Richtige, mit uns verknüpfte Agentur-MCC ist auf Ebene ${level} Direct Manager; Name und Nummer stimmen.`,
+  });
+  const MSADS_ACCOUNT_LEVEL_QUESTION = {
+    title: "Advertiser-Konto prüfen",
+    question: "Ist auf dem eigentlichen Advertiser-Konto die mit uns verknüpfte Agentur-MCC als Direct Manager sichtbar?",
+    help: "Den Namen der Agentur-MCC und ihre MCC-Nummer prüfen – nicht die SOWESPOKE-Daten. Es muss genau die Shell sein, die mit uns verknüpft ist, nicht eine andere Shell derselben Agentur.",
+    log: "Richtige, mit uns verknüpfte Agentur-MCC ist Direct Manager des Advertiser-Kontos; Name und Nummer stimmen.",
+  };
+
+  const MSADS_BILLTO_OPTIONS = [
+    { id: "customer", title: "Kunde", text: "Der Kunde übernimmt die Rechnung." },
+    { id: "current", title: "Richtige / neue Agentur-Shell", text: "Die korrekte beziehungsweise neu erstellte Shell steht im Bill-to." },
+    { id: "old", title: "Alte Agentur-Shell", text: "Eine frühere Shell der Agentur steht im Bill-to." },
+    { id: "unclear", title: "Andere oder unklare Shell", text: "Der Eintrag lässt sich nicht eindeutig zuordnen." },
+  ];
+
+  /* Fristen-Info (Nutzer-Notizen 2026-08-20) – reiner Hinweis, keine
+     Ja/Nein-Prüfung: bewertet keine bestehende Verknüpfung, sondern nennt
+     den Stichtag für künftiges Handeln. Deshalb als Info-Box im Ergebnis
+     gezeigt statt als weitere Frage. */
+  const msadsDeadlineNote = (route) =>
+    route === "agency"
+      ? {
+          title: "Frist bei Verknüpfung über eine Agentur-MCC",
+          text: "Deadline ist der 20. des Monats. Hier zählt nicht das Linking-Datum, sondern der Eingang der Autorisierung.",
+        }
+      : {
+          title: "Frist bei direkter Verknüpfung mit dem Endkunden-Konto",
+          text: "Deadline ist der 30./31. des Monats. Hier zählt das Linking-Datum.",
+        };
+
+  function renderMsAdsCheck() {
+    view.innerHTML = `
+      <div class="msads">
+        <section class="hero hero--compact">
+          <div class="hero__intro">
+            <h1>Microsoft Ads <mark>Kontoprüfung</mark>.</h1>
+            <p>Eine Frage nach der anderen – zuerst die Direct-Manager-Verknüpfung, danach der Rechnungsempfänger.</p>
+          </div>
+        </section>
+        <div class="msads-toolbar">
+          <a class="btn btn--secondary" href="content/microsoft-ads-kontopruefung/Microsoft_Ads_Kontopruefung_Lernset.pdf" download>${ICONS.download} PDF-Lernset herunterladen</a>
+        </div>
+        <ol class="msads-progress" data-msads-progress aria-label="Prüffortschritt"></ol>
+        <div class="msads-workspace layout-2col">
+          <section class="msads-panel" data-msads-panel aria-live="polite"></section>
+          <aside class="side-card msads-protocol" data-msads-protocol></aside>
+        </div>
+        <p class="msads-disclaimer">Interne Prüfhilfe – kein offizielles Microsoft-Produkt. Es werden keine Kontodaten automatisch geändert.</p>
+      </div>
+    `;
+    wireMsAdsCheck();
+  }
+
+  function wireMsAdsCheck() {
+    const progressEl = document.querySelector("[data-msads-progress]");
+    const panelEl = document.querySelector("[data-msads-panel]");
+    const protocolEl = document.querySelector("[data-msads-protocol]");
+
+    let stage = "route";
+    let route = null;
+    let level = 1;
+    let levelQuestions = [];
+    let isLeafLevel = false;
+    let questionIndex = 0;
+    let checks = [];
+    let failedQuestion = "";
+    let billTo = "";
+    let owner = "";
+    let result = null;
+    let copyTimer;
+
+    const progressLabel = () =>
+      route === "agency" ? "Ganze Agentur-Shell" : route === "account" ? "Einzelnes Advertiser-Konto" : "Noch nicht ausgewählt";
+    const activeStepNumber = () =>
+      stage === "route" ? 1 : stage === "manager" || stage === "manager-error" || stage === "manager-depth" ? 2 : 3;
+
+    function buildResultText() {
+      if (!result) return "";
+      return [
+        `Microsoft Advertising Kontoprüfung: ${result.title}`,
+        `Prüfweg: ${progressLabel()}`,
+        ...checks.map((item) => `✓ ${item}`),
+        `Bill-to: ${billTo || "nicht erreicht"}`,
+        owner ? `Besitzer: ${owner}` : "",
+        result.text,
+        ...result.actions.map((item) => `• ${item}`),
+      ]
+        .filter(Boolean)
+        .join("\n");
+    }
+
+    function renderProgress() {
+      const active = activeStepNumber();
+      const labels = ["Prüfweg", "Direct Manager", "Bill-to"];
+      progressEl.innerHTML = labels
+        .map((label, i) => {
+          const number = i + 1;
+          const complete = number < active;
+          const isActive = number === active;
+          return `<li class="msads-progress__step ${isActive ? "is-active" : complete ? "is-complete" : ""}">
+            <span class="msads-progress__num">${complete ? ICONS.check : number}</span>
+            <small>${escapeHtml(label)}</small>
+          </li>`;
+        })
+        .join("");
+    }
+
+    function renderProtocol() {
+      protocolEl.innerHTML = `
+        <h2>Prüfprotokoll</h2>
+        <dl class="msads-protocol__row"><dt>Prüfweg</dt><dd>${escapeHtml(progressLabel())}</dd></dl>
+        <div class="msads-protocol__list">
+          ${
+            checks.length === 0
+              ? `<p class="msads-protocol__empty">Noch keine Prüfung bestätigt.</p>`
+              : checks.map((item) => `<div class="msads-protocol__item">${ICONS.check}<p>${escapeHtml(item)}</p></div>`).join("")
+          }
+        </div>
+        ${billTo ? `<dl class="msads-protocol__row"><dt>Bill-to</dt><dd>${escapeHtml(billTo)}</dd></dl>` : ""}
+        ${owner ? `<dl class="msads-protocol__row"><dt>Besitzer</dt><dd>${escapeHtml(owner)}</dd></dl>` : ""}
+        <p class="msads-protocol__note"><strong>Reihenfolge merken:</strong> Direct Manager und MCC zuerst. Bill-to erst nach bestandenem Gate 1.</p>
+      `;
+    }
+
+    function focusHeading() {
+      const heading = panelEl.querySelector("h2");
+      if (!heading) return;
+      heading.setAttribute("tabindex", "-1");
+      heading.focus();
+    }
+
+    function renderStage() {
+      renderProgress();
+      renderProtocol();
+
+      if (stage === "route") {
+        panelEl.innerHTML = `
+          <div class="msads-step-label">SCHRITT 1 VON 3</div>
+          <h2>Was wird geprüft?</h2>
+          <p class="msads-lead">Wählen Sie den Fall, der im Microsoft-Advertising-Konto tatsächlich vorliegt.</p>
+          <div class="msads-choice-grid">
+            <button type="button" class="msads-choice-card msads-choice-card--teal" data-msads-route="agency">
+              <span class="msads-choice-letter">A</span>
+              <span><strong>Ganze Agentur-Shell</strong><small>SOWESPOKE → Agentur-Shell → mehrere Advertiser-Konten</small></span>
+            </button>
+            <button type="button" class="msads-choice-card msads-choice-card--accent" data-msads-route="account">
+              <span class="msads-choice-letter">B</span>
+              <span><strong>Einzelnes Advertiser-Konto</strong><small>SOWESPOKE wird direkt mit einem Konto verknüpft</small></span>
+            </button>
+          </div>
+        `;
+        panelEl.querySelectorAll("[data-msads-route]").forEach((btn) => {
+          btn.addEventListener("click", () => chooseRoute(btn.dataset.msadsRoute));
+        });
+      } else if (stage === "manager") {
+        const q = levelQuestions[questionIndex];
+        const levelLabel = route === "agency" ? ` · EBENE ${level}` : "";
+        panelEl.innerHTML = `
+          <div class="msads-step-label">SCHRITT 2 VON 3${levelLabel} · PRÜFUNG ${questionIndex + 1} VON ${levelQuestions.length}</div>
+          <h2>${escapeHtml(q.title)}</h2>
+          <div class="msads-question-box">
+            ${ICONS.info}
+            <div><h3>${escapeHtml(q.question)}</h3><p>${escapeHtml(q.help)}</p></div>
+          </div>
+          <div class="msads-yesno">
+            <button type="button" class="btn btn--primary" data-msads-answer="yes">${ICONS.check} Ja, stimmt</button>
+            <button type="button" class="btn btn--secondary" data-msads-answer="no">Nein / unklar</button>
+          </div>
+        `;
+        panelEl.querySelector('[data-msads-answer="yes"]').addEventListener("click", () => answerManager(true));
+        panelEl.querySelector('[data-msads-answer="no"]').addEventListener("click", () => answerManager(false));
+      } else if (stage === "manager-depth") {
+        panelEl.innerHTML = `
+          <div class="msads-step-label">SCHRITT 2 VON 3 · EBENE ${level} BESTANDEN</div>
+          <h2>Geht die Hierarchie noch weiter?</h2>
+          <p class="msads-lead">Manchmal hängt unter einer Agentur-MCC nicht direkt das Advertiser-Konto, sondern eine weitere Kunden-/Verwaltungs-MCC. Es zählt immer die unterste Ebene.</p>
+          <div class="msads-choice-grid">
+            <button type="button" class="msads-choice-card msads-choice-card--accent" data-msads-depth="deeper">
+              <span class="msads-choice-letter">+</span>
+              <span><strong>Weitere Manager-MCC</strong><small>Darunter hängt noch eine MCC, kein Endkonto</small></span>
+            </button>
+            <button type="button" class="msads-choice-card msads-choice-card--teal" data-msads-depth="account">
+              <span class="msads-choice-letter">✓</span>
+              <span><strong>Das ist das Advertiser-Konto</strong><small>Hier liegt das eigentliche Endkonto</small></span>
+            </button>
+          </div>
+        `;
+        panelEl.querySelector('[data-msads-depth="deeper"]').addEventListener("click", () => chooseDepth(true));
+        panelEl.querySelector('[data-msads-depth="account"]').addEventListener("click", () => chooseDepth(false));
+      } else if (stage === "manager-error") {
+        panelEl.innerHTML = `
+          <div class="msads-status-symbol msads-status-symbol--action">${ICONS.flash}</div>
+          <div class="msads-step-label msads-step-label--danger">GATE 1 NICHT BESTANDEN</div>
+          <h2>Hierarchie zuerst korrigieren</h2>
+          <p class="msads-lead">Die Prüfung wurde bei „${escapeHtml(failedQuestion)}" gestoppt. Bill-to wird noch nicht bewertet.</p>
+          <div class="msads-callout">
+            <strong>Zwei mögliche Wege</strong>
+            <ol><li>Die andere Agentur entknüpft sich.</li><li>Die betroffene Agentur-Shell entknüpft sich und verknüpft sich erneut.</li></ol>
+            <p>SOWESPOKE ist in diesem Korrekturschritt nicht die Stelle, die sich neu verknüpft.</p>
+          </div>
+          <button type="button" class="btn btn--primary" data-msads-reset>Neue Prüfung starten</button>
+        `;
+        panelEl.querySelector("[data-msads-reset]").addEventListener("click", resetAll);
+      } else if (stage === "billto") {
+        panelEl.innerHTML = `
+          <div class="msads-step-label msads-step-label--success">GATE 1 BESTANDEN · SCHRITT 3 VON 3</div>
+          <h2>Wer steht bei „Rechnung an Kunde" / Bill-to?</h2>
+          <p class="msads-lead">Wählen Sie den Eintrag genau so, wie er in der Kontenübersicht erscheint.</p>
+          <div class="msads-billto-grid">
+            ${MSADS_BILLTO_OPTIONS.map(
+              (o) => `
+              <button type="button" class="msads-billto-card" data-msads-billto="${escapeHtml(o.title)}">
+                <span class="msads-radio" aria-hidden="true"></span>
+                <span><strong>${escapeHtml(o.title)}</strong><small>${escapeHtml(o.text)}</small></span>
+              </button>`
+            ).join("")}
+          </div>
+        `;
+        panelEl.querySelectorAll("[data-msads-billto]").forEach((btn) => {
+          btn.addEventListener("click", () => chooseBillTo(btn.dataset.msadsBillto));
+        });
+      } else if (stage === "owner") {
+        panelEl.innerHTML = `
+          <div class="msads-step-label">BILL-TO · AUSNAHME PRÜFEN</div>
+          <h2>Wer ist Besitzer des Kontos?</h2>
+          <p class="msads-lead">Eine alte Agentur-Shell ist nur dann als Ausnahme korrekt, wenn genau diese Shell das Konto ursprünglich erstellt hat und als Besitzer eingetragen ist.</p>
+          <div class="msads-choice-grid">
+            <button type="button" class="msads-choice-card msads-choice-card--teal" data-msads-owner="same">
+              <span class="msads-choice-letter">1</span>
+              <span><strong>Dieselbe alte Shell</strong><small>Besitzer und Bill-to sind identisch</small></span>
+            </button>
+            <button type="button" class="msads-choice-card msads-choice-card--action" data-msads-owner="other">
+              <span class="msads-choice-letter">2</span>
+              <span><strong>Kunde oder andere Einheit</strong><small>Besitzer und alte Bill-to-Shell sind nicht identisch</small></span>
+            </button>
+          </div>
+        `;
+        panelEl.querySelector('[data-msads-owner="same"]').addEventListener("click", () => chooseOwner(true));
+        panelEl.querySelector('[data-msads-owner="other"]').addEventListener("click", () => chooseOwner(false));
+      } else if (stage === "payment") {
+        panelEl.innerHTML = `
+          <div class="msads-step-label msads-step-label--danger">BILL-TO NICHT KORREKT</div>
+          <h2>Wer soll die Rechnung künftig übernehmen?</h2>
+          <p class="msads-lead">Davon hängt die notwendige Korrektur ab.</p>
+          <div class="msads-choice-grid">
+            <button type="button" class="msads-choice-card msads-choice-card--accent" data-msads-payment="agency">
+              <span class="msads-choice-letter">A</span>
+              <span><strong>Die Agentur</strong><small>Neue SAP-ID für die neue Agentur-MCC beantragen</small></span>
+            </button>
+            <button type="button" class="msads-choice-card msads-choice-card--teal" data-msads-payment="customer">
+              <span class="msads-choice-letter">K</span>
+              <span><strong>Der Kunde</strong><small>Bill-to auf den Kunden ändern</small></span>
+            </button>
+          </div>
+        `;
+        panelEl.querySelector('[data-msads-payment="agency"]').addEventListener("click", () => choosePayment(true));
+        panelEl.querySelector('[data-msads-payment="customer"]').addEventListener("click", () => choosePayment(false));
+      } else if (stage === "result" && result) {
+        const kindVar = result.kind === "ok" ? "--teal-text" : result.kind === "exception" ? "--yellow-text" : "--accent";
+        const kindIcon = result.kind === "action" ? ICONS.flash : ICONS.check;
+        panelEl.innerHTML = `
+          <div class="msads-status-symbol" style="color: var(${kindVar})">${kindIcon}</div>
+          <div class="msads-step-label" style="color: var(${kindVar})">${escapeHtml(result.eyebrow.toUpperCase())}</div>
+          <h2>${escapeHtml(result.title)}</h2>
+          <p class="msads-lead">${escapeHtml(result.text)}</p>
+          <div class="msads-callout">
+            <strong>Nächste Schritte</strong>
+            <ul>${result.actions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+          </div>
+          <div class="msads-callout">
+            <strong>${escapeHtml(msadsDeadlineNote(route).title)}</strong>
+            <p>${escapeHtml(msadsDeadlineNote(route).text)}</p>
+          </div>
+          <div class="msads-yesno">
+            <button type="button" class="btn btn--primary" data-msads-copy>${ICONS.copy} Ergebnis kopieren</button>
+            <button type="button" class="btn btn--secondary" data-msads-reset>Neue Prüfung</button>
+            <span class="mailgen__status" data-msads-copy-status>${ICONS.check} Kopiert</span>
+          </div>
+        `;
+        panelEl.querySelector("[data-msads-reset]").addEventListener("click", resetAll);
+        panelEl.querySelector("[data-msads-copy]").addEventListener("click", copyResult);
+      }
+
+      focusHeading();
+    }
+
+    function chooseRoute(value) {
+      route = value;
+      checks = [];
+      level = 1;
+      isLeafLevel = value === "account";
+      levelQuestions = [MSADS_TOP_LEVEL_QUESTION[value], msadsRecencyQuestion("SOWESPOKE")];
+      questionIndex = 0;
+      stage = "manager";
+      renderStage();
+    }
+
+    function answerManager(answer) {
+      const q = levelQuestions[questionIndex];
+      if (!q) return;
+      if (!answer) {
+        failedQuestion = q.title;
+        stage = "manager-error";
+        renderStage();
+        return;
+      }
+      checks = [...checks, q.log];
+      if (questionIndex + 1 < levelQuestions.length) {
+        questionIndex += 1;
+      } else if (route === "account" || isLeafLevel) {
+        stage = "billto";
+      } else {
+        stage = "manager-depth";
+      }
+      renderStage();
+    }
+
+    function chooseDepth(hasDeeper) {
+      level += 1;
+      isLeafLevel = !hasDeeper;
+      levelQuestions = hasDeeper
+        ? [msadsMccLevelQuestion(level), msadsRecencyQuestion("unsere verknüpfte Agentur-MCC")]
+        : [MSADS_ACCOUNT_LEVEL_QUESTION, msadsRecencyQuestion("unsere verknüpfte Agentur-MCC")];
+      questionIndex = 0;
+      stage = "manager";
+      renderStage();
+    }
+
+    function chooseBillTo(value) {
+      billTo = value;
+      if (value === "Kunde") {
+        result = {
+          kind: "ok",
+          eyebrow: "Prüfung bestanden",
+          title: "Korrekt",
+          text: "Der Kunde ist Rechnungsempfänger und übernimmt die Rechnung.",
+          actions: ["Ergebnis dokumentieren und das geprüfte Konto flaggen."],
+        };
+        stage = "result";
+      } else if (value === "Richtige / neue Agentur-Shell") {
+        result = {
+          kind: "ok",
+          eyebrow: "Prüfung bestanden",
+          title: "Korrekt nach Datenabgleich",
+          text: "Die richtige beziehungsweise neu erstellte Agentur-Shell ist Rechnungsempfänger.",
+          actions: ["MCC-Name, MCC-Nummer und SAP-ID der Shell dokumentieren.", "Geprüftes Konto flaggen."],
+        };
+        stage = "result";
+      } else if (value === "Alte Agentur-Shell") {
+        stage = "owner";
+      } else {
+        owner = "Nicht eindeutig";
+        stage = "payment";
+      }
+      renderStage();
+    }
+
+    function chooseOwner(isSameOldShell) {
+      if (isSameOldShell) {
+        owner = "Dieselbe alte Agentur-Shell";
+        result = {
+          kind: "exception",
+          eyebrow: "Zulässige Ausnahme",
+          title: "Ausnahme: korrekt",
+          text: "Dieselbe alte Shell ist Besitzer und Bill-to. Das ist plausibel, wenn sie das Konto ursprünglich erstellt hat.",
+          actions: ["Ownership und Bill-to gemeinsam dokumentieren.", "Geprüftes Konto als Ausnahme flaggen."],
+        };
+        stage = "result";
+      } else {
+        owner = "Kunde oder andere Einheit";
+        stage = "payment";
+      }
+      renderStage();
+    }
+
+    function choosePayment(agencyPays) {
+      result = {
+        kind: "action",
+        eyebrow: "Korrektur erforderlich",
+        title: "Noch nicht korrekt",
+        text: agencyPays
+          ? "Die Agentur soll zahlen, aber die passende neue Agentur-Shell ist noch nicht sauber im Billing hinterlegt."
+          : "Der Kunde soll zahlen, steht aber noch nicht als Rechnungsempfänger im Bill-to.",
+        actions: agencyPays
+          ? ["Neue SAP-ID für die neue Agentur-MCC beantragen.", "Danach Bill-to und SAP-ID erneut prüfen."]
+          : ["Bill-to auf den Kunden ändern.", "Danach die Prüfung erneut durchführen."],
+      };
+      stage = "result";
+      renderStage();
+    }
+
+    function resetAll() {
+      stage = "route";
+      route = null;
+      level = 1;
+      levelQuestions = [];
+      isLeafLevel = false;
+      questionIndex = 0;
+      checks = [];
+      failedQuestion = "";
+      billTo = "";
+      owner = "";
+      result = null;
+      renderStage();
+    }
+
+    async function copyResult() {
+      const statusEl = panelEl.querySelector("[data-msads-copy-status]");
+      try {
+        await navigator.clipboard.writeText(buildResultText());
+        statusEl.innerHTML = `${ICONS.check} Kopiert`;
+      } catch {
+        statusEl.textContent = "Kopieren nicht möglich";
+      }
+      statusEl.classList.add("is-visible");
+      clearTimeout(copyTimer);
+      copyTimer = setTimeout(() => statusEl.classList.remove("is-visible"), 2200);
+    }
+
+    renderStage();
+  }
+
   /* ------------------------------------------------------- Zuletzt angesehen */
 
   const RECENT_KEY = "sowespoke-recent";
@@ -3282,7 +3762,8 @@
         (a.dataset.nav === "anfragen" && path.startsWith("/anfragen")) ||
         (a.dataset.nav === "ideen" && path.startsWith("/ideen")) ||
         (a.dataset.nav === "serienmails" && path.startsWith("/serienmails")) ||
-        (a.dataset.nav === "nutzer" && path.startsWith("/nutzer"));
+        (a.dataset.nav === "nutzer" && path.startsWith("/nutzer")) ||
+        (a.dataset.nav === "microsoft-ads-kontopruefung" && path.startsWith("/microsoft-ads-kontopruefung"));
       if (active) a.setAttribute("aria-current", "page");
       else a.removeAttribute("aria-current");
     });
@@ -3343,6 +3824,8 @@
       renderScheduledMails();
     } else if (path === "/nutzer") {
       renderLoginLog();
+    } else if (path === "/microsoft-ads-kontopruefung") {
+      renderMsAdsCheck();
     } else {
       renderNotFound(path);
     }

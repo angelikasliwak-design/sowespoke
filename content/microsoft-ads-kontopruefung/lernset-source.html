@@ -1,0 +1,447 @@
+<!-- impeccable-disable design-system-color, design-system-radius -- standalone
+     print-to-PDF build source (never served as a live UI surface, see
+     tools note in DESIGN.md): uses mm units and a print-only tint palette
+     derived from tokens.css for paper contrast, not the app's px/rem
+     component scale. -->
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<title>Microsoft Ads Kontoprüfung — Lernset</title>
+<style>
+  @font-face {
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 400;
+    src: url("../../assets/fonts/OpenSans-Regular.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 600;
+    src: url("../../assets/fonts/OpenSans-SemiBold.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Exo 2";
+    font-style: normal;
+    font-weight: 100 900;
+    src: url("../../assets/fonts/Exo2-Variable.woff2") format("woff2");
+  }
+
+  :root {
+    --ink: #111111;
+    --ink-60: #636363;
+    --paper: #FFFFFF;
+    --line: #E7E3DB;
+    --accent: #D4035F;
+    --accent-tint: #FDE6F1;
+    --teal: #00A6B2;
+    --teal-deep: #007C85;
+    --teal-tint: #E2F3F2;
+    --yellow: #FFC600;
+    --yellow-tint: #FFF7DC;
+    --success: #146B3A;
+    --success-tint: #DCF1E3;
+    --warning: #A5341A;
+    --warning-tint: #FBE4DE;
+  }
+
+  @page { size: 297mm 210mm; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Open Sans", "Segoe UI", sans-serif;
+    color: var(--ink);
+    background: #DCD6C8;
+  }
+  h1, h2, h3, .display {
+    font-family: "Exo 2", "Segoe UI", sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
+  .page {
+    width: 297mm;
+    height: 210mm;
+    background: var(--paper);
+    position: relative;
+    padding: 14mm 16mm 12mm;
+    page-break-after: always;
+    overflow: hidden;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  .masthead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 6mm;
+    border-bottom: 2px solid var(--line);
+    margin-bottom: 8mm;
+  }
+  .masthead__logo { height: 9mm; display: block; }
+  .masthead__meta { text-align: right; font-size: 9.5pt; color: var(--ink-60); font-weight: 600; }
+  .masthead__meta strong { color: var(--ink); }
+
+  .step-row { display: flex; align-items: flex-start; gap: 5mm; margin-bottom: 6mm; }
+  .step-num {
+    flex: none;
+    width: 11mm; height: 11mm;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: "Exo 2", sans-serif; font-weight: 800; font-size: 14pt;
+  }
+  .step-head h1 { font-size: 22pt; }
+  .step-head p { margin: 1.5mm 0 0; font-size: 10.5pt; color: var(--ink-60); max-width: 150mm; }
+
+  /* -- Route cards (Page 1) -- */
+  .route-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin-top: 4mm; }
+  .route-card { border-radius: 6mm; border: 1.5px solid var(--line); overflow: hidden; }
+  .route-card__head { padding: 5mm 6mm; font-family: "Exo 2", sans-serif; font-weight: 800; font-size: 13pt; }
+  .route-card--a .route-card__head { background: var(--teal-tint); color: var(--teal-deep); }
+  .route-card--b .route-card__head { background: var(--accent-tint); color: var(--accent); }
+  .route-card__body { padding: 5mm 6mm 6mm; }
+  .route-card__body > p { margin: 0 0 4mm; font-size: 9.5pt; color: var(--ink-60); }
+  .route-step { display: flex; gap: 3.5mm; margin-bottom: 3.5mm; }
+  .route-step__badge {
+    flex: none; width: 7mm; height: 7mm; border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 10pt; color: #fff;
+  }
+  .route-card--a .route-step__badge { background: var(--teal); }
+  .route-card--b .route-step__badge { background: var(--accent); }
+  .route-step strong { display: block; font-size: 10pt; }
+  .route-step span { display: block; font-size: 9pt; color: var(--ink-60); line-height: 1.4; }
+
+  .join-banner {
+    margin-top: 7mm;
+    background: var(--ink);
+    color: #fff;
+    border-radius: 4mm;
+    padding: 4mm 6mm;
+    text-align: center;
+    font-family: "Exo 2", sans-serif;
+    font-weight: 700;
+    font-size: 11.5pt;
+  }
+
+  /* -- Ebenen-diagram (page 2) -- */
+  .ladder { display: flex; align-items: stretch; gap: 3mm; margin: 5mm 0 6mm; }
+  .ladder__node {
+    flex: 1;
+    border: 1.5px solid var(--line);
+    border-radius: 4mm;
+    padding: 4mm;
+    background: #FAFAF8;
+    position: relative;
+  }
+  .ladder__node--variable { background: var(--yellow-tint); border-color: #E9CE6B; border-style: dashed; }
+  .ladder__node--leaf { background: var(--teal-tint); border-color: var(--teal); }
+  .ladder__node b { display: block; font-size: 10pt; font-family: "Exo 2", sans-serif; }
+  .ladder__node small { font-size: 8.3pt; color: var(--ink-60); line-height: 1.35; display: block; margin-top: 1mm; }
+  .ladder__arrow { flex: none; align-self: center; font-size: 14pt; color: var(--ink-60); }
+
+  .rule-note {
+    background: var(--accent-tint);
+    border-left: 3.5px solid var(--accent);
+    border-radius: 0 3mm 3mm 0;
+    padding: 3.5mm 5mm;
+    font-size: 9.7pt;
+    margin-bottom: 6mm;
+  }
+  .rule-note strong { color: var(--accent); }
+
+  .checklist { display: flex; flex-direction: column; gap: 2.6mm; margin-bottom: 6mm; }
+  .checklist li { display: flex; gap: 3mm; align-items: flex-start; font-size: 9.7pt; list-style: none; }
+  .checklist li::before {
+    content: "✓"; flex: none;
+    width: 5.5mm; height: 5.5mm; border-radius: 999px;
+    background: var(--success-tint); color: var(--success);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8.5pt; font-weight: 700;
+  }
+
+  .warn-box {
+    background: var(--warning-tint);
+    border: 1.3px solid #E6B8A6;
+    border-radius: 3mm;
+    padding: 4mm 5mm;
+    font-size: 9.3pt;
+    color: #7A2B12;
+  }
+  .warn-box strong { display: block; font-size: 9.7pt; margin-bottom: 1.5mm; color: var(--warning); }
+
+  .pass-banner {
+    margin-top: 5mm;
+    background: var(--success-tint);
+    border: 1.3px solid #9CC9AA;
+    border-radius: 4mm;
+    padding: 4mm 6mm;
+    text-align: center;
+    font-weight: 700;
+    color: var(--success);
+    font-size: 11pt;
+  }
+
+  /* -- Bill-to table (page 3) -- */
+  table.billto { width: 100%; border-collapse: collapse; font-size: 9.3pt; margin-top: 4mm; }
+  table.billto th {
+    background: var(--ink); color: #fff; text-align: left;
+    padding: 3.2mm 4mm; font-size: 8.6pt; font-weight: 700; letter-spacing: 0.02em;
+  }
+  table.billto th:first-child { border-radius: 3mm 0 0 0; }
+  table.billto th:last-child { border-radius: 0 3mm 0 0; }
+  table.billto td { padding: 3.6mm 4mm; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.billto tr.row-ok td:first-child, table.billto tr.row-exception td:first-child { font-weight: 700; }
+  table.billto tr.row-exception { background: var(--yellow-tint); }
+  table.billto tr.row-bad { background: var(--warning-tint); }
+  .pill { display: inline-block; padding: 1.2mm 3.5mm; border-radius: 999px; font-size: 8.3pt; font-weight: 700; white-space: nowrap; }
+  .pill--ok { background: var(--success-tint); color: var(--success); border: 1px solid #9CC9AA; }
+  .pill--exception { background: #FCEEBE; color: #8A6200; border: 1px solid #E9CE6B; }
+  .pill--bad { background: #FBDCD2; color: var(--warning); border: 1px solid #E6B8A6; }
+
+  .memo {
+    margin-top: 6mm;
+    background: var(--yellow-tint);
+    border: 1.3px solid #E9CE6B;
+    border-radius: 3mm;
+    padding: 4mm 5mm;
+    font-size: 9.5pt;
+    display: flex; gap: 4mm; align-items: flex-start;
+  }
+  .memo b { flex: none; font-size: 8.6pt; text-transform: uppercase; letter-spacing: 0.04em; color: #8A6200; }
+
+  /* -- Page 4: Fristen -- */
+  .deadline-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin-top: 5mm; }
+  .deadline-card { border-radius: 6mm; border: 1.5px solid var(--line); padding: 6mm; }
+  .deadline-card__date { font-family: "Exo 2", sans-serif; font-weight: 800; font-size: 30pt; line-height: 1; color: var(--accent); }
+  .deadline-card--direct .deadline-card__date { color: var(--teal-deep); }
+  .deadline-card__label { font-size: 9pt; color: var(--ink-60); margin: 1.5mm 0 4mm; }
+  .deadline-card__path { font-size: 9.7pt; font-weight: 700; margin-bottom: 2mm; }
+  .deadline-card__counts { font-size: 9.3pt; color: var(--ink-60); line-height: 1.5; }
+  .deadline-card__counts strong { color: var(--ink); }
+
+  .footnote-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin-top: 7mm; }
+  .footnote-box { border-left: 3.5px solid var(--teal); background: var(--teal-tint); border-radius: 0 3mm 3mm 0; padding: 4mm 5mm; font-size: 9.2pt; }
+  .footnote-box strong { display: block; font-size: 9.6pt; margin-bottom: 1.5mm; color: var(--teal-deep); }
+  .footnote-box--tool { border-left-color: var(--accent); background: var(--accent-tint); }
+  .footnote-box--tool strong { color: var(--accent); }
+
+  .foot {
+    position: absolute;
+    left: 16mm; right: 16mm; bottom: 8mm;
+    display: flex; justify-content: space-between;
+    font-size: 7.6pt; color: var(--ink-60);
+    padding-top: 3mm; border-top: 1px solid var(--line);
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ PAGE 1 — Prüfweg auswählen ============ -->
+<section class="page">
+  <div class="masthead">
+    <img class="masthead__logo" src="../../assets/brand/logo-sowespoke-logo%20horizontal%20kleiner.png" alt="Sowespoke" />
+    <div class="masthead__meta"><strong>Microsoft Ads Kontoprüfung</strong> · Internes Lernset</div>
+  </div>
+
+  <div class="step-row">
+    <div class="step-num">1</div>
+    <div class="step-head">
+      <h1>Prüfweg auswählen</h1>
+      <p>Nur eine Auswahl treffen. Danach führt die Prüfung Ebene für Ebene weiter, bis das eigentliche Advertiser-Konto erreicht ist.</p>
+    </div>
+  </div>
+
+  <div class="route-grid">
+    <div class="route-card route-card--a">
+      <div class="route-card__head">A · Ganze Agentur-Shell</div>
+      <div class="route-card__body">
+        <p>SOWESPOKE wird mit der Agentur-Shell verknüpft. Danach wird jedes Advertiser-Konto unter dieser Shell geprüft — die Kette kann mehrere Ebenen tief sein.</p>
+        <div class="route-step"><span class="route-step__badge">1</span><div><strong>Agentur-Shell</strong><span>SOWESPOKE als Direct Manager; MCC-Name und MCC-Nummer prüfen.</span></div></div>
+        <div class="route-step"><span class="route-step__badge">2</span><div><strong>Jede weitere Ebene</strong><span>Richtige, mit uns verknüpfte Agentur-MCC als Direct Manager; Name und Nummer prüfen — wiederholen, solange darunter noch eine Manager-MCC hängt.</span></div></div>
+        <div class="route-step"><span class="route-step__badge">3</span><div><strong>Auf derselben Ebene</strong><span>Bei mehreren Direct Managern muss unsere Agentur-MCC die zuletzt verknüpfte sein.</span></div></div>
+      </div>
+    </div>
+    <div class="route-card route-card--b">
+      <div class="route-card__head">B · Einzelnes Advertiser-Konto</div>
+      <div class="route-card__body">
+        <p>Ein einzelnes, bereits bekanntes Advertiser-Konto wird direkt mit SOWESPOKE verknüpft und auf Kontoebene geprüft.</p>
+        <div class="route-step"><span class="route-step__badge">1</span><div><strong>Advertiser-Konto</strong><span>SOWESPOKE als Direct Manager; MCC-Name und MCC-Nummer prüfen.</span></div></div>
+        <div class="route-step"><span class="route-step__badge">2</span><div><strong>Auf derselben Ebene</strong><span>SOWESPOKE muss als zuletzt verknüpfter Direct Manager sichtbar sein.</span></div></div>
+        <div class="route-step"><span class="route-step__badge">3</span><div><strong>Danach Bill-to</strong><span>Erst nach bestandener Manager-Prüfung den Rechnungsempfänger prüfen.</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="join-banner">Gemeinsamer nächster Schritt: Direct Manager und MCC prüfen</div>
+
+  <div class="foot">
+    <span>SOWESPOKE bleibt als Originalname erhalten. Alle anderen Beispielnamen, Nummern und Daten sind fiktiv.</span>
+    <span>Prüf- und Lernhilfe · keine automatische Änderung in Microsoft Advertising</span>
+  </div>
+</section>
+
+<!-- ============ PAGE 2 — Direct Manager und MCC prüfen ============ -->
+<section class="page">
+  <div class="masthead">
+    <img class="masthead__logo" src="../../assets/brand/logo-sowespoke-logo%20horizontal%20kleiner.png" alt="Sowespoke" />
+    <div class="masthead__meta"><strong>Microsoft Ads Kontoprüfung</strong> · Internes Lernset</div>
+  </div>
+
+  <div class="step-row">
+    <div class="step-num">2</div>
+    <div class="step-head">
+      <h1>Direct Manager und MCC prüfen</h1>
+      <p>Gate 1 muss vollständig bestanden sein, bevor Bill-to bewertet wird. Bei Route A wird dieselbe Prüfung so oft wiederholt, wie es Ebenen gibt.</p>
+    </div>
+  </div>
+
+  <div class="rule-note"><strong>Grundregel:</strong> Zwischen Agentur-Shell und dem tatsächlichen Advertiser-Konto können weitere Kunden-/Verwaltungs-MCCs hängen. Es zählt immer die <strong>unterste Ebene</strong> — und auf jeder Ebene muss es wirklich <strong>die mit uns verknüpfte</strong> Shell sein, nicht irgendeine andere Shell derselben Agentur.</div>
+
+  <div class="ladder">
+    <div class="ladder__node"><b>Agentur-Shell</b><small>SOWESPOKE ist Direct Manager</small></div>
+    <div class="ladder__arrow">→</div>
+    <div class="ladder__node ladder__node--variable"><b>Weitere MCC?</b><small>Manchmal 0, manchmal mehrere Ebenen — jede genauso prüfen</small></div>
+    <div class="ladder__arrow">→</div>
+    <div class="ladder__node ladder__node--leaf"><b>Advertiser-Konto</b><small>Unterste Ebene — hier zählt die Prüfung</small></div>
+  </div>
+
+  <ul class="checklist">
+    <li>Name und MCC-Nummer der verknüpften Stelle stimmen mit unseren Daten überein.</li>
+    <li>Es ist genau die Shell, die mit uns verknüpft ist — nicht eine andere Shell derselben Agentur.</li>
+    <li>Bei mehreren Direct Managern auf derselben Ebene: unsere Stelle ist die zuletzt verknüpfte.</li>
+    <li>Solange darunter noch eine weitere Manager-MCC hängt: dieselbe Prüfung eine Ebene tiefer wiederholen.</li>
+  </ul>
+
+  <div class="warn-box">
+    <strong>WENN NEIN</strong>
+    Andere Agentur entknüpft sich – oder die betroffene Agentur-Shell entknüpft sich und verknüpft sich erneut. SOWESPOKE ist in diesem Korrekturschritt nicht die Stelle, die sich neu verknüpft.
+  </div>
+
+  <div class="pass-banner">GATE 1 BESTANDEN → Jetzt „Rechnung an Kunde" / Bill-to prüfen</div>
+
+  <div class="foot">
+    <span>SOWESPOKE bleibt als Originalname erhalten. Alle anderen Beispielnamen, Nummern und Daten sind fiktiv.</span>
+    <span>Prüf- und Lernhilfe · keine automatische Änderung in Microsoft Advertising</span>
+  </div>
+</section>
+
+<!-- ============ PAGE 3 — Bill-to entscheiden ============ -->
+<section class="page">
+  <div class="masthead">
+    <img class="masthead__logo" src="../../assets/brand/logo-sowespoke-logo%20horizontal%20kleiner.png" alt="Sowespoke" />
+    <div class="masthead__meta"><strong>Microsoft Ads Kontoprüfung</strong> · Internes Lernset</div>
+  </div>
+
+  <div class="step-row">
+    <div class="step-num">3</div>
+    <div class="step-head">
+      <h1>Bill-to entscheiden</h1>
+      <p>Zuerst den Eintrag „Rechnung an Kunde" lesen, dann Besitzer und Zahlungsweg abgleichen.</p>
+    </div>
+  </div>
+
+  <table class="billto">
+    <thead>
+      <tr><th>Bill-to im Konto</th><th>Besitzer</th><th>Ergebnis</th><th>Was ist zu tun?</th></tr>
+    </thead>
+    <tbody>
+      <tr class="row-ok">
+        <td>Kunde</td>
+        <td>Nicht entscheidend</td>
+        <td><span class="pill pill--ok">OK</span></td>
+        <td>Der Kunde übernimmt die Rechnung. Keine SAP-Änderung nötig.</td>
+      </tr>
+      <tr class="row-ok">
+        <td>Richtige / neue Agentur-Shell</td>
+        <td>Kunde oder (neue) Agentur</td>
+        <td><span class="pill pill--ok">OK</span></td>
+        <td>MCC-Name, MCC-Nummer und SAP-ID der richtigen bzw. neu erstellten Shell prüfen.</td>
+      </tr>
+      <tr class="row-exception">
+        <td>Alte Agentur-Shell</td>
+        <td>Dieselbe alte Shell</td>
+        <td><span class="pill pill--exception">AUSNAHME: OK</span></td>
+        <td>OK, wenn diese alte Shell das Konto ursprünglich erstellt hat und zugleich als Besitzer eingetragen ist.</td>
+      </tr>
+      <tr class="row-bad">
+        <td>Alte Agentur-Shell</td>
+        <td>Kunde oder andere Einheit</td>
+        <td><span class="pill pill--bad">NICHT OK</span></td>
+        <td>Agentur zahlt: neue SAP-ID für die neue Agentur-MCC beantragen. Kunde zahlt: Bill-to auf den Kunden ändern.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="memo"><b>Merksatz</b><span>Eine alte Shell ist nur dann als Ausnahme korrekt, wenn genau diese alte Shell auch Besitzer des Kontos ist.</span></div>
+
+  <div class="footnote-grid" style="margin-top:9mm">
+    <div class="footnote-box">
+      <strong>Warum dauert eine SAP-Korrektur manchmal länger?</strong>
+      Microsoft vergibt ungern zwei SAP-IDs für dieselbe Agentur — eine neue SAP-ID für eine neue Agentur-Shell zu beantragen, ist deshalb kein reiner Selbstlauf.
+    </div>
+    <div class="footnote-box">
+      <strong>Reihenfolge merken</strong>
+      Direct Manager und MCC zuerst (Gate 1) — Bill-to wird erst danach bewertet, nie parallel oder vorher.
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>SOWESPOKE bleibt als Originalname erhalten. Alle anderen Beispielnamen, Nummern und Daten sind fiktiv.</span>
+    <span>Prüf- und Lernhilfe · keine automatische Änderung in Microsoft Advertising</span>
+  </div>
+</section>
+
+<!-- ============ PAGE 4 — Fristen & weiterführend ============ -->
+<section class="page">
+  <div class="masthead">
+    <img class="masthead__logo" src="../../assets/brand/logo-sowespoke-logo%20horizontal%20kleiner.png" alt="Sowespoke" />
+    <div class="masthead__meta"><strong>Microsoft Ads Kontoprüfung</strong> · Internes Lernset</div>
+  </div>
+
+  <div class="step-row">
+    <div class="step-num">4</div>
+    <div class="step-head">
+      <h1>Fristen im Monat</h1>
+      <p>Unabhängig vom Prüfweg gilt: der Verknüpfungsweg bestimmt sowohl den Stichtag als auch, welches Datum überhaupt zählt.</p>
+    </div>
+  </div>
+
+  <div class="deadline-grid">
+    <div class="deadline-card deadline-card--direct">
+      <div class="deadline-card__date">30./31.</div>
+      <div class="deadline-card__label">des Monats</div>
+      <div class="deadline-card__path">SOWESPOKE → Endkunden-MCC direkt</div>
+      <div class="deadline-card__counts">Hier zählt <strong>das Linking-Datum</strong> — also wann die Verknüpfung tatsächlich hergestellt wurde.</div>
+    </div>
+    <div class="deadline-card">
+      <div class="deadline-card__date">20.</div>
+      <div class="deadline-card__label">des Monats</div>
+      <div class="deadline-card__path">SOWESPOKE → Agentur-MCC → Endkunden-Konten</div>
+      <div class="deadline-card__counts">Hier zählt <strong>nicht</strong> das Linking, sondern der <strong>Eingang der Autorisierung</strong>.</div>
+    </div>
+  </div>
+
+  <div class="footnote-grid">
+    <div class="footnote-box footnote-box--tool">
+      <strong>Interaktives Prüf-Tool</strong>
+      Dieselbe Prüfung Schritt für Schritt, mit Live-Protokoll und kopierbarem Ergebnis: Sowespoke Wissenszentrum → „Kontoprüfung" in der linken Navigation.
+    </div>
+    <div class="footnote-box">
+      <strong>Diese Seite ergänzt, ersetzt aber nicht</strong>
+      Fristen sind reine Terminplanung — sie ersetzen nicht die Direct-Manager- und Bill-to-Prüfung aus den Schritten 2 und 3.
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>SOWESPOKE bleibt als Originalname erhalten. Alle anderen Beispielnamen, Nummern und Daten sind fiktiv.</span>
+    <span>Prüf- und Lernhilfe · keine automatische Änderung in Microsoft Advertising</span>
+  </div>
+</section>
+
+</body>
+</html>
