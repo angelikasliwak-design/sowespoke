@@ -78,13 +78,13 @@
     justify-content: space-between;
     padding-bottom: 6mm;
     border-bottom: 2px solid var(--line);
-    margin-bottom: 8mm;
+    margin-bottom: 6mm;
   }
   .masthead__logo { height: 9mm; display: block; }
   .masthead__meta { text-align: right; font-size: 9.5pt; color: var(--ink-60); font-weight: 600; }
   .masthead__meta strong { color: var(--ink); }
 
-  .step-row { display: flex; align-items: flex-start; gap: 5mm; margin-bottom: 6mm; }
+  .step-row { display: flex; align-items: flex-start; gap: 5mm; margin-bottom: 4mm; }
   .step-num {
     flex: none;
     width: 11mm; height: 11mm;
@@ -129,7 +129,7 @@
   }
 
   /* -- Ebenen-diagram (page 2) -- */
-  .ladder { display: flex; align-items: stretch; gap: 3mm; margin: 5mm 0 6mm; }
+  .ladder { display: flex; align-items: stretch; gap: 3mm; margin: 3mm 0 4mm; }
   .ladder__node {
     flex: 1;
     border: 1.5px solid var(--line);
@@ -148,13 +148,13 @@
     background: var(--accent-tint);
     border-left: 3.5px solid var(--accent);
     border-radius: 0 3mm 3mm 0;
-    padding: 3.5mm 5mm;
+    padding: 2.5mm 5mm;
     font-size: 9.7pt;
-    margin-bottom: 6mm;
+    margin-bottom: 3mm;
   }
   .rule-note strong { color: var(--accent); }
 
-  .checklist { display: flex; flex-direction: column; gap: 2.6mm; margin-bottom: 6mm; }
+  .checklist { display: flex; flex-direction: column; gap: 1.6mm; margin-bottom: 3mm; }
   .checklist li { display: flex; gap: 3mm; align-items: flex-start; font-size: 9.7pt; list-style: none; }
   .checklist li::before {
     content: "✓"; flex: none;
@@ -168,18 +168,19 @@
     background: var(--warning-tint);
     border: 1.3px solid #E6B8A6;
     border-radius: 3mm;
-    padding: 4mm 5mm;
-    font-size: 9.3pt;
+    padding: 3mm 5mm;
+    font-size: 9pt;
+    line-height: 1.45;
     color: #7A2B12;
   }
   .warn-box strong { display: block; font-size: 9.7pt; margin-bottom: 1.5mm; color: var(--warning); }
 
   .pass-banner {
-    margin-top: 5mm;
+    margin-top: 4mm;
     background: var(--success-tint);
     border: 1.3px solid #9CC9AA;
     border-radius: 4mm;
-    padding: 4mm 6mm;
+    padding: 3mm 6mm;
     text-align: center;
     font-weight: 700;
     color: var(--success);
@@ -267,7 +268,7 @@
       </div>
     </div>
     <div class="route-card route-card--b">
-      <div class="route-card__head">B · Einzelnes Advertiser-Konto</div>
+      <div class="route-card__head">B · Einzelnes Advertiser-Konto (Endkunde)</div>
       <div class="route-card__body">
         <p>Ein einzelnes, bereits bekanntes Advertiser-Konto wird direkt mit SOWESPOKE verknüpft und auf Kontoebene geprüft.</p>
         <div class="route-step"><span class="route-step__badge">1</span><div><strong>Advertiser-Konto</strong><span>SOWESPOKE als Direct Manager; MCC-Name und MCC-Nummer prüfen.</span></div></div>
@@ -320,6 +321,7 @@
   <div class="warn-box">
     <strong>WENN NEIN</strong>
     Andere Agentur entknüpft sich – oder die betroffene Agentur-Shell entknüpft sich und verknüpft sich erneut. SOWESPOKE ist in diesem Korrekturschritt nicht die Stelle, die sich neu verknüpft.
+    <strong>Kontoklärungsliste:</strong> steht das Konto auf der Liste, die wir von Microsoft erhalten (falsch verknüpfte Konten ohne Spend-Zurechnung) – über Elina bei Microsoft flaggen, sie gibt es an Anne-Celine weiter.
   </div>
 
   <div class="pass-banner">GATE 1 BESTANDEN → Jetzt „Rechnung an Kunde" / Bill-to prüfen</div>

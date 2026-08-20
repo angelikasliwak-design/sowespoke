@@ -3415,7 +3415,7 @@
             </button>
             <button type="button" class="msads-choice-card msads-choice-card--accent" data-msads-route="account">
               <span class="msads-choice-letter">B</span>
-              <span><strong>Einzelnes Advertiser-Konto</strong><small>SOWESPOKE wird direkt mit einem Konto verknüpft</small></span>
+              <span><strong>Einzelnes Advertiser-Konto (Endkunde)</strong><small>SOWESPOKE wird direkt mit einem Konto verknüpft</small></span>
             </button>
           </div>
         `;
@@ -3463,6 +3463,10 @@
             <strong>Zwei mögliche Wege</strong>
             <ol><li>Die andere Agentur entknüpft sich.</li><li>Die betroffene Agentur-Shell entknüpft sich und verknüpft sich erneut.</li></ol>
             <p>SOWESPOKE ist in diesem Korrekturschritt nicht die Stelle, die sich neu verknüpft.</p>
+          </div>
+          <div class="msads-callout">
+            <strong>Hinweis: Kontoklärungsliste</strong>
+            <p>Steht dieses Konto auf der Kontoklärungsliste, die wir von Microsoft erhalten (Konten, die aus Microsofts Sicht falsch verknüpft sind und deshalb keinen Spend angerechnet bekommen): bei Microsoft über Elina flaggen, die es an Anne-Celine weitergibt.</p>
           </div>
           <button type="button" class="btn btn--primary" data-msads-reset>Neue Prüfung starten</button>
         `;
