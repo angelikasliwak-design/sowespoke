@@ -2084,7 +2084,7 @@ code {
 .msads-step-label { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: var(--space-2); }
 .msads-step-label--danger { color: var(--accent); }
 .msads-step-label--success { color: var(--teal-text); }
-.msads-lead { color: var(--ink-soft); margin: 0 0 var(--space-5); }
+.msads-lead { color: var(--ink-soft); margin: var(--space-2) 0 var(--space-5); }
 
 .msads-choice-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4); }
 .msads-choice-card {
@@ -2100,6 +2100,8 @@ code {
   transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
 }
 .msads-choice-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+.msads-choice-card--teal { border-left: 3px solid var(--teal-text); }
+.msads-choice-card--accent, .msads-choice-card--action { border-left: 3px solid var(--accent); }
 .msads-choice-card--teal:hover { border-color: var(--teal-text); }
 .msads-choice-card--accent:hover, .msads-choice-card--action:hover { border-color: var(--accent); }
 .msads-choice-letter {
@@ -2114,6 +2116,8 @@ code {
   background: var(--paper);
   color: var(--ink);
 }
+.msads-choice-card--teal .msads-choice-letter { background: var(--teal-tint); color: var(--teal-text); }
+.msads-choice-card--accent .msads-choice-letter, .msads-choice-card--action .msads-choice-letter { background: var(--accent-tint); color: var(--accent); }
 .msads-choice-card small { display: block; color: var(--ink-soft); font-weight: 400; margin-top: 0.2em; }
 
 .msads-question-box {
@@ -2162,6 +2166,7 @@ code {
 .msads-callout li { margin-bottom: 0.3em; }
 .msads-callout p:last-child { margin-bottom: 0; }
 .msads-callout .btn { margin-top: var(--space-4); }
+.msads-panel h2:focus-visible { outline-offset: 6px; }
 
 .msads-protocol__row { display: flex; justify-content: space-between; gap: var(--space-2); font-size: 0.85rem; padding: var(--space-2) 0; border-bottom: 1px solid var(--line); }
 .msads-protocol__row dt { color: var(--ink-soft); margin: 0; }
