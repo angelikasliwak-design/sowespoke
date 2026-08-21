@@ -3342,11 +3342,44 @@
     let owner = "";
     let result = null;
     let copyTimer;
+    let history = [];
 
     const progressLabel = () =>
       route === "agency" ? "Ganze Agentur-Shell" : route === "account" ? "Einzelnes Advertiser-Konto" : "Noch nicht ausgewählt";
     const activeStepNumber = () =>
       stage === "route" ? 1 : stage === "manager" || stage === "manager-error" || stage === "manager-note" ? 2 : 3;
+
+    // Ein Snapshot pro Übergang, gepusht bevor der jeweilige State mutiert
+    // wird (siehe chooseRoute/answerManager/... unten) — "Zurück" rollt
+    // damit exakt den letzten Übergang zurück, nie mehr.
+    function snapshotState() {
+      return {
+        stage, route, levelQuestions: [...levelQuestions], atLeafCheck, questionIndex,
+        checks: [...checks], failedQuestion, billTo, owner, result,
+      };
+    }
+
+    function goBack() {
+      const prev = history.pop();
+      if (!prev) return;
+      ({ stage, route, levelQuestions, atLeafCheck, questionIndex, checks, failedQuestion, billTo, owner, result } = prev);
+      renderStage();
+    }
+
+    // Was zuletzt bestätigt wurde, passend zur aktuell angezeigten Stufe —
+    // Nutzer-Wunsch, den letzten Schritt sichtbar zu machen, ohne dafür ins
+    // Prüfprotokoll rechts schauen zu müssen (das steht auf Mobile ohnehin
+    // erst unterhalb des Hauptinhalts).
+    function lastStepRecap() {
+      if (stage === "manager" || stage === "manager-note" || stage === "billto") {
+        if (checks.length) return { label: "Zuletzt bestätigt", value: checks[checks.length - 1] };
+        if (route) return { label: "Prüfweg", value: progressLabel() };
+        return null;
+      }
+      if (stage === "owner") return billTo ? { label: "Bill-to ausgewählt", value: billTo } : null;
+      if (stage === "payment") return owner ? { label: "Besitzer ausgewählt", value: owner } : null;
+      return null;
+    }
 
     function buildResultText() {
       if (!result) return "";
@@ -3563,10 +3596,22 @@
         panelEl.querySelector("[data-msads-copy]").addEventListener("click", copyResult);
       }
 
+      if (history.length) {
+        const recap = lastStepRecap();
+        panelEl.insertAdjacentHTML("afterbegin", `
+          <div class="msads-stage-nav">
+            <button type="button" class="msads-back" data-msads-back>${ICONS.arrowLeft} Zurück</button>
+            ${recap ? `<div class="msads-recap" title="${escapeHtml(recap.value)}"><span>${escapeHtml(recap.label)}:</span><strong>${escapeHtml(recap.value)}</strong></div>` : ""}
+          </div>
+        `);
+        panelEl.querySelector("[data-msads-back]").addEventListener("click", goBack);
+      }
+
       focusHeading();
     }
 
     function chooseRoute(value) {
+      history.push(snapshotState());
       route = value;
       checks = [];
       atLeafCheck = value === "account";
@@ -3579,6 +3624,7 @@
     function answerManager(answer) {
       const q = levelQuestions[questionIndex];
       if (!q) return;
+      history.push(snapshotState());
       if (!answer) {
         failedQuestion = q.title;
         stage = "manager-error";
@@ -3602,6 +3648,7 @@
        Schleife (Nutzer-Korrektur 2026-08-20: das mehrfach anklickbare
        "weitere Ebene"-Muster suggerierte fälschlich unbegrenzte Tiefe). */
     function continueToLeaf() {
+      history.push(snapshotState());
       atLeafCheck = true;
       levelQuestions = [MSADS_ACCOUNT_LEVEL_QUESTION, msadsRecencyQuestion("unsere verknüpfte Agentur-MCC")];
       questionIndex = 0;
@@ -3610,6 +3657,7 @@
     }
 
     function chooseBillTo(value) {
+      history.push(snapshotState());
       billTo = value;
       if (value === "Kunde") {
         result = {
@@ -3639,6 +3687,7 @@
     }
 
     function chooseOwner(isSameOldShell) {
+      history.push(snapshotState());
       if (isSameOldShell) {
         owner = "Dieselbe alte Agentur-Shell";
         result = {
@@ -3657,6 +3706,7 @@
     }
 
     function choosePayment(agencyPays) {
+      history.push(snapshotState());
       result = {
         kind: "action",
         eyebrow: "Korrektur erforderlich",
@@ -3678,6 +3728,7 @@
     }
 
     function resetAll() {
+      history = [];
       stage = "route";
       route = null;
       levelQuestions = [];

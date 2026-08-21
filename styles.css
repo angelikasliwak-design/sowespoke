@@ -2089,6 +2089,35 @@ code {
 .msads-step-label--success { color: var(--teal-text); }
 .msads-lead { color: var(--ink-soft); margin: var(--space-2) 0 var(--space-5); }
 
+.msads-stage-nav {
+  display: flex; align-items: center; gap: var(--space-4);
+  margin-bottom: var(--space-4); padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--line);
+  min-width: 0;
+}
+.msads-back {
+  display: inline-flex; flex: none; align-items: center; gap: 0.35em;
+  background: none; border: none; padding: 0.2em 0;
+  font: inherit; font-size: 0.85rem; font-weight: 600; color: var(--ink-soft);
+  cursor: pointer;
+}
+.msads-back svg { width: 16px; height: 16px; }
+.msads-back:hover, .msads-back:focus-visible { color: var(--accent); }
+.msads-recap {
+  display: flex; align-items: baseline; gap: 0.4em;
+  min-width: 0; flex: 1 1 auto;
+  font-size: 0.78rem; color: var(--ink-soft);
+  padding-left: var(--space-4); border-left: 1px solid var(--line);
+}
+.msads-recap span { flex: none; color: var(--ink-soft); }
+.msads-recap strong {
+  color: var(--ink); font-weight: 600;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+}
+@media (max-width: 30rem) {
+  .msads-recap { padding-left: 0; border-left: none; flex-basis: 100%; }
+}
+
 .msads-choice-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4); }
 .msads-choice-card {
   display: flex;
