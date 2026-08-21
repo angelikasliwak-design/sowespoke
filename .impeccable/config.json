@@ -14,6 +14,15 @@
         "value": "cubic-bezier(0.34, 1.56, 0.64, 1)",
         "createdAt": "2026-08-11T15:02:10.730Z",
         "reason": "User confirmed cubic-bezier(0.34, 1.56, 0.64, 1) is intentional"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "styles.css"
+        ],
+        "createdAt": "2026-08-21T10:06:02.917Z",
+        "reason": "User-confirmed choice-card border-left accent (route/bill-to/owner/payment cards) from an earlier turn this session; color tied to component type, documented in DESIGN.md Do's/Don'ts"
       }
     ]
   }
