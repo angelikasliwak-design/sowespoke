@@ -24,7 +24,7 @@
     Allgemein: "--turquoise",
   };
 
-  const NAV_ICON = { news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", "microsoft-learn": "sparkle", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass", nutzer: "gauge", "microsoft-ads-kontopruefung": "crosshair" };
+  const NAV_ICON = { news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass", nutzer: "gauge", "microsoft-ads-kontopruefung": "crosshair" };
   railLinks.forEach((a) => {
     const iconSlot = a.querySelector(".rail__nav-icon");
     if (iconSlot) iconSlot.innerHTML = ICONS[NAV_ICON[a.dataset.nav]];
@@ -1513,7 +1513,6 @@
   /* --------------------------------------------------------------- Seite: News */
 
   let newsCache = null;
-  let learnCache = null;
   const isLocalDev = ["localhost", "127.0.0.1"].includes(location.hostname);
 
   async function loadNews(force) {
@@ -1529,21 +1528,6 @@
       newsCache = { error: true, kind: isLocalDev ? "local" : "network", message: String((err && err.message) || err) };
     }
     return newsCache;
-  }
-
-  async function loadLearn() {
-    if (learnCache) return learnCache;
-    try {
-      const res = await fetch("/api/learn");
-      if (!res.ok) {
-        learnCache = { error: true, kind: isLocalDev ? "local" : "server", status: res.status };
-        return learnCache;
-      }
-      learnCache = await res.json();
-    } catch (err) {
-      learnCache = { error: true, kind: isLocalDev ? "local" : "network", message: String((err && err.message) || err) };
-    }
-    return learnCache;
   }
 
   async function renderNews(query, channel) {
@@ -2714,76 +2698,6 @@
     });
   }
 
-  function learnRow(it) {
-    return `
-        <li>
-          <a class="row" href="${escapeHtml(it.url)}" target="_blank" rel="noopener">
-            <span class="row__thumb" style="background-color: var(--teal)">${ICONS.external}</span>
-            <span class="row__body">
-              <span class="row__meta"><span class="row__cat">Microsoft Learn</span></span>
-              <span class="row__title">${escapeHtml(it.title || it.label)}</span>
-              <span class="row__summary">${escapeHtml(it.description || "")}</span>
-            </span>
-            <span class="row__arrow">${ICONS.external}</span>
-          </a>
-        </li>`;
-  }
-
-  async function renderMicrosoftLearn(query) {
-    view.innerHTML = `
-      <section class="hero hero--compact">
-        <div class="hero__intro">
-          <h1>Von <mark>Microsoft Learn</mark>.</h1>
-          <p>Offizielle Kurzbeschreibungen ausgewählter Microsoft-Learn-Seiten, mit Link zur vollständigen Originalseite.</p>
-        </div>
-        <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
-      </section>
-      <div class="feed" id="learn-feed">
-        <div class="empty-state">${ICONS.book}<strong>Lade Quellen …</strong></div>
-      </div>
-    `;
-
-    const learnData = await loadLearn();
-    const learnFeed = document.getElementById("learn-feed");
-    if (!learnFeed) return;
-
-    if (learnData.error) {
-      const copy = {
-        local: "Diese Funktion läuft über eine Cloudflare Pages Function und ist auf einem lokalen Testserver nicht verfügbar.",
-        network: "Die Verbindung zu den Microsoft-Learn-Quellen ist fehlgeschlagen.",
-        server: "Der Dienst hat mit einem Fehler geantwortet — vermutlich vorübergehend.",
-      }[learnData.kind || "network"];
-      learnFeed.innerHTML = `<div class="empty-state">${ICONS.book}<strong>Gerade nicht verfügbar</strong><p>${copy}</p></div>`;
-      return;
-    }
-    if (!learnData.items || learnData.items.length === 0) {
-      learnFeed.innerHTML = `<div class="empty-state">${ICONS.book}<strong>Noch keine Quellen hinterlegt</strong><p>Sobald konkrete Microsoft-Learn-Links hinterlegt sind, erscheinen hier die offiziellen Kurzbeschreibungen mit Link zur Originalseite.</p></div>`;
-      return;
-    }
-
-    const renderList = (q) => {
-      const query = (q || "").trim().toLowerCase();
-      const items = query
-        ? learnData.items.filter((it) => [it.title || it.label, it.description].join(" ").toLowerCase().includes(query))
-        : learnData.items;
-      const listHtml = items.length
-        ? `<h2 class="feed__title">Quellen<span class="feed__title__count">${items.length} Ergebnisse</span></h2><ul class="article-list">${items.map(learnRow).join("")}</ul>`
-        : `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Begriff.</p></div>`;
-      learnFeed.innerHTML = `
-        <div class="toolbar">
-          <label class="search">
-            ${ICONS.search}
-            <input type="search" id="search-input" placeholder="Microsoft-Learn-Quellen durchsuchen …" value="${escapeHtml(q || "")}" aria-label="Microsoft-Learn-Quellen durchsuchen" />
-            <button type="button" class="search__submit" id="search-submit" aria-label="Suche fokussieren">${ICONS.search}</button>
-          </label>
-        </div>
-        ${listHtml}
-      `;
-      wireTopControls(() => renderList(document.getElementById("search-input").value), () => {}, "x");
-    };
-    renderList(query);
-  }
-
   function renderStandaloneTemplateDetail(id) {
     const t = findStandaloneTemplate(id);
     if (!t) {
@@ -3825,7 +3739,6 @@
         (a.dataset.nav === "vorlagen" && path.startsWith("/vorlagen")) ||
         (a.dataset.nav === "case-studies" && path.startsWith("/case-studies")) ||
         (a.dataset.nav === "tickets" && path.startsWith("/tickets")) ||
-        (a.dataset.nav === "microsoft-learn" && path.startsWith("/microsoft-learn")) ||
         (a.dataset.nav === "anfragen" && path.startsWith("/anfragen")) ||
         (a.dataset.nav === "ideen" && path.startsWith("/ideen")) ||
         (a.dataset.nav === "serienmails" && path.startsWith("/serienmails")) ||
@@ -3879,8 +3792,6 @@
       renderCaseStudies(params.get("q") || "", params.get("ch") || "all");
     } else if (path === "/tickets") {
       renderTickets(params.get("q") || "", params.get("st") || "all", params.get("sort") || "created");
-    } else if (path === "/microsoft-learn") {
-      renderMicrosoftLearn(params.get("q") || "");
     } else if (path.startsWith("/anfragen/")) {
       renderMicrosoftRequestDetail(path.slice("/anfragen/".length));
     } else if (path === "/anfragen") {

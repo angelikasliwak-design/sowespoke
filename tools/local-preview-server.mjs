@@ -13,7 +13,7 @@
  *   node tools/local-preview-server.mjs [port]
  *   (Default-Port: 5511)
  *
- * /api/news und /api/learn liefern feste Mock-Daten (keine echten Cloudflare
+ * /api/news liefert feste Mock-Daten (keine echten Cloudflare
  * Pages Functions verfügbar) — Layout/Karten sehen dadurch realistisch aus,
  * Inhalte sind aber keine echten News. Alle anderen Pfade werden direkt aus
  * dem Repo-Root serviert, unbekannte Pfade fallen auf index.html zurück
@@ -96,11 +96,6 @@ const server = http.createServer(async (req, res) => {
   if (urlPath === "/api/news") {
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(mockNews()));
-    return;
-  }
-  if (urlPath === "/api/learn") {
-    res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ items: [] }));
     return;
   }
   if (urlPath === "/api/auth/me") {
