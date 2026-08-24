@@ -3425,7 +3425,7 @@
         </div>
         ${billTo ? `<dl class="msads-protocol__row"><dt>Bill-to</dt><dd>${escapeHtml(billTo)}</dd></dl>` : ""}
         ${owner ? `<dl class="msads-protocol__row"><dt>Besitzer</dt><dd>${escapeHtml(owner)}</dd></dl>` : ""}
-        <p class="msads-protocol__note"><strong>Reihenfolge merken:</strong> Direct Manager und MCC zuerst. Bill-to erst nach bestandenem Gate 1.</p>
+        <p class="msads-protocol__note"><strong>Reihenfolge merken:</strong> Direct Manager zuerst. Bill-to erst nach bestandenem Gate 1.</p>
       `;
     }
 

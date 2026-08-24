@@ -223,6 +223,7 @@
   .deadline-card--direct .deadline-card__date { color: var(--teal-deep); }
   .deadline-card__label { font-size: 9pt; color: var(--ink-60); margin: 1.5mm 0 4mm; }
   .deadline-card__path { font-size: 9.7pt; font-weight: 700; margin-bottom: 2mm; }
+  .deadline-card__example { font-size: 8.6pt; color: var(--ink-60); font-style: italic; margin-bottom: 3mm; }
   .deadline-card__counts { font-size: 9.3pt; color: var(--ink-60); line-height: 1.5; }
   .deadline-card__counts strong { color: var(--ink); }
 
@@ -282,7 +283,7 @@
     </div>
   </div>
 
-  <div class="join-banner">Gemeinsamer nächster Schritt: Direct Manager und MCC prüfen</div>
+  <div class="join-banner">Gemeinsamer nächster Schritt: Direct Manager prüfen</div>
 
   <div class="foot">
     <span>SOWESPOKE bleibt als Originalname erhalten. Alle anderen Beispielnamen, Nummern und Daten sind fiktiv.</span>
@@ -300,26 +301,24 @@
   <div class="step-row">
     <div class="step-num">2</div>
     <div class="step-head">
-      <h1>Direct Manager und MCC prüfen</h1>
-      <p>Gate 1 hat immer nur zwei echte Prüfpunkte: ganz oben und ganz unten. Alles dazwischen wird nur durchlaufen, nicht bewertet.</p>
+      <h1>Direct Manager prüfen</h1>
     </div>
   </div>
 
-  <div class="rule-note"><strong>Grundregel:</strong> Zwischen Agentur-Shell und dem tatsächlichen Advertiser-Konto können weitere Kunden-/Verwaltungs-MCCs hängen. Für uns zählt dabei immer die <strong>unterste Ebene</strong> — auch wenn dort zwischendurch eine falsche oder fremde Agentur als Direct Manager steht.</div>
+  <div class="rule-note"><strong>Grundregel:</strong> Zwischen Agentur-Shell und dem tatsächlichen Advertiser-Konto können weitere Kunden-/Verwaltungs-MCCs hängen. Für uns zählt dabei immer die <strong>unterste Ebene</strong>.</div>
 
   <div class="ladder">
     <div class="ladder__node"><b>Agentur-Shell</b><small>Geprüft: SOWESPOKE ist Direct Manager</small></div>
     <div class="ladder__arrow">→</div>
     <div class="ladder__node ladder__node--variable"><b>Zwischenebenen</b><small>Nur unterste Ebene zählt für uns – einfach weiter nach unten</small></div>
     <div class="ladder__arrow">→</div>
-    <div class="ladder__node ladder__node--leaf"><b>Advertiser-Konto</b><small>Geprüft: unsere Agentur-MCC ist Direct Manager</small></div>
+    <div class="ladder__node ladder__node--leaf"><b>Advertiser-Konto</b><small>Geprüft: die mit uns verknüpfte Agentur-MCC ist als zuletzt verknüpfte Direct Manager</small></div>
   </div>
 
   <ul class="checklist">
-    <li>Oben (Agentur-Shell): SOWESPOKE ist Direct Manager, Name und MCC-Nummer stimmen — das ist unser Einstiegspunkt in die Hierarchie.</li>
-    <li>Unten (tatsächliches Advertiser-Konto): die mit uns verknüpfte Agentur-MCC ist Direct Manager — genau diese Shell, nicht eine andere Shell derselben Agentur.</li>
-    <li>Bei mehreren Direct Managern auf derselben Ebene: unsere Stelle ist jeweils die zuletzt verknüpfte — gilt nur oben und unten, nicht dazwischen.</li>
-    <li>Solange darunter noch eine weitere Manager-MCC hängt: einfach eine Ebene tiefer weiterschauen, ohne dort zu bewerten.</li>
+    <li>Oben (Agentur-Shell): SOWESPOKE ist Direct Manager.</li>
+    <li>Unten (tatsächliches Advertiser-Konto): die mit uns verknüpfte Agentur-MCC ist Direct Manager.</li>
+    <li>Bei mehreren Direct Managern auf derselben Ebene: unsere Shell ist jeweils die zuletzt verknüpfte.</li>
   </ul>
 
   <div class="warn-box">
@@ -346,7 +345,7 @@
     <div class="step-num">3</div>
     <div class="step-head">
       <h1>Bill-to entscheiden</h1>
-      <p>Zuerst den Eintrag „Rechnung an Kunde" lesen, dann Besitzer und Zahlungsweg abgleichen.</p>
+      <p>Zuerst den Eintrag „Rechnung an Kunde" lesen, dann Besitzer abgleichen.</p>
     </div>
   </div>
 
@@ -386,10 +385,10 @@
 
   <div class="footnote-box" style="margin-top:5mm">
     <strong>Warum dauert eine SAP-Korrektur manchmal länger?</strong>
-    Microsoft vergibt ungern zwei SAP-IDs für dieselbe Agentur — eine neue SAP-ID für eine neue Agentur-Shell zu beantragen, ist deshalb kein reiner Selbstlauf.
+    Microsoft vergibt ungern zwei SAP-IDs für dieselbe Agentur — deswegen am besten über Anne-Celine mit dem SAP-ID-Form beantragen.
   </div>
 
-  <p class="side-note"><strong>Kontoklärungsliste:</strong> nur bei den beiden OK-Ergebnissen oben (nicht bei NICHT OK) – ist dieses Konto korrekt verknüpft und steht trotzdem auf der Liste, die wir von Microsoft erhalten (aus Microsofts Sicht falsch verknüpfte Konten ohne Spend-Zurechnung), über Elina bei Microsoft flaggen, sie gibt es an Anne-Celine weiter.</p>
+  <p class="side-note"><strong>Kontoklärungsliste:</strong> nur bei den beiden OK-Ergebnissen oben – ist dieses Konto korrekt verknüpft und steht trotzdem auf der Liste, die wir von Microsoft erhalten (aus Microsofts Sicht falsch verknüpfte Konten ohne Spend-Zurechnung), über Elina bei Microsoft flaggen, sie gibt es an Anne-Celine weiter.</p>
 
   <div class="foot">
     <span>SOWESPOKE bleibt als Originalname erhalten. Alle anderen Beispielnamen, Nummern und Daten sind fiktiv.</span>
@@ -408,22 +407,22 @@
     <div class="step-num">4</div>
     <div class="step-head">
       <h1>Fristen im Monat</h1>
-      <p>Unabhängig vom Prüfweg gilt: der Verknüpfungsweg bestimmt sowohl den Stichtag als auch, welches Datum überhaupt zählt.</p>
     </div>
   </div>
 
   <div class="deadline-grid">
-    <div class="deadline-card deadline-card--direct">
-      <div class="deadline-card__date">30./31.</div>
-      <div class="deadline-card__label">des Monats</div>
-      <div class="deadline-card__path">SOWESPOKE → Endkunden-MCC direkt</div>
-      <div class="deadline-card__counts">Hier zählt <strong>das Linking-Datum</strong> — also wann die Verknüpfung tatsächlich hergestellt wurde.</div>
-    </div>
     <div class="deadline-card">
       <div class="deadline-card__date">20.</div>
       <div class="deadline-card__label">des Monats</div>
       <div class="deadline-card__path">SOWESPOKE → Agentur-MCC → Endkunden-Konten</div>
       <div class="deadline-card__counts">Hier zählt <strong>nicht</strong> das Linking, sondern der <strong>Eingang der Autorisierung</strong>.</div>
+    </div>
+    <div class="deadline-card deadline-card--direct">
+      <div class="deadline-card__date">30./31.</div>
+      <div class="deadline-card__label">des Monats</div>
+      <div class="deadline-card__path">SOWESPOKE → Endkunden-MCC direkt</div>
+      <div class="deadline-card__example">Beispiel: SOWESPOKE → Bergfreunde-MCC → Bergfreunde-Ad-Account</div>
+      <div class="deadline-card__counts">Hier zählt <strong>das Linking-Datum</strong> — also wann die Verknüpfung tatsächlich hergestellt wurde.</div>
     </div>
   </div>
 
