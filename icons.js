@@ -4,6 +4,24 @@
  */
 const ICON_STROKE = 'fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
 
+/**
+ * BRAND_MARK_ICONS (2026-09-02, Nutzer-Wunsch nach Mockup-Vorlage): bewusste
+ * Ausnahme vom Line-Art-Prinzip oben — echte Marken-Logos in ihren eigenen
+ * Farben statt einer einzelnen Konturfarbe, damit eine News-Quelle auf
+ * einen Blick erkennbar ist (Google/Microsoft/Meta/TikTok/Snapchat). Nur für
+ * die News-Zeilen-Thumbnails gedacht, nicht Teil des allgemeinen ICONS-Sets.
+ * Vereinfachte, aber erkennbare Nachbildungen (kein 1:1-Export der
+ * offiziellen Assets) — für ein rein internes Tool ohne Weitergabe an
+ * Dritte unkritisch.
+ */
+const BRAND_MARK_ICONS = {
+  Microsoft: `<svg viewBox="0 0 24 24"><rect x="1" y="1" width="10" height="10" fill="#F25022"/><rect x="13" y="1" width="10" height="10" fill="#7FBA00"/><rect x="1" y="13" width="10" height="10" fill="#00A4EF"/><rect x="13" y="13" width="10" height="10" fill="#FFB900"/></svg>`,
+  Google: `<svg viewBox="0 0 48 48"><path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/><path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24s.85 6.91 2.34 9.88l7.35-5.7z"/><path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/></svg>`,
+  Meta: `<svg viewBox="0 0 36 24"><path fill="#0866FF" d="M7.6 2.4C3.8 2.4 1 6.4 1 12s2.8 9.6 6.6 9.6c2.3 0 4.2-1.6 5.9-4l2.5-3.9 2.5 3.9c1.7 2.4 3.6 4 5.9 4 3.8 0 6.6-4 6.6-9.6s-2.8-9.6-6.6-9.6c-2.3 0-4.2 1.6-5.9 4L16 10.3l-1.5-2.3c-1.7-2.4-3.6-4-5.9-4h-1Zm.5 3.4c1.1 0 2.1.9 3.4 2.8L13.3 12l-1.8 2.9c-1.3 1.9-2.3 2.8-3.4 2.8-2 0-3.5-2.6-3.5-5.7s1.5-5.7 3.5-5.7Zm15.8 0c2 0 3.5 2.6 3.5 5.7s-1.5 5.7-3.5 5.7c-1.1 0-2.1-.9-3.4-2.8L18.7 12l1.8-2.9c1.3-1.9 2.3-2.8 3.4-2.8Z"/></svg>`,
+  TikTok: `<svg viewBox="0 0 24 24"><path fill="#000000" d="M16.6 5.82c-1.02-1.1-1.6-2.53-1.6-4.02h-3.5v13.9c0 1.6-1.3 2.9-2.9 2.9s-2.9-1.3-2.9-2.9 1.3-2.9 2.9-2.9c.3 0 .6.05.87.13V9.4c-.29-.04-.58-.06-.87-.06-3.5 0-6.4 2.9-6.4 6.4S5.6 22 9.1 22s6.4-2.9 6.4-6.4V8.6c1.36 1 3.04 1.6 4.86 1.6V6.7c-1.35 0-2.6-.4-3.76-.88Z"/></svg>`,
+  Snapchat: `<svg viewBox="0 0 24 24"><path fill="#FFFC00" stroke="#1A1A1A" stroke-width="0.4" d="M12 2c3.3 0 5.6 2.6 5.6 5.9 0 1 .1 2 .1 2 .5.1 1.2.4 1.4 1 .2.5-.1 1-.6 1.3-.3.2-.9.4-1.1.5 0 .3.2.9.7 1.5.6.7 1.5 1.1 1.5 1.6 0 .6-1.1.9-2 1.1-.1.3-.2.7-.4 1-.3.4-1 .3-1.6.3-.5 0-1 .3-2 .9-.8.5-1.7 1-3.6 1s-2.8-.5-3.6-1c-1-.6-1.5-.9-2-.9-.6 0-1.3.1-1.6-.3-.2-.3-.3-.7-.4-1-.9-.2-2-.5-2-1.1 0-.5.9-.9 1.5-1.6.5-.6.7-1.2.7-1.5-.2-.1-.8-.3-1.1-.5-.5-.3-.8-.8-.6-1.3.2-.6.9-.9 1.4-1 0 0 .1-1 .1-2C6.4 4.6 8.7 2 12 2Z"/></svg>`,
+};
+
 const ICONS = {
   search: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>`,
 

@@ -502,12 +502,19 @@ mark {
 .hero--connected {
   justify-content: flex-start;
   gap: var(--space-6);
-  /* Vertikal gestrafft (P0-Fund 2026-08-10) — weniger Padding/Margin,
+  /* Vertikal gestrafft (P0-Fund 2026-08-10, weiter verdichtet 2026-09-02
+     nach Mockup-Vorlage: "Suchleiste kürzer") — weniger Padding/Margin,
      damit Hero+Toolbar zusammen nicht mehr den ganzen ersten Bildschirm
-     füllen. */
-  padding: var(--space-5) var(--space-6);
+     füllen. Eigene, in sich geschlossene Illustrationsgröße statt der
+     .hero--compact-Kombination — zwei gestapelte Modifier-Klassen mit
+     überschneidenden Eigenschaften hätten sich sonst rein über die
+     Deklarationsreihenfolge gegenseitig überschrieben, kein robustes
+     Muster (siehe DESIGN.md, wiederholt gefundene Spezifitätsfallen
+     dieser Art in dieser Session). */
+  padding: var(--space-4) var(--space-6);
   margin-bottom: var(--space-3);
 }
+.hero--connected .hero__illustration { width: 230px; height: 233px; }
 /* Die vorherigen ::before/::after-Farbwolken (Teal-/Accent-Tint-Kreise)
    sind entfallen — dieselbe Funktion (weiche, großflächige Farbwolken)
    übernimmt jetzt .page-bg für die ganze Seite statt pro Hero-Instanz. */
@@ -716,6 +723,21 @@ mark {
   .layout-2col { grid-template-columns: minmax(0, 1fr); }
 }
 
+/* News-Seite (2026-09-02): Hero+Toolbar+Feed als linke Grid-Spalte, damit
+   .side-rail auf Höhe des Hero startet statt erst unter der Toolbar. */
+.news-layout__main { min-width: 0; }
+
+/* Zweites, kleineres Suchfeld nur für den News-Feed (2026-09-02) — das
+   Hauptfeld in der Toolbar ist jetzt die seitenübergreifende Suche
+   (öffnet die Strg+K-Palette), dieses hier filtert weiterhin nur die
+   sichtbare News-Liste, wie das Hauptfeld es vorher allein getan hat. */
+.search--compact input { padding: var(--space-3) var(--space-4) var(--space-3) var(--space-7); font-size: 0.88rem; border-radius: var(--radius-sm); }
+.search--compact > svg { left: var(--space-4); width: 16px; height: 16px; }
+.feed__local-search { display: block; max-width: 22rem; margin-bottom: var(--space-4); }
+/* Hauptfeld ist jetzt ein Öffner für die Palette, kein Texteingabefeld
+   mehr (readonly) — Cursor macht die andere Funktion sofort spürbar. */
+.search input[readonly] { cursor: pointer; }
+
 .feed__title {
   /* Klare Editorial-Überschrift statt Tesafilm-Pille — sah wie ein
      schwebender Button aus (Brief 2026-08-07, Punkt 12). */
@@ -861,6 +883,11 @@ mark {
   transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .row__thumb svg { width: 24px; height: 24px; position: relative; }
+/* Marken-Logo-Variante (2026-09-02) für News-Zeilen mit bekannter Quelle —
+   weißer Grund statt Farbfläche+Halbtonraster, damit die eigene Logo-Farbe
+   sauber lesbar bleibt statt gegen eine zweite Fläche anzukämpfen. */
+.row__thumb--brand { background-color: var(--c-surface); background-image: none; border: 1px solid var(--line); }
+.row__thumb--brand svg { width: 30px; height: 30px; }
 .row:hover .row__thumb { transform: scale(1.06) rotate(-3deg); }
 .row__body { flex: 1; min-width: 0; width: 100%; padding-right: var(--space-6); }
 .row__meta {
@@ -996,6 +1023,11 @@ mark {
   box-shadow: var(--shadow), 0 14px 32px -14px color-mix(in srgb, var(--accent) 50%, transparent);
   padding: var(--space-5);
 }
+/* Randlose Variante (2026-09-02, Nutzer-Wunsch nach Mockup-Vorlage) —
+   bewusste Ausnahme von der Bunte-Rahmen-Regel für genau die Anstehende-
+   Termine-Karte (siehe renderCalendarCard), kein Präzedenzfall für die
+   übrigen Seitenkarten. Reiner Softshadow statt Farbrahmen+Farbschatten. */
+.side-card--plain { border: none; box-shadow: var(--shadow); }
 .side-card__illustration, .info-box__illustration, .mailgen__illustration {
   position: absolute;
   top: 10px;

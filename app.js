@@ -430,10 +430,14 @@
 
   /* ------------------------------------------------------- Kalender-Widget */
 
-  function renderCalendarCard() {
-    const events = upcomingEvents(new Date(), 3);
+  // Randlos + "Alle Termine anzeigen" (2026-09-02, Nutzer-Wunsch nach
+  // Mockup-Vorlage) — bewusste Ausnahme von der Bunte-Rahmen-Regel für
+  // genau diese eine Karte, kein Präzedenzfall für andere Seitenkarten.
+  function renderCalendarCard(expanded) {
+    const events = upcomingEvents(new Date(), expanded ? CALENDAR_EVENTS.length : 3);
+    const showExpand = !expanded && CALENDAR_EVENTS.length > 3;
     return `
-      <div class="side-card">
+      <div class="side-card side-card--plain" id="calendar-card">
         <div class="side-card__illustration">${SIDECARD_ILLUSTRATION}</div>
         <h2>${ICONS.calendar} Anstehende Termine</h2>
         <ul class="side-card__list">
@@ -455,8 +459,18 @@
             })
             .join("")}
         </ul>
+        ${showExpand ? `<button type="button" class="side-card__expand" data-calendar-expand>Alle Termine anzeigen ${ICONS.arrowRight}</button>` : ""}
       </div>
     `;
+  }
+
+  function wireCalendarCard() {
+    const btn = document.querySelector("[data-calendar-expand]");
+    if (!btn) return;
+    btn.addEventListener("click", () => {
+      const card = document.getElementById("calendar-card");
+      card.outerHTML = renderCalendarCard(true);
+    });
   }
 
   /* ---------------------------------------------------------------- Mascot */
@@ -465,6 +479,11 @@
      nachweislich Buttons/Formularfelder verdeckt (Kritik-Fund P0). Kein
      dauerhaftes Schließen durch die Route, nur durch den X-Button. */
   let mascotDismissedByUser = false;
+  // Von setupCmdk() belegt, sobald die Palette einsatzbereit ist — erlaubt
+  // Seiten wie News, die Palette mit einem Suchbegriff vorbefüllt zu öffnen
+  // (siehe renderNews' "Alles durchsuchen"-Feld), ohne die zwei Closures
+  // ineinander zu verschachteln.
+  let openGlobalSearch = null;
   let mascotCycleTimer = null;
 
   /* MOMO (2026-08-13): ursprünglich versucht, MASCOT_SVG per ID-Suffix
@@ -1535,39 +1554,66 @@
     const ch = channel || "all";
     const channels = ["Microsoft", "Google", "Meta", "TikTok", "Snapchat", "KI", "CRO", "Rechtliches", "Allgemein"];
 
+    // Layout (2026-09-02, Nutzer-Wunsch nach Mockup-Vorlage): Hero+Toolbar+
+    // Feed jetzt gemeinsam in der linken Spalte von .layout-2col statt
+    // darüber über die volle Breite — dadurch startet .side-rail (Kalender-
+    // karte) auf Höhe des Hero statt erst unter der Toolbar.
     view.innerHTML = `
-      <section class="hero hero--connected">
-        <div class="hero__intro">
-          <h1>Neuigkeiten aus der<br>Online-<mark>Marketing-Welt</mark>.</h1>
-          <p>Aktuelle Trends, Updates &amp; Insights aus der Online-Marketing-Welt – mit besonderem Fokus auf Microsoft Advertising.</p>
-        </div>
-        <div class="hero__scene">
-          <div class="hero__bubble">Wissen weitergeben.<br>Erfolg vervielfachen.</div>
-          <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
-        </div>
-      </section>
-      <div class="toolbar">
-        <span class="toolbar__label">Was möchtest du finden?</span>
-        <label class="search">
-          ${ICONS.search}
-          <input type="search" id="search-input" placeholder="News durchsuchen …" value="${escapeHtml(query || "")}" aria-label="News durchsuchen" />
-          <button type="button" class="search__submit" id="search-submit" aria-label="Suche fokussieren">${ICONS.search}</button>
-        </label>
-        <nav class="tabs" aria-label="Kanäle">
-          <button type="button" class="tabs__item ${ch === "all" ? "is-active" : ""}" data-ch="all">Alle</button>
-          ${channels.map((c) => `<button type="button" class="tabs__item ${ch === c ? "is-active" : ""}" data-ch="${c}">${c}</button>`).join("")}
-        </nav>
-      </div>
       <div class="layout-2col">
-        <div class="feed" id="news-feed">
-          <h2 class="feed__title">Aktuelle Beiträge</h2>
-          <div class="empty-state">${ICONS.news}<strong>Lade News …</strong></div>
+        <div class="news-layout__main">
+          <section class="hero hero--connected">
+            <div class="hero__intro">
+              <h1>Neuigkeiten aus der<br>Online-<mark>Marketing-Welt</mark>.</h1>
+              <p>Aktuelle Trends, Updates &amp; Insights aus der Online-Marketing-Welt – mit besonderem Fokus auf Microsoft Advertising.</p>
+            </div>
+            <div class="hero__scene">
+              <div class="hero__bubble">Wissen weitergeben.<br>Erfolg vervielfachen.</div>
+              <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
+            </div>
+          </section>
+          <div class="toolbar">
+            <span class="toolbar__label">Alles durchsuchen</span>
+            <label class="search">
+              ${ICONS.search}
+              <input type="search" id="news-global-search" placeholder="News, Präsentationen, Vorlagen, Case Studies …" readonly aria-label="Alles durchsuchen öffnen" />
+              <button type="button" class="search__submit" id="news-global-search-submit" aria-label="Alles durchsuchen öffnen">${ICONS.search}</button>
+            </label>
+            <nav class="tabs" aria-label="Kanäle">
+              <button type="button" class="tabs__item ${ch === "all" ? "is-active" : ""}" data-ch="all">Alle</button>
+              ${channels.map((c) => `<button type="button" class="tabs__item ${ch === c ? "is-active" : ""}" data-ch="${c}">${c}</button>`).join("")}
+            </nav>
+          </div>
+          <label class="search search--compact feed__local-search">
+            ${ICONS.search}
+            <input type="search" id="news-local-search" placeholder="Nur in News suchen …" value="${escapeHtml(query || "")}" aria-label="Nur in News suchen" />
+          </label>
+          <div class="feed" id="news-feed">
+            <h2 class="feed__title">Aktuelle Beiträge</h2>
+            <div class="empty-state">${ICONS.news}<strong>Lade News …</strong></div>
+          </div>
         </div>
         <aside class="side-rail">${renderCalendarCard()}${renderRecentCard()}</aside>
       </div>
     `;
 
-    wireTopControls(() => renderNews(document.getElementById("search-input").value, ch), (nextCh) => renderNews(query, nextCh), "ch");
+    // Eigene, schlanke Verdrahtung statt wireTopControls (2026-09-02) — die
+    // Seite hat jetzt zwei Suchfelder mit unterschiedlicher Aufgabe (global
+    // vs. nur News), das passt nicht mehr auf das einfache Ein-Suchfeld-
+    // Muster, das wireTopControls für alle anderen Seiten bedient.
+    const openGlobal = () => { if (openGlobalSearch) openGlobalSearch(""); };
+    document.getElementById("news-global-search").addEventListener("focus", openGlobal);
+    document.getElementById("news-global-search-submit").addEventListener("click", openGlobal);
+
+    const localInput = document.getElementById("news-local-search");
+    let localDebounce;
+    localInput.addEventListener("input", () => {
+      clearTimeout(localDebounce);
+      localDebounce = setTimeout(() => renderNews(localInput.value, ch), 250);
+    });
+    view.querySelectorAll(".tabs__item").forEach((btn) => {
+      btn.addEventListener("click", () => renderNews(query, btn.dataset.ch));
+    });
+    wireCalendarCard();
 
     const data = await loadNews();
     const feed = document.getElementById("news-feed");
@@ -1637,10 +1683,14 @@
 
   function newsRow(item) {
     const chVar = CHANNEL_VAR[item.channel] || "--ink-soft";
+    const brandIcon = BRAND_MARK_ICONS[item.channel];
+    const thumb = brandIcon
+      ? `<span class="row__thumb row__thumb--brand">${brandIcon}</span>`
+      : `<span class="row__thumb" style="background-color: var(${chVar})">${ICONS.news}</span>`;
     return `
       <li>
         <a class="row" href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">
-          <span class="row__thumb" style="background-color: var(${chVar})">${ICONS.news}</span>
+          ${thumb}
           <span class="row__body">
             <span class="row__meta">
               ${item.pubDate ? `<span class="row__date">— ${formatDate(item.pubDate)}</span>` : ""}
@@ -3927,14 +3977,15 @@
       debounceTimer = setTimeout(runSearch, 120);
     });
 
-    function openCmdk() {
+    function openCmdk(prefill) {
       lastFocused = document.activeElement;
       backdrop.hidden = false;
-      input.value = "";
+      input.value = prefill || "";
       currentResults = [];
-      renderResults("");
+      renderResults(input.value);
       buildCmdkIndex(); // Index im Hintergrund vorwärmen (News-Fetch dauert am längsten)
       requestAnimationFrame(() => input.focus());
+      if (input.value) runSearch();
     }
     function closeCmdk() {
       backdrop.hidden = true;
@@ -3975,7 +4026,8 @@
       }
     });
 
-    if (trigger) trigger.addEventListener("click", openCmdk);
+    if (trigger) trigger.addEventListener("click", () => openCmdk());
+    openGlobalSearch = openCmdk;
   }
   setupCmdk();
 
