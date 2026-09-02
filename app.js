@@ -1717,15 +1717,31 @@
 
   /* ------------------------------------------------------- Seite: Präsentationen */
 
-  function renderPresentations(query, docType) {
+  // Reihenfolge/Divider ("Ohne bekanntes Datum") bleiben nur bei den beiden
+  // datumsbasierten Sortierungen sinnvoll — bei "Titel A–Z" sagt dateKnown
+  // nichts über die Position aus, deshalb dort reine Alphabet-Sortierung
+  // ohne den Umweg über dateKnown.
+  function sortPresentations(items, sortBy) {
+    const arr = [...items];
+    if (sortBy === "title") {
+      arr.sort((a, b) => a.title.localeCompare(b.title, "de"));
+      return arr;
+    }
+    arr.sort((a, b) => {
+      if (a.dateKnown !== b.dateKnown) return a.dateKnown ? -1 : 1;
+      const diff = new Date(a.date) - new Date(b.date);
+      return sortBy === "oldest" ? diff : -diff;
+    });
+    return arr;
+  }
+
+  function renderPresentations(query, docType, sortBy) {
     const q = (query || "").trim().toLowerCase();
     const dt = docType || "all";
+    const sort = ["newest", "oldest", "title"].includes(sortBy) ? sortBy : "newest";
     const docTypes = Object.keys(DOCTYPE_VAR);
 
-    let items = [...PRESENTATIONS].sort((a, b) => {
-      if (a.dateKnown !== b.dateKnown) return a.dateKnown ? -1 : 1;
-      return new Date(b.date) - new Date(a.date);
-    });
+    let items = sortPresentations(PRESENTATIONS, sort);
     if (dt !== "all") items = items.filter((p) => p.docType === dt);
     if (q) items = items.filter((p) => [p.title, p.summaryDE, p.docType].join(" ").toLowerCase().includes(q));
 
@@ -1751,25 +1767,34 @@
           <button type="button" class="tabs__item ${dt === "all" ? "is-active" : ""}" data-dt="all">Alle</button>
           ${docTypes.map((d) => `<button type="button" class="tabs__item ${dt === d ? "is-active" : ""}" data-dt="${escapeHtml(d)}">${escapeHtml(d)}</button>`).join("")}
         </nav>
+        <label class="select-field">
+          <span class="select-field__label">Sortieren</span>
+          <select id="presentations-sort">
+            <option value="newest" ${sort === "newest" ? "selected" : ""}>Neueste zuerst</option>
+            <option value="oldest" ${sort === "oldest" ? "selected" : ""}>Älteste zuerst</option>
+            <option value="title" ${sort === "title" ? "selected" : ""}>Titel A–Z</option>
+          </select>
+        </label>
       </div>
       <div class="feed">
         <h2 class="feed__title">Präsentationen${items.length ? `<span class="feed__title__count">${items.length} Ergebnisse</span>` : ""}</h2>
-        ${items.length ? presentationList(items) : `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Begriff oder Filter.</p></div>`}
+        ${items.length ? presentationList(items, sort) : `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Begriff oder Filter.</p></div>`}
       </div>
       ${renderFactWidget()}
     `;
 
     wireTopControls(
-      () => renderPresentations(document.getElementById("search-input").value, dt),
-      (nextDt) => renderPresentations(query, nextDt),
+      () => renderPresentations(document.getElementById("search-input").value, dt, sort),
+      (nextDt) => renderPresentations(query, nextDt, sort),
       "dt"
     );
+    document.getElementById("presentations-sort").addEventListener("change", (e) => renderPresentations(query, dt, e.target.value));
     wireFactWidget();
   }
 
-  function presentationList(items) {
+  function presentationList(items, sortBy) {
     const knownCount = items.filter((p) => p.dateKnown).length;
-    const hasMix = knownCount > 0 && knownCount < items.length;
+    const hasMix = sortBy !== "title" && knownCount > 0 && knownCount < items.length;
     let html = `<ul class="article-list">`;
     items.forEach((p, i) => {
       if (hasMix && i === knownCount) html += `<li class="feed__divider" role="presentation">Ohne bekanntes Datum</li>`;
@@ -2035,12 +2060,23 @@
 
   /* ------------------------------------------------------- Seite: Case Studies */
 
-  function renderCaseStudies(query, channel) {
+  function sortCaseStudies(items, sortBy) {
+    const arr = [...items];
+    if (sortBy === "title") {
+      arr.sort((a, b) => a.title.localeCompare(b.title, "de"));
+    } else {
+      arr.sort((a, b) => (sortBy === "oldest" ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date)));
+    }
+    return arr;
+  }
+
+  function renderCaseStudies(query, channel, sortBy) {
     const q = (query || "").trim().toLowerCase();
     const ch = channel || "all";
+    const sort = ["newest", "oldest", "title"].includes(sortBy) ? sortBy : "newest";
     const channels = [...new Set(CASE_STUDIES.map((c) => c.channel))];
 
-    let items = [...CASE_STUDIES].sort((a, b) => new Date(b.date) - new Date(a.date));
+    let items = sortCaseStudies(CASE_STUDIES, sort);
     if (ch !== "all") items = items.filter((c) => c.channel === ch);
     if (q) items = items.filter((c) => [c.title, c.metricHeadline, c.summaryDE, c.client].join(" ").toLowerCase().includes(q));
 
@@ -2052,8 +2088,22 @@
         </div>
         <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
       </section>
-      ${channels.length > 1 ? `
-      <div class="toolbar">
+      ${(() => {
+        // Sortier-Auswahl braucht mindestens zwei Einträge, um sinnvoll zu
+        // sein — mit nur einer (Platzhalter-)Case-Study wäre sie totes UI.
+        const sortSelect =
+          CASE_STUDIES.length > 1
+            ? `<label class="select-field">
+                <span class="select-field__label">Sortieren</span>
+                <select id="case-studies-sort">
+                  <option value="newest" ${sort === "newest" ? "selected" : ""}>Neueste zuerst</option>
+                  <option value="oldest" ${sort === "oldest" ? "selected" : ""}>Älteste zuerst</option>
+                  <option value="title" ${sort === "title" ? "selected" : ""}>Titel A–Z</option>
+                </select>
+              </label>`
+            : "";
+        return channels.length > 1
+          ? `<div class="toolbar">
         <span class="toolbar__label">Was möchtest du finden?</span>
         <label class="search">
           ${ICONS.search}
@@ -2064,14 +2114,17 @@
           <button type="button" class="tabs__item ${ch === "all" ? "is-active" : ""}" data-ch="all">Alle</button>
           ${channels.map((c) => `<button type="button" class="tabs__item ${ch === c ? "is-active" : ""}" data-ch="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join("")}
         </nav>
-      </div>` : `
-      <div class="toolbar">
+        ${sortSelect}
+      </div>`
+          : `<div class="toolbar">
         <label class="search">
           ${ICONS.search}
           <input type="search" id="search-input" placeholder="Case Studies durchsuchen …" value="${escapeHtml(query || "")}" aria-label="Case Studies durchsuchen" />
           <button type="button" class="search__submit" id="search-submit" aria-label="Suche fokussieren">${ICONS.search}</button>
         </label>
-      </div>`}
+        ${sortSelect}
+      </div>`;
+      })()}
       <div class="feed">
         <h2 class="feed__title">Case Studies${items.length ? `<span class="feed__title__count">${items.length} Ergebnisse</span>` : ""}</h2>
         ${
@@ -2085,10 +2138,11 @@
     `;
 
     wireTopControls(
-      () => renderCaseStudies(document.getElementById("search-input").value, ch),
-      (nextCh) => renderCaseStudies(query, nextCh),
+      () => renderCaseStudies(document.getElementById("search-input").value, ch, sort),
+      (nextCh) => renderCaseStudies(query, nextCh, sort),
       "ch"
     );
+    document.getElementById("case-studies-sort")?.addEventListener("change", (e) => renderCaseStudies(query, ch, e.target.value));
   }
 
   function caseStudyRow(c) {
@@ -3722,6 +3776,209 @@
     }
   });
 
+  /* --------------------------------------------------- Übergreifende Suche */
+  /* Cross-Content-Suche über News, Präsentationen, Vorlagen (inkl. Best
+     Practices) und Case Studies (2026-09-02, Nutzer-Wunsch nach Site-
+     Analyse) — ergänzt die bestehenden Einzelseiten-Suchen, die jeweils auf
+     einen Inhaltstyp begrenzt bleiben. "/" fokussiert weiterhin nur die
+     lokale Suche der aktuellen Seite, Strg/Cmd+K öffnet stattdessen diese
+     seitenübergreifende Palette. */
+
+  const CMDK_KIND_ICON = {
+    News: ICONS.news,
+    "Präsentation": ICONS.fileText,
+    Vorlage: ICONS.mail,
+    "Best Practice": ICONS.flash,
+    "Case Study": ICONS.trophy,
+  };
+  const CMDK_KIND_ORDER = ["News", "Präsentation", "Vorlage", "Best Practice", "Case Study"];
+  const CMDK_KIND_VAR_CYCLE = ["--accent", "--teal-text", "--turquoise-text"];
+
+  let cmdkIndexCache = null;
+
+  async function buildCmdkIndex() {
+    if (cmdkIndexCache) return cmdkIndexCache;
+    const newsData = await loadNews();
+    const newsItems = (newsData.items || []).map((it) => ({
+      kind: "News",
+      title: it.title,
+      snippet: it.description || it.source || "",
+      href: it.link,
+      external: true,
+    }));
+    const presItems = PRESENTATIONS.map((p) => ({
+      kind: "Präsentation",
+      title: p.title,
+      snippet: p.summaryDE,
+      href: `#/praesentationen/${p.id}`,
+    }));
+    const templateItems = STANDALONE_TEMPLATES.map((t) => ({
+      kind: "Vorlage",
+      title: t.title,
+      snippet: t.summary,
+      href: `#/vorlagen/${t.id}`,
+    }));
+    // Best Practices haben keine eigene Detailseite (nur ausklappbare Karten
+    // auf der Vorlagen-Seite) — Link landet auf dem "Best Practices"-Tab,
+    // vorgefiltert per Titel-Suche, damit genau diese Karte oben steht.
+    const practiceItems = BEST_PRACTICES.map((bp) => ({
+      kind: "Best Practice",
+      title: bp.title,
+      snippet: bp.body,
+      href: `#/vorlagen?t=practices&q=${encodeURIComponent(bp.title)}`,
+    }));
+    const caseItems = CASE_STUDIES.map((c) => ({
+      kind: "Case Study",
+      title: `${c.metricHeadline} — ${c.title}`,
+      snippet: c.summaryDE,
+      href: `#/case-studies/${c.id}`,
+    }));
+    cmdkIndexCache = [...newsItems, ...presItems, ...templateItems, ...practiceItems, ...caseItems];
+    return cmdkIndexCache;
+  }
+
+  function cmdkHighlight(text, q) {
+    if (!q) return escapeHtml(text);
+    const idx = text.toLowerCase().indexOf(q.toLowerCase());
+    if (idx === -1) return escapeHtml(text);
+    return `${escapeHtml(text.slice(0, idx))}<mark>${escapeHtml(text.slice(idx, idx + q.length))}</mark>${escapeHtml(text.slice(idx + q.length))}`;
+  }
+
+  function setupCmdk() {
+    const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || "");
+    const shortcutLabel = isMac ? "⌘K" : "Strg+K";
+    const trigger = document.getElementById("cmdk-trigger");
+    if (trigger) {
+      const triggerKbd = trigger.querySelector("kbd");
+      if (triggerKbd) triggerKbd.textContent = shortcutLabel;
+      const triggerIcon = trigger.querySelector(".rail__search-trigger-icon");
+      if (triggerIcon) triggerIcon.innerHTML = ICONS.search;
+    }
+
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = `
+      <div class="cmdk-backdrop" id="cmdk-backdrop" hidden>
+        <div class="cmdk-panel" role="dialog" aria-modal="true" aria-label="Übergreifende Suche">
+          <div class="cmdk-input-row">
+            ${ICONS.search}
+            <input type="text" id="cmdk-input" class="cmdk-input" placeholder="News, Präsentationen, Vorlagen, Case Studies durchsuchen …" autocomplete="off" />
+            <button type="button" class="cmdk-close" id="cmdk-close" aria-label="Suche schließen">${ICONS.close}</button>
+          </div>
+          <div class="cmdk-results" id="cmdk-results"></div>
+          <div class="cmdk-footer">
+            <span><kbd>↑</kbd><kbd>↓</kbd> Navigieren</span>
+            <span><kbd>↵</kbd> Öffnen</span>
+            <span><kbd>Esc</kbd> Schließen</span>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(wrapper.firstElementChild);
+
+    const backdrop = document.getElementById("cmdk-backdrop");
+    const input = document.getElementById("cmdk-input");
+    const resultsEl = document.getElementById("cmdk-results");
+    let activeIndex = 0;
+    let currentResults = [];
+    let lastFocused = null;
+
+    function renderResults(q) {
+      resultsEl.innerHTML = currentResults.length
+        ? currentResults
+            .map((r, i) => {
+              const varName = CMDK_KIND_VAR_CYCLE[CMDK_KIND_ORDER.indexOf(r.kind) % CMDK_KIND_VAR_CYCLE.length];
+              return `
+          <a class="cmdk-result ${i === activeIndex ? "is-active" : ""}" href="${escapeHtml(r.href)}" data-idx="${i}" ${r.external ? 'target="_blank" rel="noopener noreferrer"' : ""}>
+            <span class="cmdk-result__icon" style="color: var(${varName})">${CMDK_KIND_ICON[r.kind] || ICONS.search}</span>
+            <span class="cmdk-result__body">
+              <span class="cmdk-result__kind">${escapeHtml(r.kind)}</span>
+              <span class="cmdk-result__title">${cmdkHighlight(r.title, q)}</span>
+              ${r.snippet ? `<span class="cmdk-result__snippet">${escapeHtml(r.snippet.slice(0, 120))}${r.snippet.length > 120 ? "…" : ""}</span>` : ""}
+            </span>
+          </a>`;
+            })
+            .join("")
+        : `<div class="cmdk-empty">${
+            q.trim()
+              ? `${ICONS.magnifyEmpty}<p>Kein Treffer für „${escapeHtml(q)}".</p>`
+              : `${ICONS.search}<p>Tippe, um über News, Präsentationen, Vorlagen und Case Studies zu suchen.</p>`
+          }</div>`;
+
+      resultsEl.querySelectorAll(".cmdk-result").forEach((el) => {
+        el.addEventListener("click", closeCmdk);
+        el.addEventListener("mouseenter", () => {
+          activeIndex = Number(el.dataset.idx);
+          resultsEl.querySelectorAll(".cmdk-result").forEach((r) => r.classList.toggle("is-active", r === el));
+        });
+      });
+    }
+
+    async function runSearch() {
+      const q = input.value.trim().toLowerCase();
+      const index = await buildCmdkIndex();
+      currentResults = q ? index.filter((r) => [r.title, r.snippet].join(" ").toLowerCase().includes(q)).slice(0, 30) : [];
+      activeIndex = 0;
+      renderResults(input.value);
+    }
+
+    let debounceTimer;
+    input.addEventListener("input", () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(runSearch, 120);
+    });
+
+    function openCmdk() {
+      lastFocused = document.activeElement;
+      backdrop.hidden = false;
+      input.value = "";
+      currentResults = [];
+      renderResults("");
+      buildCmdkIndex(); // Index im Hintergrund vorwärmen (News-Fetch dauert am längsten)
+      requestAnimationFrame(() => input.focus());
+    }
+    function closeCmdk() {
+      backdrop.hidden = true;
+      if (lastFocused && typeof lastFocused.focus === "function") lastFocused.focus();
+    }
+
+    backdrop.addEventListener("click", (e) => {
+      if (e.target === backdrop) closeCmdk();
+    });
+    document.getElementById("cmdk-close").addEventListener("click", closeCmdk);
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeCmdk();
+      } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        if (!currentResults.length) return;
+        const dir = e.key === "ArrowDown" ? 1 : -1;
+        activeIndex = (activeIndex + dir + currentResults.length) % currentResults.length;
+        renderResults(input.value);
+        resultsEl.querySelector(".is-active")?.scrollIntoView({ block: "nearest" });
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        const target = currentResults[activeIndex];
+        if (!target) return;
+        closeCmdk();
+        if (target.external) window.open(target.href, "_blank", "noopener,noreferrer");
+        else location.hash = target.href.replace(/^#/, "");
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        if (backdrop.hidden) openCmdk();
+        else closeCmdk();
+      }
+    });
+
+    if (trigger) trigger.addEventListener("click", openCmdk);
+  }
+  setupCmdk();
+
   /* ------------------------------------------------------------ Routing */
 
   function currentRoute() {
@@ -3781,7 +4038,7 @@
     } else if (path.startsWith("/praesentationen/")) {
       renderPresentationDetail(path.slice("/praesentationen/".length));
     } else if (path === "/praesentationen") {
-      renderPresentations(params.get("q") || "", params.get("dt") || "all");
+      renderPresentations(params.get("q") || "", params.get("dt") || "all", params.get("sort") || "newest");
     } else if (path.startsWith("/vorlagen/")) {
       renderStandaloneTemplateDetail(path.slice("/vorlagen/".length));
     } else if (path === "/vorlagen") {
@@ -3789,7 +4046,7 @@
     } else if (path.startsWith("/case-studies/")) {
       renderCaseStudyDetail(path.slice("/case-studies/".length));
     } else if (path === "/case-studies") {
-      renderCaseStudies(params.get("q") || "", params.get("ch") || "all");
+      renderCaseStudies(params.get("q") || "", params.get("ch") || "all", params.get("sort") || "newest");
     } else if (path === "/tickets") {
       renderTickets(params.get("q") || "", params.get("st") || "all", params.get("sort") || "created");
     } else if (path.startsWith("/anfragen/")) {

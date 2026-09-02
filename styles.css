@@ -179,7 +179,6 @@ mark {
   top: 0;
   height: 100vh;
   height: 100dvh;
-  overflow-y: auto;
 }
 .rail__logo {
   padding-bottom: var(--space-4);
@@ -200,6 +199,15 @@ mark {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  /* Nur die Nav-Liste scrollt intern (2026-09-02, Nutzer-Feedback per
+     Screenshot: Profil-Widget verschwand beim Scrollen der ganzen Leiste
+     nach unten aus dem Blick). Vorher hatte ".rail" selbst overflow-y:auto
+     — bei kurzem Viewport oder aufgeklapptem Vorlagen-Untermenü wanderte
+     dadurch auch das Profil unten aus dem sichtbaren Bereich. Jetzt bleiben
+     Logo und Profil fix, nur die Links dazwischen scrollen. */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
 }
 .rail__nav a {
   position: relative;
@@ -2213,6 +2221,123 @@ code {
 
 .msads-disclaimer { font-size: 0.78rem; color: var(--ink-soft); text-align: center; margin-top: var(--space-6); }
 
+/* -- Übergreifende Suche (Strg/Cmd+K) --------------------------------------- */
+/* 2026-09-02, Nutzer-Wunsch nach Site-Analyse: eine Cross-Content-Suche über
+   News/Präsentationen/Vorlagen/Case Studies, ergänzend zu den bestehenden,
+   auf je einen Inhaltstyp begrenzten Einzelseiten-Suchen. */
+
+.rail__search-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: border-color 150ms ease, color 150ms ease;
+}
+.rail__search-trigger:hover, .rail__search-trigger:focus-visible { border-color: var(--accent); color: var(--ink); }
+.rail__search-trigger-icon { flex: none; display: flex; }
+.rail__search-trigger-icon svg { width: 16px; height: 16px; }
+.rail__search-trigger-label { flex: 1; text-align: left; }
+.rail__search-trigger kbd {
+  flex: none;
+  font: inherit;
+  font-size: 0.68rem;
+  padding: 0.15em 0.45em;
+  border-radius: var(--radius-xs);
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+}
+
+.cmdk-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  justify-content: center;
+  padding: 12vh var(--space-4) var(--space-4);
+  background: color-mix(in srgb, var(--c-ink) 45%, transparent);
+  backdrop-filter: blur(2px);
+}
+/* [hidden] und ".cmdk-backdrop" haben dieselbe Spezifität (0,1,0) — ohne
+   diese Regel gewinnt "display: flex" oben rein durch spätere Cascade-
+   Position, das Overlay bliebe trotz hidden-Attribut sichtbar. */
+.cmdk-backdrop[hidden] { display: none; }
+.cmdk-panel {
+  width: 100%;
+  max-width: 40rem;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-hover);
+  overflow: hidden;
+}
+.cmdk-input-row {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--line);
+}
+.cmdk-input-row svg { flex: none; width: 20px; height: 20px; color: var(--ink-soft); }
+.cmdk-input { flex: 1; border: none; outline: none; background: none; font: inherit; font-size: 1rem; color: var(--ink); }
+.cmdk-input::placeholder { color: var(--ink-soft); }
+.cmdk-close { flex: none; display: flex; padding: var(--space-1); border: none; background: none; color: var(--ink-soft); cursor: pointer; border-radius: var(--radius-xs); }
+.cmdk-close:hover { color: var(--ink); background: var(--paper); }
+.cmdk-close svg { width: 16px; height: 16px; }
+
+.cmdk-results { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: var(--space-2); }
+.cmdk-result {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: inherit;
+}
+.cmdk-result.is-active, .cmdk-result:hover { background: var(--paper); }
+.cmdk-result__icon { flex: none; display: flex; margin-top: 2px; }
+.cmdk-result__icon svg { width: 17px; height: 17px; }
+.cmdk-result__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.2em; }
+.cmdk-result__kind { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink-soft); }
+.cmdk-result__title { font-weight: 600; color: var(--ink); }
+.cmdk-result__title mark { background: var(--accent-tint); color: var(--ink); border-radius: var(--radius-xs); }
+.cmdk-result__snippet { font-size: 0.83rem; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.cmdk-empty { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); padding: var(--space-8) var(--space-5); color: var(--ink-soft); text-align: center; }
+.cmdk-empty svg { width: 32px; height: 32px; }
+.cmdk-empty p { margin: 0; font-size: 0.9rem; }
+
+.cmdk-footer {
+  flex: none;
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--line);
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+.cmdk-footer kbd {
+  font: inherit;
+  padding: 0.1em 0.4em;
+  border-radius: var(--radius-xs);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  margin-right: 0.2em;
+}
+
 /* -- Responsive ------------------------------------------------------------ */
 @media (max-width: 48rem) {
   .shell { flex-direction: column; }
@@ -2272,6 +2397,11 @@ code {
   .rail__nav a[aria-current="page"] { padding-left: 0; }
   .rail__nav-label { display: none; }
   .rail__profile { display: none; }
+  /* Kein Hardware-Keyboard auf Mobile, Strg/Cmd+K ergäbe dort keinen Sinn —
+     die horizontale Icon-Leiste hat ohnehin keinen Platz für den Button. */
+  .rail__search-trigger { display: none; }
+  .cmdk-backdrop { padding: var(--space-4); }
+  .cmdk-footer { display: none; }
   .rail__nav a[aria-current="page"]::before {
     left: 50%;
     top: auto;
