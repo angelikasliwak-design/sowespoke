@@ -2439,8 +2439,13 @@ code {
   bottom: var(--space-6);
   z-index: 40;
   display: flex;
-  align-items: center;
-  gap: 4px;
+  /* Bubble immer UNTER der Figur statt daneben (2026-09-02, Nutzer-Wunsch)
+     — bei der jetzt deutlich größeren Figur wirkt das stimmiger als
+     nebeneinander, und macht sichtbar, dass das ein Hund im Sowespoke-Shirt
+     ist, nicht nur eine kleine Randfigur. */
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
   /* War min(19rem, ...) — auf schmaleren Viewports (~390px) deckte die
      Blase damit bis zu 78% der Breite ab und überlagerte Filter-Pills/
      Abschnittsüberschrift (Screenshot-Selbsttest 2026-08-10). Kleiner
@@ -2467,10 +2472,12 @@ code {
 @keyframes mascot-out {
   to { transform: translateY(8px); opacity: 0; }
 }
-/* Größer + leicht überlappend mit der Bubble (margin-right negativ), damit
-   die Figur wirkt, als "halte" sie die Sprechblase, statt lose daneben zu
-   stehen (Brief 2026-08-07). */
-.mascot__figure { width: 74px; height: 74px; flex: none; margin-right: -8px; z-index: 2; animation: mascot-float 3.2s ease-in-out infinite; }
+/* Deutlich größer (2026-09-02, Nutzer-Wunsch: "damit man sieht, dass das
+   ein Hund mit Sowespoke-Logo ist") — bei 74px war das Shirt-Logo auf der
+   Figur praktisch nicht erkennbar. Kein negativer Rand mehr (war für die
+   frühere horizontale Anordnung neben der Blase gedacht, siehe git-history
+   — jetzt steht die Figur über der Blase, siehe .mascot flex-direction). */
+.mascot__figure { width: 132px; height: 132px; flex: none; z-index: 2; animation: mascot-float 3.2s ease-in-out infinite; }
 @keyframes mascot-float {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50% { transform: translateY(-6px) rotate(-4deg); }
@@ -2501,27 +2508,29 @@ code {
   padding: var(--space-5) var(--space-5) var(--space-4) var(--space-4);
   transform: rotate(-1deg);
 }
+/* Zeigt jetzt nach oben zur Figur statt nach links (2026-09-02) — die
+   Blase sitzt seitdem unter statt neben der Figur, siehe .mascot oben. */
 .mascot__bubble::before {
   content: "";
   position: absolute;
-  left: -14px;
-  bottom: 24px;
+  right: 28px;
+  top: -14px;
   width: 0;
   height: 0;
   border-style: solid;
-  border-width: 8px 14px 8px 0;
-  border-color: transparent var(--ink) transparent transparent;
+  border-width: 0 8px 14px 8px;
+  border-color: transparent transparent var(--ink) transparent;
 }
 .mascot__bubble::after {
   content: "";
   position: absolute;
-  left: -10px;
-  bottom: 25px;
+  right: 30px;
+  top: -11px;
   width: 0;
   height: 0;
   border-style: solid;
-  border-width: 6px 11px 6px 0;
-  border-color: transparent var(--paper-raised) transparent transparent;
+  border-width: 0 6px 11px 6px;
+  border-color: transparent transparent var(--paper-raised) transparent;
 }
 .mascot__label {
   display: block;
@@ -2576,7 +2585,7 @@ code {
     bottom: var(--space-3);
     max-width: min(12.5rem, calc(100vw - 2 * var(--space-3)));
   }
-  .mascot__figure { width: 56px; height: 56px; }
+  .mascot__figure { width: 92px; height: 92px; }
   .mascot__bubble { padding: var(--space-3) var(--space-4) var(--space-3) var(--space-3); }
   .mascot__bubble p { font-size: 0.82rem; padding-right: var(--space-2); }
   .hero::before { top: -0.75rem; right: -0.75rem; width: 150px; height: 150px; }
