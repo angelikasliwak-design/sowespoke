@@ -2477,17 +2477,18 @@ code {
    Figur praktisch nicht erkennbar. Kein negativer Rand mehr (war für die
    frühere horizontale Anordnung neben der Blase gedacht, siehe git-history
    — jetzt steht die Figur über der Blase, siehe .mascot flex-direction).
-   Erste Vergrößerung (74px→132px, quadratischer Container) reichte laut
-   Nutzer-Feedback ("man sieht das logo gar nicht") noch nicht — Grund per
-   Canvas-Alpha-Scan gefunden (gleiche Technik wie bei den Karten-Eck-
-   Illustrationen, siehe DESIGN.md 2026-08-14): die eigentliche Figur füllt
-   nur einen Ausschnitt (Bounding-Box ca. x:110–585 / y:0–572 in Viewbox-
-   Einheiten) der vollen 800×800-Viewbox — bei einem einfach vergrößerten
-   Container wuchs also viel Leerraum mit, nicht die Figur selbst. Jetzt
-   fest auf genau diesen Ausschnitt zugeschnitten (siehe .mascot__figure svg
-   unten) statt nur den Container zu skalieren — die Figur füllt den Rahmen
-   jetzt wirklich aus. */
-.mascot__figure { width: 170px; height: 205px; flex: none; z-index: 2; position: relative; overflow: hidden; animation: mascot-float 3.2s ease-in-out infinite; }
+   Ein Zuschneide-Versuch (fester Bildausschnitt per position:absolute +
+   overflow:hidden auf die im Ruhezustand sichtbare Bounding-Box) wurde
+   direkt danach wieder verworfen (Nutzer-Feedback: "der Hund macht keine
+   Graffiti mehr") — der MOMO-Kommentar direkt unten hatte es schon vorher
+   dokumentiert: der Leerraum rechts/unten in der Viewbox ist kein Zufall,
+   sondern der Bewegungsraum der SVGator-Sprüh-Animation. Ein starrer
+   Ausschnitt blendet dadurch zwangsläufig Teile der Animation aus, sobald
+   sie sich aus der Ruhepose herausbewegt. Bleibt deshalb bei der einfachen,
+   ungecroppten Lösung — nur der quadratische Container ist größer als beim
+   ersten Versuch (132px), damit die Figur auch im Ruhezustand ohne
+   Zuschnitt größer wirkt. */
+.mascot__figure { width: 190px; height: 190px; flex: none; z-index: 2; animation: mascot-float 3.2s ease-in-out infinite; }
 @keyframes mascot-float {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50% { transform: translateY(-6px) rotate(-4deg); }
@@ -2500,23 +2501,6 @@ code {
    Leerraum rechts (Platz für die Sprüh-Animation) wirkte die Figur in der
    kleinen Box sichtbar zu klein. */
 .mascot__figure svg, .fact-widget__figure svg { width: 100%; height: 100%; display: block; }
-/* Überschreibt die 100%-Regel direkt darüber (gleiche Spezifität 0,1,1 —
-   gewinnt hier rein durch spätere Cascade-Position, siehe Kommentar oben
-   bei .mascot__figure). Nur .mascot__figure betroffen, .fact-widget__figure
-   bleibt unverändert bei 100%/ungecroppt.
-   max-width:none nötig — der globale Reset "img, svg { max-width:100% }"
-   (siehe weiter oben in dieser Datei) deckelte die 286px sonst wieder auf
-   die 170px Container-Breite (max-width gewinnt immer gegen width, egal
-   welche Regel zuletzt kam — echter Bug beim ersten Test gefunden: width
-   kam im DOM tatsächlich bei 170px an statt 286px, height war korrekt). */
-.mascot__figure svg {
-  position: absolute;
-  width: 286px;
-  height: 286px;
-  max-width: none;
-  left: -7px;
-  top: -41px;
-}
 /* MOMO-Maskottchen (2026-08-13): löst MOKA ab, animiert sich jetzt
    vollständig selbst über MASCOT_ANIMATION_SCRIPT (app.js) statt über
    CSS-Keyframes auf benannten IDs — die vorherigen MOKA-spezifischen
@@ -2612,8 +2596,7 @@ code {
     bottom: var(--space-3);
     max-width: min(12.5rem, calc(100vw - 2 * var(--space-3)));
   }
-  .mascot__figure { width: 110px; height: 132px; }
-  .mascot__figure svg { width: 185px; height: 185px; max-width: none; left: -5px; top: -27px; }
+  .mascot__figure { width: 128px; height: 128px; }
   .mascot__bubble { padding: var(--space-3) var(--space-4) var(--space-3) var(--space-3); }
   .mascot__bubble p { font-size: 0.82rem; padding-right: var(--space-2); }
   .hero::before { top: -0.75rem; right: -0.75rem; width: 150px; height: 150px; }
