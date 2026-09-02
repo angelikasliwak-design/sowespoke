@@ -94,10 +94,20 @@
 
 /* -- Reset ----------------------------------------------------------- */
 * { box-sizing: border-box; }
+/* overflow-x:hidden lebt bewusst NUR auf html, nicht zusätzlich auf body
+   (2026-09-02, echter Bug: Profil-Widget verschwand beim Scrollen der
+   Hauptseite komplett aus dem Bild). Grund: setzt man overflow-x auf einer
+   Achse und lässt die andere auf "visible", macht der Browser diese Achse
+   automatisch zu "auto" (CSS-Spezifikations-Eigenheit) — mit der Regel auf
+   BEIDEN Elementen bekamen html UND body je ein eigenes overflow-y:auto.
+   body wurde dadurch zu einem eigenen (nie tatsächlich scrollenden)
+   Scroll-Container, an dem ".rail"s position:sticky sich verankerte, obwohl
+   die echte Seite auf html scrollte — die Sidebar folgte dem Scrollen
+   dadurch überhaupt nicht mehr. Mit der Regel nur auf html gibt es nur noch
+   einen echten Scroll-Container, sticky verankert sich korrekt daran. */
 html { -webkit-text-size-adjust: 100%; overflow-x: hidden; }
 body {
   margin: 0;
-  overflow-x: hidden;
   color: var(--ink);
   font-family: var(--font-body);
   font-size: 16px;
