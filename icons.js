@@ -47,6 +47,13 @@ const ICONS = {
 
   crosshair: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><circle cx="12" cy="12" r="7.5"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M2 12h4"/><path d="M18 12h4"/></svg>`,
 
+  // Themen-Icons für die News-Fallback-Zuordnung (topicIcon(), app.js) —
+  // gleiches ligne-claire-Strichprinzip wie der Rest von ICONS, nur drei
+  // neue Motive, die vorher fehlten (Recht, technisches Problem, Video).
+  scale: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><path d="M12 3v18"/><path d="M7 21h10"/><path d="M4 7h6"/><path d="M14 7h6"/><path d="M4 7 1.5 12.5a2.5 2.5 0 0 0 5 0Z"/><path d="M20 7l-2.5 5.5a2.5 2.5 0 0 0 5 0Z"/></svg>`,
+  bug: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><rect x="7" y="7.5" width="10" height="10" rx="4"/><path d="M12 7.5V5"/><path d="M9.5 5.5 8 4"/><path d="M14.5 5.5 16 4"/><path d="M7 12H3"/><path d="M17 12h4"/><path d="M7.5 16.5 4 19"/><path d="M16.5 16.5 20 19"/></svg>`,
+  play: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5Z"/></svg>`,
+
   layoutGrid: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1.4"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="1.4"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="1.4"/><rect x="13" y="13" width="7.5" height="7.5" rx="1.4"/></svg>`,
 
   chartLine: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><path d="M4 4v16h16"/><path d="M6.5 15 11 10l3 3 4.5-6"/></svg>`,
