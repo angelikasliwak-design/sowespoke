@@ -22,6 +22,18 @@ const BRAND_MARK_ICONS = {
   Snapchat: `<svg viewBox="0 0 24 24"><path fill="#FFFC00" stroke="#1A1A1A" stroke-width="0.4" d="M12 2c3.3 0 5.6 2.6 5.6 5.9 0 1 .1 2 .1 2 .5.1 1.2.4 1.4 1 .2.5-.1 1-.6 1.3-.3.2-.9.4-1.1.5 0 .3.2.9.7 1.5.6.7 1.5 1.1 1.5 1.6 0 .6-1.1.9-2 1.1-.1.3-.2.7-.4 1-.3.4-1 .3-1.6.3-.5 0-1 .3-2 .9-.8.5-1.7 1-3.6 1s-2.8-.5-3.6-1c-1-.6-1.5-.9-2-.9-.6 0-1.3.1-1.6-.3-.2-.3-.3-.7-.4-1-.9-.2-2-.5-2-1.1 0-.5.9-.9 1.5-1.6.5-.6.7-1.2.7-1.5-.2-.1-.8-.3-1.1-.5-.5-.3-.8-.8-.6-1.3.2-.6.9-.9 1.4-1 0 0 .1-1 .1-2C6.4 4.6 8.7 2 12 2Z"/></svg>`,
 };
 
+/**
+ * PRODUCT_MARK_ICONS (2026-09-02, Nutzer-Korrektur: "logo google analytics
+ * sieht anders aus, google trends auch") — einzelne Google-Produkte haben
+ * eigene, von der schlichten "G" sichtbar unterscheidbare Logos. Nur für
+ * newsBrandFromText() (app.js) gedacht, wird dort VOR dem generischen
+ * BRAND_MARK_ICONS.Google geprüft.
+ */
+const PRODUCT_MARK_ICONS = {
+  GoogleAnalytics: `<svg viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="6" fill="#F9AB00"/><rect x="6" y="13" width="3" height="6" rx="1" fill="#fff"/><rect x="10.5" y="9" width="3" height="10" rx="1" fill="#fff"/><rect x="15" y="5" width="3" height="14" rx="1" fill="#fff"/></svg>`,
+  GoogleTrends: `<svg viewBox="0 0 24 24"><path d="M4 17l4-5 3 2.5 4-6 3 3.5" fill="none" stroke="#4285F4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="18" cy="7" r="1.7" fill="#EA4335"/></svg>`,
+};
+
 const ICONS = {
   search: `<svg viewBox="0 0 24 24" ${ICON_STROKE}><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>`,
 

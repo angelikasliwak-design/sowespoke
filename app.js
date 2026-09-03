@@ -1549,8 +1549,7 @@
     return newsCache;
   }
 
-  async function renderNews(query, channel) {
-    const q = (query || "").trim().toLowerCase();
+  async function renderNews(channel) {
     const ch = channel || "all";
     const channels = ["Microsoft", "Google", "Meta", "TikTok", "Snapchat", "KI", "CRO", "Rechtliches", "Allgemein"];
 
@@ -1583,10 +1582,6 @@
               ${channels.map((c) => `<button type="button" class="tabs__item ${ch === c ? "is-active" : ""}" data-ch="${c}">${c}</button>`).join("")}
             </nav>
           </div>
-          <label class="search search--compact feed__local-search">
-            ${ICONS.search}
-            <input type="search" id="news-local-search" placeholder="Nur in News suchen …" value="${escapeHtml(query || "")}" aria-label="Nur in News suchen" />
-          </label>
           <div class="feed" id="news-feed">
             <h2 class="feed__title">Aktuelle Beiträge</h2>
             <div class="empty-state">${ICONS.news}<strong>Lade News …</strong></div>
@@ -1596,22 +1591,17 @@
       </div>
     `;
 
-    // Eigene, schlanke Verdrahtung statt wireTopControls (2026-09-02) — die
-    // Seite hat jetzt zwei Suchfelder mit unterschiedlicher Aufgabe (global
-    // vs. nur News), das passt nicht mehr auf das einfache Ein-Suchfeld-
-    // Muster, das wireTopControls für alle anderen Seiten bedient.
+    // Genau ein Suchfeld auf dieser Seite (2026-09-02, Nutzer-Korrektur:
+    // "3 listwy do wyszukiwania to bzdura — zostaw tylko jedna" — drei
+    // Suchfelder waren zu viel, das Kanal-Sidebar-Feld war ohnehin dasselbe
+    // Feld wie dieses hier). Öffnet die Strg+K-Palette, sucht über News,
+    // Präsentationen, Vorlagen und Case Studies gleichzeitig.
     const openGlobal = () => { if (openGlobalSearch) openGlobalSearch(""); };
     document.getElementById("news-global-search").addEventListener("focus", openGlobal);
     document.getElementById("news-global-search-submit").addEventListener("click", openGlobal);
 
-    const localInput = document.getElementById("news-local-search");
-    let localDebounce;
-    localInput.addEventListener("input", () => {
-      clearTimeout(localDebounce);
-      localDebounce = setTimeout(() => renderNews(localInput.value, ch), 250);
-    });
     view.querySelectorAll(".tabs__item").forEach((btn) => {
-      btn.addEventListener("click", () => renderNews(query, btn.dataset.ch));
+      btn.addEventListener("click", () => renderNews(btn.dataset.ch));
     });
     wireCalendarCard();
 
@@ -1651,14 +1641,13 @@
         retryBtn.disabled = true;
         retryBtn.textContent = "Lädt …";
         await loadNews(true);
-        renderNews(query, ch);
+        renderNews(ch);
       });
       return;
     }
 
     let items = data.items || [];
     if (ch !== "all") items = items.filter((i) => i.channel === ch);
-    if (q) items = items.filter((i) => [i.title, i.description, i.source].join(" ").toLowerCase().includes(q));
 
     const failedNotice = data.failedSources && data.failedSources.length
       ? `<p class="feed__notice">${ICONS.flash} ${data.failedSources.length} von ${data.failedSources.length + new Set(items.map((i) => i.source)).size} Quellen gerade nicht erreichbar (${data.failedSources.map((s) => escapeHtml(s.source)).join(", ")}).</p>`
@@ -1675,40 +1664,48 @@
       ${
         items.length
           ? `<ul class="article-list">${items.map(newsRow).join("")}</ul>`
-          : `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Begriff oder Kanal.</p></div>`
+          : `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Kanal.</p></div>`
       }
     `;
     if (items.length) wireNewsRatings(feed);
   }
 
-  // Marken-Erkennung im Artikeltext (2026-09-02, Nutzer-Korrektur: "es geht
-  // um logo von Google Analytics, oder Google, oder Meta usw" — der Kanal
-  // allein reicht nicht, weil Sammel-Quellen wie Search Engine Land/OMR
-  // Artikel über Google/Meta/Microsoft bringen, aber selbst keinem
-  // Marken-Kanal zugeordnet sind. Prüft deshalb zusätzlich Titel+
-  // Beschreibung auf Marken-Erwähnungen, bevor auf die generische
-  // Themen-Zuordnung zurückgefallen wird — Priorität liegt auf dem echten
-  // Logo, nicht auf einem abstrakten Themen-Icon.
+  // Marken-Erkennung im Artikeltitel (2026-09-02, Nutzer-Korrektur: "es
+  // geht um logo von Google Analytics, oder Google, oder Meta usw" — der
+  // Kanal allein reicht nicht, weil Sammel-Quellen wie Search Engine Land/
+  // OMR Artikel über Google/Meta/Microsoft bringen, aber selbst keinem
+  // Marken-Kanal zugeordnet sind. Prüft deshalb zusätzlich den Titel auf
+  // Marken-Erwähnungen, bevor auf die generische Themen-Zuordnung
+  // zurückgefallen wird — Priorität liegt auf dem echten Logo. Bewusst nur
+  // TITEL, nicht Beschreibung (zweite Nutzer-Korrektur: eine Marke, die nur
+  // im nicht sichtbaren Teil der Beschreibung auftaucht, wirkte willkürlich
+  // — die Karte zeigt ja nur den Titel deutlich lesbar). Produkt-Regeln
+  // (Google Analytics/Trends, eigenes Logo) laufen vor der allgemeinen
+  // Google-Regel, sonst hätte "Google Analytics" nie die Chance, das
+  // spezifischere Logo zu zeigen.
   const NEWS_BRAND_TEXT_RULES = [
-    { brand: "Google", pattern: /\b(google|gemini|adx|serp api)\b/i },
-    { brand: "Meta", pattern: /\b(meta|facebook|instagram)\b/i },
-    { brand: "Microsoft", pattern: /\b(microsoft|bing|copilot)\b/i },
-    { brand: "TikTok", pattern: /\btiktok\b/i },
-    { brand: "Snapchat", pattern: /\bsnapchat\b/i },
+    { icon: () => PRODUCT_MARK_ICONS.GoogleAnalytics, pattern: /\bgoogle analytics\b/i },
+    { icon: () => PRODUCT_MARK_ICONS.GoogleTrends, pattern: /\bgoogle trends\b/i },
+    { icon: () => BRAND_MARK_ICONS.Google, pattern: /\b(google|gemini|adx)\b/i },
+    { icon: () => BRAND_MARK_ICONS.Meta, pattern: /\b(meta|facebook|instagram)\b/i },
+    { icon: () => BRAND_MARK_ICONS.Microsoft, pattern: /\b(microsoft|bing|copilot)\b/i },
+    { icon: () => BRAND_MARK_ICONS.TikTok, pattern: /\btiktok\b/i },
+    { icon: () => BRAND_MARK_ICONS.Snapchat, pattern: /\bsnapchat\b/i },
   ];
   function newsBrandFromText(item) {
-    const text = `${item.title || ""} ${item.description || ""}`;
+    const text = item.title || "";
     const rule = NEWS_BRAND_TEXT_RULES.find((r) => r.pattern.test(text));
-    return rule ? BRAND_MARK_ICONS[rule.brand] : null;
+    return rule ? rule.icon() : null;
   }
 
   // Themen-Icon-Zuordnung (2026-09-02, ursprüngliches Nutzer-Feedback: bei
   // Kanälen ohne Markenbezug zeigte jede Zeile dasselbe generische Icon) —
-  // greift erst, wenn weder Kanal noch Text eine bekannte Marke ergeben
+  // greift erst, wenn weder Kanal noch Titel eine bekannte Marke ergeben
   // (z. B. "Evolving SEO for 2027" oder "What makes a good listicle?", die
-  // keine bestimmte Plattform nennen). Reihenfolge = Priorität, erster
-  // Treffer gewinnt; \b-Wortgrenzen statt reiner .includes(), damit "ai"/
-  // "ki" nicht versehentlich in längeren Wörtern anschlägt.
+  // keine bestimmte Plattform nennen). Ebenfalls nur Titel, aus demselben
+  // Grund wie oben. Reihenfolge = Priorität, erster Treffer gewinnt;
+  // \b-Wortgrenzen statt reiner .includes(), damit "ai"/"ki" nicht
+  // versehentlich in längeren Wörtern anschlägt.
   const NEWS_TOPIC_RULES = [
     { icon: "scale", pattern: /\b(antitrust|lawsuit|regulation|gdpr|compliance|court|legal|klage|kartellrecht|datenschutz)\b/i },
     { icon: "bug", pattern: /\b(bug|outage|down|broken|error|zero traffic|ausfall|störung|fehler)\b/i },
@@ -1720,7 +1717,7 @@
     { icon: "book", pattern: /\b(listicle|content|writing|blog|copywriting)\b/i },
   ];
   function newsTopicIcon(item) {
-    const text = `${item.title || ""} ${item.description || ""}`;
+    const text = item.title || "";
     const rule = NEWS_TOPIC_RULES.find((r) => r.pattern.test(text));
     return rule ? ICONS[rule.icon] : null;
   }
@@ -3939,16 +3936,6 @@
   }
 
   function setupCmdk() {
-    const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || "");
-    const shortcutLabel = isMac ? "⌘K" : "Strg+K";
-    const trigger = document.getElementById("cmdk-trigger");
-    if (trigger) {
-      const triggerKbd = trigger.querySelector("kbd");
-      if (triggerKbd) triggerKbd.textContent = shortcutLabel;
-      const triggerIcon = trigger.querySelector(".rail__search-trigger-icon");
-      if (triggerIcon) triggerIcon.innerHTML = ICONS.search;
-    }
-
     const wrapper = document.createElement("div");
     wrapper.innerHTML = `
       <div class="cmdk-backdrop" id="cmdk-backdrop" hidden>
@@ -4070,7 +4057,6 @@
       }
     });
 
-    if (trigger) trigger.addEventListener("click", () => openCmdk());
     openGlobalSearch = openCmdk;
   }
   setupCmdk();
@@ -4130,7 +4116,7 @@
     updateMascotForRoute(path);
 
     if (path === "/") {
-      renderNews(params.get("q") || "", params.get("ch") || "all");
+      renderNews(params.get("ch") || "all");
     } else if (path.startsWith("/praesentationen/")) {
       renderPresentationDetail(path.slice("/praesentationen/".length));
     } else if (path === "/praesentationen") {
