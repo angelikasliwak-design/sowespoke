@@ -1679,15 +1679,27 @@
   // zurückgefallen wird — Priorität liegt auf dem echten Logo. Bewusst nur
   // TITEL, nicht Beschreibung (zweite Nutzer-Korrektur: eine Marke, die nur
   // im nicht sichtbaren Teil der Beschreibung auftaucht, wirkte willkürlich
-  // — die Karte zeigt ja nur den Titel deutlich lesbar). Produkt-Regeln
-  // (Google Analytics/Trends, eigenes Logo) laufen vor der allgemeinen
-  // Google-Regel, sonst hätte "Google Analytics" nie die Chance, das
-  // spezifischere Logo zu zeigen.
+  // — die Karte zeigt ja nur den Titel deutlich lesbar).
+  //
+  // Danach selbstständig auf weitere Lücken geprüft statt auf den nächsten
+  // Einzelfall zu warten (Nutzer: "kontrolliere es bitte immer selbst" —
+  // Beispiele: YouTube/AdSense/Gemini). Ergänzt: Gemini, YouTube, Instagram,
+  // LinkedIn als eigene Produkt-Logos (Instagram/LinkedIn sind für sich
+  // genauso erkennbar wie ihre Mutter-Marke, oft sogar bekannter als "Meta"/
+  // "Microsoft" im Kontext); AdSense/AdWords/WhatsApp als zusätzliche
+  // Stichwörter auf die jeweilige Mutter-Marke gemappt (kein eigenständig
+  // ikonisches Logo nötig). Produkt-Regeln laufen immer VOR der jeweiligen
+  // Mutter-Marken-Regel, sonst hätte z. B. "Google Analytics" nie die
+  // Chance, das spezifischere Logo statt der schlichten "G" zu zeigen.
   const NEWS_BRAND_TEXT_RULES = [
     { icon: () => PRODUCT_MARK_ICONS.GoogleAnalytics, pattern: /\bgoogle analytics\b/i },
     { icon: () => PRODUCT_MARK_ICONS.GoogleTrends, pattern: /\bgoogle trends\b/i },
-    { icon: () => BRAND_MARK_ICONS.Google, pattern: /\b(google|gemini|adx)\b/i },
-    { icon: () => BRAND_MARK_ICONS.Meta, pattern: /\b(meta|facebook|instagram)\b/i },
+    { icon: () => PRODUCT_MARK_ICONS.Gemini, pattern: /\bgemini\b/i },
+    { icon: () => PRODUCT_MARK_ICONS.YouTube, pattern: /\byoutube\b/i },
+    { icon: () => PRODUCT_MARK_ICONS.Instagram, pattern: /\binstagram\b/i },
+    { icon: () => PRODUCT_MARK_ICONS.LinkedIn, pattern: /\blinkedin\b/i },
+    { icon: () => BRAND_MARK_ICONS.Google, pattern: /\b(google|adx|adsense|adwords)\b/i },
+    { icon: () => BRAND_MARK_ICONS.Meta, pattern: /\b(meta|facebook|whatsapp)\b/i },
     { icon: () => BRAND_MARK_ICONS.Microsoft, pattern: /\b(microsoft|bing|copilot)\b/i },
     { icon: () => BRAND_MARK_ICONS.TikTok, pattern: /\btiktok\b/i },
     { icon: () => BRAND_MARK_ICONS.Snapchat, pattern: /\bsnapchat\b/i },
@@ -1710,7 +1722,7 @@
     { icon: "scale", pattern: /\b(antitrust|lawsuit|regulation|gdpr|compliance|court|legal|klage|kartellrecht|datenschutz)\b/i },
     { icon: "bug", pattern: /\b(bug|outage|down|broken|error|zero traffic|ausfall|störung|fehler)\b/i },
     { icon: "sparkle", pattern: /\b(ai|ki|chatgpt|llm|künstliche intelligenz|artificial intelligence|machine learning)\b/i },
-    { icon: "play", pattern: /\b(video|youtube)\b/i },
+    { icon: "play", pattern: /\bvideo\b/i },
     { icon: "chartLine", pattern: /\b(analytics|trends?|traffic|dashboard|report|daten)\b/i },
     { icon: "search", pattern: /\b(seo|ranking|backlinks?|serp)\b/i },
     { icon: "crosshair", pattern: /\b(creative|targeting|campaigns?|advertising|ad ?tech)\b/i },

@@ -24,14 +24,25 @@ const BRAND_MARK_ICONS = {
 
 /**
  * PRODUCT_MARK_ICONS (2026-09-02, Nutzer-Korrektur: "logo google analytics
- * sieht anders aus, google trends auch") — einzelne Google-Produkte haben
- * eigene, von der schlichten "G" sichtbar unterscheidbare Logos. Nur für
- * newsBrandFromText() (app.js) gedacht, wird dort VOR dem generischen
- * BRAND_MARK_ICONS.Google geprüft.
+ * sieht anders aus, google trends auch", danach selbstständig auf weitere
+ * Lücken geprüft statt auf jeden Einzelfall zu warten — Nutzer-Wunsch:
+ * "kontrolliere es bitte immer selbst") — einzelne Produkte/Töchter mit
+ * eigenem, von ihrer Mutter-Marke sichtbar unterscheidbarem Logo. Nur für
+ * newsBrandFromText() (app.js) gedacht, wird dort VOR der jeweiligen
+ * generischen Mutter-Marken-Regel geprüft (Google/Meta/Microsoft). Bewusst
+ * keine `<linearGradient id="...">`-Verläufe wie in den echten Original-
+ * Logos (Instagram, Gemini) — dieselbe Icon-Markup-Zeichenkette landet pro
+ * Seite potenziell mehrfach im DOM (eine pro passender News-Zeile), ein
+ * wiederholter `id`-Verweis wäre nicht mehr eindeutig. Stattdessen jeweils
+ * eine repräsentative Volltonfarbe.
  */
 const PRODUCT_MARK_ICONS = {
   GoogleAnalytics: `<svg viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="6" fill="#F9AB00"/><rect x="6" y="13" width="3" height="6" rx="1" fill="#fff"/><rect x="10.5" y="9" width="3" height="10" rx="1" fill="#fff"/><rect x="15" y="5" width="3" height="14" rx="1" fill="#fff"/></svg>`,
   GoogleTrends: `<svg viewBox="0 0 24 24"><path d="M4 17l4-5 3 2.5 4-6 3 3.5" fill="none" stroke="#4285F4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="18" cy="7" r="1.7" fill="#EA4335"/></svg>`,
+  Gemini: `<svg viewBox="0 0 24 24"><path fill="#4285F4" d="M12 2c0 5.5 4.5 10 10 10-5.5 0-10 4.5-10 10 0-5.5-4.5-10-10-10 5.5 0 10-4.5 10-10Z"/></svg>`,
+  YouTube: `<svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="5" fill="#FF0000"/><path fill="#fff" d="M10 8.5l6 3.5-6 3.5Z"/></svg>`,
+  Instagram: `<svg viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="6" fill="#E1306C"/><rect x="7" y="7" width="10" height="10" rx="3" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="17" cy="7" r="1" fill="#fff"/></svg>`,
+  LinkedIn: `<svg viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="4" fill="#0A66C2"/><rect x="5" y="9.5" width="3" height="9" fill="#fff"/><circle cx="6.5" cy="6" r="1.8" fill="#fff"/><path fill="#fff" d="M11 9.5h3v1.6c.7-1.1 1.9-1.9 3.5-1.9 2.6 0 4 1.7 4 4.9v5.4h-3v-4.8c0-1.5-.6-2.4-1.8-2.4-1 0-1.7.7-2 1.4-.1.3-.2.7-.2 1.1v4.7h-3V9.5Z"/></svg>`,
 };
 
 const ICONS = {
