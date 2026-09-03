@@ -1681,17 +1681,38 @@
     if (items.length) wireNewsRatings(feed);
   }
 
-  // Themen-Icon-Zuordnung (2026-09-02, Nutzer-Feedback per Screenshot: bei
-  // Kanälen ohne Markenbezug — z. B. Sammel-Quellen wie Search Engine Land —
-  // zeigte jede Zeile dasselbe generische Icon). Reihenfolge = Priorität,
-  // erster Treffer gewinnt; \b-Wortgrenzen statt reiner .includes(), damit
-  // "ai"/"ki" nicht versehentlich in längeren Wörtern anschlägt. Reine
-  // Heuristik auf Titel+Beschreibung, kein Anspruch auf Perfektion — deutlich
-  // besser als ein einziges Icon für 40 verschiedene Themen.
+  // Marken-Erkennung im Artikeltext (2026-09-02, Nutzer-Korrektur: "es geht
+  // um logo von Google Analytics, oder Google, oder Meta usw" — der Kanal
+  // allein reicht nicht, weil Sammel-Quellen wie Search Engine Land/OMR
+  // Artikel über Google/Meta/Microsoft bringen, aber selbst keinem
+  // Marken-Kanal zugeordnet sind. Prüft deshalb zusätzlich Titel+
+  // Beschreibung auf Marken-Erwähnungen, bevor auf die generische
+  // Themen-Zuordnung zurückgefallen wird — Priorität liegt auf dem echten
+  // Logo, nicht auf einem abstrakten Themen-Icon.
+  const NEWS_BRAND_TEXT_RULES = [
+    { brand: "Google", pattern: /\b(google|gemini|adx|serp api)\b/i },
+    { brand: "Meta", pattern: /\b(meta|facebook|instagram)\b/i },
+    { brand: "Microsoft", pattern: /\b(microsoft|bing|copilot)\b/i },
+    { brand: "TikTok", pattern: /\btiktok\b/i },
+    { brand: "Snapchat", pattern: /\bsnapchat\b/i },
+  ];
+  function newsBrandFromText(item) {
+    const text = `${item.title || ""} ${item.description || ""}`;
+    const rule = NEWS_BRAND_TEXT_RULES.find((r) => r.pattern.test(text));
+    return rule ? BRAND_MARK_ICONS[rule.brand] : null;
+  }
+
+  // Themen-Icon-Zuordnung (2026-09-02, ursprüngliches Nutzer-Feedback: bei
+  // Kanälen ohne Markenbezug zeigte jede Zeile dasselbe generische Icon) —
+  // greift erst, wenn weder Kanal noch Text eine bekannte Marke ergeben
+  // (z. B. "Evolving SEO for 2027" oder "What makes a good listicle?", die
+  // keine bestimmte Plattform nennen). Reihenfolge = Priorität, erster
+  // Treffer gewinnt; \b-Wortgrenzen statt reiner .includes(), damit "ai"/
+  // "ki" nicht versehentlich in längeren Wörtern anschlägt.
   const NEWS_TOPIC_RULES = [
     { icon: "scale", pattern: /\b(antitrust|lawsuit|regulation|gdpr|compliance|court|legal|klage|kartellrecht|datenschutz)\b/i },
     { icon: "bug", pattern: /\b(bug|outage|down|broken|error|zero traffic|ausfall|störung|fehler)\b/i },
-    { icon: "sparkle", pattern: /\b(ai|ki|gemini|chatgpt|copilot|llm|künstliche intelligenz|artificial intelligence|machine learning)\b/i },
+    { icon: "sparkle", pattern: /\b(ai|ki|chatgpt|llm|künstliche intelligenz|artificial intelligence|machine learning)\b/i },
     { icon: "play", pattern: /\b(video|youtube)\b/i },
     { icon: "chartLine", pattern: /\b(analytics|trends?|traffic|dashboard|report|daten)\b/i },
     { icon: "search", pattern: /\b(seo|ranking|backlinks?|serp)\b/i },
@@ -1706,7 +1727,7 @@
 
   function newsRow(item) {
     const chVar = CHANNEL_VAR[item.channel] || "--ink-soft";
-    const brandIcon = BRAND_MARK_ICONS[item.channel];
+    const brandIcon = BRAND_MARK_ICONS[item.channel] || newsBrandFromText(item);
     const thumb = brandIcon
       ? `<span class="row__thumb row__thumb--brand">${brandIcon}</span>`
       : `<span class="row__thumb" style="background-color: var(${chVar})">${newsTopicIcon(item) || ICONS.news}</span>`;
