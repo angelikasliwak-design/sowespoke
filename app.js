@@ -366,7 +366,7 @@
           <h1>Anfragen an <mark>Microsoft</mark>.</h1>
           <p>Vorbereitete E-Mails auf Englisch an ${escapeHtml(MS_CONTACT_NAME)} — nach Anfrage-Art sortiert, jede mit eigenem Formular.</p>
         </div>
-        <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
+        <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
       </section>
 
       <ul class="article-list">
@@ -1567,7 +1567,7 @@
             </div>
             <div class="hero__scene">
               <div class="hero__bubble">Wissen weitergeben.<br>Erfolg vervielfachen.</div>
-              <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
+              <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
             </div>
           </section>
           <div class="toolbar">
@@ -1663,7 +1663,7 @@
       ${failedNotice}
       ${
         items.length
-          ? `<ul class="article-list">${items.map(newsRow).join("")}</ul>`
+          ? `<ul class="article-list">${items.map((item, i) => newsRow(item, i === 0)).join("")}</ul>`
           : `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Kanal.</p></div>`
       }
     `;
@@ -1734,18 +1734,20 @@
     return rule ? ICONS[rule.icon] : null;
   }
 
-  function newsRow(item) {
+  function newsRow(item, featured) {
     const chVar = CHANNEL_VAR[item.channel] || "--ink-soft";
     const brandIcon = BRAND_MARK_ICONS[item.channel] || newsBrandFromText(item);
     const thumb = brandIcon
       ? `<span class="row__thumb row__thumb--brand">${brandIcon}</span>`
       : `<span class="row__thumb" style="background-color: var(${chVar})">${newsTopicIcon(item) || ICONS.news}</span>`;
     return `
-      <li>
+      <li${featured ? ` class="article-list__item--featured"` : ""}>
+        ${featured ? `<span class="card-badge card-badge--new">Neu</span>` : ""}
         <a class="row" href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">
           ${thumb}
           <span class="row__body">
             <span class="row__meta">
+              ${featured ? `<span class="flash">${ICONS.crosshair} Im Fokus</span>` : ""}
               ${item.pubDate ? `<span class="row__date">— ${formatDate(item.pubDate)}</span>` : ""}
               <span class="row__cat">${escapeHtml(item.source)}</span>
               ${item.translated ? `<span class="flash flash--muted" title="Automatisch aus dem Englischen übersetzt">Übersetzt</span>` : item.lang === "en" ? `<span class="flash flash--muted">EN</span>` : ""}
@@ -1856,7 +1858,7 @@
         </div>
         <div class="hero__scene">
           <div class="hero__bubble">Wissen, das<br>weiterbringt!</div>
-          <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
+          <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
         </div>
       </section>
       <div class="toolbar">
@@ -2057,7 +2059,7 @@
           <h1><mark>Vorlagen</mark> &amp; Wissen.</h1>
           <p>E-Mail-Vorlagen zum direkten Versand oder Best Practices zum Nachschlagen — beides an einem Ort, klar getrennt.</p>
         </div>
-        <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
+        <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
       </section>
       <div class="toolbar">
         <span class="toolbar__label">Was möchtest du finden?</span>
@@ -2189,7 +2191,7 @@
           <h1>Case <mark>Studies</mark>.</h1>
           <p>Echte Ergebnisse und Testresultate aus den Kundenkonten — laufend gepflegt.</p>
         </div>
-        <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
+        <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
       </section>
       ${(() => {
         // Sortier-Auswahl braucht mindestens zwei Einträge, um sinnvoll zu
@@ -2761,7 +2763,7 @@
           <h1>Tickets<mark>-Übersicht</mark>.</h1>
           <p>Alle Anfragen von Kundenagenturen an einem Ort. Diese Ansicht zeigt aktuell Beispieldaten — die Anbindung an das echte Ticketsystem folgt.</p>
         </div>
-        <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
+        <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
       </section>
       <div class="toolbar">
         <span class="toolbar__label">Was möchtest du finden?</span>
@@ -2953,18 +2955,19 @@
   // auch den DELETE-Endpunkt selbst ab). Frontend zeigt den Button also nur
   // echten Admins, verlässt sich aber nicht allein darauf.
   function ideaCardHtml(idea, i, isAdmin) {
-    // Rahmen wechselt bewusst zwischen Magenta und Gelb (2026-08-14,
-    // Nutzer-Feedback: "nicht alles rosa auf dieser Seite") — echte
-    // Ausnahme von der sonst geltenden Bunte-Rahmen-Regel (Farbe = fester
-    // Komponenten-Typ, siehe DESIGN.md), hier bewusst für Abwechslung
-    // innerhalb EINER Liste gleichwertiger Karten statt für verschiedene
-    // Komponenten-Typen. Icon-Textfarbe folgt mit (--on-yellow auf Gelb,
-    // nie Weiß).
+    // Icon-Fläche wechselt bewusst zwischen Magenta und Gelb (2026-08-14,
+    // Nutzer-Feedback: "nicht alles rosa auf dieser Seite") — Abwechslung
+    // innerhalb EINER Liste gleichwertiger Karten. Der Kartenrahmen selbst
+    // war früher aus demselben Grund mitgefärbt (Ausnahme von der
+    // Bunte-Rahmen-Regel); seit dem Comic-Panel-Redesign (2026-09-04) hat
+    // JEDE Karte site-weit denselben schwarzen Rahmen, deshalb bleibt die
+    // Abwechslung jetzt beim Icon statt beim Rahmen. Icon-Textfarbe folgt
+    // mit (--on-yellow auf Gelb, nie Weiß).
     const isYellow = i % 2 === 1;
     const cardColor = isYellow ? "--yellow" : "--accent";
     const iconTextColor = isYellow ? "var(--on-yellow)" : "var(--c-surface)";
     return `
-      <div class="side-card idea-card" style="--idea-accent: var(${cardColor}); border-color: var(--idea-accent)">
+      <div class="side-card idea-card">
         <span class="side-card__icon" style="background-color: var(${cardColor}); color: ${iconTextColor}">${ICONS.lightbulb}</span>
         ${isAdmin ? `
         <div class="idea-card__admin" data-idea-admin="${escapeHtml(idea.id)}">
@@ -3160,7 +3163,7 @@
           <h1>Geplante <mark>Serienmails</mark>.</h1>
           <p>Über den Mail-Generator terminierte Nachrichten — werden automatisch zum gewählten Zeitpunkt über deine verbundene Gmail-Adresse verschickt.</p>
         </div>
-        <div class="hero__illustration"><img src="assets/brand/hero-megafon.png" alt="" /></div>
+        <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
       </section>
       <div class="feed">
         <h2 class="feed__title">Deine geplanten Mails<span class="feed__title__count" id="schedule-count"></span></h2>
