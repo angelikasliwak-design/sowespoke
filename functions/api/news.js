@@ -7,6 +7,30 @@
  * Kontingent, keine Zahlungsmethode nötig) ins Deutsche übersetzt (siehe
  * `translateItems`). Ohne gesetzten Key bleibt das bisherige Verhalten
  * unverändert: Original-Text + "EN"-Sprach-Badge im Frontend, kein Fehler.
+ *
+ * Persistentes Archiv (2026-09-04, Nutzer-Beobachtung: "gestern gab es
+ * andere News, z. B. Google Trends, heute sehe ich sie nicht mehr"):
+ * RSS-Feeds der Quellen selbst sind KEIN Archiv, sondern zeigen nur ein
+ * rollierendes Fenster der letzten ~10–20 Beiträge — sobald eine Quelle
+ * etwas Neues veröffentlicht, fällt bei ihr der älteste Eintrag raus, und
+ * damit auch aus jedem reinen Live-Abruf wie bisher. `mergeArchive` legt
+ * deshalb jeden je gesehenen Artikel dauerhaft in Cloudflare KV ab
+ * (Namespace `NEWS_ARCHIVE`) und mischt ihn bei jedem Abruf wieder mit den
+ * frischen Live-Daten. Erfordert eine KV-Namespace-Bindung `NEWS_ARCHIVE`
+ * im Cloudflare-Dashboard (Pages-Projekt → Settings → Functions → KV
+ * namespace bindings), gleiches Muster wie NEWS_RATINGS/IDEAS_BOARD. Ohne
+ * Bindung verhält sich der Feed unverändert wie vorher: rein live, kein
+ * Fehler.
+ *
+ * Bewusst EIN Blob-Key (`archive:pool`) statt eines Keys pro Artikel wie
+ * sonst in diesem Projekt üblich (siehe ideas.js/rate.js): ein aggregierter
+ * News-Feed wächst unbegrenzt und automatisch (nicht durch Nutzer-Aktionen
+ * begrenzt wie Ideen/Bewertungen) — ein Key pro Artikel hätte bedeutet,
+ * dass jeder der ca. 96 Origin-Aufrufe/Tag (15-Minuten-Cache) mit
+ * wachsendem Archiv linear mehr KV-Lese-Operationen braucht und das
+ * kostenlose Tageskontingent irgendwann sprengt. Ein einzelner Blob
+ * bedeutet immer genau 1 KV-Read + höchstens 1 KV-Write pro Origin-Aufruf,
+ * unabhängig von der Archivgröße.
  */
 
 const SOURCES = [
@@ -138,6 +162,18 @@ async function fetchSource(source) {
   }
 }
 
+// Nur Items übersetzen, die es noch nicht sind (2026-09-04, im Zuge des
+// Archivs ergänzt) — ein aus dem Archiv wiederverwendetes Item trägt nach
+// einer früheren Übersetzung bereits `translated: true` UND deutschen
+// Text in title/description bei weiterhin `lang: "en"` (lang beschreibt
+// die Sprache der QUELLE, nicht des aktuell angezeigten Texts). Ohne diese
+// Prüfung würde bei jedem Cache-Refresh derselbe schon-übersetzte Text
+// erneut als "zu übersetzendes Englisch" an Gemini geschickt — unnötige
+// API-Aufrufe UND das Risiko, bereits-deutschen Text kaputtzuübersetzen.
+function needsTranslation(item) {
+  return item.lang === "en" && !item.translated && (item.title || item.description);
+}
+
 // Übersetzt die englischsprachigen Items in einem einzigen Batch-Request
 // (statt einem Request pro Artikel) — hält Kosten/Latenz niedrig, das
 // Ergebnis landet ohnehin im 15-Minuten-Response-Cache. Bei fehlendem Key,
@@ -145,7 +181,7 @@ async function fetchSource(source) {
 // unverändert zurückgegeben — Übersetzung ist ein optionales Add-on, kein
 // harter Abhängigkeitspunkt für den News-Feed.
 async function translateItems(items, apiKey, model) {
-  const toTranslate = items.filter((i) => i.lang === "en" && (i.title || i.description));
+  const toTranslate = items.filter(needsTranslation);
   if (!toTranslate.length || !apiKey) return items;
 
   const payload = toTranslate.map((i, idx) => ({ id: idx, title: i.title, description: i.description }));
@@ -175,7 +211,7 @@ async function translateItems(items, apiKey, model) {
 
     let cursor = 0;
     return items.map((item) => {
-      if (item.lang !== "en" || !(item.title || item.description)) return item;
+      if (!needsTranslation(item)) return item;
       const t = byId.get(cursor++);
       if (!t) return item;
       return { ...item, title: t.title || item.title, description: t.description || item.description, translated: true };
@@ -185,24 +221,61 @@ async function translateItems(items, apiKey, model) {
   }
 }
 
+const NEWS_ARCHIVE_KEY = "archive:pool";
+const MAX_ARCHIVE_ITEMS = 200;
+const MAX_VISIBLE_ITEMS = 60;
+
+// Führt frisch abgerufene Live-Items mit dem bestehenden Archiv zusammen,
+// dedupliziert über den Link (eindeutige Artikel-ID, gleiche Annahme wie
+// bei rate.js). Ein bereits übersetzter archivierter Eintrag bleibt in
+// title/description unangetastet (nur pubDate wird aufgefrischt, falls die
+// Quelle inzwischen ein genaueres Datum liefert) — ein noch nicht
+// übersetzter oder ganz neuer Eintrag wird durch die frische Live-Version
+// ersetzt, damit dort weiterhin der aktuelle Originaltext ankommt.
+function mergeArchive(archived, live) {
+  const byLink = new Map(archived.map((item) => [item.link, item]));
+  for (const item of live) {
+    const prior = byLink.get(item.link);
+    byLink.set(item.link, prior && prior.translated ? { ...prior, pubDate: item.pubDate || prior.pubDate } : item);
+  }
+  return Array.from(byLink.values()).sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
+}
+
 export async function onRequestGet(context) {
   const cache = caches.default;
   const cacheKey = new Request(context.request.url, context.request);
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
 
-  const results = await Promise.all([...SOURCES.map(fetchSource), ...ARTICLES.map(fetchArticle)]);
-  let items = results.filter((r) => !r.error).flatMap((r) => r.items);
+  const { env } = context;
+  const archiveEnabled = !!env.NEWS_ARCHIVE;
+
+  const [results, archived] = await Promise.all([
+    Promise.all([...SOURCES.map(fetchSource), ...ARTICLES.map(fetchArticle)]),
+    archiveEnabled ? env.NEWS_ARCHIVE.get(NEWS_ARCHIVE_KEY, "json") : Promise.resolve(null),
+  ]);
+  const liveItems = results.filter((r) => !r.error).flatMap((r) => r.items);
   const failedSources = results.filter((r) => r.error).map((r) => ({ source: r.source, status: r.status, message: r.message }));
 
-  items.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
-  items = items.slice(0, 60);
-  items = await translateItems(items, context.env.GEMINI_API_KEY, context.env.GEMINI_MODEL);
+  // Ohne KV-Bindung exakt das vorherige Verhalten: rein live, auf die
+  // sichtbaren 60 gedeckelt. Mit Bindung: Live+Archiv gemischt, auf
+  // MAX_ARCHIVE_ITEMS gedeckelt für die Ablage (siehe Datei-Kommentar oben
+  // zur Begründung des Caps), Übersetzung läuft über die volle Ablage
+  // (einmalig pro Artikel, nicht nur über die sichtbaren 60), erst danach
+  // auf die sichtbaren 60 zugeschnitten.
+  let items = archiveEnabled ? mergeArchive(archived || [], liveItems) : liveItems.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
+  items = items.slice(0, archiveEnabled ? MAX_ARCHIVE_ITEMS : MAX_VISIBLE_ITEMS);
+  items = await translateItems(items, env.GEMINI_API_KEY, env.GEMINI_MODEL);
+
+  if (archiveEnabled) {
+    context.waitUntil(env.NEWS_ARCHIVE.put(NEWS_ARCHIVE_KEY, JSON.stringify(items)));
+  }
+  const visibleItems = items.slice(0, MAX_VISIBLE_ITEMS);
 
   const body = JSON.stringify({
     generatedAt: new Date().toISOString(),
-    count: items.length,
-    items,
+    count: visibleItems.length,
+    items: visibleItems,
     failedSources,
   });
 
