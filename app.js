@@ -509,11 +509,16 @@
     document.body.appendChild(el);
   }
 
-  function routeBlocksMascot(path) {
-    // "/praesentationen" (ohne Slash, die Liste) blockt die schwebende
-    // Bubble jetzt zusätzlich (2026-08-13) — dort zeigt .fact-widget schon
-    // denselben Hund, siehe Kommentar bei runMascotAnimation weiter oben.
-    return path.startsWith("/praesentationen") || path.startsWith("/vorlagen/") || path.startsWith("/anfragen") || path === "/ideen";
+  // Maskottchen site-weit temporär deaktiviert (2026-09-04, Nutzer-Wunsch:
+  // "erstmal maskottchen wegnehmen") — Nutzer liefert einen neuen
+  // Maskottchen-Look selbst nach (siehe DESIGN.md, Comic-Panel-Redesign-
+  // Eintrag). Alle übrigen Mascot-Funktionen (showMascot/hideMascotForRoute/
+  // etc.) bleiben unverändert bestehen, Reaktivierung braucht nur diese eine
+  // Funktion wieder auf die vorherige, seitenweise Sperrliste
+  // (Präsentationen/Vorlagen/Anfragen/Ideen, wegen doppeltem Hund neben
+  // .fact-widget) zurückzustellen.
+  function routeBlocksMascot() {
+    return true;
   }
 
   function showMascot() {
@@ -715,11 +720,13 @@
 
   /* ----------------------------------------------------- Fakten-Widget */
 
+  // Maskottchen-Figur entfernt (2026-09-04, siehe routeBlocksMascot) — die
+  // Bubble füllt jetzt die volle Breite, siehe .fact-widget__bubble in
+  // styles.css (flex:1 war schon vorher gesetzt).
   function renderFactWidget() {
     const fact = factOfTheDay();
     return `
       <section class="fact-widget" aria-label="Wusstest du schon?">
-        <div class="fact-widget__figure">${MASCOT_SVG}</div>
         <div class="fact-widget__bubble">
           <span class="fact-widget__label">Wusstest du schon?</span>
           <p id="fact-widget-text">${escapeHtml(fact)}</p>
@@ -741,7 +748,39 @@
         textEl.style.opacity = "1";
       }, 160);
     });
-    runMascotAnimation();
+  }
+
+  // Sidebar-Variante (2026-09-04, Nutzer-Wunsch): dieselben Fakten wie
+  // .fact-widget, aber als normale Seitenkarte im News-.side-rail statt als
+  // schwebende, an die Maskottchen-Figur gebundene Bubble — "Box mit
+  // 'wusstest du schon' bitte fix unter Anstehende Termine anhängen".
+  // Reuse von SIDECARD_ILLUSTRATION/.side-card__expand/.side-card__body
+  // statt neuer Bausteine, gleiches Muster wie renderCalendarCard/
+  // renderRecentCard direkt daneben im selben .side-rail.
+  function renderFactSidebarCard() {
+    const fact = factOfTheDay();
+    return `
+      <div class="side-card" id="fact-sidebar-card">
+        <div class="side-card__illustration">${SIDECARD_ILLUSTRATION}</div>
+        <h2>${ICONS.sparkle} Wusstest du schon?</h2>
+        <p class="side-card__body" id="fact-sidebar-text">${escapeHtml(fact)}</p>
+        <button type="button" class="side-card__expand" id="fact-sidebar-more">Noch ein Fakt ${ICONS.arrowRight}</button>
+      </div>
+    `;
+  }
+
+  function wireFactSidebarCard() {
+    const textEl = document.getElementById("fact-sidebar-text");
+    const btn = document.getElementById("fact-sidebar-more");
+    if (!textEl || !btn) return;
+    btn.addEventListener("click", () => {
+      const next = randomFact(textEl.textContent);
+      textEl.style.opacity = "0";
+      setTimeout(() => {
+        textEl.textContent = next;
+        textEl.style.opacity = "1";
+      }, 160);
+    });
   }
 
   /* ---------------------------------------------------------------- Mailgen */
@@ -1565,10 +1604,7 @@
               <h1>Neuigkeiten aus der<br>Online-<mark>Marketing-Welt</mark>.</h1>
               <p>Aktuelle Trends, Updates &amp; Insights aus der Online-Marketing-Welt – mit besonderem Fokus auf Microsoft Advertising.</p>
             </div>
-            <div class="hero__scene">
-              <div class="hero__bubble">Wissen weitergeben.<br>Erfolg vervielfachen.</div>
-              <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
-            </div>
+            <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
           </section>
           <div class="toolbar">
             <span class="toolbar__label">Alles durchsuchen</span>
@@ -1587,7 +1623,7 @@
             <div class="empty-state">${ICONS.news}<strong>Lade News …</strong></div>
           </div>
         </div>
-        <aside class="side-rail">${renderCalendarCard()}${renderRecentCard()}</aside>
+        <aside class="side-rail">${renderCalendarCard()}${renderFactSidebarCard()}${renderRecentCard()}</aside>
       </div>
     `;
 
@@ -1604,6 +1640,7 @@
       btn.addEventListener("click", () => renderNews(btn.dataset.ch));
     });
     wireCalendarCard();
+    wireFactSidebarCard();
 
     const data = await loadNews();
     const feed = document.getElementById("news-feed");
@@ -1856,10 +1893,7 @@
           <h1>Offizielle <mark>Microsoft-Präsentationen</mark>.</h1>
           <p>Zusammenfassungen, Beta-/Feature-Guides und Kunden-Mails direkt aus den echten Präsentationsfolien — neueste zuerst, Einträge ohne bekanntes Datum am Ende.</p>
         </div>
-        <div class="hero__scene">
-          <div class="hero__bubble">Wissen, das<br>weiterbringt!</div>
-          <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
-        </div>
+        <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
       </section>
       <div class="toolbar">
         <span class="toolbar__label">Was möchtest du finden?</span>

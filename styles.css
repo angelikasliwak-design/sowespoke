@@ -535,7 +535,12 @@ mark {
   padding: var(--space-4) var(--space-6);
   margin-bottom: var(--space-3);
 }
-.hero--connected .hero__illustration { width: 230px; height: 233px; }
+/* Sprechblase entfernt + Megafon größer/schräg gestellt (2026-09-04,
+   Nutzer-Feedback zum Comic-Panel-Redesign: "Sprechblase erstmal weg,
+   Megafon größer, ein bisschen schräg, anders platziert"). Rotation +
+   Versatz statt reiner Größenänderung, damit die Illustration wie
+   hingeworfen/dynamisch wirkt statt nur größer zu sein. */
+.hero--connected .hero__illustration { width: 268px; height: 272px; transform: rotate(-6deg) translate(4px, 10px); }
 /* Die vorherigen ::before/::after-Farbwolken (Teal-/Accent-Tint-Kreise)
    sind entfallen — dieselbe Funktion (weiche, großflächige Farbwolken)
    übernimmt jetzt .page-bg für die ganze Seite statt pro Hero-Instanz. */
@@ -544,9 +549,10 @@ mark {
    Hero-Headlines wurden site-weit aus dem Markup entfernt (Nutzer-Feedback:
    "auf allen seiten die kleineboxen bei den überschriften löschen"). */
 
-/* Sprechblase + Illustration als EIN visueller Cluster statt zwei
-   getrennter Flex-Kinder — Bubble überlappt die Illustration leicht, damit
-   klar wird "das Megafon spricht". */
+/* .hero__scene/.hero__bubble (2026-09-04): Markup-Nutzung entfernt
+   (Nutzer-Wunsch, "Sprechblase erstmal weg") — Regeln bleiben stehen,
+   falls die Sprechblase später mit neuem Maskottchen-Material
+   zurückkommt, sind aber aktuell ungenutzt. */
 .hero__scene { position: relative; flex: none; display: flex; align-items: center; gap: 0; }
 .hero__scene .hero__bubble { margin-right: -14px; z-index: 2; }
 .hero__scene .hero__illustration { z-index: 1; }
@@ -956,14 +962,17 @@ mark {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--ink-soft);
   margin-bottom: var(--space-1);
 }
 .row__cat { font-weight: 600; }
+/* Textgrößen angehoben (2026-09-04, Nutzer-Feedback: "Text ist zu klein
+   für die Kachel") — Titel/Vorschau wirkten in den jetzt dick umrandeten
+   Comic-Panel-Karten proportional zu klein für die verfügbare Fläche. */
 .row__title {
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 1.18rem;
   margin-bottom: var(--space-1);
   /* Max. 2 Zeilen, dann Ellipsis — Karten bleiben gleich hoch, egal wie
      lang der Titel ist (Brief Punkt 15). */
@@ -974,7 +983,8 @@ mark {
 }
 .row__summary {
   color: var(--ink-soft);
-  font-size: 0.94rem;
+  font-size: 1.02rem;
+  line-height: 1.5;
   max-width: 62ch;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -2688,7 +2698,10 @@ code {
   background-size: contain;
   pointer-events: none;
 }
-.fact-widget__figure { width: 88px; height: 88px; flex: none; margin-right: -10px; z-index: 2; }
+/* Figur + Sprechblasen-Spitze entfernt (2026-09-04, Maskottchen temporär
+   deaktiviert, siehe routeBlocksMascot) — die Spitze zeigte auf die jetzt
+   fehlende Figur und wäre ohne sie bedeutungslos. Bubble nimmt die volle
+   Breite ein (flex:1 war schon vorher gesetzt, kein Layout-Umbau nötig). */
 .fact-widget__bubble {
   position: relative;
   z-index: 1;
@@ -2699,28 +2712,6 @@ code {
   border-radius: var(--radius);
   box-shadow: 0 10px 18px color-mix(in srgb, var(--ink) 5%, transparent), 0 26px 48px -20px color-mix(in srgb, var(--ink) 22%, transparent);
   padding: var(--space-5);
-}
-.fact-widget__bubble::before {
-  content: "";
-  position: absolute;
-  left: -14px;
-  bottom: 24px;
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 8px 14px 8px 0;
-  border-color: transparent var(--ink) transparent transparent;
-}
-.fact-widget__bubble::after {
-  content: "";
-  position: absolute;
-  left: -10px;
-  bottom: 25px;
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 6px 11px 6px 0;
-  border-color: transparent var(--paper-raised) transparent transparent;
 }
 .fact-widget__label {
   display: block;
