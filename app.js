@@ -437,7 +437,7 @@
     const events = upcomingEvents(new Date(), expanded ? CALENDAR_EVENTS.length : 3);
     const showExpand = !expanded && CALENDAR_EVENTS.length > 3;
     return `
-      <div class="side-card side-card--plain" id="calendar-card">
+      <div class="side-card" id="calendar-card">
         <div class="side-card__illustration">${SIDECARD_ILLUSTRATION}</div>
         <h2>${ICONS.calendar} Anstehende Termine</h2>
         <ul class="side-card__list">
@@ -2076,16 +2076,11 @@
 
     let bestPractices = BEST_PRACTICES;
     let standalone = STANDALONE_TEMPLATES;
-    let linkedTemplates = [...PRESENTATIONS].sort((a, b) => {
-      if (a.dateKnown !== b.dateKnown) return a.dateKnown ? -1 : 1;
-      return new Date(b.date) - new Date(a.date);
-    });
     if (q) {
       bestPractices = bestPractices.filter((bp) => [bp.title, bp.body].join(" ").toLowerCase().includes(q));
       standalone = standalone.filter((t) => [t.title, t.summary].join(" ").toLowerCase().includes(q));
-      linkedTemplates = linkedTemplates.filter((p) => [p.title, p.summaryDE, p.docType].join(" ").toLowerCase().includes(q));
     }
-    const noResults = activeTab === "practices" ? !bestPractices.length : !standalone.length && !linkedTemplates.length;
+    const noResults = activeTab === "practices" ? !bestPractices.length : !standalone.length;
 
     view.innerHTML = `
       <section class="hero hero--compact">
@@ -2128,27 +2123,6 @@
             </a>
           </li>`
         ).join("")}
-      </ul>` : ""}
-
-      ${linkedTemplates.length ? `
-      <h2 class="feed__title">Vorlagen aus Präsentationen<span class="feed__title__count">${linkedTemplates.length} Ergebnisse</span></h2>
-      <ul class="article-list">
-        ${linkedTemplates
-          .map(
-            (p) => `
-          <li>
-            <a class="row" href="#/praesentationen/${p.id}">
-              <span class="row__thumb" style="background-color: var(${DOCTYPE_VAR[p.docType] || "--ink-soft"})">${ICONS.fileText}</span>
-              <span class="row__body">
-                <span class="row__meta"><span class="row__cat">${escapeHtml(p.docType)}</span></span>
-                <span class="row__title">${escapeHtml(p.title)}</span>
-                <span class="row__summary">${escapeHtml(p.summaryDE.slice(0, 180))}${p.summaryDE.length > 180 ? "…" : ""}</span>
-              </span>
-              <span class="row__arrow">${ICONS.arrowRight}</span>
-            </a>
-          </li>`
-          )
-          .join("")}
       </ul>` : ""}
       ` : `
       ${bestPractices.length ? `

@@ -184,21 +184,32 @@ mark {
   gap: var(--space-6);
   padding: var(--space-6) var(--space-4) var(--space-4);
   background: var(--paper-raised);
-  border-right: 1px solid var(--line);
+  /* Comic-Panel-Redesign (2026-09-04) — dieselbe dicke Ink-Kontur wie der
+     Rest der Seite, statt der dünnen neutralen Trennlinie. */
+  border-right: 3px solid var(--ink);
   position: sticky;
   top: 0;
   height: 100vh;
   height: 100dvh;
 }
+/* Logo-Badge (2026-09-04, Nutzer-Wunsch: "Logo im Menü auch in Magenta-
+   Rahmen, weißes Logo benutzen") — Magenta-Fläche + Ink-Rahmen statt der
+   vorherigen schlichten Trennlinie unter dem Logo, passend zur restlichen
+   Comic-Panel-Sprache (Fläche = Farbe, Kontur = Ink). Braucht zwingend die
+   weiße Logo-Variante (logo-sowespoke-vertical-white.png, aus der
+   Original-Datei per Canvas-Alpha-Recolor erzeugt) — die farbige Original-
+   Version (Türkis/Magenta auf Transparent) wäre auf Magenta unlesbar. */
 .rail__logo {
-  padding-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
   margin-bottom: var(--space-1);
-  border-bottom: 1px solid var(--line);
-  width: 100%;
+  width: auto;
+  align-self: center;
   display: flex;
-  /* Zentriert statt linksbündig (2026-08-14, Nutzer-Feedback per
-     Screenshot-Annotation). */
   justify-content: center;
+  background: var(--accent);
+  border: 3px solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 .rail__logo img {
   width: 40px;
@@ -1098,11 +1109,10 @@ mark {
   box-shadow: var(--shadow);
   padding: var(--space-5);
 }
-/* Randlose Variante (2026-09-02, Nutzer-Wunsch nach Mockup-Vorlage) —
-   bewusste Ausnahme von der Bunte-Rahmen-Regel für genau die Anstehende-
-   Termine-Karte (siehe renderCalendarCard), kein Präzedenzfall für die
-   übrigen Seitenkarten. Reiner Softshadow statt Farbrahmen+Farbschatten. */
-.side-card--plain { border: none; box-shadow: var(--shadow); }
+/* .side-card--plain (Ausnahme "randlose Anstehende-Termine-Karte") entfernt
+   (2026-09-04, Nutzer-Wunsch: "Anstehende Termine soll auch schwarzen
+   Rahmen haben") — die Karte nutzt jetzt wieder den normalen .side-card-
+   Ink-Rahmen wie jede andere Seitenkarte, keine Ausnahme mehr nötig. */
 .side-card__illustration, .info-box__illustration, .mailgen__illustration {
   position: absolute;
   top: 10px;
@@ -1231,7 +1241,7 @@ mark {
 .kpi-tile {
   padding: var(--space-4);
   background: var(--paper);
-  border: 1px solid var(--line);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-sm);
 }
 .kpi-tile__label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: var(--space-2); }
@@ -1439,11 +1449,10 @@ mark {
 /* -- Präsentations-PDF-Viewer (2026-08-11, Nutzer-Wunsch) ---------------
    Selbst gehosteter PDF.js-Viewer (assets/pdfjs/, kein externes CDN),
    damit Präsentationen direkt im Browserfenster lesbar sind — ohne
-   Download und ohne Browser-Extension. Eigener neutraler Rahmen (--line)
-   statt Teal, weil das kein .info-box-Element ist (Bunte-Rahmen-Regel:
-   Farbe hängt am Komponenten-Typ). */
+   Download und ohne Browser-Extension. Ink-Rahmen (2026-09-04) wie jeder
+   andere Container-Typ, siehe Ink-Rahmen-Regel. */
 .pdf-viewer {
-  border: 1px solid var(--line);
+  border: 3px solid var(--ink);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow: hidden;
@@ -1646,7 +1655,7 @@ mark {
   font-family: var(--font-body);
   font-size: 0.88rem;
   padding: 0.5em var(--space-3);
-  border: 1px solid var(--line);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-sm);
   background: var(--paper-raised);
   color: var(--ink);
@@ -1739,7 +1748,7 @@ code {
   font-family: var(--font-body);
   font-size: 0.95rem;
   padding: var(--space-3);
-  border: 1px solid var(--line);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-sm);
   background: var(--paper);
   color: var(--ink);
@@ -1809,7 +1818,7 @@ code {
    JS-Toggle — bewusst eingeklappt per Default, damit das Formular nicht
    überladen wirkt, aber jederzeit erreichbar. */
 .mailgen__signature {
-  border: 1px solid var(--line);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-sm);
   padding: var(--space-3) var(--space-4);
 }
@@ -1830,7 +1839,7 @@ code {
   font-family: inherit;
   font-size: 0.9rem;
   padding: var(--space-3);
-  border: 1px solid var(--line);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-sm);
   background: var(--paper);
   color: var(--ink);
@@ -1848,7 +1857,7 @@ code {
   font-family: var(--font-body);
   font-size: 0.9rem;
   padding: var(--space-3);
-  border: 1px solid var(--line);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-sm);
   background: var(--paper);
   color: var(--ink);
@@ -1924,7 +1933,7 @@ code {
   max-height: 22rem;
   overflow-y: auto;
   padding: var(--space-2);
-  border: 1px solid var(--line);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-sm);
   background: var(--paper);
 }
@@ -1968,7 +1977,7 @@ code {
   font-size: 0.85rem;
   color: var(--ink-soft);
   background: var(--paper);
-  border: 1px solid var(--line);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-sm);
   padding: var(--space-3);
   margin-top: var(--space-2);
@@ -2171,7 +2180,7 @@ code {
   gap: var(--space-2);
   padding: var(--space-2) var(--space-4);
   border-radius: 999px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--ink);
   background: var(--surface);
   color: var(--ink-soft);
   /* Auf .tabs__item-Maß angeglichen (Nutzer-Fund: wirkte "wie eine andere
@@ -2193,14 +2202,14 @@ code {
   font-size: 0.72rem;
 }
 .msads-progress__num svg { width: 12px; height: 12px; }
-.msads-progress__step.is-active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
+.msads-progress__step.is-active { background: var(--accent); color: var(--on-accent); font-weight: 600; }
 .msads-progress__step.is-active .msads-progress__num { background: rgba(255, 255, 255, 0.28); color: var(--on-accent); }
-.msads-progress__step.is-complete { color: var(--teal-text); border-color: var(--teal-text); }
+.msads-progress__step.is-complete { color: var(--teal-text); }
 
 .msads-workspace { align-items: start; }
 .msads-panel {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 3px solid var(--ink);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: var(--space-6);
@@ -2250,16 +2259,14 @@ code {
   text-align: left;
   padding: var(--space-5);
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 3px solid var(--ink);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+  transition: transform 160ms ease, box-shadow 160ms ease;
 }
 .msads-choice-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
-.msads-choice-card--teal { border-left: 3px solid var(--teal-text); }
-.msads-choice-card--accent, .msads-choice-card--action { border-left: 3px solid var(--accent); }
-.msads-choice-card--teal:hover { border-color: var(--teal-text); }
-.msads-choice-card--accent:hover, .msads-choice-card--action:hover { border-color: var(--accent); }
+.msads-choice-card--teal { border-left-color: var(--teal-text); }
+.msads-choice-card--accent, .msads-choice-card--action { border-left-color: var(--accent); }
 .msads-choice-letter {
   display: flex;
   flex: none;
@@ -2280,7 +2287,7 @@ code {
   display: flex;
   gap: var(--space-3);
   background: var(--paper);
-  border: 1px solid var(--line);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-sm);
   padding: var(--space-4);
   margin-bottom: var(--space-5);
@@ -2299,11 +2306,11 @@ code {
   text-align: left;
   padding: var(--space-4) var(--space-5);
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 3px solid var(--ink);
   border-radius: var(--radius);
-  transition: border-color 150ms ease, background-color 150ms ease;
+  transition: background-color 150ms ease;
 }
-.msads-billto-card:hover { border-color: var(--accent); background: var(--accent-tint); }
+.msads-billto-card:hover { background: var(--accent-tint); }
 .msads-radio { flex: none; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line); }
 .msads-billto-card small { display: block; color: var(--ink-soft); font-weight: 400; }
 
@@ -2313,7 +2320,7 @@ code {
 
 .msads-callout {
   background: var(--paper);
-  border: 1px solid var(--line);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-sm);
   padding: var(--space-4) var(--space-5);
   margin: var(--space-4) 0 var(--space-5);
@@ -2440,17 +2447,16 @@ code {
     gap: var(--space-2);
     padding: var(--space-3) var(--space-4);
     border-right: none;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 3px solid var(--ink);
     position: sticky;
   }
   .rail__logo {
     flex-shrink: 0;
     width: auto;
-    padding-bottom: 0;
+    padding: var(--space-2) var(--space-3);
     margin-bottom: 0;
-    border-bottom: none;
   }
-  .rail__logo img { width: 32px; height: 42px; }
+  .rail__logo img { width: 28px; height: 37px; }
   /* Bug-Fund (2026-08-13, beim Ergänzen von "Ideen" als 8. Eintrag
      aufgefallen): mit `flex-shrink: 0` und ohne Scroll-Mechanik ragten die
      letzten Einträge (Anfragen, Ideen) auf Mobile schlicht über den
