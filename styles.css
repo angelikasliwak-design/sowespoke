@@ -717,6 +717,27 @@ mark {
 .search__submit svg { width: 17px; height: 17px; }
 .search__submit:hover { transform: translateY(-50%) scale(1.06); box-shadow: var(--shadow-hover); }
 
+/* Inline-Ergebnis-Dropdown (2026-09-07, Nutzer-Wunsch: direkt ins
+   Suchfeld eintippen statt in ein Vollbild-Fenster umgeleitet zu werden)
+   — reuse von .cmdk-result/.cmdk-empty (siehe dort) für die einzelnen
+   Zeilen, nur der äußere Rahmen ist neu: ein am Suchfeld verankertes
+   Dropdown statt ein Vollbild-Overlay. */
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  left: 0;
+  right: 0;
+  z-index: 45;
+  background: var(--surface);
+  border: 3px solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-hover);
+  max-height: 22rem;
+  overflow-y: auto;
+  padding: var(--space-2);
+}
+.search-dropdown[hidden] { display: none; }
+
 /* -- Filter-Chips (Kurskorrektur 2026-08-07: Pills statt Underline-Tabs) */
 .tabs {
   display: flex;
@@ -782,10 +803,6 @@ mark {
 /* News-Seite (2026-09-02): Hero+Toolbar+Feed als linke Grid-Spalte, damit
    .side-rail auf Höhe des Hero startet statt erst unter der Toolbar. */
 .news-layout__main { min-width: 0; }
-
-/* Hauptfeld ist jetzt ein Öffner für die Palette, kein Texteingabefeld
-   mehr (readonly) — Cursor macht die andere Funktion sofort spürbar. */
-.search input[readonly] { cursor: pointer; }
 
 .feed__title {
   /* Klare Editorial-Überschrift statt Tesafilm-Pille — sah wie ein

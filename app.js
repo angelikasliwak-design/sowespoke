@@ -1610,8 +1610,9 @@
             <span class="toolbar__label">Alles durchsuchen</span>
             <label class="search">
               ${ICONS.search}
-              <input type="search" id="news-global-search" placeholder="News, Präsentationen, Vorlagen, Case Studies …" readonly aria-label="Alles durchsuchen öffnen" />
-              <button type="button" class="search__submit" id="news-global-search-submit" aria-label="Alles durchsuchen öffnen">${ICONS.search}</button>
+              <input type="search" id="news-global-search" placeholder="News, Präsentationen, Vorlagen, Case Studies …" autocomplete="off" aria-label="Alles durchsuchen" aria-expanded="false" role="combobox" aria-controls="news-search-dropdown" />
+              <button type="button" class="search__submit" id="news-global-search-submit" aria-label="Suchen">${ICONS.search}</button>
+              <div class="search-dropdown" id="news-search-dropdown" role="listbox" hidden></div>
             </label>
             <nav class="tabs" aria-label="Kanäle">
               <button type="button" class="tabs__item ${ch === "all" ? "is-active" : ""}" data-ch="all">Alle</button>
@@ -1629,12 +1630,14 @@
 
     // Genau ein Suchfeld auf dieser Seite (2026-09-02, Nutzer-Korrektur:
     // "3 listwy do wyszukiwania to bzdura — zostaw tylko jedna" — drei
-    // Suchfelder waren zu viel, das Kanal-Sidebar-Feld war ohnehin dasselbe
-    // Feld wie dieses hier). Öffnet die Strg+K-Palette, sucht über News,
-    // Präsentationen, Vorlagen und Case Studies gleichzeitig.
-    const openGlobal = () => { if (openGlobalSearch) openGlobalSearch(""); };
-    document.getElementById("news-global-search").addEventListener("focus", openGlobal);
-    document.getElementById("news-global-search-submit").addEventListener("click", openGlobal);
+    // Suchfelder waren zu viel). Direkt eintippbar statt nur ein Sprungbrett
+    // zur Strg+K-Palette (2026-09-07, Nutzer: "könnte man einfach in
+    // Suchfeld sachen eingeben und nicht in ein zusätzliches Fenster
+    // weitergeleitet zu suchen?") — Ergebnisse klappen als Dropdown direkt
+    // unter dem Feld auf, sucht über News/Präsentationen/Vorlagen/Case
+    // Studies (buildCmdkIndex, gleicher Index wie die Palette). Strg+K
+    // bleibt zusätzlich als schneller Zugriff von jeder Seite aus bestehen.
+    wireInlineSearch();
 
     view.querySelectorAll(".tabs__item").forEach((btn) => {
       btn.addEventListener("click", () => renderNews(btn.dataset.ch));
@@ -3956,6 +3959,115 @@
     const idx = text.toLowerCase().indexOf(q.toLowerCase());
     if (idx === -1) return escapeHtml(text);
     return `${escapeHtml(text.slice(0, idx))}<mark>${escapeHtml(text.slice(idx, idx + q.length))}</mark>${escapeHtml(text.slice(idx + q.length))}`;
+  }
+
+  // Inline-Dropdown-Suche fürs News-Toolbar-Suchfeld (2026-09-07, Nutzer:
+  // "könnte man einfach in Suchfeld sachen eingeben und nicht in ein
+  // zusätzliches Fenster weitergeleitet zu suchen?") — direkt eintippbar,
+  // Ergebnisse klappen als Dropdown darunter auf statt in die Strg+K-
+  // Vollbild-Palette umzuleiten. Nutzt bewusst denselben Index/dieselbe
+  // Ergebnis-Optik wie setupCmdk() (buildCmdkIndex/cmdkHighlight/
+  // CMDK_KIND_*, .cmdk-result-Markup) statt Suche/Darstellung zu
+  // duplizieren — Strg+K bleibt daneben als schneller Zugriff von jeder
+  // Seite aus bestehen (Nutzer-Entscheidung: beides parallel).
+  let inlineSearchOutsideClickWired = false;
+  function wireInlineSearch() {
+    const input = document.getElementById("news-global-search");
+    const submit = document.getElementById("news-global-search-submit");
+    const dropdown = document.getElementById("news-search-dropdown");
+    if (!input || !dropdown) return;
+
+    let results = [];
+    let activeIndex = 0;
+
+    function renderDropdown(q) {
+      dropdown.innerHTML = results.length
+        ? results
+            .map((r, i) => {
+              const varName = CMDK_KIND_VAR_CYCLE[CMDK_KIND_ORDER.indexOf(r.kind) % CMDK_KIND_VAR_CYCLE.length];
+              return `
+          <a class="cmdk-result ${i === activeIndex ? "is-active" : ""}" href="${escapeHtml(r.href)}" data-idx="${i}" ${r.external ? 'target="_blank" rel="noopener noreferrer"' : ""}>
+            <span class="cmdk-result__icon" style="color: var(${varName})">${CMDK_KIND_ICON[r.kind] || ICONS.search}</span>
+            <span class="cmdk-result__body">
+              <span class="cmdk-result__kind">${escapeHtml(r.kind)}</span>
+              <span class="cmdk-result__title">${cmdkHighlight(r.title, q)}</span>
+              ${r.snippet ? `<span class="cmdk-result__snippet">${escapeHtml(r.snippet.slice(0, 120))}${r.snippet.length > 120 ? "…" : ""}</span>` : ""}
+            </span>
+          </a>`;
+            })
+            .join("")
+        : `<div class="cmdk-empty">${ICONS.magnifyEmpty}<p>Kein Treffer für „${escapeHtml(q)}".</p></div>`;
+      dropdown.hidden = false;
+      input.setAttribute("aria-expanded", "true");
+      dropdown.querySelectorAll(".cmdk-result").forEach((el) => {
+        el.addEventListener("click", closeDropdown);
+        el.addEventListener("mouseenter", () => {
+          activeIndex = Number(el.dataset.idx);
+          dropdown.querySelectorAll(".cmdk-result").forEach((r) => r.classList.toggle("is-active", r === el));
+        });
+      });
+    }
+
+    function closeDropdown() {
+      dropdown.hidden = true;
+      input.setAttribute("aria-expanded", "false");
+    }
+
+    let debounceTimer;
+    input.addEventListener("input", () => {
+      clearTimeout(debounceTimer);
+      const q = input.value.trim();
+      if (!q) {
+        results = [];
+        closeDropdown();
+        return;
+      }
+      debounceTimer = setTimeout(async () => {
+        const index = await buildCmdkIndex();
+        const ql = q.toLowerCase();
+        results = index.filter((r) => [r.title, r.snippet].join(" ").toLowerCase().includes(ql)).slice(0, 8);
+        activeIndex = 0;
+        renderDropdown(q);
+      }, 120);
+    });
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if (!dropdown.hidden) closeDropdown();
+        else input.blur();
+      } else if ((e.key === "ArrowDown" || e.key === "ArrowUp") && results.length) {
+        e.preventDefault();
+        activeIndex = (activeIndex + (e.key === "ArrowDown" ? 1 : -1) + results.length) % results.length;
+        renderDropdown(input.value.trim());
+        dropdown.querySelector(".is-active")?.scrollIntoView({ block: "nearest" });
+      } else if (e.key === "Enter" && results.length) {
+        e.preventDefault();
+        dropdown.querySelector(`[data-idx="${activeIndex}"]`)?.click();
+      }
+    });
+
+    submit.addEventListener("click", () => {
+      if (results.length) dropdown.querySelector(`[data-idx="${activeIndex}"]`)?.click();
+      else input.focus();
+    });
+
+    // Nur EIN globaler Klick-Listener über die ganze Sitzung hinweg (nicht
+    // pro renderNews-Aufruf neu registriert, sonst häufen sich bei jedem
+    // Kanal-Tab-Wechsel weitere Listener auf alten, längst ersetzten DOM-
+    // Knoten an) — fragt das Dropdown-Element bei jedem Klick frisch über
+    // die ID ab statt sich auf eine feste Closure-Referenz zu verlassen.
+    if (!inlineSearchOutsideClickWired) {
+      inlineSearchOutsideClickWired = true;
+      document.addEventListener("click", (e) => {
+        if (e.target.closest(".search")) return;
+        const dd = document.getElementById("news-search-dropdown");
+        const inp = document.getElementById("news-global-search");
+        if (dd && !dd.hidden) {
+          dd.hidden = true;
+          if (inp) inp.setAttribute("aria-expanded", "false");
+        }
+      });
+    }
   }
 
   function setupCmdk() {
