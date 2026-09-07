@@ -65,8 +65,22 @@ function extractTag(xml, tag) {
   return m[1].replace(/^<!\[CDATA\[/, "").replace(/\]\]>\s*$/, "").trim();
 }
 
+// Bug-Fund (SoWeSpike-Spezifikation B1.1, 2026-09-07): numerische
+// HTML-Entities (z. B. &#124; für "|", von adseed SEA-News als manuelles
+// Trennzeichen im Teaser verwendet) wurden bisher gar nicht dekodiert —
+// liefen als Roh-Text durch stripHtml() durch, wurden dann beim Rendern in
+// app.js per escapeHtml() ERNEUT escaped (das & wird zu &amp;) und
+// erschienen dadurch sichtbar als Text "&#124;" statt als "|". Generischer
+// Decoder statt nur des einen Falls, damit jede numerische Entity
+// funktioniert, nicht nur &#124;.
+function decodeNumericEntities(str) {
+  return str
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+}
+
 function stripHtml(str) {
-  return str.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&#8217;/g, "'").replace(/\s+/g, " ").trim();
+  return decodeNumericEntities(str.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&#8217;/g, "'")).replace(/\s+/g, " ").trim();
 }
 
 function parseItems(xml, isAtom) {
@@ -99,7 +113,7 @@ function parseItems(xml, isAtom) {
 }
 
 function decodeHtmlEntities(str) {
-  return str.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, " ");
+  return decodeNumericEntities(str.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, " "));
 }
 
 async function fetchArticle(article) {

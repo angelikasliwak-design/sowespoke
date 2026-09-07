@@ -144,8 +144,11 @@ mark {
   text-underline-offset: 0.16em;
 }
 
+/* Gelb statt Magenta (SoWeSpike-Spezifikation B8.3/B10.1, 2026-09-07) —
+   Tastatur-Fokus ist einer der sechs erlaubten Gelb-Einsätze, nicht länger
+   Magenta. */
 :focus-visible {
-  outline: 3px solid var(--accent);
+  outline: 3px solid var(--yellow);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -184,9 +187,9 @@ mark {
   gap: var(--space-6);
   padding: var(--space-6) var(--space-4) var(--space-4);
   background: var(--paper-raised);
-  /* Comic-Panel-Redesign (2026-09-04) — dieselbe dicke Ink-Kontur wie der
-     Rest der Seite, statt der dünnen neutralen Trennlinie. */
-  border-right: 3px solid var(--ink);
+  /* Sidebar-Kante (SoWeSpike-Spezifikation B8.5, 2026-09-07) — Karten-Stufe
+     der Konturstärken-Skala, siehe --border-card in tokens.css. */
+  border-right: var(--border-card);
   position: sticky;
   top: 0;
   height: 100vh;
@@ -207,9 +210,9 @@ mark {
   display: flex;
   justify-content: center;
   background: var(--accent);
-  border: 3px solid var(--ink);
+  border: var(--border-card);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+
 }
 .rail__logo img {
   width: 40px;
@@ -242,6 +245,12 @@ mark {
   color: var(--ink-soft);
   font-size: 0.92rem;
   font-weight: 600;
+  /* Bug-Fund (SoWeSpike-Spezifikation B1.2, 2026-09-07): kein Rahmenwerk
+     hatte die Browser-Standard-Unterstreichung je zurückgesetzt — bei der
+     Bildkompression von Screenshots kaum sichtbar, im echten Browser aber
+     durchgehend aktiv. Unterstreichung bleibt ausschließlich dem
+     Fließtext-Link vorbehalten (siehe .article-list li, Präsentationstext). */
+  text-decoration: none;
   /* padding-left bewusst NICHT animiert (Layout-Eigenschaft, Detector-Fund) —
      der Wechsel passiert beim Routenwechsel, nicht als Hover-Effekt, braucht
      also keine Übergangsanimation. */
@@ -480,9 +489,14 @@ mark {
   margin-bottom: var(--space-6);
   padding: var(--space-6) var(--space-6);
   background: var(--accent);
-  border: 3px solid var(--ink);
+  border: var(--border-card);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  /* Schatten-Hierarchie (SoWeSpike-Spezifikation B8.4, 2026-09-07) — genau
+     zwei Elemente site-weit tragen noch einen Schatten, als Werkzeug für
+     Hierarchie statt Dekoration. Ebene 1 (härtester/größter Versatz) ist
+     ausschließlich der Hero; jede andere Karte/jedes Panel hat jetzt gar
+     keinen Schatten mehr. */
+  box-shadow: var(--shadow-comic-l);
   color: var(--on-accent);
 }
 /* Halbton-Punktmuster, dieselbe Technik wie .page-bg (radial-gradient-
@@ -587,13 +601,13 @@ mark {
   max-width: 175px;
   background: var(--c-surface);
   color: var(--ink);
-  border: 3px solid var(--ink);
+  border: var(--border-card);
   border-radius: var(--radius);
   padding: var(--space-3) var(--space-4);
   font-size: 0.92rem;
   font-weight: 700;
   line-height: 1.32;
-  box-shadow: var(--shadow);
+
   animation: hero-in 420ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
 }
 .hero__bubble::after {
@@ -678,11 +692,11 @@ mark {
   /* Rechts Platz für den runden Such-Button lassen. */
   padding: var(--space-4) 4rem var(--space-4) var(--space-7);
   /* Comic-Panel-Redesign (2026-09-04) — siehe .side-card-Kommentar. */
-  border: 3px solid var(--ink);
+  border: var(--border-card);
   border-radius: 999px;
   background: var(--paper-raised);
   color: var(--ink);
-  box-shadow: var(--shadow);
+
 }
 .search input::placeholder { color: var(--ink-soft); }
 /* Bug-Fund (Nutzer-Screenshot 2026-08-10): ">" statt Nachfahren-Selektor
@@ -729,7 +743,7 @@ mark {
   right: 0;
   z-index: 45;
   background: var(--surface);
-  border: 3px solid var(--ink);
+  border: var(--border-card);
   border-radius: var(--radius);
   box-shadow: var(--shadow-hover);
   max-height: 22rem;
@@ -761,7 +775,7 @@ mark {
   color: var(--ink-soft);
   background: var(--paper-raised);
   /* Comic-Panel-Redesign (2026-09-04) — siehe .side-card-Kommentar. */
-  border: 2px solid var(--ink);
+  border: var(--border-tile);
   border-radius: 999px;
   white-space: nowrap;
   transition: background-color 150ms ease, color 150ms ease;
@@ -890,9 +904,9 @@ mark {
   background: var(--surface);
   /* Comic-Panel-Redesign (2026-09-04) — dicke schwarze Kontur statt des
      dünnen neutralen Rahmens, siehe .side-card-Kommentar. */
-  border: 3px solid var(--ink);
+  border: var(--border-card);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+
   transition: transform 160ms ease, box-shadow 160ms ease;
   height: 100%;
 }
@@ -910,7 +924,7 @@ mark {
   text-transform: uppercase;
   letter-spacing: 0.03em;
   border-radius: 999px;
-  border: 1.5px solid var(--ink);
+  border: var(--border-tile);
   box-shadow: 1.5px 1.5px 0 var(--ink);
   transform: rotate(-6deg);
 }
@@ -923,6 +937,11 @@ mark {
 .article-list__item--featured {
   grid-column: 1 / -1;
   overflow: hidden;
+  /* Ebene 2 der Schatten-Hierarchie (SoWeSpike-Spezifikation B8.4,
+     2026-09-07) — der hervorgehobene Beitrag ist eines von genau zwei
+     Elementen site-weit, das noch einen Schatten trägt (die Basisregel
+     .article-list li hat keinen mehr). */
+  box-shadow: var(--shadow-comic);
 }
 /* Bug-Fund (2026-09-07, Nutzer-Screenshot: Daumen-Bewertungsbuttons gar
    nicht sichtbar) — NICHT spezifitätsbedingt (ein testweises Inline-
@@ -1139,7 +1158,7 @@ mark {
   /* Comic-Sticker statt flachem Pill: harter Versatz-Schatten (kein Blur)
      plus leichte Drehung — Halbton-/Sticker-Sprache aus den echten
      Sowespoke-Materialien, hier im Kleinformat für ein Badge. */
-  border: 1.5px solid var(--ink);
+  border: var(--border-tile);
   box-shadow: 1.5px 1.5px 0 var(--ink);
   transform: rotate(-2deg);
 }
@@ -1158,8 +1177,8 @@ mark {
      siehe DESIGN.md, bewusste Ablösung dieses Prinzips auf ausdrücklichen
      Nutzer-Wunsch ("ganze Seite" im eckigen Comic-Stil). Farbe lebt jetzt in
      Flächen/Akzenten (Illustration, Badges), nicht mehr im Rahmen. */
-  border: 3px solid var(--ink);
-  box-shadow: var(--shadow);
+  border: var(--border-card);
+
   padding: var(--space-5);
 }
 /* .side-card--plain (Ausnahme "randlose Anstehende-Termine-Karte") entfernt
@@ -1294,7 +1313,7 @@ mark {
 .kpi-tile {
   padding: var(--space-4);
   background: var(--paper);
-  border: 2px solid var(--ink);
+  border: var(--border-tile);
   border-radius: var(--radius-sm);
 }
 .kpi-tile__label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: var(--space-2); }
@@ -1384,7 +1403,7 @@ mark {
 .empty-state {
   background: var(--paper-raised);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+
   padding: var(--space-8) var(--space-5);
   text-align: center;
   color: var(--ink-soft);
@@ -1456,10 +1475,10 @@ mark {
   position: relative;
   overflow: hidden;
   background: var(--paper-raised);
-  box-shadow: var(--shadow);
+
   border-radius: var(--radius);
   /* Comic-Panel-Redesign (2026-09-04) — siehe .side-card-Kommentar. */
-  border: 3px solid var(--ink);
+  border: var(--border-card);
   padding: var(--space-4) var(--space-5);
   margin-top: var(--space-2);
 }
@@ -1477,6 +1496,11 @@ mark {
   padding-left: 1.1em;
   position: relative;
 }
+/* Magenta-Aufzählungspunkt auf neutralen Ink-Ton umgestellt (SoWeSpike-
+   Spezifikation B8.1, 2026-09-07: Magenta nur noch für Such-Button und
+   aktiven Filter-Chip, nicht mehr für "klein und oft" verteilte Akzente
+   wie bisher — löst die alte, in DESIGN.md dokumentierte Small-and-Often-
+   Regel für diese Stelle ab). */
 .info-box li::before {
   content: "";
   position: absolute;
@@ -1485,7 +1509,7 @@ mark {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--ink-soft);
 }
 /* Ganze Karte klickbar (2026-08-11, Nutzer-Wunsch) — .info-box ist hier
    ein <a>, nicht mehr nur Container um einen separaten Button (der
@@ -1505,9 +1529,9 @@ mark {
    Download und ohne Browser-Extension. Ink-Rahmen (2026-09-04) wie jeder
    andere Container-Typ, siehe Ink-Rahmen-Regel. */
 .pdf-viewer {
-  border: 3px solid var(--ink);
+  border: var(--border-card);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+
   overflow: hidden;
   background: var(--paper-raised);
 }
@@ -1567,9 +1591,9 @@ mark {
   background: var(--surface);
   /* Comic-Panel-Redesign (2026-09-04) — dieselbe dicke schwarze Kontur wie
      .article-list li, siehe dortiger Kommentar. */
-  border: 3px solid var(--ink);
+  border: var(--border-card);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+
   transition: transform 160ms ease, box-shadow 160ms ease;
 }
 .ticket-row:hover {
@@ -1587,7 +1611,7 @@ mark {
   color: var(--c-surface);
   font-weight: 700;
   font-size: 0.82rem;
-  border: 2px solid var(--ink);
+  border: var(--border-tile);
 }
 .ticket-row__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.3em; }
 .ticket-row__top { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); }
@@ -1708,7 +1732,7 @@ mark {
   font-family: var(--font-body);
   font-size: 0.88rem;
   padding: 0.5em var(--space-3);
-  border: 2px solid var(--ink);
+  border: var(--border-tile);
   border-radius: var(--radius-sm);
   background: var(--paper-raised);
   color: var(--ink);
@@ -1736,12 +1760,12 @@ mark {
    Zeile bliebe ein per hidden-Attribut versteckter Button sichtbar. */
 .btn[hidden] { display: none; }
 .btn svg { width: 17px; height: 17px; }
-.btn--primary { background: var(--accent); color: var(--on-accent); box-shadow: var(--shadow); }
+.btn--primary { background: var(--accent); color: var(--on-accent); }
 .btn--primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-hover); }
-.btn--primary:active { transform: translateY(0) scale(0.98); box-shadow: var(--shadow); }
+.btn--primary:active { transform: translateY(0) scale(0.98); }
 /* Comic-Panel-Redesign (2026-09-04) — dieselbe schwarze Kontur wie
    .tabs__item statt des dünnen neutralen Rands. */
-.btn--secondary { background: var(--paper-raised); color: var(--ink); border: 2px solid var(--ink); }
+.btn--secondary { background: var(--paper-raised); color: var(--ink); border: var(--border-tile); }
 .btn--secondary:hover { background: var(--paper); }
 .btn--secondary:active { transform: scale(0.98); }
 
@@ -1752,8 +1776,8 @@ mark {
   background: var(--paper-raised);
   border-radius: var(--radius);
   /* Comic-Panel-Redesign (2026-09-04) — siehe .side-card-Kommentar. */
-  border: 3px solid var(--ink);
-  box-shadow: var(--shadow);
+  border: var(--border-card);
+
   padding: var(--space-5);
   display: flex;
   flex-direction: column;
@@ -1801,7 +1825,7 @@ code {
   font-family: var(--font-body);
   font-size: 0.95rem;
   padding: var(--space-3);
-  border: 2px solid var(--ink);
+  border: var(--border-tile);
   border-radius: var(--radius-sm);
   background: var(--paper);
   color: var(--ink);
@@ -1871,7 +1895,7 @@ code {
    JS-Toggle — bewusst eingeklappt per Default, damit das Formular nicht
    überladen wirkt, aber jederzeit erreichbar. */
 .mailgen__signature {
-  border: 2px solid var(--ink);
+  border: var(--border-tile);
   border-radius: var(--radius-sm);
   padding: var(--space-3) var(--space-4);
 }
@@ -1892,7 +1916,7 @@ code {
   font-family: inherit;
   font-size: 0.9rem;
   padding: var(--space-3);
-  border: 2px solid var(--ink);
+  border: var(--border-tile);
   border-radius: var(--radius-sm);
   background: var(--paper);
   color: var(--ink);
@@ -1910,7 +1934,7 @@ code {
   font-family: var(--font-body);
   font-size: 0.9rem;
   padding: var(--space-3);
-  border: 2px solid var(--ink);
+  border: var(--border-tile);
   border-radius: var(--radius-sm);
   background: var(--paper);
   color: var(--ink);
@@ -1986,7 +2010,7 @@ code {
   max-height: 22rem;
   overflow-y: auto;
   padding: var(--space-2);
-  border: 2px solid var(--ink);
+  border: var(--border-card);
   border-radius: var(--radius-sm);
   background: var(--paper);
 }
@@ -2030,7 +2054,7 @@ code {
   font-size: 0.85rem;
   color: var(--ink-soft);
   background: var(--paper);
-  border: 2px solid var(--ink);
+  border: var(--border-card);
   border-radius: var(--radius-sm);
   padding: var(--space-3);
   margin-top: var(--space-2);
@@ -2233,7 +2257,7 @@ code {
   gap: var(--space-2);
   padding: var(--space-2) var(--space-4);
   border-radius: 999px;
-  border: 2px solid var(--ink);
+  border: var(--border-tile);
   background: var(--surface);
   color: var(--ink-soft);
   /* Auf .tabs__item-Maß angeglichen (Nutzer-Fund: wirkte "wie eine andere
@@ -2262,9 +2286,9 @@ code {
 .msads-workspace { align-items: start; }
 .msads-panel {
   background: var(--surface);
-  border: 3px solid var(--ink);
+  border: var(--border-card);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+
   padding: var(--space-6);
 }
 .msads-protocol { padding: var(--space-5); }
@@ -2312,9 +2336,9 @@ code {
   text-align: left;
   padding: var(--space-5);
   background: var(--surface);
-  border: 3px solid var(--ink);
+  border: var(--border-card);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+
   transition: transform 160ms ease, box-shadow 160ms ease;
 }
 .msads-choice-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
@@ -2340,7 +2364,7 @@ code {
   display: flex;
   gap: var(--space-3);
   background: var(--paper);
-  border: 2px solid var(--ink);
+  border: var(--border-tile);
   border-radius: var(--radius-sm);
   padding: var(--space-4);
   margin-bottom: var(--space-5);
@@ -2359,7 +2383,7 @@ code {
   text-align: left;
   padding: var(--space-4) var(--space-5);
   background: var(--surface);
-  border: 3px solid var(--ink);
+  border: var(--border-card);
   border-radius: var(--radius);
   transition: background-color 150ms ease;
 }
@@ -2373,7 +2397,7 @@ code {
 
 .msads-callout {
   background: var(--paper);
-  border: 2px solid var(--ink);
+  border: var(--border-tile);
   border-radius: var(--radius-sm);
   padding: var(--space-4) var(--space-5);
   margin: var(--space-4) 0 var(--space-5);
@@ -2500,7 +2524,7 @@ code {
     gap: var(--space-2);
     padding: var(--space-3) var(--space-4);
     border-right: none;
-    border-bottom: 3px solid var(--ink);
+    border-bottom: var(--border-card);
     position: sticky;
   }
   .rail__logo {
@@ -2642,7 +2666,7 @@ code {
   z-index: 1;
   background: var(--paper-raised);
   border-radius: var(--radius);
-  border: 3px solid var(--ink);
+  border: var(--border-card);
   /* Weicher/hochwertiger als vorher (größerer, gedämpfterer Blur statt der
      kompakten Karten-Standardschatten). */
   box-shadow: 0 10px 18px color-mix(in srgb, var(--ink) 5%, transparent), 0 26px 48px -20px color-mix(in srgb, var(--ink) 22%, transparent);
@@ -2767,7 +2791,7 @@ code {
   flex: 1;
   min-width: 0;
   background: var(--paper-raised);
-  border: 3px solid var(--ink);
+  border: var(--border-card);
   border-radius: var(--radius);
   box-shadow: 0 10px 18px color-mix(in srgb, var(--ink) 5%, transparent), 0 26px 48px -20px color-mix(in srgb, var(--ink) 22%, transparent);
   padding: var(--space-5);

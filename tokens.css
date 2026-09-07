@@ -75,6 +75,11 @@
      Marken-Werte der Live-Site — Kategorie-/Status-Farben und Tint-Flächen
      dieses internen Tools, unverändert relozierte Werte) -------------- */
   --c-line:          #E7E3DB;
+  /* Etwas dunklerer Ton speziell für gestrichelte Innentrenner in Karten
+     (SoWeSpike-Spezifikation B8.5, 2026-09-07) — --c-line selbst bleibt für
+     durchgezogene Ränder/Trennlinien reserviert, dieser Ton ist bewusst
+     eine eigene, dunklere Stufe nur für den gestrichelten Fall. */
+  --c-line-dashed:   #D8D2C4;
   --c-pink-tint:     #FDE6F1;
   --c-green-tint:    #E2F3F2;
   --c-success:       #146B3A;
@@ -87,8 +92,17 @@
   --c-cat-creative:  #8F5C08;
   --c-cat-tracking:  #185F8C;
 
-  /* -- Comic-Primitives (harter Versatz statt weicher Unschärfe) --------- */
-  --border-comic:   2.5px solid var(--c-ink);
-  --shadow-comic:   4px 4px 0 var(--c-ink);
-  --shadow-comic-l: 6px 6px 0 var(--c-ink);
+  /* -- Konturstärken-/Schatten-Skala (SoWeSpike-Spezifikation B8.4/B8.5,
+     2026-09-07 — löst die bisherige einheitliche 3px-Ink-Rahmen-Regel ab)
+     Kontur skaliert mit der Flächengröße statt überall gleich dick zu
+     sein: dieselbe Stärke wirkt auf kleinen Elementen (Badge, Chip) rund
+     viermal so schwer wie auf großen (Karte, Hero). Schatten sind auf
+     genau zwei Elemente begrenzt (Hero = -l, hervorgehobener Beitrag =
+     normal) statt wie zuvor jede Karte einen weichen Schein zu geben —
+     beide Werte waren als --shadow-comic/--shadow-comic-l bereits vorher
+     hier definiert, aber bislang ungenutzt. */
+  --border-card: 2px solid var(--c-ink);   /* Karten, Hero, Sidebar-Kante, Kartenkopf-Trennlinie */
+  --border-tile: 1.5px solid var(--c-ink); /* Icon-Kacheln, Badges, Chips, Avatar, Buttons */
+  --shadow-comic:   4px 4px 0 var(--c-ink); /* Ebene 2 — nur der hervorgehobene Beitrag */
+  --shadow-comic-l: 6px 6px 0 var(--c-ink); /* Ebene 1 — nur der Hero */
 }
