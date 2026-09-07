@@ -961,10 +961,10 @@ mark {
 }
 .card-badge--new { background: var(--accent); color: var(--on-accent); }
 /* Erste News-Karte pro Kanal-Ansicht als "Im Fokus"-Karte (2026-09-04,
-   Mockup-Vorgabe) — spannt beide Grid-Spalten, Reihenlayout statt
-   gestapelt (Icon neben statt über dem Text), dezente Halbton-Ecke wie im
-   Hero. Keine neue Farbe: NEU nutzt .card-badge--new (Magenta), "Im Fokus"
-   nutzt .flash (Gelb) — beide bestehende Sticker-Bausteine. */
+   Mockup-Vorgabe) — spannt beide Grid-Spalten, dezente Halbton-Ecke wie im
+   Hero. NEU-Kennzeichnung nutzt seit B5.4 (s. u.) NICHT mehr .card-badge
+   (den gedrehten Sticker, weiterhin für Präsentationen im Einsatz) —
+   .row__badge-new stattdessen, s. Kommentar dort. */
 .article-list__item--featured {
   grid-column: 1 / -1;
   overflow: hidden;
@@ -989,17 +989,6 @@ mark {
    komplett aus dem Stretch-Verfahren heraus, Höhe richtet sich danach rein
    nach dem eigenen Inhalt (.row + .row__rate zusammen). */
 .article-list li.article-list__item--featured { height: auto; align-self: start; }
-/* Bug-Fund (2026-09-07, Nutzer-Screenshot: NEU-Sticker halb abgeschnitten):
-   .card-badge sitzt normalerweise per Absicht mit negativem Versatz
-   (top:-10px/left:-8px) leicht AUSSERHALB der Karte — auf jeder anderen
-   Karte unproblematisch, hier aber von .article-list__item--featured's
-   eigenem overflow:hidden (nötig für die Halbton-Ecken-Maske unten)
-   abgeschnitten. Für genau diese Karte deshalb positiv statt negativ
-   platziert, bleibt innerhalb des sichtbaren Bereichs. */
-.article-list__item--featured .card-badge {
-  top: 10px;
-  left: 10px;
-}
 .article-list__item--featured::after {
   content: "";
   position: absolute;
@@ -1019,12 +1008,12 @@ mark {
    verschoben statt zum Textblock zu gehören). */
 .article-list__item--featured .row__title { font-size: 1.45rem; }
 .article-list__item--featured .row__summary { font-size: 1.08rem; }
+/* Eigenes Reihenlayout (Icon neben statt über dem Text) auf Desktop
+   entfernt (SoWeSpike-Spezifikation B6.1, 2026-09-07) — hervorgehobene
+   Karte teilt jetzt dieselbe Kopfzeile→Titel→Text→Fußzeile-Struktur wie
+   jede Grid-Karte, unterscheidet sich nur noch über Schriftgröße
+   (s. o.) und größere Icon-Kachel. */
 @media (min-width: 768px) {
-  .article-list__item--featured .row {
-    flex-direction: row;
-    align-items: center;
-    gap: var(--space-5);
-  }
   .article-list__item--featured .row__thumb { width: 68px; height: 68px; }
   .article-list__item--featured .row__thumb svg { width: 32px; height: 32px; }
   .article-list__item--featured .row__thumb--brand svg { width: 40px; height: 40px; }
@@ -1034,6 +1023,16 @@ mark {
   transform: translateY(-3px);
   box-shadow: var(--shadow-hover);
 }
+/* .row/.article-list ist ein SEITENÜBERGREIFENDES Komponentenpaar (auch
+   Anfragen, Präsentationen, Vorlagen, Case Studies nutzen es unverändert
+   mit ihrer bisherigen Meta-oben+Pfeil-unten-Struktur) — die Basisregeln
+   hier bleiben deshalb bewusst wie vor der SoWeSpike-Spezifikation. Die
+   News-spezifische Kopfzeile→Titel→Text→Fußzeile-Umstrukturierung
+   (B5.1/B6.1/B6.2, 2026-09-07, "TITEL STEHT VOR DEN METADATEN") lebt
+   stattdessen unten in einem auf .article-list--news verengten Block
+   (s. dort), plus den drei ausschließlich von newsRow() erzeugten neuen
+   Klassen .row__head/.row__badge-new/.row__head-lang/.row__open, die auf
+   keiner anderen Seite vorkommen und deshalb ohne Scoping sicher sind. */
 .row {
   display: flex;
   flex-direction: column;
@@ -1047,6 +1046,7 @@ mark {
   color: var(--ink);
   position: relative;
 }
+.row__head { display: flex; align-items: center; gap: var(--space-2); width: 100%; }
 .row__thumb {
   flex: none;
   width: 52px;
@@ -1071,16 +1071,29 @@ mark {
 .row__thumb--brand { background-color: var(--c-surface); background-image: none; border: 1px solid var(--line); }
 .row__thumb--brand svg { width: 30px; height: 30px; }
 .row:hover .row__thumb { transform: scale(1.06) rotate(-3deg); }
-.row__body { flex: 1; min-width: 0; width: 100%; padding-right: var(--space-6); }
-.row__meta {
-  display: flex;
+/* Ersetzt auf der hervorgehobenen Karte den bisherigen doppelten
+   "das ist neu/besonders"-Hinweis (B5.4, 2026-09-07: gedrehter
+   .card-badge--new-Sticker UND .flash "Im Fokus" nebeneinander waren
+   redundant) durch EIN Signal in der neuen Kopfzeile — flach statt
+   Sticker, passend zur reduzierten Schatten-/Rahmen-Sprache der
+   Spezifikation. Eigenständig von .card-badge (dem gedrehten Sticker mit
+   Schatten, weiterhin für Präsentationen im Einsatz, s. dortiger
+   Kommentar). */
+.row__badge-new {
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-3);
-  font-size: 0.85rem;
-  color: var(--ink-soft);
-  margin-bottom: var(--space-1);
+  flex: none;
+  font-weight: 800;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--on-accent);
+  background: var(--accent);
+  padding: 0.2em 0.6em;
+  border-radius: 999px;
 }
-.row__cat { font-weight: 600; }
+.row__head-lang { margin-left: auto; flex: none; }
+.row__body { flex: 1; min-width: 0; width: 100%; padding-right: var(--space-6); }
 /* Textgrößen angehoben (2026-09-04, Nutzer-Feedback: "Text ist zu klein
    für die Kachel") — Titel/Vorschau wirkten in den jetzt dick umrandeten
    Comic-Panel-Karten proportional zu klein für die verfügbare Fläche. */
@@ -1105,6 +1118,15 @@ mark {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+.row__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-bottom: var(--space-1);
+}
+.row__cat { font-weight: 600; }
 .row__arrow {
   position: absolute;
   right: var(--space-5);
@@ -1113,8 +1135,42 @@ mark {
   transition: transform 160ms ease, color 160ms ease;
 }
 .row__arrow svg { width: 18px; height: 18px; }
+/* Nur von newsRow() erzeugt (Fußzeilen-Pendant zu .row__arrow, aber
+   inline statt absolut positioniert — B5.3). */
+.row__open {
+  margin-left: auto;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  font-weight: 600;
+  color: var(--ink-soft);
+  transition: transform 160ms ease, color 160ms ease;
+}
+.row__open svg { width: 18px; height: 18px; }
 .row:hover .row__title { color: var(--accent); }
 .row:hover .row__arrow { color: var(--accent); transform: translateX(3px); }
+.row:hover .row__open { color: var(--accent); transform: translateX(3px); }
+
+/* News-spezifische Umstrukturierung (SoWeSpike-Spezifikation B5.1/B6.1/
+   B6.2, 2026-09-07): verengt auf die News-Liste (Klasse am <ul> in
+   renderNews()), damit Anfragen/Präsentationen/Vorlagen/Case-Studies ihr
+   bestehendes Meta-oben+Pfeil-unten-Layout unangetastet behalten.
+   .row__meta trägt hier die FUSSZEILE (Datum/Quelle/"Öffnen", per
+   margin-top:auto an den Kartenboden gedrückt) statt der Meta-Zeile oben —
+   derselbe Klassenname wie überall sonst, nur die Rolle verschiebt sich
+   innerhalb dieses Scopes. */
+.article-list--news .row {
+  padding: var(--space-5);
+  min-height: 232px; /* B6.2: gleiche Kartenhöhe unabhängig von Textlänge */
+}
+.article-list--news .row__body { padding-right: 0; }
+.article-list--news .row__meta {
+  margin-bottom: 0;
+  margin-top: auto;
+  padding-top: var(--space-2);
+  width: 100%;
+}
 
 .row__rate {
   display: flex;

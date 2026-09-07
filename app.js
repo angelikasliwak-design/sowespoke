@@ -1719,7 +1719,7 @@
       ${failedNotice}
       ${
         items.length
-          ? `<ul class="article-list">${items.map((item, i) => newsRow(item, i === 0)).join("")}</ul>`
+          ? `<ul class="article-list article-list--news">${items.map((item, i) => newsRow(item, i === 0)).join("")}</ul>`
           : `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Kanal.</p></div>`
       }
     `;
@@ -1796,22 +1796,28 @@
     const thumb = brandIcon
       ? `<span class="row__thumb row__thumb--brand">${brandIcon}</span>`
       : `<span class="row__thumb" style="background-color: var(${chVar})">${newsTopicIcon(item) || ICONS.news}</span>`;
+    const langBadge = item.translated
+      ? `<span class="flash flash--muted" title="Automatisch aus dem Englischen übersetzt">Übersetzt</span>`
+      : item.lang === "en"
+        ? `<span class="flash flash--muted">EN</span>`
+        : "";
     return `
       <li${featured ? ` class="article-list__item--featured"` : ""}>
-        ${featured ? `<span class="card-badge card-badge--new">Neu</span>` : ""}
         <a class="row" href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">
-          ${thumb}
+          <span class="row__head">
+            ${thumb}
+            ${featured ? `<span class="row__badge-new">Neu</span>` : ""}
+            ${langBadge ? `<span class="row__head-lang">${langBadge}</span>` : ""}
+          </span>
           <span class="row__body">
-            <span class="row__meta">
-              ${featured ? `<span class="flash">${ICONS.crosshair} Im Fokus</span>` : ""}
-              ${item.pubDate ? `<span class="row__date">— ${formatDate(item.pubDate)}</span>` : ""}
-              <span class="row__cat">${escapeHtml(item.source)}</span>
-              ${item.translated ? `<span class="flash flash--muted" title="Automatisch aus dem Englischen übersetzt">Übersetzt</span>` : item.lang === "en" ? `<span class="flash flash--muted">EN</span>` : ""}
-            </span>
             <span class="row__title">${escapeHtml(item.title)}</span>
             ${item.description ? `<span class="row__summary">${escapeHtml(item.description)}</span>` : ""}
           </span>
-          <span class="row__arrow">${ICONS.external}</span>
+          <span class="row__meta">
+            ${item.pubDate ? `<span class="row__date">${formatDate(item.pubDate)}</span>` : ""}
+            <span class="row__cat">${escapeHtml(item.source)}</span>
+            <span class="row__open">${ICONS.external} Öffnen</span>
+          </span>
         </a>
         <div class="row__rate" data-rate-link="${escapeHtml(item.link)}" data-rate-title="${escapeHtml(item.title)}">
           <button type="button" class="row__rate-btn" data-vote="up" aria-label="Relevant, mehr davon">${ICONS.thumbUp}</button>
