@@ -551,7 +551,11 @@ mark {
    Megafon größer, ein bisschen schräg, anders platziert"). Rotation +
    Versatz statt reiner Größenänderung, damit die Illustration wie
    hingeworfen/dynamisch wirkt statt nur größer zu sein. */
-.hero--connected .hero__illustration { width: 268px; height: 272px; transform: rotate(-6deg) translate(4px, 10px); }
+/* Weiter nach rechts gerückt (2026-09-07, Nutzer-Screenshot: "nicht gut
+   platziert, ein bisschen nach rechts") — bei flex-start blieb rechts vom
+   Megafon sichtbar Leerraum bis zum Hero-Rand, translateX von 4px auf 32px
+   angehoben, um diesen Freiraum zu nutzen statt ihn ungenutzt zu lassen. */
+.hero--connected .hero__illustration { width: 268px; height: 272px; transform: rotate(-6deg) translate(32px, 10px); }
 /* Die vorherigen ::before/::after-Farbwolken (Teal-/Accent-Tint-Kreise)
    sind entfallen — dieselbe Funktion (weiche, großflächige Farbwolken)
    übernimmt jetzt .page-bg für die ganze Seite statt pro Hero-Instanz. */
@@ -903,6 +907,17 @@ mark {
   grid-column: 1 / -1;
   overflow: hidden;
 }
+/* Bug-Fund (2026-09-07, Nutzer-Screenshot: NEU-Sticker halb abgeschnitten):
+   .card-badge sitzt normalerweise per Absicht mit negativem Versatz
+   (top:-10px/left:-8px) leicht AUSSERHALB der Karte — auf jeder anderen
+   Karte unproblematisch, hier aber von .article-list__item--featured's
+   eigenem overflow:hidden (nötig für die Halbton-Ecken-Maske unten)
+   abgeschnitten. Für genau diese Karte deshalb positiv statt negativ
+   platziert, bleibt innerhalb des sichtbaren Bereichs. */
+.article-list__item--featured .card-badge {
+  top: 10px;
+  left: 10px;
+}
 .article-list__item--featured::after {
   content: "";
   position: absolute;
@@ -915,11 +930,17 @@ mark {
   -webkit-mask-image: radial-gradient(ellipse 55% 90% at 100% 0%, black 0%, transparent 70%);
 }
 .article-list__item--featured .row { position: relative; z-index: 1; }
-.article-list__item--featured .row__title { font-size: 1.28rem; }
+/* Textgrößen nochmal angehoben + Icon zentriert statt oben ausgerichtet
+   (2026-09-07, Nutzer-Screenshot: Text zu klein, Icon oben "nicht in der
+   Mitte" — bei align-items:flex-start ragte das große 68px-Icon deutlich
+   über die viel schmalere Meta-Zeile hinaus, wirkte gegen die erste Zeile
+   verschoben statt zum Textblock zu gehören). */
+.article-list__item--featured .row__title { font-size: 1.45rem; }
+.article-list__item--featured .row__summary { font-size: 1.08rem; }
 @media (min-width: 768px) {
   .article-list__item--featured .row {
     flex-direction: row;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--space-5);
   }
   .article-list__item--featured .row__thumb { width: 68px; height: 68px; }
