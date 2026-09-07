@@ -1778,7 +1778,7 @@
   const NEWS_TOPIC_RULES = [
     { icon: "scale", pattern: /\b(antitrust|lawsuit|regulation|gdpr|compliance|court|legal|klage|kartellrecht|datenschutz)\b/i },
     { icon: "bug", pattern: /\b(bug|outage|down|broken|error|zero traffic|ausfall|störung|fehler)\b/i },
-    { icon: "sparkle", pattern: /\b(ai|ki|chatgpt|llm|künstliche intelligenz|artificial intelligence|machine learning)\b/i },
+    { icon: "sparkle", pattern: /\b(ai|ki|chatgpt|gpt|llm|nvidia|künstliche intelligenz|artificial intelligence|machine learning)\b/i },
     { icon: "play", pattern: /\bvideo\b/i },
     { icon: "chartLine", pattern: /\b(analytics|trends?|traffic|dashboard|report|daten)\b/i },
     { icon: "search", pattern: /\b(seo|ranking|backlinks?|serp)\b/i },

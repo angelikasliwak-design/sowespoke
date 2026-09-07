@@ -1164,11 +1164,22 @@ mark {
   padding: var(--space-5);
   min-height: 232px; /* B6.2: gleiche Kartenhöhe unabhängig von Textlänge */
 }
-.article-list--news .row__body { padding-right: 0; }
+/* Bug-Fund (2026-09-07, Nutzer-Screenshot: bei kurzen Artikeln klaffte eine
+   auffällige Leerfläche zwischen Text und Fußzeile) — .row__body erbte
+   flex:1 aus der seitenübergreifenden Basisregel (dort nötig, damit der
+   Text bei den ANDEREN Seiten die Breite neben dem Icon ausfüllt) und
+   streckte sich dadurch hier auf die volle verbleibende Kartenhöhe, auch
+   wenn Titel+Text viel kürzer waren. margin-top:auto auf .row__meta verstärkte
+   denselben Effekt zusätzlich. Fußzeile jetzt mit festem statt an den
+   Kartenboden gedrücktem Abstand direkt unter dem Text — bei ungleich
+   hohen Karten in derselben Grid-Zeile bleibt die restliche Höhe (aus
+   align-items:stretch, B6.2) jetzt unauffällig als Rand UNTER der
+   Fußzeile statt als Lücke DAVOR. */
+.article-list--news .row__body { padding-right: 0; flex: none; }
 .article-list--news .row__meta {
   margin-bottom: 0;
-  margin-top: auto;
-  padding-top: var(--space-2);
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
   width: 100%;
   border-top: 1px dashed var(--c-line-dashed); /* B8.5, s. .side-card__list */
 }

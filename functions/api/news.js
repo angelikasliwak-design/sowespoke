@@ -60,6 +60,41 @@ function isExcludedTitle(title) {
   return EXCLUDED_TITLE_PATTERNS.some((p) => p.test(title));
 }
 
+// Kanal-Zuordnung nach Inhalt statt nur nach Quelle (2026-09-07, Nutzer-
+// Fund per Screenshot: ein sichtbarer TikTok-Artikel, aber der TikTok-Chip
+// zeigte "0") — `channel` kam bisher ausschließlich fix pro Quelle
+// (SOURCES[].channel), nie aus dem Artikeltext selbst. Für Sammelquellen
+// wie Search Engine Land/OMR/OnlineMarketing.de (alle "Allgemein") landete
+// dadurch JEDER Artikel unter "Allgemein", selbst wenn der Titel eindeutig
+// eine bestimmte Plattform nennt — die Plattform-Chips (Meta/TikTok/
+// Snapchat/…) blieben dadurch faktisch tot, obwohl passende Artikel längst
+// im Feed sichtbar waren (siehe [[sowespoke-news-channel-tabs-dead]]-
+// Notiz, jetzt überholt). Dieselbe Wortgrenzen-Regel-Struktur wie
+// NEWS_BRAND_TEXT_RULES in app.js, hier server-seitig dupliziert (kein
+// gemeinsames Modul zwischen Function und Frontend in diesem Projekt) —
+// greift bewusst NUR bei Quellen/Items, deren Kanal aktuell "Allgemein"
+// ist (die drei Sammelquellen Search Engine Land/OMR/OnlineMarketing.de).
+// Ein bereits verlässlich zugeordneter Kanal (Microsoft Advertising Blog →
+// "Microsoft", adseed SEA-News → "Google") wird NICHT überschrieben, auch
+// wenn der Titel zufällig eine andere Marke nennt (z. B. ein Microsoft-
+// Advertising-Artikel, der Google vergleichend erwähnt, bleibt "Microsoft"
+// — die Quelle weiß es hier besser als eine Titel-Heuristik).
+const CHANNEL_TEXT_RULES = [
+  { channel: "Google", pattern: /\b(google|adx|adsense|adwords|youtube)\b/i },
+  { channel: "Meta", pattern: /\b(meta|facebook|instagram|whatsapp)\b/i },
+  { channel: "Microsoft", pattern: /\b(microsoft|bing|copilot)\b/i },
+  { channel: "TikTok", pattern: /\btiktok\b/i },
+  { channel: "Snapchat", pattern: /\bsnapchat\b/i },
+  { channel: "KI", pattern: /\b(ki|ai|chatgpt|openai|llm|künstliche intelligenz|artificial intelligence)\b/i },
+  { channel: "Rechtliches", pattern: /\b(datenschutz|dsgvo|gdpr|kartellrecht|klage|lawsuit|antitrust|regulation|compliance)\b/i },
+  { channel: "CRO", pattern: /\b(cro|conversion.?rate|micro-?conversions?)\b/i },
+];
+function classifyChannel(title, currentChannel) {
+  if (currentChannel !== "Allgemein") return currentChannel;
+  const rule = CHANNEL_TEXT_RULES.find((r) => r.pattern.test(title || ""));
+  return rule ? rule.channel : currentChannel;
+}
+
 // Einzelne, von Hand kuratierte Artikel ohne RSS-Feed (z. B. der
 // "Discover"-Ressourcenbereich von Microsoft Advertising hat keinen Feed) —
 // werden per Titel + Meta-Description ins News-Format gebracht.
@@ -295,6 +330,11 @@ export async function onRequestGet(context) {
   // (einmalig pro Artikel, nicht nur über die sichtbaren 60), erst danach
   // auf die sichtbaren 60 zugeschnitten.
   let items = archiveEnabled ? mergeArchive(archived || [], liveItems) : liveItems.sort((a, b) => new Date(b.pubDate || 0) - new Date(a.pubDate || 0));
+  // Läuft über ALLE Items (frisch UND bereits archiviert) statt nur beim
+  // Einlesen einer Quelle — dadurch heilen sich auch schon im Archiv
+  // liegende, unter "Allgemein" einsortierte Alt-Einträge bei jedem Abruf
+  // selbst aus, ohne das Archiv einmalig manuell neu einlesen zu müssen.
+  items = items.map((item) => ({ ...item, channel: classifyChannel(item.title, item.channel) }));
   items = items.slice(0, archiveEnabled ? MAX_ARCHIVE_ITEMS : MAX_VISIBLE_ITEMS);
   items = await translateItems(items, env.GEMINI_API_KEY, env.GEMINI_MODEL);
 
