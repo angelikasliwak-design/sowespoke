@@ -26,6 +26,9 @@
   --yellow: var(--c-yellow-500);
   --on-yellow: var(--ink); /* auf Gelb ausnahmslos dunkler Text, nie Weiß */
   --yellow-text: var(--c-yellow-800); /* dunklere Variante nur für Gelb als Fließtext (z. B. Status-/Prioritäts-Labels) — --yellow selbst bleibt für Flächen/Icons (nur 3:1 nötig) */
+  /* Helle Gelb-Fläche, Pendant zu --accent-tint/--teal-tint (SoWeSpike-
+     Spezifikation B2.3, 2026-09-07: Nav-Hover-Fläche). */
+  --yellow-tint: var(--c-yellow-100);
 
   --teal: var(--c-green-500); /* Name "teal" historisch, Farbe ist jetzt das verifizierte Marken-Grün */
   --on-teal: var(--c-surface);
@@ -265,19 +268,39 @@ mark {
    mehrfach am selben Tag bei .mailgen__field/.btn/.mailgen__gmail-send-row
    dokumentiert, hier präventiv vor dem ersten Einsatz behoben). */
 .rail__nav a[hidden] { display: none; }
-.rail__nav a:hover { background: var(--paper); color: var(--ink); }
-.rail__nav a[aria-current="page"] { background: var(--accent-tint); color: var(--accent); padding-left: calc(var(--space-3) + 6px); }
+/* Hover-/Aktiv-Zustände (SoWeSpike-Spezifikation B2.3/B2.4, 2026-09-07) —
+   Hover jetzt Gelb statt neutralem Papier-Ton, Aktiv jetzt mit 1,5px
+   schwarzen Linien oben/unten + Blitz-Indikator statt schlichtem Balken
+   (derselbe Pfad wie ICONS.flash, als Maske statt eigenem <svg>-Element,
+   damit am Markup in app.js nichts geändert werden muss). */
+.rail__nav a:hover { background: var(--yellow-tint); color: var(--ink); }
+.rail__nav a[aria-current="page"] {
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-weight: 700;
+  padding-left: calc(var(--space-3) + 17px);
+  border-top: 1.5px solid var(--ink);
+  border-bottom: 1.5px solid var(--ink);
+}
 .rail__nav a[aria-current="page"]::before {
-  /* Zusätzlicher Indikator neben der Farbe (Brief: "Do NOT rely only on
-     color") — schmaler Balken am linken Rand der aktiven Pille. */
+  /* Blitz-Form statt schlichtem Balken — zusätzlicher Indikator neben der
+     Farbe bleibt (Brief: "Do NOT rely only on color"). */
   content: "";
   position: absolute;
-  left: var(--space-1);
-  top: 8px;
-  bottom: 8px;
-  width: 3px;
-  border-radius: 999px;
-  background: var(--accent);
+  left: var(--space-2);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 11px;
+  height: 26px;
+  background-color: var(--accent);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M13 2 4 14h6l-1 8 9-12h-6z'/%3E%3C/svg%3E");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M13 2 4 14h6l-1 8 9-12h-6z'/%3E%3C/svg%3E");
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
 }
 
 /* Aufklappbares Untermenü (2026-08-14) — .rail__nav-group-link erbt die
@@ -678,7 +701,11 @@ mark {
   margin-bottom: var(--space-4);
 }
 .toolbar .tabs { margin-bottom: 0; }
-.toolbar__label { font-size: 0.82rem; font-weight: 700; color: var(--ink-soft); }
+/* .toolbar__label entfernt (SoWeSpike-Spezifikation B4.1, 2026-09-07,
+   "der Platzhalter trägt die Information allein") — auf allen fünf Seiten
+   mit Toolbar-Suche entfernt (News + die vier "Was möchtest du finden?"-
+   Instanzen), nicht nur bei der im Dokument genannten News-Suche, da
+   dieselbe Redundanz überall gleich vorlag. */
 
 /* -- Suche --------------------------------------------------------------- */
 .search {
@@ -800,6 +827,10 @@ mark {
   font-weight: 700;
   background: var(--paper);
   color: var(--ink-soft);
+  /* SoWeSpike-Spezifikation B4.4/B10.5, 2026-09-07: Ziffern in Chips mit
+     tabular-nums, damit die Chip-Breite beim Wechsel der Zahl nicht
+     zittert. */
+  font-variant-numeric: tabular-nums;
 }
 .tabs__item.is-active .tabs__item-count { background: var(--c-surface); color: var(--accent); }
 

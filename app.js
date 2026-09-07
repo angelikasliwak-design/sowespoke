@@ -1607,7 +1607,6 @@
             <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
           </section>
           <div class="toolbar">
-            <span class="toolbar__label">Alles durchsuchen</span>
             <label class="search">
               ${ICONS.search}
               <input type="search" id="news-global-search" placeholder="News, Präsentationen, Vorlagen, Case Studies …" autocomplete="off" aria-label="Alles durchsuchen" aria-expanded="false" role="combobox" aria-controls="news-search-dropdown" />
@@ -1648,6 +1647,23 @@
     const data = await loadNews();
     const feed = document.getElementById("news-feed");
     if (!feed) return; // Route hat sich zwischenzeitlich geändert
+
+    // Trefferzahl je Kanal-Chip (SoWeSpike-Spezifikation B4.4, 2026-09-07)
+    // — erst NACH dem News-Abruf möglich (die Tabs selbst rendern weiter
+    // oben synchron, bevor die Artikel überhaupt geladen sind), deshalb
+    // per gezieltem Nachtrag statt beim ersten Rendern. Übernimmt exakt
+    // dasselbe .tabs__item-count-Markup, das die Tickets-Seite schon nutzt.
+    if (Array.isArray(data.items)) {
+      const channelCounts = data.items.reduce((acc, item) => {
+        acc[item.channel] = (acc[item.channel] || 0) + 1;
+        return acc;
+      }, {});
+      view.querySelectorAll(".tabs__item[data-ch]").forEach((btn) => {
+        const key = btn.dataset.ch;
+        const count = key === "all" ? data.items.length : channelCounts[key] || 0;
+        btn.insertAdjacentHTML("beforeend", `<span class="tabs__item-count">${count}</span>`);
+      });
+    }
 
     if (data.error) {
       const copy = {
@@ -1890,6 +1906,16 @@
     if (dt !== "all") items = items.filter((p) => p.docType === dt);
     if (q) items = items.filter((p) => [p.title, p.summaryDE, p.docType].join(" ").toLowerCase().includes(q));
 
+    // Trefferzahl je Doctype-Chip (SoWeSpike-Spezifikation B4.4, 2026-09-07)
+    // — gegen die vollständige, ungefilterte PRESENTATIONS-Liste gezählt
+    // (nicht gegen die such-gefilterten items), gleiches Prinzip wie die
+    // Tickets-Statuszahlen: der Chip zeigt "wie viele gibt es insgesamt",
+    // unabhängig von der aktuellen Sucheingabe.
+    const docTypeCounts = PRESENTATIONS.reduce((acc, p) => {
+      acc[p.docType] = (acc[p.docType] || 0) + 1;
+      return acc;
+    }, {});
+
     view.innerHTML = `
       <section class="hero hero--connected">
         <div class="hero__intro">
@@ -1899,15 +1925,14 @@
         <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
       </section>
       <div class="toolbar">
-        <span class="toolbar__label">Was möchtest du finden?</span>
         <label class="search">
           ${ICONS.search}
           <input type="search" id="search-input" placeholder="Präsentation durchsuchen …" value="${escapeHtml(query || "")}" aria-label="Präsentationen durchsuchen" />
           <button type="button" class="search__submit" id="search-submit" aria-label="Suche fokussieren">${ICONS.search}</button>
         </label>
         <nav class="tabs" aria-label="Art">
-          <button type="button" class="tabs__item ${dt === "all" ? "is-active" : ""}" data-dt="all">Alle</button>
-          ${docTypes.map((d) => `<button type="button" class="tabs__item ${dt === d ? "is-active" : ""}" data-dt="${escapeHtml(d)}">${escapeHtml(d)}</button>`).join("")}
+          <button type="button" class="tabs__item ${dt === "all" ? "is-active" : ""}" data-dt="all">Alle<span class="tabs__item-count">${PRESENTATIONS.length}</span></button>
+          ${docTypes.map((d) => `<button type="button" class="tabs__item ${dt === d ? "is-active" : ""}" data-dt="${escapeHtml(d)}">${escapeHtml(d)}<span class="tabs__item-count">${docTypeCounts[d] || 0}</span></button>`).join("")}
         </nav>
         <label class="select-field">
           <span class="select-field__label">Sortieren</span>
@@ -2094,7 +2119,6 @@
         <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
       </section>
       <div class="toolbar">
-        <span class="toolbar__label">Was möchtest du finden?</span>
         <label class="search">
           ${ICONS.search}
           <input type="search" id="search-input" placeholder="${activeTab === "practices" ? "Best Practices durchsuchen …" : "E-Mail-Vorlagen durchsuchen …"}" value="${escapeHtml(query || "")}" aria-label="Vorlagen durchsuchen" />
@@ -2220,15 +2244,14 @@
             : "";
         return channels.length > 1
           ? `<div class="toolbar">
-        <span class="toolbar__label">Was möchtest du finden?</span>
         <label class="search">
           ${ICONS.search}
           <input type="search" id="search-input" placeholder="Case Studies durchsuchen …" value="${escapeHtml(query || "")}" aria-label="Case Studies durchsuchen" />
           <button type="button" class="search__submit" id="search-submit" aria-label="Suche fokussieren">${ICONS.search}</button>
         </label>
         <nav class="tabs" aria-label="Kanal">
-          <button type="button" class="tabs__item ${ch === "all" ? "is-active" : ""}" data-ch="all">Alle</button>
-          ${channels.map((c) => `<button type="button" class="tabs__item ${ch === c ? "is-active" : ""}" data-ch="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join("")}
+          <button type="button" class="tabs__item ${ch === "all" ? "is-active" : ""}" data-ch="all">Alle<span class="tabs__item-count">${CASE_STUDIES.length}</span></button>
+          ${channels.map((c) => `<button type="button" class="tabs__item ${ch === c ? "is-active" : ""}" data-ch="${escapeHtml(c)}">${escapeHtml(c)}<span class="tabs__item-count">${CASE_STUDIES.filter((cs) => cs.channel === c).length}</span></button>`).join("")}
         </nav>
         ${sortSelect}
       </div>`
@@ -2777,7 +2800,6 @@
         <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
       </section>
       <div class="toolbar">
-        <span class="toolbar__label">Was möchtest du finden?</span>
         <label class="search">
           ${ICONS.search}
           <input type="search" id="search-input" placeholder="Tickets durchsuchen …" value="${escapeHtml(query || "")}" aria-label="Tickets durchsuchen" />
