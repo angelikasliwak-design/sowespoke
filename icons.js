@@ -20,6 +20,14 @@ const BRAND_MARK_ICONS = {
   Meta: `<svg viewBox="0 0 36 24"><path fill="#0866FF" d="M7.6 2.4C3.8 2.4 1 6.4 1 12s2.8 9.6 6.6 9.6c2.3 0 4.2-1.6 5.9-4l2.5-3.9 2.5 3.9c1.7 2.4 3.6 4 5.9 4 3.8 0 6.6-4 6.6-9.6s-2.8-9.6-6.6-9.6c-2.3 0-4.2 1.6-5.9 4L16 10.3l-1.5-2.3c-1.7-2.4-3.6-4-5.9-4h-1Zm.5 3.4c1.1 0 2.1.9 3.4 2.8L13.3 12l-1.8 2.9c-1.3 1.9-2.3 2.8-3.4 2.8-2 0-3.5-2.6-3.5-5.7s1.5-5.7 3.5-5.7Zm15.8 0c2 0 3.5 2.6 3.5 5.7s-1.5 5.7-3.5 5.7c-1.1 0-2.1-.9-3.4-2.8L18.7 12l1.8-2.9c1.3-1.9 2.3-2.8 3.4-2.8Z"/></svg>`,
   TikTok: `<svg viewBox="0 0 24 24"><path fill="#000000" d="M16.6 5.82c-1.02-1.1-1.6-2.53-1.6-4.02h-3.5v13.9c0 1.6-1.3 2.9-2.9 2.9s-2.9-1.3-2.9-2.9 1.3-2.9 2.9-2.9c.3 0 .6.05.87.13V9.4c-.29-.04-.58-.06-.87-.06-3.5 0-6.4 2.9-6.4 6.4S5.6 22 9.1 22s6.4-2.9 6.4-6.4V8.6c1.36 1 3.04 1.6 4.86 1.6V6.7c-1.35 0-2.6-.4-3.76-.88Z"/></svg>`,
   Snapchat: `<svg viewBox="0 0 24 24"><path fill="#FFFC00" stroke="#1A1A1A" stroke-width="0.4" d="M12 2c3.3 0 5.6 2.6 5.6 5.9 0 1 .1 2 .1 2 .5.1 1.2.4 1.4 1 .2.5-.1 1-.6 1.3-.3.2-.9.4-1.1.5 0 .3.2.9.7 1.5.6.7 1.5 1.1 1.5 1.6 0 .6-1.1.9-2 1.1-.1.3-.2.7-.4 1-.3.4-1 .3-1.6.3-.5 0-1 .3-2 .9-.8.5-1.7 1-3.6 1s-2.8-.5-3.6-1c-1-.6-1.5-.9-2-.9-.6 0-1.3.1-1.6-.3-.2-.3-.3-.7-.4-1-.9-.2-2-.5-2-1.1 0-.5.9-.9 1.5-1.6.5-.6.7-1.2.7-1.5-.2-.1-.8-.3-1.1-.5-.5-.3-.8-.8-.6-1.3.2-.6.9-.9 1.4-1 0 0 .1-1 .1-2C6.4 4.6 8.7 2 12 2Z"/></svg>`,
+  // Vereinfachte Nachbildung des OpenAI-Knoten-Logos (2026-09-07,
+  // Nutzer-Fund: ChatGPT/OpenAI-Artikel zeigten das generische türkise
+  // KI-Sparkle-Topic-Icon statt eines erkennbaren Markenzeichens) — sechs
+  // radiale Balken um einen gefüllten Mittelpunkt statt des echten
+  // verschlungenen Sechser-Knotens, gleiches Vereinfachungsprinzip wie bei
+  // Meta/Snapchat/TikTok oben. Einfarbig Schwarz statt Verlauf (echtes Logo
+  // ist ohnehin monochrom).
+  OpenAI: `<svg viewBox="0 0 24 24"><g fill="#0A0A0A"><rect x="11" y="2.3" width="2" height="7.2" rx="1"/><rect x="11" y="2.3" width="2" height="7.2" rx="1" transform="rotate(60 12 12)"/><rect x="11" y="2.3" width="2" height="7.2" rx="1" transform="rotate(120 12 12)"/><rect x="11" y="2.3" width="2" height="7.2" rx="1" transform="rotate(180 12 12)"/><rect x="11" y="2.3" width="2" height="7.2" rx="1" transform="rotate(240 12 12)"/><rect x="11" y="2.3" width="2" height="7.2" rx="1" transform="rotate(300 12 12)"/><circle cx="12" cy="12" r="2.6"/></g></svg>`,
 };
 
 /**

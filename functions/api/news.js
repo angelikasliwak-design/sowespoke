@@ -41,7 +41,24 @@ const SOURCES = [
   // t3n bewusst entfernt: kein eigener Marketing-Feed verfügbar (nur
   // Gesamt-Tech-Feed inkl. Astronomie/Hardware/Wissenschaft, fachfremd
   // für dieses Tool) — siehe Nutzer-Feedback vom 2026-08-02.
+  // Neue DACH-Quelle (2026-09-07, Nutzer-Wunsch: "mehr wichtige Infos aus
+  // Deutschland"). Vor der Aufnahme per curl geprüft: stündlich
+  // aktualisiert, deutschsprachig, deckt (anders als adseed/OMR) auch
+  // Plattform-News zu Google/Meta/TikTok/KI ab — deshalb "Allgemein" wie
+  // Search Engine Land/OMR statt eines der Plattform-Kanäle.
+  { name: "OnlineMarketing.de", url: "https://onlinemarketing.de/feed", channel: "Allgemein", lang: "de" },
 ];
+
+// Wiederkehrende Rubriken ohne eigentlichen Nachrichtenwert für dieses
+// Tool (2026-09-07, Nutzer-Fund: "die Job-Angebote sind irrelevant") —
+// Search Engine Land veröffentlicht z. B. wöchentlich eine Stellenangebote-
+// Sammlung unter demselben Titel. Titel-Muster statt Quellen-Sperre, damit
+// eine einzelne wiederkehrende Rubrik gefiltert wird, ohne die ganze Quelle
+// auszuschließen.
+const EXCLUDED_TITLE_PATTERNS = [/^the latest jobs in /i];
+function isExcludedTitle(title) {
+  return EXCLUDED_TITLE_PATTERNS.some((p) => p.test(title));
+}
 
 // Einzelne, von Hand kuratierte Artikel ohne RSS-Feed (z. B. der
 // "Discover"-Ressourcenbereich von Microsoft Advertising hat keinen Feed) —
@@ -166,7 +183,7 @@ async function fetchSource(source) {
     if (!res.ok) return { error: true, source: source.name, status: res.status };
     const xml = await res.text();
     const isAtom = /<feed[\s>]/i.test(xml) && !/<rss[\s>]/i.test(xml);
-    const items = parseItems(xml, isAtom).filter((i) => i.title && i.link);
+    const items = parseItems(xml, isAtom).filter((i) => i.title && i.link && !isExcludedTitle(i.title));
     return {
       error: false,
       items: items.slice(0, 12).map((i) => ({ ...i, source: source.name, channel: source.channel, lang: source.lang })),

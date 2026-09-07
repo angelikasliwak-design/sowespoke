@@ -1759,6 +1759,7 @@
     { icon: () => BRAND_MARK_ICONS.Microsoft, pattern: /\b(microsoft|bing|copilot)\b/i },
     { icon: () => BRAND_MARK_ICONS.TikTok, pattern: /\btiktok\b/i },
     { icon: () => BRAND_MARK_ICONS.Snapchat, pattern: /\bsnapchat\b/i },
+    { icon: () => BRAND_MARK_ICONS.OpenAI, pattern: /\b(openai|chatgpt)\b/i },
   ];
   function newsBrandFromText(item) {
     const text = item.title || "";
