@@ -907,6 +907,21 @@ mark {
   grid-column: 1 / -1;
   overflow: hidden;
 }
+/* Bug-Fund (2026-09-07, Nutzer-Screenshot: Daumen-Bewertungsbuttons gar
+   nicht sichtbar) — NICHT spezifitätsbedingt (ein testweises Inline-
+   height:auto änderte per Playwright-Check nichts an der berechneten
+   Höhe): Grid-Stretch war die eigentliche Ursache. .article-list li hat
+   align-items:stretch geerbt (Grid-Default), die Featured-Karte wird
+   dadurch auf eine Zeilen-Kreuzgröße gestreckt, die sich zirkulär primär
+   an .row (height:100%) orientiert — .row__rate (Daumen-Zeile, ein
+   Geschwister-Element NACH .row) ragte dadurch unten aus der bereits
+   "fertigen" Kartenhöhe heraus und wurde vom eigenen overflow:hidden
+   (Halbton-Maske) abgeschnitten. Die Featured-Karte ist als einziges Item
+   in ihrer eigenen Grid-Zeile (grid-column:1/-1) ohnehin nie auf
+   Gleichlauf mit Nachbar-Karten angewiesen — align-self:start nimmt sie
+   komplett aus dem Stretch-Verfahren heraus, Höhe richtet sich danach rein
+   nach dem eigenen Inhalt (.row + .row__rate zusammen). */
+.article-list li.article-list__item--featured { height: auto; align-self: start; }
 /* Bug-Fund (2026-09-07, Nutzer-Screenshot: NEU-Sticker halb abgeschnitten):
    .card-badge sitzt normalerweise per Absicht mit negativem Versatz
    (top:-10px/left:-8px) leicht AUSSERHALB der Karte — auf jeder anderen
