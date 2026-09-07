@@ -3985,6 +3985,17 @@
     let activeIndex = 0;
     let currentResults = [];
     let lastFocused = null;
+    // Bug-Fund (2026-09-07, Nutzer: "ich klicke x und es funktioniert
+    // nicht raus zu gehen") — closeCmdk() fokussiert das zuletzt aktive
+    // Element zurück (z. B. #news-global-search). Genau dieses Feld hat
+    // aber selbst einen focus-Listener, der die Palette wieder öffnet
+    // (siehe renderNews) — .focus() löst diesen Listener SYNCHRON aus,
+    // wodurch sich die Palette augenblicklich wieder öffnete: X schließen
+    // wirkte dadurch komplett wirkungslos (schließt und öffnet im selben
+    // Klick). suppressReopen blockt genau dieses eine, durch den
+    // Fokus-Restore selbst ausgelöste Wiederöffnen, ohne echte spätere
+    // Klicks/Tastatureingaben auf dasselbe Feld zu beeinträchtigen.
+    let suppressReopen = false;
 
     function renderResults(q) {
       resultsEl.innerHTML = currentResults.length
@@ -4032,6 +4043,7 @@
     });
 
     function openCmdk(prefill) {
+      if (suppressReopen) return;
       lastFocused = document.activeElement;
       backdrop.hidden = false;
       input.value = prefill || "";
@@ -4043,7 +4055,11 @@
     }
     function closeCmdk() {
       backdrop.hidden = true;
-      if (lastFocused && typeof lastFocused.focus === "function") lastFocused.focus();
+      if (lastFocused && typeof lastFocused.focus === "function") {
+        suppressReopen = true;
+        lastFocused.focus();
+        suppressReopen = false;
+      }
     }
 
     backdrop.addEventListener("click", (e) => {
