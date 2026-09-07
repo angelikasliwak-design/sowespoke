@@ -1510,10 +1510,16 @@ mark {
 .side-card__expand:hover svg { transform: translateX(2px); }
 
 /* -- Leerzustand ----------------------------------------------------- */
+/* Rahmen ergänzt (SoWeSpike-Spezifikation B9, 2026-09-07) — der Phase-1-
+   Sweep, der den weichen Schein aller Karten/Panels gegen den einheitlichen
+   Ink-Rahmen tauschte, hatte diesen Leer-Zustand übersehen: Ergebnis war
+   ein randloses, gegenüber Hero/Suchfeld/Tabs sichtbar "unfertig" wirkendes
+   Element (Nutzer-unabhängig per Playwright-Screenshot gefunden, nicht nur
+   vermutet). */
 .empty-state {
   background: var(--paper-raised);
   border-radius: var(--radius);
-
+  border: var(--border-card);
   padding: var(--space-8) var(--space-5);
   text-align: center;
   color: var(--ink-soft);
