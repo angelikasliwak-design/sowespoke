@@ -439,7 +439,7 @@
     return `
       <div class="side-card" id="calendar-card">
         <div class="side-card__illustration">${SIDECARD_ILLUSTRATION}</div>
-        <h2>${ICONS.calendar} Anstehende Termine</h2>
+        <h2><span class="side-card__head-icon">${ICONS.calendar}</span> Anstehende Termine</h2>
         <ul class="side-card__list">
           ${events
             .map((ev) => {
@@ -762,7 +762,7 @@
     return `
       <div class="side-card" id="fact-sidebar-card">
         <div class="side-card__illustration">${SIDECARD_ILLUSTRATION}</div>
-        <h2>${ICONS.sparkle} Wusstest du schon?</h2>
+        <h2><span class="side-card__head-icon">${ICONS.sparkle}</span> Wusstest du schon?</h2>
         <p class="side-card__body" id="fact-sidebar-text">${escapeHtml(fact)}</p>
         <button type="button" class="side-card__expand" id="fact-sidebar-more">Noch ein Fakt ${ICONS.arrowRight}</button>
       </div>
@@ -1802,12 +1802,21 @@
       : item.lang === "en"
         ? `<span class="flash flash--muted">EN</span>`
         : "";
+    // Korrektur gegenüber der ersten B5.4-Fassung (2026-09-07, Referenz-
+    // Mockup nochmal genau verglichen): die hervorgehobene Karte zeigt dort
+    // KEIN "Neu"-Badge, sondern "Im Fokus" als gelbes Badge in der
+    // Fußzeile (nicht in der Kopfzeile wie vorher fälschlich angenommen).
+    // "Neu" markiert stattdessen frisch veröffentlichte Grid-Karten — nicht
+    // im Dokument mit einem exakten Tageswert belegt, deshalb bewusst
+    // konservativ auf 2 Tage gesetzt (kürzer als das 21-Tage-Fenster bei
+    // Präsentationen, da News deutlich schneller getaktet ist als dort).
+    const isNew = !featured && isRecent(item.pubDate || "", 2);
     return `
       <li${featured ? ` class="article-list__item--featured"` : ""}>
         <a class="row" href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">
           <span class="row__head">
             ${thumb}
-            ${featured ? `<span class="row__badge-new">Neu</span>` : ""}
+            ${isNew ? `<span class="row__badge-new">Neu</span>` : ""}
             ${langBadge ? `<span class="row__head-lang">${langBadge}</span>` : ""}
           </span>
           <span class="row__body">
@@ -1815,6 +1824,7 @@
             ${item.description ? `<span class="row__summary">${escapeHtml(item.description)}</span>` : ""}
           </span>
           <span class="row__meta">
+            ${featured ? `<span class="flash">${ICONS.crosshair} Im Fokus</span>` : ""}
             ${item.pubDate ? `<span class="row__date">${formatDate(item.pubDate)}</span>` : ""}
             <span class="row__cat">${escapeHtml(item.source)}</span>
             <span class="row__open">${ICONS.external} Öffnen</span>
@@ -2862,7 +2872,7 @@
           </div>
           <div class="side-card">
             <div class="side-card__illustration">${SIDECARD_ILLUSTRATION}</div>
-            <h2>${ICONS.layoutGrid} Top-Kategorien</h2>
+            <h2><span class="side-card__head-icon">${ICONS.layoutGrid}</span> Top-Kategorien</h2>
             <div class="ticket-cats">
               ${topCategories.map(([cat, count], i) => `<button type="button" class="chip" style="background-color: var(${catVarCycle[i % catVarCycle.length]})" data-cat="${escapeHtml(cat)}" title="Nach „${escapeHtml(cat)}“ filtern">${escapeHtml(cat)} · ${count}</button>`).join("")}
             </div>
@@ -3901,7 +3911,7 @@
     return `
       <div class="side-card">
         <div class="side-card__illustration">${SIDECARD_ILLUSTRATION}</div>
-        <h2>${ICONS.book} Zuletzt angesehen</h2>
+        <h2><span class="side-card__head-icon">${ICONS.book}</span> Zuletzt angesehen</h2>
         <ul class="side-card__list">
           ${items.map((e) => `<li><a href="${e.href}" class="side-card__recent"><strong>${escapeHtml(e.title)}</strong><p>${escapeHtml(e.kind)}</p></a></li>`).join("")}
         </ul>

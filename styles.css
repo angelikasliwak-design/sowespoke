@@ -1170,6 +1170,7 @@ mark {
   margin-top: auto;
   padding-top: var(--space-2);
   width: 100%;
+  border-top: 1px dashed var(--c-line-dashed); /* B8.5, s. .side-card__list */
 }
 
 .row__rate {
@@ -1309,10 +1310,32 @@ mark {
   font-weight: 700;
   margin-bottom: var(--space-3);
 }
-.side-card h2 svg { width: 18px; height: 18px; flex: none; color: var(--accent); }
+/* Gelbe Icon-Kachel im Karten-Kopf (SoWeSpike-Spezifikation B7, 2026-09-07,
+   nach Referenz-Mockup umgesetzt) — löst das vorher freistehende, magenta
+   eingefärbte 18px-Icon direkt vor der Überschrift ab. Eigene Klasse statt
+   Wiederverwendung von .side-card__icon (dem größeren, block-eigenen
+   Kachel-Muster für "Passende Präsentation"/Ideen-Karten, mit
+   margin-bottom für gestapeltes Icon-über-Text) — hier inline vor dem
+   Text, kleiner, immer Gelb statt variabler Akzentfarbe. */
+.side-card__head-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: var(--radius-sm);
+  background: var(--yellow);
+  border: var(--border-tile);
+}
+.side-card__head-icon svg { width: 15px; height: 15px; color: var(--ink); }
+/* Gestrichelter statt durchgezogener Innentrenner (SoWeSpike-Spezifikation
+   B8.5, 2026-09-07, nach Referenz-Mockup) — --c-line-dashed war seit
+   Phase 1 als eigener Token für genau diesen Fall definiert, aber noch
+   nirgends tatsächlich angewendet; hier die erste echte Verwendung. */
 .side-card__list li {
   padding: var(--space-3) 0;
-  border-top: 1px solid var(--line);
+  border-top: 1px dashed var(--c-line-dashed);
 }
 .side-card__list li:first-child { border-top: none; padding-top: 0; }
 .side-card__list strong { display: block; font-size: 0.95rem; margin-bottom: 2px; }
@@ -1321,7 +1344,7 @@ mark {
 .side-card__recent {
   display: block;
   padding: var(--space-3) 0;
-  border-top: 1px solid var(--line);
+  border-top: 1px dashed var(--c-line-dashed);
   text-decoration: none;
   color: inherit;
 }
@@ -2215,7 +2238,7 @@ code {
   justify-content: space-between;
   margin-top: var(--space-2);
   padding-top: var(--space-2);
-  border-top: 1px solid var(--line);
+  border-top: 1px dashed var(--c-line-dashed); /* B8.5, siehe .side-card__list */
   font-size: 0.74rem;
   color: var(--ink-soft);
 }
