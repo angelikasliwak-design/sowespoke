@@ -559,4 +559,88 @@ const PRESENTATIONS = [
     emailHookDE: "Mit Copilot Checkout und dem Universal Commerce Protocol (UCP) können eure Kund:innen künftig direkt im Copilot-Gespräch einkaufen — inklusive aktueller Produktdaten, Rückgabebedingungen und Rabatten, ohne die Unterhaltung zu verlassen.",
     pageCount: 67,
   },
+  {
+    id: "audience-action-results-holiday-guide",
+    file: "Audience, action, results_Your holiday marketing guide [Presentation].pdf",
+    title: "Audience, Action, Results: Der Feiertags-Marketing-Guide (15. September 2026)",
+    // Titelfolie trägt ein echtes Datum ("September 15, 2026") — anders als
+    // bei den beiden unten stehenden Fällen ohne Folien-Datum, deshalb hier
+    // das echte Datum statt eines Upload-Tags übernommen.
+    date: "2026-09-15", dateKnown: true,
+    docType: "Saisonal",
+    summaryDE: "Webinar-Deck (49 Seiten, 15. September 2026, Sprecher:innen Maor Daniel, Chris Vazquez, Brent Brown Jr. und Sarah Mascone) in drei Teilen: (1) Holiday Ramp — datengestützte Timing-Empfehlungen für Oktober/November/Dezember inkl. SMB-Trends, Warengruppen-Peaks und dem Last-Minute-Geschenkkarten-Fenster; (2) From Search to Discovery — wie KI/Copilot die Customer Journey verändert (längere, mehrdeutigere Suchanfragen, „Need-first“ statt „Brand-first“-Sessions, AI Max, impression-basiertes Remarketing); (3) Holiday Best Practices — Monats-für-Monat-Aktionskalender von August bis Dezember, Feed-Audit-Checkliste, Creative-Best-Practices inkl. Ads Studio, saisonale In-Market-Zielgruppen und automatisierte Gebots-Tipps.",
+    customerBlurb: "Aus dem aktuellen Microsoft-Advertising-Webinar zur Feiertagssaison 2026: praxisnahe Timing- und Kanal-Empfehlungen von der Vorbereitung im August bis zum Weihnachtsgeschäft im Dezember, inklusive eines konkreten Monats-Aktionskalenders. Gerne gehen wir gemeinsam durch, welche der Empfehlungen für eure aktuelle Kampagnenplanung relevant sind.",
+    keyFactsDE: [
+      "Oktober liefert laut Deck durchgehend über ein Viertel (27 %) aller Feiertags-Conversions — CPCs sind hier am niedrigsten im Jahresverlauf, ROAS-Index bei 129 (Saisondurchschnitt = 100).",
+      "Gift-Card-Suchanfragen legten 2025 um bis zu +500 % zu, mit klar definiertem Nachfragefenster von Mitte November bis Ende Dezember.",
+      "76 % der befragten Shopper wollen laut Deck KI-Chat für die Feiertagsplanung nutzen; die Präsenz von KI im Kaufprozess verdoppelt nahezu das Awareness-Volumen im Funnel (+93 %).",
+      "Search-und-Audience-Kombination bringt laut Deck 2,7x mehr Klicks und 3,2x mehr Conversions gegenüber Search allein; nach einem Display-Ad-Kontakt folgt mit 52 % Wahrscheinlichkeit direkt ein Search-Klick.",
+      "AI Max erzielt laut Deck 8 %+ Uplift bei Exact-/Phrase-Match-Kampagnen, Performance Max im Schnitt 8 %+ inkrementelle Conversions (jeweils gegenüber einer Kontrollgruppe ohne die Funktion).",
+    ],
+    emailHookDE: null,
+    pageCount: 49,
+  },
+  {
+    id: "optimize-ai-presence-microsoft-clarity",
+    file: "Optimize your AI presence with Microsoft Clarity [PRESENTATION].pdf",
+    title: "Optimize Your AI Presence with Microsoft Clarity (Webinar)",
+    // Kein Datum auf einer Folie gefunden (anders als beim vorherigen
+    // Eintrag) — Anzeige-/Sortierdatum deshalb auf den Datei-Zeitstempel
+    // beim Eintreffen im Ordner gesetzt (gleiche Konvention wie bei den
+    // älteren Einträgen ohne Folien-Datum), damit der Eintrag mit
+    // "Neu"-Badge oben erscheint.
+    date: "2026-09-07", dateKnown: true,
+    docType: "Beta-Feature",
+    summaryDE: "Webinar-Deck (43 Seiten, Sprecherin: Megan Pakes, Director Product Marketing) zur neuen „AI Visibility“-Funktion von Microsoft Clarity — einer kostenlosen Analytics-Plattform, die jetzt zusätzlich zur bestehenden Behavioral Analytics (Session Recordings, Heatmaps, Friction-Signale) zeigt, wie und wo KI-Systeme wie Copilot die eigene Marke in generierten Antworten zitieren. Drei neue Reports: Bot Activity (welche KI-Crawler die Seite erreichen), Citations (welche „Grounding Queries“ zu einer Zitierung führten) und Topic Insights (Share of Authority gegenüber Wettbewerbern). Enthält Demo-Fallbeispiele sowie einen Sneak Peek auf einen geplanten, gesprächsbasierten KI-Analysten („Clarity on Clarity“), aktuell im Pilotbetrieb über ein Interessenformular zugänglich. Zeigt außerdem, wie sich Google- und Microsoft-Werbeausgaben direkt mit dem On-Site-Verhalten verknüpfen lassen.",
+    customerBlurb: "Microsoft Clarity bekommt eine neue, kostenlose Funktion: „AI Visibility“ zeigt, wie oft und wodurch KI-Systeme wie Copilot die eigene Website in ihren Antworten zitieren — bislang ein blinder Fleck der klassischen Web-Analyse. Gerne schauen wir gemeinsam, ob sich das für eure Domain einrichten lässt.",
+    keyFactsDE: [
+      "Setup in zwei Schritten: Clarity aktivieren (über den Microsoft-Advertising-UET-Tag oder direkt auf clarity.microsoft.com), dann AI Visibility einschalten (Domain-Verifizierung über Bing Webmaster Tools oder Google Search Console, CDN-Verbindung für Bot Activity).",
+      "Datengrundlage laut Deck: echte Zitierdaten aus Microsoft-KI und ausgewählten Partner-Grounding-Daten statt reiner Schätzungen/Sampling, wie es andere GEO-Tools laut Deck nutzen.",
+      "Demo-Beispielwerte: KI-Zitate der Beispielseite insgesamt rund 18.500-mal in ~2.540 Fragen innerhalb von 30 Tagen; Besucher:innen aus KI-Zitaten konvertierten mit 9,41 % gegenüber 5,25 % im Seitendurchschnitt — laut Demo entstammen davon aber rund 60 % bereits markenbekannten Suchanfragen.",
+      "Sneak Peek: ein gesprächsbasierter KI-Analyst („Clarity on Clarity“), der Fragen in normaler Sprache zum Website-Verhalten beantwortet — aktuell nur über ein Interessenformular für den Pilotbetrieb zugänglich, noch kein GA-Termin genannt.",
+      "Werbe-Integration: Google- UND Microsoft-Werbeausgaben lassen sich direkt mit dem On-Site-Verhalten verknüpfen (Post-Click-Verhalten, Zielgruppen-Insights, Creative-Diagnostik), ohne den Kampagnen-Arbeitsbereich zu verlassen.",
+    ],
+    emailHookDE: "Microsoft Clarity kann jetzt kostenlos zeigen, wie oft und wodurch KI-Systeme wie Copilot eure Website in ihren Antworten zitieren — bisher ein blinder Fleck der klassischen Web-Analyse. Bei Interesse richten wir das gerne gemeinsam für eure Domain ein.",
+    pageCount: 43,
+  },
+  {
+    id: "partner-pulse-sep-2026",
+    file: "September 2026 Partner Pulse.pdf",
+    title: "Microsoft Advertising Partner Pulse – September 2026",
+    date: "2026-09-01", dateKnown: true,
+    docType: "Sonstiges",
+    summaryDE: "Quartalsweises Partner-Update-Webinar vom 1. September 2026 (59 Seiten) mit sechs Programmpunkten: Partner-Programm-Neuigkeiten (Chinmayi Bhavanishankar) mit Termin-Übersicht bis Mai 2027, PMax-Partner-Workshop Session 2 am 16.09., globales Partner-Sweepstake (15.09.–10.11., u. a. Xboxes) für Konto-Verknüpfung/UET-Tags/Autobidding/KI-Kampagnen sowie die Partner-Celebration-Award-Kategorien; eine Konsumentenstudie „Capturing Discovery at Work“ (Kelli Kemery) zu Einkäufen auf Arbeitsgeräten; „The Holiday Shift“ (James Murray) zum KI-Einfluss auf die Customer Journey (Query-Fan-out, „drei Ären des Webs“); ein Partner Spotlight (Gespräch mit Joey Bridges, VP Global Search); sowie „Unlocking Performance with Foundational Features“ (Amanda Silvernale) zu UET-Tracking, Autobidding und automatisiertem Keyword-Targeting als Basis-Empfehlungen.",
+    customerBlurb: "Aus dem aktuellen Microsoft-Advertising-Partner-Update: eine neue Konsumentenstudie zeigt, dass viele Menschen zwar auf Arbeitsgeräten nach Produkten stöbern, den Kauf aber aus Datenschutz-/Bequemlichkeitsgründen oft auf dem privaten Gerät abschließen — relevant für Remarketing- und Attributionsstrategien über Gerätegrenzen hinweg.",
+    keyFactsDE: [
+      "Konsumentenstudie „Capturing Discovery at Work“ (1.000 befragte US-Personen): 87 % browsen auf dem Arbeitsgerät, 74 % vergleichen dort Preise — aber 89 % bevorzugen den Kaufabschluss auf dem privaten Gerät, 57 % wechseln das Gerät im Laufe der Journey.",
+      "Häufigste Gründe für den Gerätewechsel: Datenschutzbedenken (Sichtbarkeit für Arbeitgeber, Zahlungsdaten) sowie Bequemlichkeit (gespeicherte Logins, Apps, Wallets).",
+      "Globales Partner-Sweepstake 15.09.–10.11.2026: Lose durch Konto-Verknüpfung, UET-Tag-Erstellung, Aktivierung automatisierter Gebotsstrategien und KI-Kampagnen (AI Max/Performance Max); Gewinne u. a. Xboxes und Gutscheine.",
+      "Laut Deck liegt die durchschnittliche Feiertags-Conversion-Journey bei 52 Tagen; Oktober-Erstklicks erzeugen 56 % der November- und 35 % der Dezember-Conversions.",
+      "Drei Grundfunktionen als Performance-Fundament: UET-Tracking (bessere Optimierungssignale, cookie-resistent), Autobidding (KI-gestützte Echtzeit-Gebote je Auktion) und automatisiertes Keyword-Targeting (erfasst zusätzliche, nicht explizit hinterlegte Suchanfragen).",
+    ],
+    emailHookDE: null,
+    pageCount: 59,
+  },
+  {
+    id: "unwrapping-performance-holiday-playbook",
+    file: "unwrapping-performance-the-advertising-holiday-playbook-final-version.pdf",
+    title: "Unwrapping Performance: Der Werbe-Feiertags-Spielplan für 2026",
+    // Kein Datum auf einer Folie gefunden — Anzeige-/Sortierdatum auf den
+    // Datei-Zeitstempel beim Eintreffen im Ordner gesetzt, gleiche
+    // Konvention wie beim Clarity-Eintrag oben.
+    date: "2026-09-21", dateKnown: true,
+    docType: "Saisonal",
+    summaryDE: "Umfassender, 43-seitiger Feiertags-Strategie-Leitfaden, gegliedert in drei Phasen (Wrap the Basics: Juli–August; Gift Them a Reason: September–Oktober; Ring in the Sales: November–Dezember) plus abschließender Checkliste. Beschreibt sechs Trends für die Feiertagssaison 2026 (u. a. KI verändert Entdeckung/Entscheidung, ungleich verteilte Kaufkraft/„K-shaped economy“, längere 52-tägige Conversion-Journeys, anhaltende Bedeutung von Rabattaktionen, wachsende Inspirations-Suche, Markentreue vs. Entdeckungsoffenheit). Enthält konkrete Handlungsempfehlungen je Phase (Feed-/Messwesen-Grundlagen, Zielgruppenaufbau, Creative-Refresh, Audience Ads, Copilot-Kampagnen, Neukundengewinnung, Promotions-/Budget-Management) sowie sieben benannte Kunden-Erfolgsbeispiele mit konkreten Kennzahlen.",
+    customerBlurb: "Microsofts vollständiger Feiertags-Spielplan für 2026, aufgeteilt in drei klare Zeitfenster von der Vorbereitung im Sommer bis zum Weihnachtsgeschäft — inklusive einer fertigen Checkliste je Phase. Gerne gehen wir gemeinsam durch, wo eure Konten aktuell stehen und was als Nächstes ansteht.",
+    keyFactsDE: [
+      "Sechs Trends prägen laut Deck die Saison 2026: KI-gestützte Entdeckung (76 % der US-Shopper planen KI-Chat-Nutzung), ungleich verteilte Kaufkraft („K-shaped economy“), 52-tägige Conversion-Journeys, anhaltende Rabatt-Nachfrage, verdreifachte Inspirations-Suchanfragen sowie Offenheit für neue Marken trotz Markenbindung.",
+      "Cross-Markt-Vergleich (US/UK/AU): 76 %/70 %/74 % planen KI-Chat für die Feiertagsplanung, 87 %/76 %/80 % planen die Teilnahme an einem großen Sale-Event.",
+      "Microsoft-Shopper (US) sind laut Deck 19 % eher bereit, Marken über die Suche zu entdecken, und tragen ein 12 % höheres Haushaltseinkommen als vergleichbare Google-Shopper.",
+      "Sieben benannte Fallbeispiele mit Kennzahlen, u. a. IKEA (+140 % ROAS, +311 % Conversion-Rate), Amsive (+1.042 % ROAS, 2x schnellere Profitabilität), JD Sports (+747 % Klickwachstum), Alexander Del Rossa (3x höhere Conversion-Rate durch Brand Agents).",
+      "Kombination aus Search und Performance Max bringt laut Deck +164 % Conversion-Rate, +57 % Reichweite, +56 % ROAS und -28 % CPC gegenüber Search allein.",
+      "Bereitschafts-Checkliste je Phase: Juli–August (Clarity-Tags, Merchant-Center-Feed/UCP, UET+Conversions-API), September–Oktober (Zielgruppenlisten, Audience Ads, PMax/AI Max aktivieren, saisonale Zielgruppen), November–Dezember (PMax/AI-Max-Optimierung, Promotions-Zeitplan, Budget-Puffer, tägliches Monitoring).",
+    ],
+    emailHookDE: null,
+    pageCount: 43,
+  },
 ];
