@@ -1,5 +1,5 @@
 /**
- * Aus 23 echten PDF-Präsentationen extrahiert (content/presentations/).
+ * Aus echten PDF-Präsentationen extrahiert (content/presentations/).
  * Zusammenfassungen/Fakten stammen ausschließlich aus den Dokumenten selbst,
  * ins Deutsche übertragen — keine Ergänzung aus Allgemeinwissen.
  * `dateKnown: false` heißt: kein Datum im Dokument gefunden, `date` ist der
@@ -23,6 +23,445 @@ const DOCTYPE_VAR = {
 };
 
 const PRESENTATIONS = [
+  {
+    id: "audience-ads-unique-benefits",
+    file: "Audience-ads-unique-benefits-one-sheet.pdf",
+    title: "Audience Ads auf einen Blick: Reichweite, Daten und Vorteile (One-Sheet)",
+    // Original war eine PPTX (eine Folie); für die Website nach PDF exportiert,
+    // weil Cloudflare Pages nur Dateien bis 25 MiB ausliefert. Kein
+    // Foliendatum (Quellen bis Dez. 2023) — Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Feature-Guide",
+    summaryDE: "Einseitiges Verkaufsblatt zu Microsoft Audience Ads (CTV, Video, Display, Native): Reichweite über das Microsoft-Portfolio (Edge, MSN, Casual Games, Bing, Outlook), eingeloggte Nutzer:innen mit Microsoft-eigenen Such-, Web- und LinkedIn-Signalen, Wirkung auf das Nutzerverhalten, Kostenmodell sowie Markensicherheit über Integral Ad Science (IAS).",
+    customerBlurb: "Microsoft Audience Ads erreichen eingeloggte Nutzer:innen über Edge, MSN, Outlook und weitere Microsoft-Angebote — gesteuert über Such-, Web- und LinkedIn-Signale, die es so nur bei Microsoft gibt. Gerne zeigen wir euch, wie sich das als Ergänzung zu euren Suchkampagnen einsetzen lässt.",
+    keyFactsDE: [
+      "Reichweite laut Blatt: 100 Mio.+ täglich aktive Nutzer:innen, zweitgrößter Desktop-/Tablet-Browser, 500 Mio.+ monatliche Leser:innen und 200 Mio.+ monatliche Unique Visitors (Microsoft-Daten 2023, comScore 2023).",
+      "Wer Audience Ads gesehen hat, sucht laut Microsoft-Lift-Studien (Juli 2023) 3x eher nach der Marke, besucht 4x eher die Website und konvertiert 6x eher als nicht erreichte Nutzer:innen.",
+      "Einzige Plattform mit Zugriff auf Microsofts Suchintention, Web-Aktivität und LinkedIn-Zielgruppensignale; Nutzer:innen sind eingeloggt und identifizierbar.",
+      "Kosten: CPM-Strategien rechnen nur sichtbare Impressionen ab, Auktion ohne Monatskosten, Einrichtungsgebühr oder Mindestbudget.",
+      "Markensicherheit: plattformweiter Schutz durch Integral Ad Science (IAS), unabhängige Sichtbarkeits-Reports; Kampagnen lassen sich aus Google, Facebook und Pinterest importieren.",
+    ],
+    emailHookDE: null,
+    pageCount: 1,
+  },
+  {
+    id: "msan-feed-based-shopping-campaigns",
+    file: "Feed-based-campaigns-on-the-Microsoft-Audience-Network-EN.pdf",
+    title: "Shopping-Kampagnen im Microsoft Audience Network: neue Feed-Filter",
+    // Kein Datum im Dokument — Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Feature-Guide",
+    summaryDE: "Kurzer Feature-Guide zu feedbasierten Shopping-Kampagnen im Microsoft Audience Network: Der vorhandene Shopping-Feed aus der Suche wird mit Microsofts KI-Intent-Signalen kombiniert, um Nutzer:innen passende Produkte zu zeigen. Vier Verbesserungen bei den Produktfiltern (gleichziehend mit Search): Filter nach ID und Kategorie auf allen Ebenen, mehrere Filter kombinierbar, Mehrfacheingabe von Werten und Ausschluss von Artikeln.",
+    customerBlurb: "Shopping-Kampagnen im Microsoft Audience Network nutzen euren bestehenden Produkt-Feed aus der Suche und lassen sich jetzt deutlich genauer filtern — nach Produkt-ID, Kategorie und mit Ausschlüssen. Gerne prüfen wir, ob das für euren Feed eine sinnvolle Erweiterung ist.",
+    keyFactsDE: [
+      "Nutzt den bestehenden Shopping-Feed aus der Suche; Microsoft gleicht Produkte mit den KI-Intent-Signalen der Nutzer:innen ab.",
+      "Neue Filter nach ID und Kategorie wie in Search; Kategorien auf jeder Ebene wählbar (z. B. ganz 'Pet Supplies' oder nur 'Fish Supplies').",
+      "Mehrere Filter kombinierbar, Mehrfachwerte per Zeilenumbruch oder ';;' eingeben, Artikel lassen sich aus dem Katalog ausschließen.",
+      "Microsoft empfiehlt grundsätzlich, keine Produktfilter zu setzen.",
+      "Die Änderungen gelten nur für Merchant-Center-Feeds, nicht für Dynamic Data Feeds.",
+    ],
+    emailHookDE: null,
+    pageCount: 9,
+  },
+  {
+    id: "msan-setup-optimize-checklist",
+    file: "MSAN_Setup_and_Optimize_CB.pdf",
+    title: "Microsoft Audience Network: Checkliste für Einrichtung und Optimierung",
+    // Kein Datum im Dokument — Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Feature-Guide",
+    summaryDE: "Einseitige Arbeits-Checkliste für MSAN-Kampagnen (Audience Workflow, AWF) mit Begründung je Punkt: Zielgruppen-Zuordnung, Predictive Targeting, Day-Parting, Conversion-Ziele und UET, Offline-Conversions, View-Through-Conversions, Geräte- und Gebotseinstellungen, Publisher-Ausschlüsse sowie Creative-Regeln für Bildanzeigen.",
+    customerBlurb: "Microsoft hat eine kompakte Checkliste für Kampagnen im Audience Network veröffentlicht — von der Zielgruppenstruktur über Tracking bis zu Bildern, die auf Publisher-Seiten natürlich wirken. Wir gehen die Punkte gerne gemeinsam für eure Kampagnen durch.",
+    keyFactsDE: [
+      "Keine Zielgruppentypen in einer Anzeigengruppe mischen (z. B. Remarketing und In-Market getrennt); Predictive Targeting allein oder zusätzlich nutzen, am besten mit Ziel-CPA oder Max. Conversions.",
+      "Day-Parting: zwischen 23 und 7 Uhr Gebote um 50–80 % senken, weil sonst nachts (0–3 Uhr) Budget ohne Conversions verbraucht wird.",
+      "Offline-Conversions mit MSCLKID möglichst innerhalb von 48 Stunden hochladen; View-Through-Fenster bei Leadgen oder langen Kaufentscheidungen auf 7–14 Tage verlängern (Standard: 1 Tag).",
+      "Start mit manuellem CPC von mindestens 1 € bzw. 1 USD; Smartphone-Gebote bei laufenden Kampagnen zunächst um 20–30 % senken, Desktop konvertiert in MSAN meist am besten.",
+      "Bilder ohne Text und Logo, Lifestyle-Motive statt reiner Produktfotos, mindestens 5 Bildvarianten pro Anzeige; Search und AWF nicht 1:1 vergleichen.",
+    ],
+    emailHookDE: null,
+    pageCount: 1,
+  },
+  {
+    id: "msan-video-best-practices",
+    file: "Microsoft_Audience_Network_Video_Best_Practices_EN.pdf",
+    title: "Video-Anzeigen im Audience Network: Creative Best Practices und Spezifikationen",
+    // Kein Datum im Dokument (jüngste Quelle: eMarketer-Prognose bis 2025) —
+    // Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Feature-Guide",
+    summaryDE: "Creative-Leitfaden für Video- und Connected-TV-Anzeigen im Microsoft Audience Network: Funnel-gerechte Creative-Strategie, regelmäßiger Creative-Refresh, sechs Regeln für Videoanzeigen und die technischen Anforderungen der drei Qualitätsstufen (Fair, Good, Excellent), die bestimmen, auf welchem Premium-Inventar ein Video laufen kann.",
+    customerBlurb: "Microsoft hat Best Practices und technische Vorgaben für Video- und CTV-Anzeigen zusammengestellt — inklusive der Qualitätsstufen, die über den Zugang zu Premium-Platzierungen entscheiden. Gerne prüfen wir, ob eure vorhandenen Videos dafür geeignet sind.",
+    keyFactsDE: [
+      "Die ersten 10 Sekunden sind entscheidend: Marke und Produkt früh zeigen, für Ton aus gestalten (Untertitel, Text, Grafiken).",
+      "Creative-Audit und Refresh alle 4 Wochen gegen Werbemüdigkeit; Promotions getrennt von Evergreen-Anzeigen halten, neue Anzeigen brauchen Anlaufzeit.",
+      "Microsoft bewertet hochgeladene Videos mit 1–3 Sternen (Fair/Good/Excellent); nur 'Excellent' erreicht das Premium-Inventar.",
+      "Excellent: MP4 oder MOV, 1920x1080, 15 oder 30 Sekunden, MP4 mit 15.000+ kbps, Audio 192+ kbps bei 48 kHz, Stereo.",
+      "Anzeigentexte: kurze Headline 30, lange Headline 90, Anzeigentext 90, Firmenname 25 Zeichen; Video-Länge 6–120 Sekunden, Seitenverhältnis 16:9.",
+    ],
+    emailHookDE: null,
+    pageCount: 10,
+  },
+  {
+    id: "audience-campaigns-optimization-tips",
+    file: "Optimization-Deck-Tips-and-Best-Practices-EN.pdf",
+    title: "Audience-Kampagnen optimieren: Struktur, Zeitplan und Fehlersuche",
+    // Kein Datum im Dokument — Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Feature-Guide",
+    summaryDE: "Optimierungsleitfaden für Audience-Kampagnen: empfohlene Vier-Kampagnen-Struktur (Remarketing, In-Market, LinkedIn-Profil-Targeting, Catchall), Optimierungs-Zeitplan für die ersten Wochen, Checklisten für Search- und Audience-Workflow sowie Diagnose-Fragen bei geringem Volumen oder schwacher Leistung, getrennt nach Bild-, Video-, Feed- und dynamischen Remarketing-Kampagnen.",
+    customerBlurb: "Microsoft hat einen kompakten Leitfaden zur Optimierung von Audience-Kampagnen veröffentlicht — mit klarer Kampagnenstruktur und konkreten Prüffragen, wenn Volumen oder Leistung nicht stimmen. Gerne schauen wir damit gemeinsam auf eure Audience-Kampagnen.",
+    keyFactsDE: [
+      "Empfohlene Struktur: (1) Remarketing + ähnliche Zielgruppen, (2) In-Market, (3) LinkedIn-Profil-Targeting, (4) Catchall mit 'Bid only', niedrigsten Geboten und Ausschluss der übrigen Ziele.",
+      "Lernphase etwa eine Woche; Creative-Refresh alle 2–3 Wochen bzw. etwa alle 30 Tage, Day-Parting, Geräte- und Zielgruppen-Gebotsanpassungen nach den ersten Wochen.",
+      "Bilder hinzufügen ist laut Deck die wichtigste einzelne Optimierung; View-Through-Fenster (Standard 1 Tag) an die Marketingziele anpassen.",
+      "Bei wenig Volumen: Richtlinien, Ausschlüsse, Zielgruppengröße (Audience Planner), Gebots-Wettbewerbsfähigkeit (Bid Landscape, Share of Voice) und Website-Traffic prüfen.",
+      "Video läuft derzeit nur auf Microsoft-eigenen Seiten (O&O), abrechenbar per CPV, CPM oder CPC (CPC noch nicht empfohlen); Zielgruppen in Feed-Kampagnen immer auf 'Bid only' setzen.",
+    ],
+    emailHookDE: null,
+    pageCount: 11,
+  },
+  {
+    id: "audience-ads-creative-specifications",
+    file: "Audience_ads-creative-specifications-summary-EN_March_2025.pdf",
+    title: "Audience Ads: Creative-Spezifikationen für Bild- und Videoanzeigen",
+    // Dateiname nennt "March 2025", die Fußzeilen im Dokument "Last updated -
+    // March 2024". Anzeigedatum = Upload-Tag, keine Aussage über den Stand.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Feature-Guide",
+    summaryDE: "Übersicht der Creative-Anforderungen für Microsoft Audience Ads: Formate und Zeichengrenzen für Bildanzeigen, Best Practices für Bildauswahl und Safe Area sowie die Video-Qualitätsstufen (Fair, Good, Excellent) für Video- und Connected-TV-Anzeigen, die laut Dokument noch in der offenen Beta sind. Die Fußzeilen nennen als Stand März 2024.",
+    customerBlurb: "Hier sind die aktuellen Bild- und Video-Vorgaben für Microsoft Audience Ads gebündelt — inklusive Tipps, welche Motive auf Publisher-Seiten am besten wirken. Wenn ihr Audience Ads startet, prüfen wir eure vorhandenen Assets gerne vorab.",
+    keyFactsDE: [
+      "Bild: ein Querformat mit 1200x628 px genügt (Minimum 703x368, JPEG oder PNG), empfohlen sind aber mindestens 3 Bilder pro Anzeige.",
+      "Zeichengrenzen: kurze Headline 40, lange Headline 90, Anzeigentext 90, Firmenname 25, URL 1.024 Zeichen.",
+      "Keine Text- oder Logo-Overlays im Bild — manche Publisher verbieten das, Text wird beim Zuschneiden abgeschnitten; Lifestyle-Motive mit Menschen statt reiner Produktfotos.",
+      "Bildmaße entsprechen Google Display, Facebook und Yahoo Gemini, vorhandene Assets lassen sich also wiederverwenden; jedes Seitenverhältnis kann einzeln zugeschnitten werden.",
+      "Video & Connected TV laut Dokument in offener Beta; die Videoqualität (1–3 Sterne) entscheidet, ob Premium-Inventar erreichbar ist.",
+    ],
+    emailHookDE: null,
+    pageCount: 7,
+  },
+  {
+    id: "audience-ads-pitch-deck-global",
+    file: "Audience_ads_Pitch_Deck__EN-Global_.pdf",
+    title: "Audience Ads Pitch Deck (Global): Microsofts Ökosystem und Audience Intelligence",
+    // Original-PPTX (~95 MB) für die Website nach PDF exportiert (Cloudflare
+    // Pages: max. 25 MiB pro Datei). Kein Foliendatum, jüngste Quellen
+    // Dezember 2025 — Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Feature-Guide",
+    summaryDE: "Aktuelles globales Pitch Deck für Microsoft Audience Ads (Video, Display, Native), aufgebaut um drei Versprechen: Zielgruppen, die es nur bei Microsoft gibt (Windows, Bing, Edge, Outlook, MSN, Copilot, Casual Games), KI entlang der ganzen Customer Journey (In-Market, impressionsbasiertes Remarketing, Lift-Studien, Copilot in der Plattform) sowie Kontrolle und Transparenz (Placement- und Topic-Targeting, Placement-Reports, IAS-Messung). Anhang mit Reichweitenzahlen je Markt (u. a. Deutschland, Stand Dezember 2025), Targeting-Übersicht und Gebotsstrategien je Format.",
+    customerBlurb: "Microsoft Audience Ads erreichen Menschen dort, wo sie arbeiten, surfen und spielen — auf MSN, Outlook, Edge, Bing und im Partnernetzwerk, gesteuert über Suchintention und LinkedIn-Daten. Gerne zeigen wir euch, wie sich das als Ergänzung zu euren Suchkampagnen aufsetzen lässt.",
+    keyFactsDE: [
+      "1,4 Mrd. monatlich aktive Geräte mit Windows 10/11; Nutzer:innen von Microsoft-Diensten sind laut Deck 49 % eher einkommensstark, klicken 19 % eher auf Anzeigen und kaufen 25 % eher.",
+      "Deutschland (Comscore, Dez. 2025): 39 Mio.+ monatliche Nutzer:innen auf Microsoft-Werbeflächen, darunter 29 Mio.+ Leser:innen und 30 Mio.+ Suchende.",
+      "Fallstudie s.Oliver mit impressionsbasiertem Remarketing: 50x höhere CTR und 10 % niedrigerer CPM als andere Videoplattformen, 27 % Conversion-Rate der Remarketing-Liste.",
+      "Wer Audience Ads gesehen hat, sucht laut Microsoft-Daten (Jan.–März 2024) 3x eher nach der Marke, besucht 4x eher die Website und konvertiert 6x eher.",
+      "Kontrolle: Placement-Targeting nur auf Microsoft-Seiten (MSN, Outlook, Casual Games, King-Spiele), Topic-Targeting, Placement-Reports; IAS filtert vor dem Gebot riskantes Inventar; 900+ In-Market-Segmente.",
+    ],
+    emailHookDE: null,
+    pageCount: 47,
+  },
+  {
+    id: "audience-ads-pitch-deck-search-first",
+    file: "Audience_ads_Pitch_Deck__Search_First_Buyer_.pdf",
+    title: "Audience Ads Pitch Deck für Search-First-Kund:innen: Suchintention auf Display, Video und CTV übertragen",
+    // Original-PPTX (~96 MB) nach PDF exportiert. Kein Foliendatum, jüngste
+    // Quellen Oktober 2024 — Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Strategie-Trend",
+    summaryDE: "Pitch Deck für Werbetreibende, die bisher vor allem auf Suche setzen: Suche bleibt planbar und effizient, aber neue Nachfrage muss zusätzlich erzeugt werden. Zeigt, wie Audience Ads (CTV, Video, Display, Native) Microsofts Suchintention und eigene Daten nutzen, welche Zielgruppen-Taktiken wann passen, den Lift von Search plus Audience gegenüber Search allein sowie Beispiel-Platzierungen und Reichweiten je Markt. Datenstand der Quellen überwiegend 2024.",
+    customerBlurb: "Wer heute vor allem auf Suchanzeigen setzt, kann dieselbe Suchintention auch für Display-, Video- und CTV-Anzeigen bei Microsoft nutzen — und so zusätzliche Nachfrage erzeugen statt nur abzuschöpfen. Gerne zeigen wir euch, wie das als Ergänzung zu euren Suchkampagnen aussieht.",
+    keyFactsDE: [
+      "Wer sowohl Audience als auch Search Ads sieht, kauft laut Microsoft-Daten (Feb. 2022) 7x eher als bei reinem Search-Kontakt; 3x höhere Besuchs- und 7x höhere Conversion-Rate laut Daten vom Juli 2023.",
+      "Laut Forrester (2022) wollen 82 % der CMOs ihr Paid-Search-Budget erhöhen.",
+      "Taktiken im Überblick: ähnliche Zielgruppen, In-Market (900+ Segmente), LinkedIn-Profil-Targeting, Predictive Targeting, Custom Audiences/Customer Match, dynamisches Remarketing.",
+      "Über 1.500 Premium-Publisher für CTV, u. a. Netflix, Hulu, Roku und Max; zusätzlich Placements auf MSN, Outlook, Bing, Casual Games und Microsoft 365.",
+      "Microsoft-Zielgruppe (GWI 2023): 70 % unter 45 Jahren, 39 % im obersten Einkommensviertel, 39 % nutzen Suchmaschinen zur Markenentdeckung.",
+    ],
+    emailHookDE: null,
+    pageCount: 42,
+  },
+  {
+    id: "connecting-with-b2b-audience",
+    file: "Connecting_with_a_B2B_Audience-_EN-Global___1_.pdf",
+    title: "B2B-Zielgruppen erreichen: LinkedIn-Profil-Targeting und B2B-In-Market-Audiences",
+    // Original-PPTX (~34 MB) nach PDF exportiert. Kein Foliendatum, jüngste
+    // Quelle Mai 2024 — Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Strategie-Trend",
+    summaryDE: "Deck zu B2B-Werbung mit Microsoft Advertising: warum Microsoft als 'Zugang zur Arbeitswelt' gilt, welche B2B-Targeting-Optionen es gibt (LinkedIn-Profil-Targeting nach Firma, Funktion und Branche, B2B-In-Market-Audiences nach Unternehmensgröße und Jobtitel, Customer Match, Google-Import von Zielgruppen) sowie Lift-Messung am Beispiel eines B2B-Zulieferers und eine Übersicht der Anzeigenformate entlang des Funnels.",
+    customerBlurb: "Für B2B-Kampagnen bietet Microsoft Advertising etwas, das es sonst nur bei LinkedIn selbst gibt: Targeting nach Firma, Jobfunktion und Branche aus LinkedIn-Profilen — auch in Suchkampagnen. Gerne prüfen wir, wie sich das für eure Zielgruppen einsetzen lässt.",
+    keyFactsDE: [
+      "Microsoft Advertising ist laut Deck die einzige Werbeplattform außer LinkedIn selbst mit LinkedIn-Profil-Targeting (Firma, Jobfunktion, Branche).",
+      "71 % der Business-Zielgruppe auf Microsoft-Seiten sind Entscheider:innen; 60 % der erreichbaren Entscheider:innen lassen sich laut GWI (Q3 2023) von Online-Anzeigen beeinflussen.",
+      "In-Market-Audiences nach Unternehmensgröße (von Selbstständigen bis 10.001+ Mitarbeitende) und nach Jobtitel auf Basis von LinkedIn-Daten, nutzbar in Search- und Audience-Kampagnen, ohne UET-Tag.",
+      "Customer Match mit eigenen Kundenlisten (derzeit nur E-Mail-Adressen) für Search und Audience Ads.",
+      "Lift-Studie eines B2B-Zulieferers: 3x eher Markensuche, 6x eher Website-Besuch, 8x eher Conversion als bei nicht erreichten Nutzer:innen.",
+    ],
+    emailHookDE: null,
+    pageCount: 21,
+  },
+  {
+    id: "in-market-audiences-pitch-setup",
+    file: "In_market_Audiences_pitch_deck__EN_Multiple_.pdf",
+    title: "In-Market Audiences: Pitch Deck und Einrichtungsanleitung",
+    // Original-PPTX (~30 MB) nach PDF exportiert. Kein Foliendatum; die
+    // genannten Leistungsdaten stammen aus 2017/2018 — Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Feature-Guide",
+    summaryDE: "Pitch Deck und Schritt-für-Schritt-Anleitung zu In-Market Audiences: Was sie sind, für wen sie sich eignen (30+ Branchen), Einrichtung einzeln und per Bulk/Editor, Best Practices zu 'Bid only' versus 'Target and bid', Gebotsanpassungen, mehr Volumen und Kombination mit Remarketing und Custom Audiences sowie Auswertung über die Audience-Segmentierung. Die zitierten Leistungsdaten sind älter (2017/2018).",
+    customerBlurb: "In-Market Audiences sind Microsofts vorgefertigte Listen von Menschen, die gerade aktiv kaufen wollen — ohne eigenes Tracking-Tag einsetzbar und mit kostenlosem Beobachtungsmodus. Gerne prüfen wir, welche Segmente zu euren Kampagnen passen.",
+    keyFactsDE: [
+      "Einrichtung ohne UET-Tag: In-Market-Liste im Reiter 'Zielgruppen' wählen und mit Kampagnen oder Anzeigengruppen verknüpfen; Google-Import übernimmt bestehende Zuordnungen samt Gebotsanpassung.",
+      "Empfehlung: mit 'Bid only' starten, +20 % Gebotsanpassung als Ausgangspunkt — oder zwei Wochen mit 0 % kostenlos beobachten und danach anpassen.",
+      "Pro Anzeigengruppe gilt eine Targeting-Einstellung ('Bid only' oder 'Target and bid') für alle Zielgruppen; die zuletzt gesetzte überschreibt die vorherige.",
+      "Laut US-Pilotdaten (April 2018) mit 'Bid only': +5 % CTR und +17 % Conversion-Rate gegenüber denselben Anzeigen ohne Zielgruppe.",
+      "In der Suche nur auf Bing und Yahoo ausgespielt, nicht bei Suchpartnern; Auswertung je Markt nur über getrennte Kampagnen.",
+    ],
+    emailHookDE: null,
+    pageCount: 30,
+  },
+  {
+    id: "display-ads-feature-guide",
+    file: "Display_Ads-Feature_Guide-EN__1_.pdf",
+    title: "Display Ads: Feature Guide mit Einrichtung, Formaten und Best Practices",
+    // Kein Datum im Dokument (jüngste Quelle Dez. 2023) — Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Feature-Guide",
+    summaryDE: "Feature Guide zu Display Ads in Microsoft Advertising (eigene Bildbanner auf MSN, Edge, Outlook, Casual Games und Partnerseiten): Verfügbarkeit, Vorteile (nur sichtbare Impressionen werden berechnet, CTR-Vergleiche), Targeting, IAS-Messung, Einrichtung in sechs Schritten inkl. KI-generierter Banner, Reporting, Best Practices und FAQ. Hinweis: Eine Folie nennt HTML5-Banner als Pilot, die FAQ sagt, HTML5 werde nicht unterstützt.",
+    customerBlurb: "Mit Display Ads lassen sich eigene Banner auf MSN, Outlook, Edge und Partnerseiten ausspielen — abgerechnet werden nur Impressionen, die tatsächlich sichtbar waren. Gerne prüfen wir, ob eure vorhandenen Banner-Formate direkt einsetzbar sind.",
+    keyFactsDE: [
+      "Allgemein verfügbar, global außer China, Bahamas, Paraguay, Ägypten und Venezuela; Desktop, Tablet und Mobil.",
+      "Abgerechnet werden nur sichtbare Impressionen (mind. 50 % der Pixel für mind. 1 Sekunde sichtbar); Gebote per manuellem CPM, Enhanced CPC, Max. Conversions oder Ziel-CPA, Frequency Cap nur mit manuellem CPM.",
+      "CTR laut Microsoft-Daten (Juli–Dez. 2023) 1,4x höher auf MSN und 3,4x höher auf Outlook als andere Anbieter auf denselben Flächen; 300x600 rechts auf MSN mit 3x höherer CTR, Outlook-Display im Schnitt 2,6 % CTR.",
+      "Mindestens drei Banner in verschiedenen Seitenverhältnissen nach IAB-Standard hochladen; auf MSN laufen v. a. 300x250, 300x600 und 728x90, auf Outlook 160x600, 300x250 und 300x600.",
+      "Banner lassen sich aus der Final URL per KI erzeugen und in Hintergrund- und Textfarbe anpassen; Import aus Google und extern gehostete Creatives sind laut FAQ nicht möglich.",
+    ],
+    emailHookDE: null,
+    pageCount: 46,
+  },
+  {
+    id: "impression-based-remarketing",
+    file: "Impression_based_remarketing_-_Feature_Guide__EN-Global_.pdf",
+    title: "Impressionsbasiertes Remarketing: Feature Guide",
+    // Kein Datum im Dokument (Status dort: "Pilot coming soon", jüngste
+    // Quelle März 2024) — Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Beta-Feature",
+    summaryDE: "Feature Guide zum impressionsbasierten Remarketing: Remarketing-Listen entstehen aus Anzeigenkontakten statt aus Website-Besuchen, sodass sich Nutzer:innen nach einem Video-, CTV- oder Display-Kontakt mit einer passenden Folgebotschaft in Search, Shopping, Native oder Display erneut ansprechen lassen. Enthält Anwendungsbeispiele, Einrichtung in sechs Schritten und FAQ. Im Dokument als 'Pilot coming soon' markiert.",
+    customerBlurb: "Mit impressionsbasiertem Remarketing lassen sich Menschen gezielt wieder ansprechen, die eure Anzeige gesehen, aber noch nicht geklickt haben — etwa erst ein Video, danach eine Suchanzeige. Ein UET-Tag ist dafür nicht nötig. Gerne prüfen wir, welche Abfolge für eure Kampagnen Sinn ergibt.",
+    keyFactsDE: [
+      "Listen lassen sich aus Kontakten mit Search-, Shopping-, Display-, Native-, Online-Video-, CTV- und Performance-Max-Anzeigen bilden; Ausspielung auf allen diesen Formaten außer CTV.",
+      "Kein UET-Tag nötig; Mitgliedsdauer 1–30 Tage (Standard und Empfehlung: mindestens 7 Tage), Listen sind kontoübergreifend teilbar und auch als Ausschluss nutzbar.",
+      "Bei Audience Ads können Zielgruppen nur auf Anzeigengruppenebene zugeordnet werden; Gebotsanpassungen werden ausdrücklich empfohlen.",
+      "Microsoft/Roku-Studie (April–Juli 2022): Mit CTV-Kampagnen stieg die CTR der Audience Ads um 18 % und die Markensuche um 9 %.",
+      "Anwendungsbeispiel aus dem Guide: Display-Kontakt aus der Awareness-Kampagne → beim nächsten Marken-Suchvorgang auf Bing per Suchanzeige auf die Website holen.",
+    ],
+    emailHookDE: "Kund:innen können künftig Menschen erneut ansprechen, die ihre Video-, CTV- oder Display-Anzeige gesehen haben — etwa mit einer Suchanzeige beim nächsten Suchvorgang — und das ganz ohne eigenes Tracking-Tag.",
+    pageCount: 26,
+  },
+  {
+    id: "website-control-lists-audience-ads",
+    file: "Website_control_lists_-_Audience_ads_-_Feature_guide__EN-Global_.pdf",
+    title: "Website Control Lists für Audience Ads: Ausschlusslisten, Ziel-Websites und App-Traffic",
+    // Kein Foliendatum; der Guide nennt Unterstützung weiterer Kampagnentypen
+    // "bis Juli 2025" als Ausblick, ist also älter — Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Beta-Feature",
+    summaryDE: "Feature Guide zu drei Steuerungsfunktionen für Platzierungen in Audience Ads: Website-Ausschlusslisten (Open Beta, zentral auf Manager-Konto-, Konto- und Kampagnenebene verwaltbar), gezielte Website-Listen für Partnerseiten (Open Beta) und das Reporting bzw. der Ausschluss einzelner Mobile Apps (allgemein verfügbar). Mit Schritt-für-Schritt-Anleitungen und FAQ.",
+    customerBlurb: "Microsoft hat die Steuerung der Platzierungen für Audience Ads ausgebaut: Ausschlusslisten lassen sich zentral für viele Kampagnen pflegen, Partnerseiten gezielt auswählen und einzelne Apps statt des ganzen App-Traffics ausschließen. Gerne bringen wir eure bestehenden Ausschlüsse damit auf den neuen Stand.",
+    keyFactsDE: [
+      "Limits: bis zu 3 Ausschlusslisten pro Manager-Konto, 100 Kampagnenlisten pro Konto und bis zu 10.000 Websites pro Liste.",
+      "Gezielte Website-Listen: bis zu 100 pro Konto, je 10.000 Domains (max. 5.000 pro Upload); Ziel-Websites haben Vorrang vor Ausschlüssen.",
+      "Microsoft-eigene Seiten und Apps (z. B. Outlook) lassen sich bei Audience Ads nicht ausschließen — auch nicht mit einer Ziel-Website-Liste.",
+      "Websites auf Anzeigengruppenebene überschreiben die auf Kampagnenebene; empfohlen wird die Verwaltung über zentrale Listen.",
+      "Einzelne Apps erscheinen jetzt im Website-URL-Report (Mobile Bundle, App-Name); Pauschalausschlüsse wie play.google.com sollten entfernt und durch gezielte App-Ausschlüsse ersetzt werden.",
+    ],
+    emailHookDE: null,
+    pageCount: 34,
+  },
+  {
+    id: "gaming-deck",
+    file: "Gaming_Deck.pdf",
+    title: "Gaming bei Microsoft Advertising: Gamer:innen erreichen über Casual Games und King",
+    // Kein Foliendatum, jüngste Quelle September 2025 — Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Strategie-Trend",
+    summaryDE: "Deck zu Gaming als Werbeumfeld: Marktgröße und Zielgruppe, typische Vorurteile gegenüber In-Game-Werbung, Aufmerksamkeit und Second-Screen-Nutzung, Lift-Ergebnisse sowie das Angebot von Microsoft: eigene Spiele (Microsoft Casual Games wie Solitaire, King-Spiele wie Candy Crush) mit Rewarded Video und Display, inklusive Spezifikationen und Aktivierung über Placement- und Topic-Targeting.",
+    customerBlurb: "Gaming ist ein großes und oft unterschätztes Werbeumfeld: Bei Microsoft lassen sich Anzeigen direkt in Spielen wie Solitaire oder Candy Crush schalten, etwa als freiwillig angesehenes Video mit Belohnung und sehr hoher Sichtbarkeit. Gerne prüfen wir, ob das zu eurer Zielgruppe passt.",
+    keyFactsDE: [
+      "3,4 Mrd. Spieler:innen weltweit (Newzoo, Juli 2024); in den USA identifizieren sich 48 % als weiblich, Durchschnittsalter 36 Jahre (ESA 2024).",
+      "In Spielen werden 100 % der Anzeigen gesehen gegenüber 86 % bei Online-Video und 77 % bei Social Media (Dentsu/Lumen, Jan. 2024); 62 % der US-Gamer bevorzugen Anzeigen mit Belohnung.",
+      "King-Spiele: 238 Mio. monatlich aktive Nutzer:innen, Rewarded Video mit 99 % Sichtbarkeit, 95 % Abschlussrate und 0,63 % CTR; Microsoft Casual Games: 40 Mio. MAU, 2,39 % CTR.",
+      "Lift-Studie: Werbetreibende auf Microsoft Casual Games erzielten +147 % Markensuchen und +52 % Conversions; eine Finanzmarke +742 % Markensuchen.",
+      "Aktivierung über das Placement-Bundle 'Gaming' (Casual Games, MSN Gaming, King) oder Topic-Targeting; Display in Casual Games als HTML5 über PMP.",
+    ],
+    emailHookDE: null,
+    pageCount: 34,
+  },
+  {
+    id: "audience-targeting-playbook",
+    file: "Audience_Targeting_Playbook.pdf",
+    title: "Audience Targeting Playbook: alle Zielgruppen-Optionen mit Leistungswerten",
+    // Kein Foliendatum, jüngste Quelle Januar 2023 — Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Feature-Guide",
+    summaryDE: "Nachschlagewerk zu allen Zielgruppen-Optionen in Microsoft Advertising, getrennt nach Microsoft-Daten (In-Market inkl. saisonaler Segmente, LinkedIn-Profil-Targeting, ähnliche Zielgruppen, Predictive Targeting) und eigenen Daten (Remarketing, automatische Remarketing-Listen, dynamisches Remarketing, Customer Match, Custom Audiences). Je Option: Voraussetzungen, Verfügbarkeit, Google-Entsprechung und Leistungswert; dazu Einordnung in die Customer Journey, Best Practices für Audience Ads und Search sowie Marktverfügbarkeit. Leistungsdaten von 2022/2023.",
+    customerBlurb: "Microsoft hat alle Zielgruppen-Optionen in einem Playbook gebündelt — von In-Market-Audiences über LinkedIn-Profil-Targeting bis zu Customer Match, jeweils mit Voraussetzungen und typischen Leistungswerten. Gerne schauen wir gemeinsam, welche davon in euren Kampagnen noch fehlen.",
+    keyFactsDE: [
+      "Zielgruppen-Targeting bringt laut Microsoft-Daten (Search Network, Sept. 2022) im Schnitt 60 % höhere Conversion-Rate gegenüber Kampagnen ohne Zielgruppen.",
+      "Conversion-Rate je Option: Remarketing +179 %, dynamisches Remarketing +164 %, Customer Match +134 %, Custom Audiences +102 %, LinkedIn-Profil +60 %, Predictive Targeting +46 %, In-Market +42 %.",
+      "Kosten: ähnliche Zielgruppen −24 % CPA, automatische Remarketing-Listen −45 % CPA, Remarketing −63 % CPA.",
+      "Saisonale In-Market-Segmente u. a. für Weihnachten und Black Friday, auch in Deutschland verfügbar; LinkedIn-Profil-Targeting gibt es bei Google nicht.",
+      "Best Practice: mit 15–20 % Gebotsanpassung starten, je weiter unten im Funnel desto höher; in Audience Ads je Zielgruppentyp eine eigene Kampagne mit 'Target and bid', in Search eher 'Bid only'. Custom Audiences nicht in EU, Norwegen, Schweiz und Japan.",
+    ],
+    emailHookDE: null,
+    pageCount: 35,
+  },
+  {
+    id: "pitch-clinic-audience-ads-webinar",
+    file: "Pitch_Clinic_Webinar.pdf",
+    title: "Pitch Clinic Webinar: Microsoft Audience Ads mit Display, Native und Video",
+    // Original-PPTX (~182 MB, 60 Folien, davon 34 sichtbar und im PDF) nach
+    // PDF exportiert. Kein Foliendatum, jüngste Quellen Oktober 2024 —
+    // Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Strategie-Trend",
+    summaryDE: "Webinar-Deck (Sprecher: Lucas Gordon, Sr. Account Executive Microsoft Advertising) als Verkaufshilfe für Audience Ads: Microsoft-Ökosystem und Reichweite, die vier Formate Premium Streaming (CTV), Online-Video, Display und Native mit Gebotsmodellen und Targeting, Zielgruppen-Strategie entlang des Funnels, Schnellstart für feedbasierte Kampagnen, Audience Planner, Lift-Messung und KI-Werkzeuge in der Plattform (Chat, Asset-Empfehlungen, Bildgenerierung) sowie eine Produktübersicht inkl. Netflix-Anzeigen.",
+    customerBlurb: "Microsoft Audience Ads verbinden Streaming-TV, Online-Video, Display und Native in einer Plattform — mit denselben Zielgruppen-Daten wie in der Suche. Gerne zeigen wir euch, welches Format zu euren Zielen passt und wie schnell sich ein Test aufsetzen lässt.",
+    keyFactsDE: [
+      "Wer Search und Audience Ads sieht, hat laut Microsoft-Daten (Juli 2023) eine 3x höhere Besuchsrate und 7x höhere Conversion-Rate als bei reinem Search-Kontakt.",
+      "Premium Streaming: nicht überspringbare Vollbild-Videos auf Smart-TVs, Abrechnung pro vollständig angesehenem Video (CPCV), mit Genre-Targeting; Netflix-Anzeigen in 10–60 Sekunden.",
+      "Feedbasierte Kampagne in fünf Schritten: Ziel 'Produkte verkaufen', Standard Shopping mit Option 'Audience', alle Produkte ohne Filter, keine Zielgruppen, Startgebot mindestens 2 USD; Ausspielung läuft nach 24–48 Stunden an.",
+      "Zielgruppen-Start mit Remarketing und In-Market, Gebotsanpassung 15–20 %; Zielgruppen in Audience-Shopping-Kampagnen nur mit 'Bid only'.",
+      "Audience Planner unterstützt derzeit nur Native; Prognosen für Display, Video und Multi-Format sind laut Deck angekündigt.",
+    ],
+    emailHookDE: null,
+    pageCount: 34,
+  },
+  {
+    id: "video-premium-streaming-pitch-deck",
+    file: "Video___Premium_streaming_-_Pitch_Deck__EN-Global_.pdf",
+    title: "Video und Premium Streaming (CTV) Pitch Deck: Verfügbarkeit, Targeting und Reichweite je Markt",
+    // Original-PPTX (~114 MB) nach PDF exportiert. Kein Foliendatum, jüngste
+    // Quellen Juli 2024 — Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Feature-Guide",
+    summaryDE: "Pitch Deck zu Online-Video- und Premium-Streaming-Anzeigen (Connected TV/OTT) bei Microsoft Advertising: Verfügbarkeit je Markt, Vorteile (Abrechnung nur sichtbarer Impressionen bzw. vollständiger Views, Frequency Cap, IAS und HUMAN gegen Bot-Traffic), Targeting inkl. Genre-Targeting für Streaming, nun allgemein verfügbare Performance-Funktionen für Online-Video, Gebotsstrategien, Video-Spezifikationen sowie Reichweitenzahlen je Markt, darunter Deutschland, Österreich und die Schweiz.",
+    customerBlurb: "Mit Microsofts Premium Streaming laufen eure Videos als Vollbild-Spots auf Smart-TVs und Streaming-Diensten — abgerechnet wird nur, wenn der Spot ganz angesehen wurde, und mit Targeting nach Genre. Gerne prüfen wir, ob eure vorhandenen Videos dafür passen.",
+    keyFactsDE: [
+      "Premium Streaming allgemein verfügbar u. a. in Deutschland, Österreich und der Schweiz; Online-Video global außer China, Bahamas, Paraguay, Ägypten und Venezuela.",
+      "Deutschland: 32 Mio. monatliche Unique Visitors (Comscore, Mai 2024), 3,2 Mrd. CTV/OTT- und 42 Mrd. Video-Impressionen pro Monat (Microsoft, Juli 2024); Österreich 2,9 Mio., Schweiz 2,5 Mio. Unique Visitors.",
+      "Abrechnung: Online-Video nur bei Sichtbarkeit (2 Sekunden, mind. 50 % im Bild), Premium Streaming nur bei vollständig angesehenem Spot (CPCV); eigener Frequency Cap möglich.",
+      "Jetzt allgemein verfügbar für Online-Video (noch nicht CTV): Enhanced CPC, Max. Conversions/Ziel-CPA, In-Market, dynamisches Remarketing, LinkedIn-Profil-Targeting, Predictive Targeting, Conversion- und View-Through-Tracking.",
+      "Genre-Targeting (nur Premium Streaming) auf Anzeigengruppenebene mit rund 90 Genres von Action bis Wetter; Excellent-Qualität: 1920x1080, 16:9 oder 9:16, 15–90 Sekunden.",
+    ],
+    emailHookDE: null,
+    pageCount: 47,
+  },
+  {
+    id: "retail-peak-2026-de",
+    file: "Retail_Peak_2026_DE.pdf",
+    title: "Retail Peak 2026 (DE): Wirtschaftslage, KI-Suche, Prognose und PMax für das Weihnachtsgeschäft",
+    // Kein exaktes Foliendatum; jüngste Quellen April 2026 — Anzeigedatum =
+    // Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Saisonal",
+    summaryDE: "Microsoft-Deck zur Retail-Saison 2026 mit Deutschland-Schwerpunkt in sechs Teilen: Wirtschaftsausblick (Inflation, Iran-Konflikt und Straße von Hormus, Konsumklima), KI in der Suche, Marktentwicklung mit Klick- und CPC-Verlauf in sechs EU-Märkten, Prognose Oktober–Dezember 2026 für Deutschland je Kategorie, Wert der Marke (Markenoffenheit, Discovery-Fenster) sowie Performance Max und Audience Ads mit Fallstudien. Abschließend ein Aktivierungskalender: Audience Ads ab Oktober, PMax durch die Spitze, Search/Shopping für die Kaufabsicht, Remarketing bis in den Januar.",
+    customerBlurb: "Microsofts aktuelle Prognose für das Weihnachtsgeschäft 2026 in Deutschland: etwas weniger Suchanfragen, aber rund 5 % mehr Klicks als im Vorjahr — und Käufer:innen, die rund zehn Wochen offen für neue Marken bleiben. Gerne leiten wir daraus gemeinsam einen Zeitplan für eure Kampagnen ab.",
+    keyFactsDE: [
+      "Prognose Deutschland Okt.–Dez. 2026 (Retail): Suchanfragen −4,9 %, Klicks +5 %, durchschnittlicher CPC 0,48; stärkstes Klickwachstum bei Computer & Unterhaltungselektronik (+9 %) und Haus & Garten (+8,1 %), Rückgang bei Bekleidung und Beauty.",
+      "Nachfrage baut sich ab Oktober auf und erreicht in der Black-Friday-Woche den Höhepunkt, CPCs ebenso; in Deutschland lag der CPA vor Black Friday rund 20 % unter Vorjahr.",
+      "Mobil schlägt Desktop in Deutschland (Sept.–Dez. 2025): CTR 6,08 % vs. 4,85 %, Conversion-Rate 8,98 % vs. 6,82 %.",
+      "Deutsche Käufer:innen bleiben etwa 10 Wochen offen für neue Marken und vergleichen rund 10 Marken vor dem Klick; erst ab ca. 8. Dezember halten sich Marken- und generische Suchen die Waage.",
+      "Rund jeder fünfte Klick läuft über Performance Max, 77 % davon über Shopping Ads; PMax gewinnt deutlich mehr Klicks in den wettbewerbsintensivsten Auktionen. Fallstudie Spielwaren: Audience Ads + PMax erreichten in UK +2.846 % mehr aktive Suchende als PMax allein.",
+    ],
+    emailHookDE: null,
+    pageCount: 57,
+  },
+  {
+    id: "blueprint-framework-vertical-templates",
+    file: "Blueprint_Framework_Vertical_Templates_V2.pdf",
+    title: "Blueprint Framework: Always-on-Kontoaufbau nach Branche mit Fokus auf PMax und Audience Ads",
+    // Original-PPTX (~14 MB) nach PDF exportiert. Kein Foliendatum —
+    // Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Strategie-Trend",
+    summaryDE: "Arbeitsrahmen von Microsoft für den schrittweisen Aufbau dauerhaft laufender Konten: Vier Eingaben (Branche, Hauptziel, Lückenanalyse, größter Blocker) bestimmen den nächsten Ausbauschritt; Aufbau in vier Stufen (Fundament, Performance ausbauen, Nachfrage erzeugen, Skalieren und Messen) mit 30-Tage-Review. Enthält Vorlagen für 12 Branchen (u. a. Retail, B2B, Finanzen, Gesundheit, Automotive, Immobilien, SaaS), Diagnose-Reihenfolgen bei schwacher Leistung oder knappem Budget, Troubleshooting für Audience Ads und PMax sowie eine Vorlage für Kunden-Workshops.",
+    customerBlurb: "Microsoft beschreibt in einem Blueprint, wie sich ein Konto Schritt für Schritt von stabiler Suche zu Performance Max und Audience Ads ausbauen lässt — mit klaren Prüfpunkten alle 30 Tage und Vorlagen für eure Branche. Gerne nutzen wir das als Grundlage für einen gemeinsamen Ausbauplan.",
+    keyFactsDE: [
+      "Vier Stufen, jede bleibt live: (1) UET und Conversions prüfen, Brand und Generic trennen; (2) PMax für das Hauptziel; (3) Audience Ads und impressionsbasiertes Remarketing; (4) Gewinner skalieren — Review alle 30 Tage.",
+      "Vorgeschlagenes Tor zur nächsten Stufe: vereinbarter CPA/ROAS zwei vergleichbare Wochen lang erreicht (nach Conversion-Lag), bei verlässlichem Tracking und Mindestvolumen.",
+      "Branchenvorlagen für 12 Verticals, jeweils mit acht Ausbauschritten, empfohlenen Zielgruppen, Erfolgsmessgrößen und typischen Fallstricken (z. B. B2B: erst die qualifizierte Conversion definieren, dann automatisieren).",
+      "Diagnose in fester Reihenfolge: Tracking → Budget → Conversion-Volumen → zu enge Gebote/Zielgruppen → zu fragmentierte Struktur → Abstimmung von Zielgruppen, Creatives, Feed und Landingpage; immer nur eine Änderung zur Zeit, dann zwei Wochen warten.",
+      "Audience Ads und PMax nicht am Last-Click-CPA der Brand-Suche messen, sondern an assistierten Conversions, View-Through und Gesamtergebnis des Kontos; Brand-Ausschlüsse in PMax setzen.",
+    ],
+    emailHookDE: null,
+    pageCount: 33,
+  },
+  {
+    id: "best-practices-holiday-success-2026",
+    file: "Best_Practices_for_Holiday_Success_2026.pdf",
+    title: "Best Practices for Holiday Success 2026: der vollständige Vier-Phasen-Leitfaden",
+    // Titelfolie: "Winning holiday moments: Practical strategies for seasonal
+    // success" — erweiterte Fassung (96 statt 61 Seiten) des bereits
+    // katalogisierten Decks "winning-holiday-moments", mit u. a. UCP,
+    // AI Max, Neukundengewinnung und Clarity. Kein Foliendatum —
+    // Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Saisonal",
+    summaryDE: "Ausführliche Fassung des Webinars 'Winning holiday moments' (Sprecherin: Monica Orsino, Senior Learning Consultant) mit dem Feiertags-Fahrplan in vier Phasen: Grundlagen im Juli/August (Kampagnenmix, Feed-Audit, UCP im Merchant Center, AI Max, Messung, Data-Driven Attribution, Clarity), Nachfrage erzeugen im September/Oktober (saisonale In-Market-Segmente, impressionsbasiertes Remarketing, Placement- und Topic-Targeting, Ads Studio), Verkaufsspitze im November/Dezember (PMax für kurzfristige Promotions, Seasonality Adjustments, Conversion Value Rules, Neukundengewinnung) und Auswertung im Dezember/Januar. Gegenüber dem bereits vorhandenen 61-seitigen Deck deutlich erweitert.",
+    customerBlurb: "Microsofts ausführlicher Feiertags-Leitfaden für 2026 führt in vier Phasen von der Vorbereitung im Sommer bis zur Auswertung im Januar — mit Feed-Checklisten, Hinweisen zur Sichtbarkeit in Copilot und einer Abschluss-Checkliste. Gerne gehen wir gemeinsam durch, was für eure Konten jetzt noch ansteht.",
+    keyFactsDE: [
+      "74 % der Shopper recherchieren 2026 vor Black Friday/Cyber Monday (2025: 69 %); 63 % beginnen vor Halloween, 82 % kauften im Vorjahr bei einem Sale-Event, 87 % planen das für 2026 (Microsoft-Umfrage, USA).",
+      "Durchschnittliche Feiertags-Conversion-Journey: 52 Tage; Oktober-Klicks lösen 56 % der November- und 35 % der Dezember-Conversions aus; Cyber-5 bringt 9 % der Conversions bei 7 % der Klicks.",
+      "Am meisten gesucht werden Angebote mit 20–35 % Rabatt; Microsoft-Shopper haben laut GWI ein 12 % höheres Haushaltseinkommen als Google-Shopper.",
+      "Kampagnen mit weniger als 30 Conversions in 30 Tagen zusammenlegen; neue Gebotsstrategien mindestens vier Wochen vor der Saison starten; Seasonality Adjustments höchstens 14 Tage, nur bei stabilen Kampagnen.",
+      "PMax-Neukundengewinnung: Aufschlag für Neukund:innen von mindestens 30 % des durchschnittlichen Bestellwerts; Fallstudien JD Sports (+747 % Klicks) und LOOKFANTASTIC (2,7x Conversion-Lift durch In-Market-Audiences).",
+    ],
+    emailHookDE: null,
+    pageCount: 96,
+  },
+  {
+    id: "channel-partner-vertical-best-practices-jul-2026",
+    file: "Channel_Partner_-_Vertical_Best_Practices_-_July_26.pdf",
+    title: "Channel Partner: Vertical Best Practices für Audience Ads (Juli 2026)",
+    // Dateiname nennt Juli 2026, auf den Folien steht kein Datum —
+    // Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Strategie-Trend",
+    summaryDE: "Partner-Deck mit einer 'Vertical Matrix' für Audience Ads (Display, Native, Video): je Branche (Travel, Retail, B2B, Careers & Education, Health & Wellness, Financial Services) die empfohlene Kombination aus Medienmix, impressionsbasiertem Remarketing, Zielgruppen und Grundlagen. Dazu Einzeiler-Verkaufsargumente je Produkt, Feiertags-Aktivierungskalender, Zusammenspiel von PMax mit anderen Kampagnentypen, KI in der Suche sowie zusätzliche Einblicke und Reichweitenzahlen für UK, Deutschland, USA und weitere Märkte.",
+    customerBlurb: "Microsoft zeigt, wie Audience Ads je nach Branche am besten eingesetzt werden — von Reisen über Handel bis B2B — und wie sie die Suchkampagnen messbar verstärken. Gerne schauen wir gemeinsam, welche Empfehlungen für eure Branche gelten.",
+    keyFactsDE: [
+      "75 % der Feiertags-Conversion-Journeys enthalten mindestens einen Audience-Ads-Kontakt; nach dem Kontakt 80 % höhere Markensuche, 270 % höhere Besuchsrate und 170 % höhere Conversion-Rate in der Suche (Retail & CPG, 2024).",
+      "Search plus Audience Ads statt Search allein: 1,8–2,1x mehr Klickende und 2,1–2,6x mehr Konvertierende, je nach Kategorie (März–April 2024); in UK steigt der durchschnittliche Bestellwert um 12 %.",
+      "LinkedIn-Zielgruppen bringen bei B2B und Bildung laut Deck typischerweise +16 % CTR und +64 % Conversion-Rate.",
+      "Auktions-Regeln: Exakte Keywords in Search haben Vorrang vor PMax, PMax hat Vorrang vor Standard Shopping; Audience-Kampagnen konkurrieren ohne CPC-Effekt. Empfohlenes PMax-Budget: 2–3x das der bisherigen Einzelkampagnen.",
+      "Oktober-Erstklicks lösen 65 % der November- und 44 % der Dezember-Conversions aus (Retail Holiday Query Path 2024).",
+    ],
+    emailHookDE: null,
+    pageCount: 88,
+  },
+  {
+    id: "import-tools-feature-guide",
+    file: "Import_Tools_-_Feature_Guide.pdf",
+    title: "Import Tools: Kampagnen aus Google Ads, Meta, Pinterest und Baidu übernehmen (Feature Guide)",
+    // Kein Foliendatum — Anzeigedatum = Upload-Tag.
+    date: "2026-10-05", dateKnown: true,
+    docType: "Feature-Guide",
+    summaryDE: "Umfassender Leitfaden (124 Seiten) zu den Import-Werkzeugen von Microsoft Advertising: Google Import in drei Varianten (Quick, Smart, Advanced) inkl. Merchant-Center-Import, Meta Ads Import, Pinterest Import und Baidu Import, jeweils mit Verfügbarkeit, was übernommen wird und was nicht, Schritt-für-Schritt-Anleitung und Grenzen. Abschließend Checkliste und Best Practices nach dem Import.",
+    customerBlurb: "Bestehende Kampagnen aus Google Ads, Meta oder Pinterest lassen sich mit wenigen Klicks zu Microsoft Advertising übernehmen und per geplantem Import automatisch aktuell halten. Gerne richten wir das für euch ein und prüfen danach gemeinsam die Einstellungen.",
+    keyFactsDE: [
+      "Google Import: bis zu 20 Mio. Keywords und 20 Mio. Anzeigen, inkl. Display- und Demand-Gen-Kampagnen mit Bildern sowie Remarketing-Listen; geplante Imports einmalig, täglich, wöchentlich oder monatlich (Empfehlung: 'auto').",
+      "Nicht übernommen werden u. a. Videos von YouTube, Conversion-Ziele, Abrechnungsdaten und Broad-Match-Negativkeywords; Google-PMax wird zu Shopping- (mit Merchant Center) oder DSA-Kampagnen.",
+      "Zu niedrige Gebote und Budgets werden auf Microsoft-Mindestwerte angehoben; ein später geplanter Import kann manuell pausierte Kampagnen wieder aktivieren, wenn der Status nicht ausgenommen wird.",
+      "Meta Import: bis zu 10.000 Kampagnen und Anzeigengruppen pro Konto, nur Einzelbild-Anzeigen, manuelle Gebote (Standard 1 USD), Emojis werden entfernt; Lookalikes werden zu ähnlichen Zielgruppen, Website-Custom-Audiences zu Remarketing-Listen.",
+      "Empfohlener Ablauf: Import zuerst in ein pausiertes Testkonto, dann parallel zum Altkonto anlaufen lassen; nach dem Import Sprach-, Standort-, Zeitplan- und Netzwerkeinstellungen prüfen und Desktop-Gebote erhöhen.",
+    ],
+    emailHookDE: null,
+    pageCount: 124,
+  },
   {
     id: "product-roadmap-q3-2026",
     file: "Product Roadmap Q3 2026.pdf",
