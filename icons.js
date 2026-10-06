@@ -223,11 +223,11 @@ const BRAND_BURST = `<svg viewBox="0 0 200 200" aria-hidden="true">
    Hero-Illustrationen). */
 /* SWS 2.0 (2026-10-06): Stern-Cluster statt Pop-Art-PNGs (Blitz/Ringe/Sterne). */
 const SPARK_PATH = "M0-1c.07.58.42.93 1 1-.58.07-.93.42-1 1-.07-.58-.42-.93-1-1 .58-.07.93-.42 1-1z";
-const SIDECARD_ILLUSTRATION = `<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="${SPARK_PATH}" transform="translate(20 26) scale(17)" fill="var(--c-pink-500)" /><path d="${SPARK_PATH}" transform="translate(39 10) scale(7)" fill="var(--c-yellow-500)" /><circle cx="38" cy="38" r="3.5" fill="var(--c-turquoise)" /></svg>`;
+const SIDECARD_ILLUSTRATION = ""; /* SWS 2.0 Audit (2026-10-06): Karten ohne Deko, wie auf der SWS-Plattform */
 
-const INFOBOX_ILLUSTRATION = `<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="${SPARK_PATH}" transform="translate(20 26) scale(17)" fill="var(--c-turquoise)" /><path d="${SPARK_PATH}" transform="translate(39 10) scale(7)" fill="var(--c-pink-500)" /><circle cx="38" cy="38" r="3.5" fill="var(--c-yellow-500)" /></svg>`;
+const INFOBOX_ILLUSTRATION = ""; /* SWS 2.0 Audit (2026-10-06): Karten ohne Deko, wie auf der SWS-Plattform */
 
-const MAILGEN_ILLUSTRATION = `<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="${SPARK_PATH}" transform="translate(20 26) scale(17)" fill="var(--c-yellow-500)" /><path d="${SPARK_PATH}" transform="translate(39 10) scale(7)" fill="var(--c-turquoise)" /><circle cx="38" cy="38" r="3.5" fill="var(--c-pink-500)" /></svg>`;
+const MAILGEN_ILLUSTRATION = ""; /* SWS 2.0 Audit (2026-10-06): Karten ohne Deko, wie auf der SWS-Plattform */
 
 const CATEGORY_ICON = {
   "KI & Automatisierung": "sparkle",

@@ -428,27 +428,34 @@ mark {
    an die Sidebar und den rechten Fensterrand, da .shell__main selbst
    schon exakt diese Breite hat (kein zusätzlicher Gutter nötig). */
 .page-bg {
-  /* SWS 2.0 "Bühne" (2026-10-06, Nutzer-Wahl "oberer Bereich"): Verlauf +
-     konzentrische Ringe wie auf der SWS-Login-Seite, nur oben hinter
-     Seitenkopf und Suche. --stage-h setzt app.js (syncStage) auf die
-     Unterkante von Hero bzw. Detail-Titel; darunter 64px voll deckend
-     (Suche), dann 150px Auslauf ins Mist. */
-  --stage-solid: calc(var(--stage-h, 0px) + 64px);
+  /* SWS 2.0 Band (Audit 2026-10-06, nach support-tiers.sws-alliance.com):
+     randloser Verlaufsbalken mit HARTER Unterkante statt Auslauf ins Mist
+     — der weiche Auslauf wirkte verwaschen und ließ Überschriften auf
+     rosa Dunst stehen. --stage-h setzt app.js (syncStage) auf die
+     Unterkante von Hero bzw. Detail-Titel, --stage-pad ist der Abstand
+     darunter bis zur Kante. */
   position: absolute;
   inset-inline: 0;
   top: 0;
-  height: calc(var(--stage-solid) + 150px);
+  height: calc(var(--stage-h, 0px) + var(--stage-pad));
   z-index: -1;
   pointer-events: none;
+  overflow: hidden;
   background-color: var(--c-pink-500);
   background-image:
-    repeating-radial-gradient(circle at 84% 34%, rgba(255, 255, 255, 0.13) 0 1px, transparent 1.5px 34px),
     radial-gradient(120% 140% at 78% 8%, rgba(255, 255, 255, 0.16), transparent 55%),
     radial-gradient(90% 90% at 12% 100%, color-mix(in srgb, var(--c-shadow) 18%, transparent), transparent 60%),
     var(--grad-brand);
-  mask-image: linear-gradient(to bottom, black 0, black var(--stage-solid), transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 0, black var(--stage-solid), transparent 100%);
   display: none;
+}
+/* Ringe als eigene Ebene, nur rechts, zur Mitte hin ausgeblendet */
+.page-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-radial-gradient(circle at 82% 42%, rgba(255, 255, 255, 0.14) 0 1px, transparent 1.5px 36px);
+  mask-image: radial-gradient(circle at 82% 42%, black 0%, transparent 62%);
+  -webkit-mask-image: radial-gradient(circle at 82% 42%, black 0%, transparent 62%);
 }
 .shell__main.has-stage .page-bg { display: block; }
 /* Texte, die direkt auf der Bühne stehen (Detailseiten ohne Hero) */
@@ -461,7 +468,8 @@ mark {
 /* Nutzer:innen, die reduzierte Transparenz/Effekte bevorzugen: nur die
    flache Papier-Fläche, keine Farbwolken/kein Punktraster. */
 @media (prefers-reduced-transparency: reduce) {
-  .page-bg { background-image: var(--grad-brand); } /* nur Verlauf, ohne Ringe/Lichter */
+  .page-bg { background-image: var(--grad-brand); }
+  .page-bg::after { display: none; } /* nur Verlauf, ohne Ringe/Lichter */
 }
 
 /* -- Layout ------------------------------------------------------------ */
@@ -2972,3 +2980,139 @@ code {
   * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
   .mascot { animation: none; }
 }
+
+
+/* ==========================================================================
+   SWS 2.0 — Angleichung an die SWS-Plattform (Audit 2026-10-06)
+   Referenz: support-tiers.sws-alliance.com + partners.sws-alliance.com
+   (Komponenten .band, .st-hero, .ov-card, .chip, .button-primary, .search
+   aus deren ausgeliefertem Stylesheet). Bewusst als eigene, letzte Schicht,
+   damit die Angleichung an einer Stelle nachvollziehbar bleibt.
+   ========================================================================== */
+:root {
+  --stage-pad: 56px;               /* Abstand Hero-/Titel-Unterkante bis Bandkante */
+  --radius: 18px;                  /* Karten (SWS ov-card/panel: 14–22px) */
+  --accent-ink: var(--c-pink-700); /* Magenta als Text auf Tint-Flächen (AA) */
+  --topbar-h: 72px;
+}
+
+/* -- Kopfleiste wie SWS .band: Logo | Bereich … schwarze Pille -------- */
+.topbar {
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.topbar__title { font-size: 0.82rem; letter-spacing: 0.02em; }
+.topbar__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  padding: 0 1.4rem;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--c-surface);
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: background-color 150ms ease;
+}
+.topbar__cta:hover { background: var(--c-ink-60); }
+.topbar__cta svg { width: 17px; height: 17px; }
+.topbar__cta kbd {
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.16);
+}
+@media (max-width: 767px) {
+  :root { --topbar-h: 56px; --stage-pad: 36px; }
+  .topbar__cta { padding: 0 0.9rem; min-width: 44px; justify-content: center; }
+  .topbar__cta span, .topbar__cta kbd { display: none; }
+}
+
+/* -- Hero wie SWS .st-hero: nur Typo auf dem Band, keine Clipart ------- */
+.hero, .hero--compact, .hero--connected {
+  display: block;
+  padding: var(--space-4) 0 0;
+  margin-bottom: calc(var(--stage-pad) + var(--space-6));
+}
+.hero__intro, .hero--connected .hero__intro { max-width: 46rem; animation: none; }
+.hero__intro h1 {
+  font-size: clamp(2rem, 1.2rem + 2.6vw, 3.25rem);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+}
+.hero__intro p {
+  margin-top: var(--space-4);
+  max-width: 38rem;
+  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.92);
+}
+.hero mark { color: inherit; text-decoration: none; }
+.hero__illustration { display: none; }
+@media (max-width: 767px) {
+  .hero, .hero--compact, .hero--connected { padding-top: 0; margin-bottom: calc(var(--stage-pad) + var(--space-5)); }
+}
+
+/* -- Detailseiten: Titel steht auf dem Band ------------------------------ */
+.detail h1 { font-weight: 800; letter-spacing: -0.01em; line-height: 1.12; }
+.has-stage .detail > h1 { margin-bottom: calc(var(--stage-pad) + var(--space-6)); }
+
+/* -- Abschnittstitel wie SWS (Exo 800) + neutrale Ergebniszahl --------- */
+.feed__title { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; letter-spacing: -0.01em; }
+.feed__title__count {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  background: var(--c-surface);
+  border: 1px solid var(--line);
+}
+
+/* -- Suche wie SWS .search__control, Aktion in Ink -------------------- */
+.search__submit { background: var(--ink); color: var(--c-surface); }
+.search__submit:hover { background: var(--c-ink-60); }
+
+/* -- Filter/Tabs: aktiv = Ink-Pille (SWS .button-primary), nicht Magenta */
+.tabs__item { color: var(--ink); font-weight: 600; }
+.tabs__item:hover { background: var(--c-paper); }
+.tabs__item.is-active { background: var(--ink); border-color: var(--ink); color: var(--c-surface); }
+.tabs__item.is-active .tabs__item-count { background: rgba(255, 255, 255, 0.18); color: var(--c-surface); }
+
+/* -- Karten flach wie SWS .ov-card: Haarlinie, kein Glow -------------- */
+.article-list li, .side-card, .article-list__item--featured { box-shadow: none; }
+.article-list__item--featured::after { content: none; }
+.article-list li:not(.feed__divider):hover,
+.article-list li:not(.feed__divider):focus-within { transform: translateY(-2px); box-shadow: var(--shadow-comic); }
+.row__thumb { background-image: none; border-radius: 12px; }
+.row:hover .row__thumb { transform: none; }
+.side-card__illustration, .info-box__illustration, .mailgen__illustration { display: none; }
+
+/* -- "Neu"-Markierung wie SWS .chip: klein, Versal, in der Karte ------- */
+.card-badge {
+  top: 16px;
+  right: 16px;
+  left: auto;
+  padding: 4px 10px;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  box-shadow: none;
+}
+.card-badge--new { background: var(--accent-tint); color: var(--accent-ink); }
+
+/* -- Magenta-Text auf Tint: dunkles Magenta (vorher 4.46:1, unter AA) -- */
+.event-row__days, .event-row__link, .rail__nav a[aria-current="page"] { color: var(--accent-ink); }
+
+/* -- Sidebar: aktiver Punkt ohne Stern-Marke -------------------------- */
+.rail__nav a[aria-current="page"] { padding-left: var(--space-3); }
+.rail__nav a[aria-current="page"]::before { content: none; }
+
+/* -- Verknüpfungs-Prüfung: aktiver Schritt wie Filter in Ink, Auswahlkarten
+      ohne farbigen Randstreifen links (Farbe trägt der Buchstaben-Kreis) -- */
+.msads-progress__step.is-active { background: var(--ink); }
+.msads-choice-card--teal, .msads-choice-card--accent, .msads-choice-card--action { border-left-color: var(--line); }
+.msads-choice-card--accent .msads-choice-letter, .msads-choice-card--action .msads-choice-letter { color: var(--accent-ink); }
