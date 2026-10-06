@@ -4339,7 +4339,8 @@
   /* Anleitungen aus der SWS-Alliance-Wissensdatenbank (2026-10-06, Daten in
      kb-guides-data.js). Übersicht nach Kategorien gruppiert, Karten im Stil
      der SWS-Benefits-Karten; Suche filtert ohne Neuaufbau der Seite, damit
-     der Cursor im Feld bleibt. */
+     der Cursor im Feld bleibt. DE/EN-Umschalter (2026-10-06): englische
+     Fassung steht in den *_en-Feldern, die Wahl merkt sich der Browser. */
   const GUIDE_ICON = {
     "Tracking": "chartLine", "Targeting": "crosshair", "MSAN-Anleitungen": "layers", "Linkchecker": "bug",
     "Kampagnen-Importe": "download", "Anzeigen": "layoutGrid", "Richtlinien": "info", "Kampagnen-Umzug": "rocket",
@@ -4347,69 +4348,106 @@
     "Accountverknüpfung": "crosshair", "Identitätsprüfung": "check",
   };
   const GUIDE_SECTIONS = ["Accounthandhabung", "Abrechnung und Zahlungen", "Accountverknüpfung", "Allgemeines"];
+  const GUIDE_UI = {
+    de: { title: "Anleitungen", lead: "Schritt-für-Schritt-Anleitungen aus der SWS-Alliance-Wissensdatenbank – Tracking, Targeting, Abrechnung, Accountverknüpfung und mehr.", search: "Anleitungen durchsuchen …", all: "Alle", one: "Anleitung", many: "Anleitungen", updated: "Stand", none: "Keine Anleitung gefunden", noneHint: "Versuch einen anderen Begriff oder Bereich.", source: "Quelle: SWS-Alliance-Wissensdatenbank (Zoho Desk), übernommen am 6. Okt. 2026. Jede Anleitung verlinkt ihr Original.", back: "Zu den Anleitungen", original: "Original", originalText: "Diese Anleitung stammt aus der SWS-Alliance-Wissensdatenbank. Das Original kann neuer sein.", open: "In Zoho öffnen", more: "Mehr zu", areas: "Bereiche" },
+    en: { title: "Guides", lead: "Step-by-step guides from the SWS Alliance knowledge base – tracking, targeting, billing, account linking and more.", search: "Search guides …", all: "All", one: "guide", many: "guides", updated: "Updated", none: "No guide found", noneHint: "Try a different term or area.", source: "Source: SWS Alliance knowledge base (Zoho Desk), imported on 6 Oct 2026 and translated from German. Each guide links to its German original.", back: "Back to guides", original: "Original", originalText: "This guide comes from the SWS Alliance knowledge base (German original). The original may be more recent.", open: "Open in Zoho", more: "More on", areas: "Areas" },
+  };
+  function guideLang() {
+    try { return localStorage.getItem("guidesLang") === "en" ? "en" : "de"; } catch { return "de"; }
+  }
+  function setGuideLang(l) { try { localStorage.setItem("guidesLang", l); } catch {} }
+  const gf = (g, field, lang) => (lang === "en" && g[field + "_en"]) || g[field];
+  const guideDate = (iso, lang) => lang === "en"
+    ? new Date(iso + "T00:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
+    : formatDate(iso);
+  const SECTION_EN = Object.fromEntries(KB_GUIDES.map((g) => [g.section, g.section_en || g.section]));
 
-  function guideCard(g) {
+  function langToggle(lang) {
+    return `<div class="lang-toggle" role="group" aria-label="Sprache / Language">
+      <button type="button" data-lang="de" aria-pressed="${lang === "de"}">DE</button>
+      <button type="button" data-lang="en" aria-pressed="${lang === "en"}">EN</button>
+    </div>`;
+  }
+  function wireLangToggle() {
+    view.querySelectorAll(".lang-toggle [data-lang]").forEach((b) => b.addEventListener("click", () => {
+      if (b.getAttribute("aria-pressed") === "true") return;
+      setGuideLang(b.dataset.lang);
+      render();
+    }));
+  }
+
+  function guideCard(g, lang) {
+    const t = GUIDE_UI[lang];
     const icon = ICONS[GUIDE_ICON[g.category]] || ICONS.book;
     return `
       <li>
-        <a class="row" href="#/anleitungen/${encodeURIComponent(g.id)}">
+        <a class="row" href="#/anleitungen/${encodeURIComponent(g.id)}" lang="${lang}">
           <span class="row__head"><span class="row__thumb">${icon}</span></span>
-          <span class="row__channel" style="--ch: var(--turquoise)">${escapeHtml(g.category)}</span>
+          <span class="row__channel" style="--ch: var(--turquoise)">${escapeHtml(gf(g, "category", lang))}</span>
           <span class="row__body">
-            <span class="row__title">${escapeHtml(g.title)}</span>
-            <span class="row__summary">${escapeHtml(g.excerpt)}</span>
+            <span class="row__title">${escapeHtml(gf(g, "title", lang))}</span>
+            <span class="row__summary">${escapeHtml(gf(g, "excerpt", lang))}</span>
           </span>
-          <span class="row__meta">${g.updated ? `<span class="row__date">Stand ${formatDate(g.updated)}</span>` : ""}<span class="row__cat">${escapeHtml(g.section)}</span></span>
+          <span class="row__meta">${g.updated ? `<span class="row__date">${t.updated} ${guideDate(g.updated, lang)}</span>` : ""}<span class="row__cat">${escapeHtml(gf(g, "section", lang))}</span></span>
         </a>
       </li>`;
   }
 
-  function renderGuideGroups(query, section) {
+  function renderGuideGroups(query, section, lang) {
+    const t = GUIDE_UI[lang];
     const q = query.trim().toLowerCase();
     let items = KB_GUIDES.filter((g) => section === "all" || g.section === section);
-    if (q) items = items.filter((g) => (g.title + " " + g.category + " " + g.searchText).toLowerCase().includes(q));
+    // Suche über beide Sprachen, damit deutsche wie englische Begriffe treffen
+    if (q) items = items.filter((g) => [g.title, g.category, g.searchText, g.title_en, g.category_en, g.searchText_en].join(" ").toLowerCase().includes(q));
     if (!items.length) {
-      return `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Keine Anleitung gefunden</strong><p>Versuch einen anderen Begriff oder Bereich.</p></div>`;
+      return `<div class="empty-state">${ICONS.magnifyEmpty}<strong>${t.none}</strong><p>${t.noneHint}</p></div>`;
     }
     const groups = new Map();
     items.forEach((g) => { if (!groups.has(g.category)) groups.set(g.category, []); groups.get(g.category).push(g); });
     const order = [...groups.keys()].sort((x, y) => groups.get(y).length - groups.get(x).length || x.localeCompare(y, "de"));
-    return order.map((cat) => `
+    return order.map((cat) => {
+      const list = groups.get(cat);
+      return `
       <section class="guide-group">
-        <h2 class="feed__title">${escapeHtml(cat)}<span class="feed__title__count">${groups.get(cat).length} ${groups.get(cat).length === 1 ? "Anleitung" : "Anleitungen"}</span></h2>
-        <ul class="article-list">${groups.get(cat).map(guideCard).join("")}</ul>
-      </section>`).join("");
+        <h2 class="feed__title" lang="${lang}">${escapeHtml(gf(list[0], "category", lang))}<span class="feed__title__count">${list.length} ${list.length === 1 ? t.one : t.many}</span></h2>
+        <ul class="article-list">${list.map((g) => guideCard(g, lang)).join("")}</ul>
+      </section>`;
+    }).join("");
   }
 
   function renderGuides(query, section) {
+    const lang = guideLang();
+    const t = GUIDE_UI[lang];
     const sec = GUIDE_SECTIONS.includes(section) ? section : "all";
     const counts = KB_GUIDES.reduce((acc, g) => { acc[g.section] = (acc[g.section] || 0) + 1; return acc; }, {});
     view.innerHTML = `
       <section class="hero hero--compact">
-        <div class="hero__intro">
-          <h1>Anleitungen</h1>
-          <p>Schritt-für-Schritt-Anleitungen aus der SWS-Alliance-Wissensdatenbank – Tracking, Targeting, Abrechnung, Accountverknüpfung und mehr.</p>
+        <div class="hero__intro" lang="${lang}">
+          <h1>${t.title}</h1>
+          <p>${t.lead}</p>
+          ${langToggle(lang)}
         </div>
       </section>
       <div class="toolbar">
         <label class="search">
           ${ICONS.search}
-          <input type="search" id="guide-search" placeholder="Anleitungen durchsuchen …" autocomplete="off" aria-label="Anleitungen durchsuchen" value="${escapeHtml(query)}" />
+          <input type="search" id="guide-search" placeholder="${escapeHtml(t.search)}" autocomplete="off" aria-label="${escapeHtml(t.search)}" value="${escapeHtml(query)}" />
         </label>
-        <nav class="tabs" aria-label="Bereiche">
-          <button type="button" class="tabs__item ${sec === "all" ? "is-active" : ""}" data-s="all">Alle<span class="tabs__item-count">${KB_GUIDES.length}</span></button>
-          ${GUIDE_SECTIONS.filter((s) => counts[s]).map((s) => `<button type="button" class="tabs__item ${sec === s ? "is-active" : ""}" data-s="${escapeHtml(s)}">${escapeHtml(s)}<span class="tabs__item-count">${counts[s]}</span></button>`).join("")}
+        <nav class="tabs" aria-label="${t.areas}">
+          <button type="button" class="tabs__item ${sec === "all" ? "is-active" : ""}" data-s="all">${t.all}<span class="tabs__item-count">${KB_GUIDES.length}</span></button>
+          ${GUIDE_SECTIONS.filter((s) => counts[s]).map((s) => `<button type="button" class="tabs__item ${sec === s ? "is-active" : ""}" data-s="${escapeHtml(s)}">${escapeHtml(lang === "en" ? SECTION_EN[s] : s)}<span class="tabs__item-count">${counts[s]}</span></button>`).join("")}
         </nav>
       </div>
-      <div id="guide-groups">${renderGuideGroups(query, sec)}</div>
-      <p class="guide-source">Quelle: SWS-Alliance-Wissensdatenbank (Zoho Desk), übernommen am 6. Okt. 2026. Jede Anleitung verlinkt ihr Original.</p>
+      <div id="guide-groups">${renderGuideGroups(query, sec, lang)}</div>
+      <p class="guide-source" lang="${lang}">${t.source}</p>
     `;
+    wireLangToggle();
     const input = document.getElementById("guide-search");
-    let t;
+    let tm;
     input.addEventListener("input", () => {
-      clearTimeout(t);
-      t = setTimeout(() => {
-        document.getElementById("guide-groups").innerHTML = renderGuideGroups(input.value, sec);
+      clearTimeout(tm);
+      tm = setTimeout(() => {
+        document.getElementById("guide-groups").innerHTML = renderGuideGroups(input.value, sec, lang);
         history.replaceState(null, "", `#/anleitungen?${new URLSearchParams({ q: input.value, s: sec })}`);
       }, 150);
     });
@@ -4421,35 +4459,39 @@
   function renderGuideDetail(id) {
     const g = KB_GUIDES.find((x) => x.id === id);
     if (!g) { renderNotFound("/anleitungen/" + id); return; }
+    const lang = guideLang();
+    const t = GUIDE_UI[lang];
     pushRecent({ href: `#/anleitungen/${g.id}`, title: g.title, kind: "Anleitung" });
     const more = KB_GUIDES.filter((x) => x.category === g.category && x.id !== g.id).slice(0, 6);
     view.innerHTML = `
-      <a class="back-link" href="#/anleitungen">${ICONS.arrowLeft} Zu den Anleitungen</a>
-      <article class="detail">
+      <a class="back-link" href="#/anleitungen">${ICONS.arrowLeft} ${t.back}</a>
+      <article class="detail" lang="${lang}">
         <div class="detail__meta">
-          <span class="chip" style="background-color: var(--turquoise-text)">${escapeHtml(g.category)}</span>
-          <span class="detail__date">— ${escapeHtml(g.section)}${g.updated ? " · Stand " + formatDate(g.updated) : ""}</span>
+          <span class="chip" style="background-color: var(--turquoise-text)">${escapeHtml(gf(g, "category", lang))}</span>
+          <span class="detail__date">— ${escapeHtml(gf(g, "section", lang))}${g.updated ? ` · ${t.updated} ${guideDate(g.updated, lang)}` : ""}</span>
+          ${langToggle(lang)}
         </div>
-        <h1>${escapeHtml(g.title)}</h1>
+        <h1>${escapeHtml(gf(g, "title", lang))}</h1>
         <div class="detail__body guide-detail">
           <div class="detail__main">
-            <div class="kb-article">${g.html}</div>
+            <div class="kb-article">${gf(g, "html", lang)}</div>
           </div>
           <aside class="guide-aside">
             <div class="side-card">
-              <h2>Original</h2>
-              <p class="guide-aside__text">Diese Anleitung stammt aus der SWS-Alliance-Wissensdatenbank. Das Original kann neuer sein.</p>
-              <a class="btn btn--secondary" href="${escapeHtml(g.sourceUrl)}" target="_blank" rel="noopener noreferrer">${ICONS.external} In Zoho öffnen</a>
+              <h2>${t.original}</h2>
+              <p class="guide-aside__text">${t.originalText}</p>
+              <a class="btn btn--secondary" href="${escapeHtml(g.sourceUrl)}" target="_blank" rel="noopener noreferrer">${ICONS.external} ${t.open}</a>
             </div>
             ${more.length ? `
             <div class="side-card">
-              <h2>Mehr zu ${escapeHtml(g.category)}</h2>
-              <ul class="guide-more">${more.map((m) => `<li><a href="#/anleitungen/${encodeURIComponent(m.id)}">${escapeHtml(m.title)}</a></li>`).join("")}</ul>
+              <h2>${t.more} ${escapeHtml(gf(g, "category", lang))}</h2>
+              <ul class="guide-more">${more.map((m) => `<li><a href="#/anleitungen/${encodeURIComponent(m.id)}">${escapeHtml(gf(m, "title", lang))}</a></li>`).join("")}</ul>
             </div>` : ""}
           </aside>
         </div>
       </article>
     `;
+    wireLangToggle();
   }
 
   function renderNotFound(path) {
