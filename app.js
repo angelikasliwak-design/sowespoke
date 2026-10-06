@@ -24,7 +24,7 @@
     Allgemein: "--turquoise",
   };
 
-  const NAV_ICON = { news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass", nutzer: "gauge", "microsoft-ads-kontopruefung": "crosshair" };
+  const NAV_ICON = { anleitungen: "fileText", news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass", nutzer: "gauge", "microsoft-ads-kontopruefung": "crosshair" };
   railLinks.forEach((a) => {
     const iconSlot = a.querySelector(".rail__nav-icon");
     if (iconSlot) iconSlot.innerHTML = ICONS[NAV_ICON[a.dataset.nav]];
@@ -4027,7 +4027,13 @@
       snippet: c.summaryDE,
       href: `#/case-studies/${c.id}`,
     }));
-    cmdkIndexCache = [...newsItems, ...presItems, ...templateItems, ...practiceItems, ...caseItems];
+    const guideItems = KB_GUIDES.map((g) => ({
+      kind: "Anleitung",
+      title: g.title,
+      snippet: `${g.category} · ${g.excerpt}`,
+      href: `#/anleitungen/${g.id}`,
+    }));
+    cmdkIndexCache = [...newsItems, ...presItems, ...templateItems, ...practiceItems, ...caseItems, ...guideItems];
     return cmdkIndexCache;
   }
 
@@ -4304,6 +4310,7 @@
         (a.dataset.nav === "news" && path === "/") ||
         (a.dataset.nav === "praesentationen" && path.startsWith("/praesentationen")) ||
         (a.dataset.nav === "vorlagen" && path.startsWith("/vorlagen")) ||
+        (a.dataset.nav === "anleitungen" && path.startsWith("/anleitungen")) ||
         (a.dataset.nav === "case-studies" && path.startsWith("/case-studies")) ||
         (a.dataset.nav === "tickets" && path.startsWith("/tickets")) ||
         (a.dataset.nav === "anfragen" && path.startsWith("/anfragen")) ||
@@ -4326,6 +4333,123 @@
         group.querySelector("[data-nav-sub]").classList.add("is-expanded");
       }
     });
+  }
+
+  /* ------------------------------------------------------- Anleitungen */
+  /* Anleitungen aus der SWS-Alliance-Wissensdatenbank (2026-10-06, Daten in
+     kb-guides-data.js). Übersicht nach Kategorien gruppiert, Karten im Stil
+     der SWS-Benefits-Karten; Suche filtert ohne Neuaufbau der Seite, damit
+     der Cursor im Feld bleibt. */
+  const GUIDE_ICON = {
+    "Tracking": "chartLine", "Targeting": "crosshair", "MSAN-Anleitungen": "layers", "Linkchecker": "bug",
+    "Kampagnen-Importe": "download", "Anzeigen": "layoutGrid", "Richtlinien": "info", "Kampagnen-Umzug": "rocket",
+    "Abrechnungsmethoden": "scale", "Inserationsaufträge": "fileText", "Voucher / Gutscheine": "sparkle",
+    "Accountverknüpfung": "crosshair", "Identitätsprüfung": "check",
+  };
+  const GUIDE_SECTIONS = ["Accounthandhabung", "Abrechnung und Zahlungen", "Accountverknüpfung", "Allgemeines"];
+
+  function guideCard(g) {
+    const icon = ICONS[GUIDE_ICON[g.category]] || ICONS.book;
+    return `
+      <li>
+        <a class="row" href="#/anleitungen/${encodeURIComponent(g.id)}">
+          <span class="row__head"><span class="row__thumb">${icon}</span></span>
+          <span class="row__channel" style="--ch: var(--turquoise)">${escapeHtml(g.category)}</span>
+          <span class="row__body">
+            <span class="row__title">${escapeHtml(g.title)}</span>
+            <span class="row__summary">${escapeHtml(g.excerpt)}</span>
+          </span>
+          <span class="row__meta">${g.updated ? `<span class="row__date">Stand ${formatDate(g.updated)}</span>` : ""}<span class="row__cat">${escapeHtml(g.section)}</span></span>
+        </a>
+      </li>`;
+  }
+
+  function renderGuideGroups(query, section) {
+    const q = query.trim().toLowerCase();
+    let items = KB_GUIDES.filter((g) => section === "all" || g.section === section);
+    if (q) items = items.filter((g) => (g.title + " " + g.category + " " + g.searchText).toLowerCase().includes(q));
+    if (!items.length) {
+      return `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Keine Anleitung gefunden</strong><p>Versuch einen anderen Begriff oder Bereich.</p></div>`;
+    }
+    const groups = new Map();
+    items.forEach((g) => { if (!groups.has(g.category)) groups.set(g.category, []); groups.get(g.category).push(g); });
+    const order = [...groups.keys()].sort((x, y) => groups.get(y).length - groups.get(x).length || x.localeCompare(y, "de"));
+    return order.map((cat) => `
+      <section class="guide-group">
+        <h2 class="feed__title">${escapeHtml(cat)}<span class="feed__title__count">${groups.get(cat).length} ${groups.get(cat).length === 1 ? "Anleitung" : "Anleitungen"}</span></h2>
+        <ul class="article-list">${groups.get(cat).map(guideCard).join("")}</ul>
+      </section>`).join("");
+  }
+
+  function renderGuides(query, section) {
+    const sec = GUIDE_SECTIONS.includes(section) ? section : "all";
+    const counts = KB_GUIDES.reduce((acc, g) => { acc[g.section] = (acc[g.section] || 0) + 1; return acc; }, {});
+    view.innerHTML = `
+      <section class="hero hero--compact">
+        <div class="hero__intro">
+          <h1>Anleitungen</h1>
+          <p>Schritt-für-Schritt-Anleitungen aus der SWS-Alliance-Wissensdatenbank – Tracking, Targeting, Abrechnung, Accountverknüpfung und mehr.</p>
+        </div>
+      </section>
+      <div class="toolbar">
+        <label class="search">
+          ${ICONS.search}
+          <input type="search" id="guide-search" placeholder="Anleitungen durchsuchen …" autocomplete="off" aria-label="Anleitungen durchsuchen" value="${escapeHtml(query)}" />
+        </label>
+        <nav class="tabs" aria-label="Bereiche">
+          <button type="button" class="tabs__item ${sec === "all" ? "is-active" : ""}" data-s="all">Alle<span class="tabs__item-count">${KB_GUIDES.length}</span></button>
+          ${GUIDE_SECTIONS.filter((s) => counts[s]).map((s) => `<button type="button" class="tabs__item ${sec === s ? "is-active" : ""}" data-s="${escapeHtml(s)}">${escapeHtml(s)}<span class="tabs__item-count">${counts[s]}</span></button>`).join("")}
+        </nav>
+      </div>
+      <div id="guide-groups">${renderGuideGroups(query, sec)}</div>
+      <p class="guide-source">Quelle: SWS-Alliance-Wissensdatenbank (Zoho Desk), übernommen am 6. Okt. 2026. Jede Anleitung verlinkt ihr Original.</p>
+    `;
+    const input = document.getElementById("guide-search");
+    let t;
+    input.addEventListener("input", () => {
+      clearTimeout(t);
+      t = setTimeout(() => {
+        document.getElementById("guide-groups").innerHTML = renderGuideGroups(input.value, sec);
+        history.replaceState(null, "", `#/anleitungen?${new URLSearchParams({ q: input.value, s: sec })}`);
+      }, 150);
+    });
+    view.querySelectorAll(".tabs__item[data-s]").forEach((btn) => btn.addEventListener("click", () => {
+      location.hash = `#/anleitungen?${new URLSearchParams({ q: input.value, s: btn.dataset.s })}`;
+    }));
+  }
+
+  function renderGuideDetail(id) {
+    const g = KB_GUIDES.find((x) => x.id === id);
+    if (!g) { renderNotFound("/anleitungen/" + id); return; }
+    pushRecent({ href: `#/anleitungen/${g.id}`, title: g.title, kind: "Anleitung" });
+    const more = KB_GUIDES.filter((x) => x.category === g.category && x.id !== g.id).slice(0, 6);
+    view.innerHTML = `
+      <a class="back-link" href="#/anleitungen">${ICONS.arrowLeft} Zu den Anleitungen</a>
+      <article class="detail">
+        <div class="detail__meta">
+          <span class="chip" style="background-color: var(--turquoise-text)">${escapeHtml(g.category)}</span>
+          <span class="detail__date">— ${escapeHtml(g.section)}${g.updated ? " · Stand " + formatDate(g.updated) : ""}</span>
+        </div>
+        <h1>${escapeHtml(g.title)}</h1>
+        <div class="detail__body guide-detail">
+          <div class="detail__main">
+            <div class="kb-article">${g.html}</div>
+          </div>
+          <aside class="guide-aside">
+            <div class="side-card">
+              <h2>Original</h2>
+              <p class="guide-aside__text">Diese Anleitung stammt aus der SWS-Alliance-Wissensdatenbank. Das Original kann neuer sein.</p>
+              <a class="btn btn--secondary" href="${escapeHtml(g.sourceUrl)}" target="_blank" rel="noopener noreferrer">${ICONS.external} In Zoho öffnen</a>
+            </div>
+            ${more.length ? `
+            <div class="side-card">
+              <h2>Mehr zu ${escapeHtml(g.category)}</h2>
+              <ul class="guide-more">${more.map((m) => `<li><a href="#/anleitungen/${encodeURIComponent(m.id)}">${escapeHtml(m.title)}</a></li>`).join("")}</ul>
+            </div>` : ""}
+          </aside>
+        </div>
+      </article>
+    `;
   }
 
   function renderNotFound(path) {
@@ -4353,6 +4477,10 @@
       renderStandaloneTemplateDetail(path.slice("/vorlagen/".length));
     } else if (path === "/vorlagen") {
       renderTemplates(params.get("q") || "", params.get("t") || "mail");
+    } else if (path.startsWith("/anleitungen/")) {
+      renderGuideDetail(decodeURIComponent(path.slice("/anleitungen/".length)));
+    } else if (path === "/anleitungen") {
+      renderGuides(params.get("q") || "", params.get("s") || "all");
     } else if (path.startsWith("/case-studies/")) {
       renderCaseStudyDetail(path.slice("/case-studies/".length));
     } else if (path === "/case-studies") {
@@ -4410,6 +4538,11 @@
     const head = view.querySelector(".hero") || view.querySelector(".detail > h1");
     if (head) { if (head.nextElementSibling !== subnav) head.after(subnav); }
     else if (view.firstElementChild !== subnav) view.prepend(subnav);
+    // Mobil (wischbare Leiste): aktiven Punkt waagerecht ins Bild holen,
+    // ohne die Seite senkrecht zu verschieben.
+    const nav = subnav.querySelector(".rail__nav");
+    const cur = subnav.querySelector('[aria-current="page"]');
+    if (nav && cur && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = cur.offsetLeft - nav.clientWidth / 2 + cur.offsetWidth / 2;
   }
   if (subnav && "MutationObserver" in window) new MutationObserver(placeSubnav).observe(view, { childList: true });
 

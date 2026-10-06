@@ -3393,3 +3393,51 @@ code {
 .msads-bar .msads-progress, .msads-bar .msads-toolbar { margin: 0; }
 /* Programmatischer Fokus auf Überschriften (Screenreader-Ansage) ohne sichtbaren Rahmen */
 h1:focus, h2:focus, h3:focus { outline: none; }
+
+
+/* ==========================================================================
+   Anleitungen (2026-10-06) — aus der SWS-Alliance-Wissensdatenbank
+   ========================================================================== */
+.guide-group { margin-bottom: var(--space-7); }
+.guide-group .feed__title { font-size: clamp(1.3rem, 1.1rem + 0.6vw, 1.6rem); }
+.guide-source { margin-top: var(--space-6); font-size: 0.85rem; color: var(--ink-soft); }
+
+.guide-detail { display: grid; grid-template-columns: minmax(0, 1fr) 20rem; gap: var(--space-6); align-items: start; }
+@media (max-width: 1023px) { .guide-detail { grid-template-columns: 1fr; } }
+.guide-aside { display: flex; flex-direction: column; gap: 18px; position: sticky; top: calc(var(--topbar-h) + var(--subnav-h) + var(--space-5)); }
+.guide-aside__text { font-size: 0.9rem; color: var(--ink-soft); margin-bottom: var(--space-4); }
+.guide-more { display: flex; flex-direction: column; gap: var(--space-3); }
+.guide-more a { color: var(--ink); font-weight: 600; font-size: 0.92rem; text-decoration: none; line-height: 1.35; }
+.guide-more a:hover { color: var(--accent); text-decoration: underline; }
+
+/* Anleitungstext: weiße Fläche wie die SWS-Karten, ruhige Lesetypografie */
+.kb-article {
+  background: var(--c-surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: clamp(20px, 3vw, 40px);
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: var(--ink);
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.kb-article > * + * { margin-top: 0.9em; }
+.kb-article h2, .kb-article h3, .kb-article h4 { font-family: var(--font-display); font-weight: 800; line-height: 1.2; letter-spacing: -0.01em; margin-top: 1.6em; }
+.kb-article h2 { font-size: 1.45rem; }
+.kb-article h3 { font-size: 1.2rem; }
+.kb-article h4 { font-size: 1.05rem; }
+.kb-article p { margin: 0; }
+.kb-article ul, .kb-article ol { padding-left: 1.4em; list-style: revert; }
+.kb-article li + li { margin-top: 0.35em; }
+.kb-article a { color: var(--accent-ink); font-weight: 600; }
+.kb-article img { max-width: 100%; height: auto; border: 1px solid var(--line); border-radius: 10px; margin: 0.6em 0; }
+.kb-article table { width: 100%; border-collapse: collapse; font-size: 0.95rem; display: block; overflow-x: auto; }
+.kb-article td, .kb-article th { border: 1px solid var(--line); padding: 8px 10px; vertical-align: top; text-align: left; }
+.kb-article th { background: var(--c-paper); }
+.kb-article code { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 0.9em; background: var(--c-paper); border: 1px solid var(--line); border-radius: 6px; padding: 1px 5px; }
+.kb-article pre { background: var(--ink); color: var(--c-surface); border-radius: 10px; padding: 14px 16px; overflow-x: auto; font-size: 0.88rem; }
+.kb-article pre code { background: none; border: 0; padding: 0; color: inherit; }
+.kb-article blockquote { margin: 0; padding: 12px 16px; background: var(--c-paper); border-radius: 10px; }
+.kb-video { position: relative; aspect-ratio: 16 / 9; max-width: 820px; border-radius: 12px; overflow: hidden; background: var(--ink); margin: 1em 0; }
+.kb-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
