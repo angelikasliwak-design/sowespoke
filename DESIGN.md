@@ -1,18 +1,18 @@
 ---
 name: Sowespoke Wissenszentrum
-description: Internes Editorial-Wissenszentrum mit Sowespoke-Markenfarben (Magenta/Petrol/Gelb)
+description: Internes Wissenszentrum im SWS-2.0-Markenstil (Magenta→Petrol-Verlauf, Ringe, Sparkle-Sterne)
 colors:
-  ink: "#111111"
-  ink-soft: "#636363"
-  paper: "#f9f9f9"
+  ink: "#1a1e22"
+  ink-soft: "#4b5560"
+  paper: "#f4f8f9"
   paper-raised: "#ffffff"
-  line: "#e7e3db"
-  accent: "#d4035f"
+  line: "#e3eaec"
+  accent: "#d40360"
   accent-tint: "#fde6f1"
   on-accent: "#ffffff"
-  yellow: "#ffc600"
+  yellow: "#ffc000"
   on-yellow: "#111111"
-  teal: "#609274"
+  teal: "#5f9c74"
   on-teal: "#ffffff"
   cat-ai: "#5b3fb0"
   cat-bid: "#146b3a"
@@ -21,22 +21,32 @@ colors:
   cat-tracking: "#185f8c"
   success: "#146b3a"
   success-tint: "#dcf1e3"
-  teal-tint: "#e2f3f2"
+  teal-tint: "#e1f2f5"
   accent-light: "#ff4b9e"
-  accent-deep: "#9c0349"
+  petrol: "#0092b0"
+  petrol-deep: "#00697f"
+  orange: "#fbae40"
+  muted: "#66707b"
+  faint: "#8a939c"
+  line-strong: "#d6e0e3"
+  error-tint: "#fdecef"
+  error-line: "#f3bdc9"
+  error-ink: "#8f1236"
+  accent-deep: "#9e0249"
 typography:
   display:
     fontFamily: "Exo 2, Segoe UI, system-ui, sans-serif"
-    fontWeight: 700
+    fontWeight: 800
     letterSpacing: "-0.01em"
   body:
-    fontFamily: "Open Sans, Segoe UI, system-ui, sans-serif"
+    fontFamily: "Source Sans 3, Segoe UI, system-ui, sans-serif"
     fontWeight: 400
     lineHeight: 1.55
 rounded:
   xs: "4px"
   sm: "10px"
   md: "14px"
+  lg: "22px"
   pill: "999px"
 spacing:
   xs: "0.25rem"
@@ -85,6 +95,25 @@ components:
 # Design System: Sowespoke Wissenszentrum
 
 ## Overview
+
+
+## SWS 2.0 — aktueller Markenstil (2026-10-06, löst den Comic-Panel-Look ab)
+
+**Anlass:** Nutzer-Wunsch, das Intranet an den neuen Unternehmensstil anzupassen. Referenzen: die Login-Seite der neuen SWS-Alliance-Plattform (`partners.sws-alliance.com/login`, Werte direkt aus deren ausgelieferten CSS-Variablen gelesen) und das Deck „SWS 2.0 – Weil Wachstum gemeinsam mehr Spaß macht“ (`content/`). Der Stil ist damit vorgegeben (brand-pinned), deshalb gab es keine eigene Richtungs-Auswahl.
+
+**Was gilt jetzt:**
+- **Farben:** Magenta `#d40360` (dunkel `#9e0249`) bleibt dominant, Petrol `#0092b0` (dunkel `#00697f`) ist die zweite Markenfarbe, Gold `#ffc000` nur für kleine Akzente (Sterne, Badges, Unterstreichung im Hero). Seitengrund ist das kühle Mist `#f4f8f9` statt warmem Off-White, Text ist Ink `#1a1e22`/`#4b5560`, Linien sind `#e3eaec`/`#d6e0e3`. Die Token-Namen in `tokens.css` sind gleich geblieben (`--c-pink-500`, `--c-turquoise` …), nur die Werte folgen jetzt der SWS-Plattform.
+- **Typografie:** Exo 2 **800** für Überschriften (wie SWS-Plattform und Deck), **Source Sans 3** (selbst gehostet, variabel) für Fließtext/UI statt Open Sans. Open Sans bleibt nur für das Lernset unter `content/microsoft-ads-kontopruefung/`.
+- **Flächen:** Karten mit 1px-Haarlinie und weichem Schatten (Versatz + Blur) statt 2px-Ink-Kontur und hartem Versatzschatten. Radien 22px (Hero), 14px (Karten), 10px (Felder), Pillen für Buttons/Chips/Badges.
+- **Hero:** Markenverlauf `--grad-brand` (Magenta-dunkel → Magenta → Petrol, 135°) mit konzentrischen Kreislinien und Lichtkante oben rechts — Ringmotiv der SWS-Login-Seite. Rechts das neue Motiv `HERO_SPARK` (icons.js): vierzackiger Stern im Ringsystem, funkelt einmal beim Laden (ohne Bewegung bei `prefers-reduced-motion`). Hervorhebungen im Hero sind weiß mit gerader Gold-Linie, außerhalb des Heros nur Magenta ohne Unterstreichung (keine Wellenlinie mehr).
+- **Motiv:** Der vierzackige Sparkle-Stern aus dem Deck ersetzt Blitz und Halbtonpunkte überall: aktiver Navigationspunkt, Stern-Cluster oben rechts in Seitenkarten/Info-Box/Mail-Generator (Magenta/Petrol/Gold), Hintergrund mit weichen Farbkugeln statt Punktraster.
+- **Login (`login.html`/`auth.css`):** nach SWS-Login gebaut — weiße Kopfleiste mit Logo, Verlauf mit Ringen, helle Karte mit dunkler Magenta-Pille „Intern“, Magenta-Pillenbutton „Mit Google anmelden“ (Google-„G“ auf weißem Kreis). Eigene Farbwerte in `auth.css`, weil die Seite ohne Login und ohne `tokens.css` ausgeliefert wird; Fehlerfarben = SWS `--error-*`.
+- **Entfernt:** Pop-Art-Megafon/-Rakete im Hero und Blitz/Ringe/Sterne-PNGs in den Seitenkarten. Die PNGs liegen weiter unter `assets/brand/`, falls sie zurück sollen.
+- **Fokus-Ring:** Petrol statt Gelb (SWS `--focus`).
+
+Alles unterhalb dieses Abschnitts ist Historie (Case-Wall-/Comic-Panel-Phase). Wo es widerspricht, gilt dieser Abschnitt.
+
+### Historie
 
 **Creative North Star: "The Case Wall"** (löst "The Editorial Desk" ab, 2026-08-07)
 

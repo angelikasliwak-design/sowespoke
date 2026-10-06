@@ -1,21 +1,28 @@
 /* Eigenständiges, schlankes Stylesheet für login.html — bewusst getrennt
    von styles.css, damit die Login-Seite öffentlich (ohne Login) ausgeliefert
-   werden kann, ohne das ganze App-CSS freizugeben. */
+   werden kann, ohne das ganze App-CSS freizugeben. Deshalb eigene Farbwerte
+   statt tokens.css.
+
+   SWS 2.0 (2026-10-06): gestaltet nach der Login-Seite der SWS-Plattform
+   (partners.sws-alliance.com/login) — weiße Kopfleiste, Magenta→Petrol-
+   Verlauf mit konzentrischen Ringen, helle Karte mit Pillen-Tag, Exo 2
+   ExtraBold + Source Sans 3. Werte = SWS-Variablen (--magenta, --petrol …). */
 
 :root {
-  --ink: #171717;
-  --ink-soft: #63636b;
-  --paper: #f7f5f1;
-  --paper-raised: #ffffff;
-  --line: #e7e3db;
-  --accent: #e4067e;
-  --accent-tint: #fde6f1;
-  --on-accent: #ffffff;
-  --font-display: "Baloo 2", "Segoe UI", system-ui, sans-serif;
-  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
-  --radius: 14px;
-  --radius-sm: 10px;
-  --shadow: 0 1px 2px rgba(23, 23, 23, 0.04), 0 8px 20px -10px rgba(23, 23, 23, 0.12);
+  --magenta: #d40360;
+  --magenta-dark: #9e0249;
+  --petrol: #0092b0;
+  --petrol-dark: #00697f;
+  --ink: #1a1e22;
+  --ink-soft: #4b5560;
+  --line: #e3eaec;
+  --paper: #ffffff;
+  --mist: #f4f8f9;
+  --font-display: "Exo 2", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --radius-lg: 22px;
+  --radius-field: 10px;
+  --shadow: 0 18px 40px -18px rgba(15, 40, 50, 0.28);
 }
 
 * { box-sizing: border-box; }
@@ -23,55 +30,96 @@
 body.auth-body {
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--paper);
+  flex-direction: column;
   color: var(--ink);
   font-family: var(--font-body);
   font-size: 16px;
-  padding: 1.5rem;
   -webkit-font-smoothing: antialiased;
+  background-color: var(--magenta);
+  background-image:
+    radial-gradient(120% 140% at 78% 8%, rgba(255, 255, 255, 0.16), transparent 55%),
+    radial-gradient(90% 90% at 12% 100%, rgba(0, 0, 0, 0.18), transparent 60%),
+    linear-gradient(135deg, var(--magenta-dark) 0%, var(--magenta) 42%, var(--petrol) 100%);
+}
+
+/* Konzentrische Ringe wie im SWS-Login, Zentrum rechts oben */
+body.auth-body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-radial-gradient(circle at 82% 35%, rgba(255, 255, 255, 0.14) 0 1px, transparent 1.5px 34px);
+  mask-image: radial-gradient(circle at 82% 35%, black 0%, transparent 70%);
+  -webkit-mask-image: radial-gradient(circle at 82% 35%, black 0%, transparent 70%);
+}
+
+.auth-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem clamp(1rem, 4vw, 3rem);
+  background: var(--paper);
+}
+.auth-bar__logo { width: 30px; height: auto; }
+.auth-bar__title {
+  padding-left: 1rem;
+  border-left: 1px solid var(--line);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
 }
 
 .auth-card {
-  width: 100%;
-  max-width: 380px;
-  background: var(--paper-raised);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  position: relative;
+  width: calc(100% - 2rem);
+  max-width: 440px;
+  margin: auto;
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
-  padding: 2.25rem 2rem;
+  padding: 2rem 1.9rem 2.1rem;
 }
 
-.auth-card__logo {
-  width: 44px;
-  height: auto;
-  margin: 0 auto 1.25rem;
-  display: block;
+.auth-card__tag {
+  display: inline-block;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: var(--magenta-dark);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .auth-card h1 {
   font-family: var(--font-display);
-  font-size: 1.5rem;
-  margin: 0 0 0.5rem;
-  text-align: center;
+  font-weight: 800;
+  font-size: clamp(1.6rem, 1.3rem + 1vw, 1.9rem);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  margin: 0.9rem 0 0.6rem;
+  text-wrap: balance;
 }
 
 .auth-card__hint {
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: var(--ink-soft);
-  text-align: center;
-  margin: 0 0 1.5rem;
+  margin: 0 0 1.6rem;
   line-height: 1.5;
 }
+.auth-card__hint strong { color: var(--ink); }
 
 .auth-error {
-  background: var(--accent-tint);
-  color: #a5341a;
-  border-radius: var(--radius-sm);
+  background: #fdecef;
+  border: 1px solid #f3bdc9;
+  color: #8f1236;
+  border-radius: var(--radius-field);
   padding: 0.6rem 0.75rem;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   margin: 0 0 1rem;
 }
 
@@ -81,22 +129,27 @@ body.auth-body {
   justify-content: center;
   gap: 0.65rem;
   width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--paper-raised);
-  color: var(--ink);
-  font-weight: 600;
-  font-size: 0.9375rem;
+  padding: 0.95rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--magenta);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
   font-family: inherit;
   text-decoration: none;
+  transition: background-color 150ms ease, transform 150ms ease;
 }
+.auth-google-btn:hover { background: var(--magenta-dark); }
+.auth-google-btn:active { transform: translateY(1px); }
+.auth-google-btn:focus-visible { outline: 3px solid var(--petrol); outline-offset: 2px; }
 
-.auth-google-btn:hover { background: var(--paper); }
-
-.auth-google-btn:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 1px;
+/* Google-"G" braucht laut Markenrichtlinie einen weißen Grund */
+.auth-google-btn__icon {
+  width: 26px;
+  height: 26px;
+  padding: 4px;
+  flex: none;
+  background: #fff;
+  border-radius: 50%;
 }
-
-.auth-google-btn__icon { width: 18px; height: 18px; flex: none; }

@@ -76,7 +76,7 @@
      DESIGN.md-Eintrag "Marken-Token-Umstellung" (2026-08-10). Open Sans ist
      die echte, frei lizenzierte Fließtext-/UI-Schrift der Live-Seite. */
   --font-display: "Exo 2", "Segoe UI", system-ui, sans-serif;
-  --font-body: "Open Sans", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif; /* SWS 2.0 (2026-10-06): Fließtextschrift der SWS-Plattform, löst Open Sans ab */
 
   /* -- Abstand / Radius / Schatten --------------------------------------- */
   --space-1: 0.25rem;
@@ -137,21 +137,16 @@ mark {
      Zeile mitläuft. */
   background: none;
   color: var(--accent);
-  /* Schwarz + wavy statt pink/gerade (Referenz-Mockup 2026-08-07 zeigt die
-     Unterstreichung schwarz und handgezeichnet-wellig, nicht als gerade
-     pinke Linie). */
-  text-decoration: underline;
-  text-decoration-color: var(--ink);
-  text-decoration-style: wavy;
-  text-decoration-thickness: 2.5px;
-  text-underline-offset: 0.16em;
+  /* SWS 2.0 (2026-10-06): hervorgehobene Wörter nur in Magenta, ohne
+     wellige Comic-Unterstreichung — wie "We built a team." im Deck. */
+  text-decoration: none;
 }
 
 /* Gelb statt Magenta (SoWeSpike-Spezifikation B8.3/B10.1, 2026-09-07) —
    Tastatur-Fokus ist einer der sechs erlaubten Gelb-Einsätze, nicht länger
    Magenta. */
 :focus-visible {
-  outline: 3px solid var(--yellow);
+  outline: 3px solid var(--turquoise); /* SWS --focus: Petrol (2026-10-06) */
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -212,8 +207,8 @@ mark {
   align-self: center;
   display: flex;
   justify-content: center;
-  background: var(--accent);
-  border: var(--border-card);
+  background: var(--grad-brand);
+  box-shadow: var(--shadow-comic);
   border-radius: var(--radius);
 
 }
@@ -273,14 +268,12 @@ mark {
    schwarzen Linien oben/unten + Blitz-Indikator statt schlichtem Balken
    (derselbe Pfad wie ICONS.flash, als Maske statt eigenem <svg>-Element,
    damit am Markup in app.js nichts geändert werden muss). */
-.rail__nav a:hover { background: var(--yellow-tint); color: var(--ink); }
+.rail__nav a:hover { background: var(--c-paper); color: var(--ink); }
 .rail__nav a[aria-current="page"] {
   background: var(--accent-tint);
   color: var(--accent);
   font-weight: 700;
   padding-left: calc(var(--space-3) + 17px);
-  border-top: 1.5px solid var(--ink);
-  border-bottom: 1.5px solid var(--ink);
 }
 .rail__nav a[aria-current="page"]::before {
   /* Blitz-Form statt schlichtem Balken — zusätzlicher Indikator neben der
@@ -293,11 +286,11 @@ mark {
   width: 11px;
   height: 26px;
   background-color: var(--accent);
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M13 2 4 14h6l-1 8 9-12h-6z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0c.8 7 5 11.2 12 12-7 .8-11.2 5-12 12-.8-7-5-11.2-12-12 7-.8 11.2-5 12-12z'/%3E%3C/svg%3E");
   mask-size: contain;
   mask-repeat: no-repeat;
   mask-position: center;
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M13 2 4 14h6l-1 8 9-12h-6z'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0c.8 7 5 11.2 12 12-7 .8-11.2 5-12 12-.8-7-5-11.2-12-12 7-.8 11.2-5 12-12z'/%3E%3C/svg%3E");
   -webkit-mask-size: contain;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
@@ -416,12 +409,14 @@ mark {
   z-index: -1;
   pointer-events: none;
   background-color: var(--c-paper);
+  /* SWS 2.0 (2026-10-06): weiche Farbkugeln wie in den Deck-Folien
+     (Magenta oben rechts, Petrol links, Gold klein) statt Punktraster. */
   background-image:
-    radial-gradient(ellipse 55% 45% at 100% 0%, color-mix(in srgb, var(--c-pink-100) 40%, transparent) 0%, transparent 70%),
-    radial-gradient(ellipse 55% 45% at 0% 0%, color-mix(in srgb, var(--c-yellow-100) 40%, transparent) 0%, transparent 70%),
-    radial-gradient(circle, color-mix(in srgb, var(--c-ink) 8%, transparent) 1.4px, transparent 1.6px);
-  background-repeat: no-repeat, no-repeat, repeat;
-  background-size: 100% 100%, 100% 100%, 15px 15px;
+    radial-gradient(circle at 92% 6%, color-mix(in srgb, var(--c-pink-500) 16%, transparent) 0, transparent 34%),
+    radial-gradient(circle at 4% 30%, color-mix(in srgb, var(--c-turquoise) 13%, transparent) 0, transparent 30%),
+    radial-gradient(circle at 70% 2%, color-mix(in srgb, var(--c-yellow-500) 16%, transparent) 0, transparent 16%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
   /* Ein gemeinsames mask-image auf demselben Element sorgt dafür, dass
      ALLE drei Hintergrund-Ebenen (Punktraster + beide Farbwolken)
      gleichmäßig im selben Verlauf ausblenden, statt jede Ebene einzeln
@@ -444,10 +439,6 @@ mark {
 @media (max-width: 767px) {
   .page-bg {
     height: clamp(280px, 40vh, 420px);
-    background-image:
-      radial-gradient(ellipse 55% 45% at 100% 0%, color-mix(in srgb, var(--c-pink-100) 25%, transparent) 0%, transparent 70%),
-      radial-gradient(ellipse 55% 45% at 0% 0%, color-mix(in srgb, var(--c-yellow-100) 25%, transparent) 0%, transparent 70%),
-      radial-gradient(circle, color-mix(in srgb, var(--c-ink) 8%, transparent) 1.4px, transparent 1.6px);
   }
 }
 /* Nutzer:innen, die reduzierte Transparenz/Effekte bevorzugen: nur die
@@ -511,9 +502,9 @@ mark {
   flex-wrap: wrap;
   margin-bottom: var(--space-6);
   padding: var(--space-6) var(--space-6);
-  background: var(--accent);
-  border: var(--border-card);
-  border-radius: var(--radius);
+  background: var(--grad-brand); /* SWS 2.0: Magenta→Petrol wie Login-Hero/Deck-Titelfolien */
+  border: 0;
+  border-radius: var(--radius-lg);
   /* Schatten-Hierarchie (SoWeSpike-Spezifikation B8.4, 2026-09-07) — genau
      zwei Elemente site-weit tragen noch einen Schatten, als Werkzeug für
      Hierarchie statt Dekoration. Ebene 1 (härtester/größter Versatz) ist
@@ -527,18 +518,36 @@ mark {
    Pseudo-Element statt direkt auf .hero, damit .hero__scene/.hero__intro
    in einem eigenen Stacking-Kontext sauber darüber liegen. */
 .hero::before {
+  /* SWS 2.0 (2026-10-06): konzentrische Kreislinien (Ringmotiv der
+     SWS-Plattform) plus Lichtkante oben rechts statt Halbtonpunkten. */
   content: "";
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: radial-gradient(circle, color-mix(in srgb, var(--on-accent) 55%, transparent) 1.6px, transparent 1.8px);
-  background-size: 15px 15px;
-  background-position: right -20px top -20px;
-  mask-image: radial-gradient(ellipse 70% 90% at 85% 30%, black 0%, transparent 75%);
-  -webkit-mask-image: radial-gradient(ellipse 70% 90% at 85% 30%, black 0%, transparent 75%);
+  background:
+    radial-gradient(120% 140% at 78% 8%, rgba(255, 255, 255, 0.16), transparent 55%),
+    repeating-radial-gradient(circle at 86% 30%, rgba(255, 255, 255, 0.16) 0 1px, transparent 1.5px 30px);
+  mask-image: radial-gradient(ellipse 65% 120% at 86% 30%, black 0%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 65% 120% at 86% 30%, black 0%, transparent 78%);
 }
 .hero > * { position: relative; z-index: 1; }
+/* Hervorhebung auf dem Verlauf: Magenta-auf-Magenta wäre unsichtbar —
+   Weiß mit gerader Gold-Linie (SWS --gold), keine Wellenlinie. */
+.hero mark {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--yellow);
+  text-decoration-thickness: 0.09em;
+  text-underline-offset: 0.14em;
+}
+/* Hero-Motiv: vierzackiger Stern im Ringsystem (Deck "SO WE SCALE"). Die
+   Sterne funkeln einmal beim Laden, danach Ruhe; ohne Bewegung bei
+   prefers-reduced-motion. */
+.hero-spark__main { transform-origin: 120px 120px; animation: spark-in 900ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.hero-spark__mini { transform-box: fill-box; transform-origin: center; animation: spark-in 700ms 250ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes spark-in { from { opacity: 0; transform: scale(0.4) rotate(-30deg); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .hero-spark__main, .hero-spark__mini { animation: none; } }
 .hero__illustration {
   position: relative;
   flex: none;
@@ -552,6 +561,7 @@ mark {
    — flache Comic-Zeichnung statt des vorherigen Fotos, deshalb ohne die
    für das Foto gedachte Rotation/Verschiebung; sitzt bereits passend
    ausgerichtet im Bild. */
+.hero__illustration svg { width: 100%; height: 100%; overflow: visible; }
 .hero__illustration img {
   width: 100%;
   height: 100%;
@@ -592,7 +602,7 @@ mark {
    platziert, ein bisschen nach rechts") — bei flex-start blieb rechts vom
    Megafon sichtbar Leerraum bis zum Hero-Rand, translateX von 4px auf 32px
    angehoben, um diesen Freiraum zu nutzen statt ihn ungenutzt zu lassen. */
-.hero--connected .hero__illustration { width: 268px; height: 272px; transform: rotate(-6deg) translate(32px, 10px); }
+.hero--connected .hero__illustration { width: 240px; height: 240px; transform: translateX(24px); }
 /* Die vorherigen ::before/::after-Farbwolken (Teal-/Accent-Tint-Kreise)
    sind entfallen — dieselbe Funktion (weiche, großflächige Farbwolken)
    übernimmt jetzt .page-bg für die ganze Seite statt pro Hero-Instanz. */
@@ -614,7 +624,7 @@ mark {
    Stern saß an .hero__intro::before, also site-weit auf jedem Hero, nicht
    nur News — bewusst konsequent überall entfernt statt nur auf einer
    Seite, sonst wäre die Uneinheitlichkeit nur verschoben worden. */
-.hero__intro { position: relative; flex: 1 1 26rem; max-width: 34rem; animation: hero-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.hero__intro { position: relative; flex: 1 1 26rem; max-width: 38rem; animation: hero-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both; }
 
 /* Comic-Sprechblase als echtes HTML-Element statt SVG-Text (lesbar bei
    jeder Größe) — sitzt zwischen Intro-Text und Megafon-Illustration. */
@@ -661,14 +671,14 @@ mark {
 
 .hero__intro h1 {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 800; /* SWS-Überschriften: Exo 2 ExtraBold */
   /* Verkleinert (Screenshot-Selbsttest 2026-08-10, kritischer P0-Fund:
      bei 4.2rem/2-zeiliger Headline war auf 1440×900 UND 390×844 kein
      einziger Artikel ohne Scrollen sichtbar — widerspricht dem
      Kernprinzip "schneller Zugriff". Deckel von 4.2rem auf 2.75rem. */
-  font-size: clamp(2rem, 1.3rem + 2vw, 2.75rem);
+  font-size: clamp(2rem, 1.3rem + 2vw, 2.6rem);
   line-height: 1.1;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
   text-wrap: balance;
 }
 @keyframes hero-in {
@@ -955,9 +965,8 @@ mark {
   text-transform: uppercase;
   letter-spacing: 0.03em;
   border-radius: 999px;
-  border: var(--border-tile);
-  box-shadow: 1.5px 1.5px 0 var(--ink);
-  transform: rotate(-6deg);
+  border: 0;
+  box-shadow: var(--shadow-comic);
 }
 .card-badge--new { background: var(--accent); color: var(--on-accent); }
 /* Erste News-Karte pro Kanal-Ansicht als "Im Fokus"-Karte (2026-09-04,
@@ -995,10 +1004,7 @@ mark {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: radial-gradient(circle, color-mix(in srgb, var(--ink) 10%, transparent) 1.4px, transparent 1.6px);
-  background-size: 14px 14px;
-  mask-image: radial-gradient(ellipse 55% 90% at 100% 0%, black 0%, transparent 70%);
-  -webkit-mask-image: radial-gradient(ellipse 55% 90% at 100% 0%, black 0%, transparent 70%);
+  background: radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--c-pink-500) 12%, transparent) 0, transparent 40%), radial-gradient(circle at 0% 100%, color-mix(in srgb, var(--c-turquoise) 10%, transparent) 0, transparent 35%);
 }
 .article-list__item--featured .row { position: relative; z-index: 1; }
 /* Textgrößen nochmal angehoben + Icon zentriert statt oben ausgerichtet
@@ -1058,10 +1064,8 @@ mark {
   color: var(--c-surface);
   /* Sichtbareres Ben-Day-Punktraster — comic-typisches Halbton-Druckmuster,
      vorher zu blass, um als bewusstes Pop-Art-Element erkennbar zu sein. */
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.78) 1.6px, transparent 1.8px);
-  background-size: 8px 8px;
-  background-position: right -3px bottom -3px;
-  background-repeat: repeat;
+  /* SWS 2.0: weicher Glanzverlauf statt Halbtonpunkten */
+  background-image: linear-gradient(150deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 60%);
   transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .row__thumb svg { width: 24px; height: 24px; position: relative; }
@@ -1254,12 +1258,7 @@ mark {
   background: var(--yellow);
   padding: 2px var(--space-2);
   border-radius: 999px;
-  /* Comic-Sticker statt flachem Pill: harter Versatz-Schatten (kein Blur)
-     plus leichte Drehung — Halbton-/Sticker-Sprache aus den echten
-     Sowespoke-Materialien, hier im Kleinformat für ein Badge. */
-  border: var(--border-tile);
-  box-shadow: 1.5px 1.5px 0 var(--ink);
-  transform: rotate(-2deg);
+  /* SWS 2.0: flache Gold-Pille (wie "Launch"-Badges im Deck), ohne Sticker-Schatten/Drehung. */
 }
 .flash svg { width: 12px; height: 12px; }
 .flash--muted { background: var(--paper); color: var(--ink-soft); border: 1px solid var(--line); box-shadow: none; transform: none; }
@@ -1296,6 +1295,7 @@ mark {
    Quelldateien sind unterschiedlich beschnitten (Ringe eher breit, Blitz/
    Sterne eher hoch), object-fit:contain verhindert Verzerrung/Beschnitt
    innerhalb des festen 52×52-Rahmens. */
+.side-card__illustration svg, .info-box__illustration svg, .mailgen__illustration svg { width: 100%; height: 100%; }
 .side-card__illustration img, .info-box__illustration img, .mailgen__illustration img {
   width: 100%;
   height: 100%;
@@ -1795,9 +1795,9 @@ mark {
   text-align: left;
   cursor: pointer;
   background: var(--paper-raised);
-  border: 2.5px solid var(--stat-color);
-  border-radius: var(--radius-sm);
-  box-shadow: 3px 3px 0 var(--stat-color);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-comic);
   padding: var(--space-4);
   display: flex;
   flex-direction: column;
@@ -1809,7 +1809,7 @@ mark {
    Hover vertieft den bestehenden harten Versatz-Schatten statt auf die
    weiche shadow-hover-Sprache zu wechseln — im Grundzustand ist der
    Schatten schon hart, ein Stilbruch nur beim Hover wäre inkonsistent. */
-.ticket-stat:hover { transform: translateY(-2px); box-shadow: 5px 5px 0 var(--stat-color); }
+.ticket-stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
 .ticket-stat:focus-visible { outline-offset: 3px; }
 .ticket-stat__icon {
   display: flex;

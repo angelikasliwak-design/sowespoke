@@ -366,7 +366,7 @@
           <h1>Anfragen an <mark>Microsoft</mark>.</h1>
           <p>Vorbereitete E-Mails auf Englisch an ${escapeHtml(MS_CONTACT_NAME)} — nach Anfrage-Art sortiert, jede mit eigenem Formular.</p>
         </div>
-        <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
+        <div class="hero__illustration">${HERO_SPARK}</div>
       </section>
 
       <ul class="article-list">
@@ -1604,7 +1604,7 @@
               <h1>Neuigkeiten aus der<br>Online-<mark>Marketing-Welt</mark>.</h1>
               <p>Aktuelle Trends, Updates &amp; Insights aus der Online-Marketing-Welt – mit besonderem Fokus auf Microsoft Advertising.</p>
             </div>
-            <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
+            <div class="hero__illustration">${HERO_SPARK}</div>
           </section>
           <div class="toolbar">
             <label class="search">
@@ -1939,7 +1939,7 @@
           <h1>Offizielle <mark>Microsoft-Präsentationen</mark>.</h1>
           <p>Zusammenfassungen, Beta-/Feature-Guides und Kunden-Mails direkt aus den echten Präsentationsfolien — neueste zuerst, Einträge ohne bekanntes Datum am Ende.</p>
         </div>
-        <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
+        <div class="hero__illustration">${HERO_SPARK}</div>
       </section>
       <div class="toolbar">
         <label class="search">
@@ -2133,7 +2133,7 @@
           <h1><mark>Vorlagen</mark> &amp; Wissen.</h1>
           <p>E-Mail-Vorlagen zum direkten Versand oder Best Practices zum Nachschlagen — beides an einem Ort, klar getrennt.</p>
         </div>
-        <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
+        <div class="hero__illustration">${HERO_SPARK}</div>
       </section>
       <div class="toolbar">
         <label class="search">
@@ -2243,7 +2243,7 @@
           <h1>Case <mark>Studies</mark>.</h1>
           <p>Echte Ergebnisse und Testresultate aus den Kundenkonten — laufend gepflegt.</p>
         </div>
-        <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
+        <div class="hero__illustration">${HERO_SPARK}</div>
       </section>
       ${(() => {
         // Sortier-Auswahl braucht mindestens zwei Einträge, um sinnvoll zu
@@ -2814,7 +2814,7 @@
           <h1>Tickets<mark>-Übersicht</mark>.</h1>
           <p>Alle Anfragen von Kundenagenturen an einem Ort. Diese Ansicht zeigt aktuell Beispieldaten — die Anbindung an das echte Ticketsystem folgt.</p>
         </div>
-        <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
+        <div class="hero__illustration">${HERO_SPARK}</div>
       </section>
       <div class="toolbar">
         <label class="search">
@@ -2957,7 +2957,7 @@
           <h1>Hast du eine <mark>Idee</mark>? Dann her damit!</h1>
           <p>Teile neue Ansätze, Verbesserungsvorschläge oder kreative Impulse mit dem Team. Jede Idee zählt und wird für alle sichtbar.</p>
         </div>
-        <div class="hero__illustration"><img src="assets/brand/hero-rakete.png" alt="" /></div>
+        <div class="hero__illustration">${HERO_SPARK}</div>
       </section>
 
       <div class="ideas-layout">
@@ -3213,7 +3213,7 @@
           <h1>Geplante <mark>Serienmails</mark>.</h1>
           <p>Über den Mail-Generator terminierte Nachrichten — werden automatisch zum gewählten Zeitpunkt über deine verbundene Gmail-Adresse verschickt.</p>
         </div>
-        <div class="hero__illustration"><img src="assets/brand/hero-megafon-v2.png" alt="" /></div>
+        <div class="hero__illustration">${HERO_SPARK}</div>
       </section>
       <div class="feed">
         <h2 class="feed__title">Deine geplanten Mails<span class="feed__title__count" id="schedule-count"></span></h2>
@@ -3299,7 +3299,7 @@
           <h1>Wer <mark>nutzt</mark> Sowespoke?</h1>
           <p>Nur für Admins sichtbar. "Zuletzt aktiv" aktualisiert sich bei echter Nutzung (höchstens einmal pro Tag), "Letzter Login" nur bei einer neuen Anmeldung (Session hält 14 Tage).</p>
         </div>
-        <div class="hero__illustration"><img src="assets/brand/hero-rakete.png" alt="" /></div>
+        <div class="hero__illustration">${HERO_SPARK}</div>
       </section>
       <div class="feed">
         <h2 class="feed__title">Eingeloggte Personen<span class="feed__title__count" id="login-log-count"></span></h2>

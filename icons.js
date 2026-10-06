@@ -221,11 +221,13 @@ const BRAND_BURST = `<svg viewBox="0 0 200 200" aria-hidden="true">
    Dateien getrimmt (transparente Ränder entfernt) und auf max. 200px
    Kantenlänge verkleinert (Playwright-Canvas, gleiche Technik wie bei den
    Hero-Illustrationen). */
-const SIDECARD_ILLUSTRATION = `<img src="assets/brand/card-accent-bolt.png" alt="" />`;
+/* SWS 2.0 (2026-10-06): Stern-Cluster statt Pop-Art-PNGs (Blitz/Ringe/Sterne). */
+const SPARK_PATH = "M0-1c.07.58.42.93 1 1-.58.07-.93.42-1 1-.07-.58-.42-.93-1-1 .58-.07.93-.42 1-1z";
+const SIDECARD_ILLUSTRATION = `<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="${SPARK_PATH}" transform="translate(20 26) scale(17)" fill="var(--c-pink-500)" /><path d="${SPARK_PATH}" transform="translate(39 10) scale(7)" fill="var(--c-yellow-500)" /><circle cx="38" cy="38" r="3.5" fill="var(--c-turquoise)" /></svg>`;
 
-const INFOBOX_ILLUSTRATION = `<img src="assets/brand/card-accent-rings.png" alt="" />`;
+const INFOBOX_ILLUSTRATION = `<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="${SPARK_PATH}" transform="translate(20 26) scale(17)" fill="var(--c-turquoise)" /><path d="${SPARK_PATH}" transform="translate(39 10) scale(7)" fill="var(--c-pink-500)" /><circle cx="38" cy="38" r="3.5" fill="var(--c-yellow-500)" /></svg>`;
 
-const MAILGEN_ILLUSTRATION = `<img src="assets/brand/card-accent-stars.png" alt="" />`;
+const MAILGEN_ILLUSTRATION = `<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="${SPARK_PATH}" transform="translate(20 26) scale(17)" fill="var(--c-yellow-500)" /><path d="${SPARK_PATH}" transform="translate(39 10) scale(7)" fill="var(--c-turquoise)" /><circle cx="38" cy="38" r="3.5" fill="var(--c-pink-500)" /></svg>`;
 
 const CATEGORY_ICON = {
   "KI & Automatisierung": "sparkle",
@@ -234,3 +236,21 @@ const CATEGORY_ICON = {
   "Kreativ & Formate": "layoutGrid",
   "Tracking & Messung": "chartLine",
 };
+
+
+/* SWS 2.0 (2026-10-06): Hero-Motiv statt Pop-Art-Megafon/-Rakete —
+   vierzackiger Stern (Marken-Sparkle aus dem SWS-2.0-Deck) in einem
+   Ringsystem wie im Login-Hero der SWS-Plattform. Reines SVG, Farben über
+   CSS-Variablen; die alten PNGs liegen weiter unter assets/brand/. */
+const HERO_SPARK = `<svg class="hero-spark" viewBox="0 0 240 240" aria-hidden="true" focusable="false">
+  <g fill="none" stroke="var(--c-surface)">
+    <circle cx="120" cy="120" r="54" stroke-opacity=".55" />
+    <circle cx="120" cy="120" r="84" stroke-opacity=".32" />
+    <circle cx="120" cy="120" r="114" stroke-opacity=".18" />
+  </g>
+  <circle cx="120" cy="120" r="46" fill="var(--c-surface)" fill-opacity=".14" />
+  <g class="hero-spark__main"><path d="${SPARK_PATH}" transform="translate(120 120) scale(58)" fill="var(--c-surface)" /></g>
+  <path class="hero-spark__mini" d="${SPARK_PATH}" transform="translate(196 48) scale(15)" fill="var(--c-yellow-500)" />
+  <path class="hero-spark__mini" d="${SPARK_PATH}" transform="translate(44 186) scale(10)" fill="var(--c-surface)" />
+  <circle cx="204" cy="120" r="5" fill="var(--c-yellow-500)" />
+</svg>`;
