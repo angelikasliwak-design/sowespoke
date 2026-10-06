@@ -3221,3 +3221,14 @@ code {
   .rail__nav a, .rail__nav a.rail__nav-group-link, .rail__nav-sub a { width: auto; height: auto; justify-content: flex-start; }
   .rail__nav-label { display: inline; }
 }
+
+
+/* -- Breitere Mittelspalte (2026-10-06, Nutzer: "das in der Mitte muss
+      größer sein") + Filter-Pillen umbrechen statt mit Scrollleiste ------ */
+:root { --container: 1440px; }
+.hero__intro, .hero--connected .hero__intro { max-width: 880px; }
+@media (min-width: 768px) {
+  .toolbar .tabs, .tabs { flex-wrap: wrap; overflow: visible; }
+}
+.tabs { scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
