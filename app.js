@@ -3472,10 +3472,12 @@
             <p>Eine Frage nach der anderen – zuerst die Direct-Manager-Verknüpfung, danach der Rechnungsempfänger.</p>
           </div>
         </section>
-        <div class="msads-toolbar">
-          <a class="btn btn--secondary" href="content/microsoft-ads-kontopruefung/Microsoft_Ads_Kontopruefung_Lernset.pdf" download>${ICONS.download} PDF-Lernset herunterladen</a>
+        <div class="msads-bar">
+          <ol class="msads-progress" data-msads-progress aria-label="Prüffortschritt"></ol>
+          <div class="msads-toolbar">
+            <a class="btn btn--secondary" href="content/microsoft-ads-kontopruefung/Microsoft_Ads_Kontopruefung_Lernset.pdf" download>${ICONS.download} PDF-Lernset herunterladen</a>
+          </div>
         </div>
-        <ol class="msads-progress" data-msads-progress aria-label="Prüffortschritt"></ol>
         <div class="msads-workspace layout-2col">
           <section class="msads-panel" data-msads-panel aria-live="polite"></section>
           <aside class="side-card msads-protocol" data-msads-protocol></aside>

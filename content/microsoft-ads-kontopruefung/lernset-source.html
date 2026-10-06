@@ -10,16 +10,10 @@
 <title>Microsoft Ads Kontoprüfung — Lernset</title>
 <style>
   @font-face {
-    font-family: "Open Sans";
+    font-family: "Source Sans 3";
     font-style: normal;
-    font-weight: 400;
-    src: url("../../assets/fonts/OpenSans-Regular.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: "Open Sans";
-    font-style: normal;
-    font-weight: 600;
-    src: url("../../assets/fonts/OpenSans-SemiBold.woff2") format("woff2");
+    font-weight: 200 900;
+    src: url("../../assets/fonts/SourceSans3-Variable.woff2") format("woff2");
   }
   @font-face {
     font-family: "Exo 2";
@@ -28,31 +22,34 @@
     src: url("../../assets/fonts/Exo2-Variable.woff2") format("woff2");
   }
 
+  /* SWS 2.0 (2026-10-06): Palette wie tokens.css / SWS-Plattform */
   :root {
-    --ink: #111111;
-    --ink-60: #636363;
+    --ink: #1A1E22;
+    --ink-60: #4B5560;
     --paper: #FFFFFF;
-    --line: #E7E3DB;
-    --accent: #D4035F;
-    --accent-tint: #FDE6F1;
-    --teal: #00A6B2;
-    --teal-deep: #007C85;
-    --teal-tint: #E2F3F2;
-    --yellow: #FFC600;
-    --yellow-tint: #FFF7DC;
+    --line: #E3EAEC;
+    --accent: #D40360;
+    --accent-ink: #9E0249;
+    --accent-tint: #FCE6F0;
+    --teal: #0092B0;
+    --teal-deep: #00697F;
+    --teal-tint: #E3F2F5;
+    --yellow: #FFC000;
+    --yellow-tint: #FFF6D6;
     --success: #146B3A;
     --success-tint: #DCF1E3;
     --warning: #A5341A;
     --warning-tint: #FBE4DE;
+    --grad: linear-gradient(135deg, #00697F 0%, #0092B0 48%, #D40360 100%);
   }
 
   @page { size: 297mm 210mm; margin: 0; }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body {
-    font-family: "Open Sans", "Segoe UI", sans-serif;
+    font-family: "Source Sans 3", "Segoe UI", sans-serif;
     color: var(--ink);
-    background: #DCD6C8;
+    background: #E3EAEC;
   }
   h1, h2, h3, .display {
     font-family: "Exo 2", "Segoe UI", sans-serif;
@@ -71,16 +68,17 @@
     overflow: hidden;
   }
   .page:last-child { page-break-after: auto; }
+  .page::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3mm; background: var(--grad); }
 
   .masthead {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding-bottom: 6mm;
-    border-bottom: 2px solid var(--line);
+    border-bottom: 1px solid var(--line);
     margin-bottom: 6mm;
   }
-  .masthead__logo { height: 9mm; display: block; }
+  .masthead__logo { height: 8mm; display: block; }
   .masthead__meta { text-align: right; font-size: 9.5pt; color: var(--ink-60); font-weight: 600; }
   .masthead__meta strong { color: var(--ink); }
 
@@ -89,7 +87,7 @@
     flex: none;
     width: 11mm; height: 11mm;
     border-radius: 999px;
-    background: var(--accent);
+    background: var(--grad);
     color: #fff;
     display: flex; align-items: center; justify-content: center;
     font-family: "Exo 2", sans-serif; font-weight: 800; font-size: 14pt;
@@ -99,10 +97,10 @@
 
   /* -- Route cards (Page 1) -- */
   .route-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin-top: 4mm; }
-  .route-card { border-radius: 6mm; border: 1.5px solid var(--line); overflow: hidden; }
+  .route-card { border-radius: 4mm; border: 1px solid var(--line); overflow: hidden; }
   .route-card__head { padding: 5mm 6mm; font-family: "Exo 2", sans-serif; font-weight: 800; font-size: 13pt; }
   .route-card--a .route-card__head { background: var(--teal-tint); color: var(--teal-deep); }
-  .route-card--b .route-card__head { background: var(--accent-tint); color: var(--accent); }
+  .route-card--b .route-card__head { background: var(--accent-tint); color: var(--accent-ink); }
   .route-card__body { padding: 5mm 6mm 6mm; }
   .route-card__body > p { margin: 0 0 4mm; font-size: 9.5pt; color: var(--ink-60); }
   .route-step { display: flex; gap: 3.5mm; margin-bottom: 3.5mm; }
@@ -121,7 +119,7 @@
     margin-top: 7mm;
     background: var(--ink);
     color: #fff;
-    border-radius: 4mm;
+    border-radius: 999px;
     padding: 4mm 6mm;
     text-align: center;
     font-family: "Exo 2", sans-serif;
@@ -133,10 +131,10 @@
   .ladder { display: flex; align-items: stretch; gap: 3mm; margin: 3mm 0 4mm; }
   .ladder__node {
     flex: 1;
-    border: 1.5px solid var(--line);
+    border: 1px solid var(--line);
     border-radius: 4mm;
     padding: 4mm;
-    background: #FAFAF8;
+    background: #F4F8F9;
     position: relative;
   }
   .ladder__node--variable { background: var(--yellow-tint); border-color: #E9CE6B; border-style: dashed; }
@@ -147,13 +145,12 @@
 
   .rule-note {
     background: var(--accent-tint);
-    border-left: 3.5px solid var(--accent);
-    border-radius: 0 3mm 3mm 0;
+    border-radius: 3mm;
     padding: 2.5mm 5mm;
     font-size: 9.7pt;
     margin-bottom: 3mm;
   }
-  .rule-note strong { color: var(--accent); }
+  .rule-note strong { color: var(--accent-ink); }
 
   .checklist { display: flex; flex-direction: column; gap: 1.6mm; margin-bottom: 3mm; }
   .checklist li { display: flex; gap: 3mm; align-items: flex-start; font-size: 9.7pt; list-style: none; }
@@ -218,7 +215,7 @@
 
   /* -- Page 4: Fristen -- */
   .deadline-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin-top: 5mm; }
-  .deadline-card { border-radius: 6mm; border: 1.5px solid var(--line); padding: 6mm; }
+  .deadline-card { border-radius: 4mm; border: 1px solid var(--line); padding: 6mm; }
   .deadline-card__date { font-family: "Exo 2", sans-serif; font-weight: 800; font-size: 30pt; line-height: 1; color: var(--accent); }
   .deadline-card--direct .deadline-card__date { color: var(--teal-deep); }
   .deadline-card__label { font-size: 9pt; color: var(--ink-60); margin: 1.5mm 0 4mm; }
@@ -227,10 +224,10 @@
   .deadline-card__counts strong { color: var(--ink); }
 
   .footnote-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin-top: 7mm; }
-  .footnote-box { border-left: 3.5px solid var(--teal); background: var(--teal-tint); border-radius: 0 3mm 3mm 0; padding: 4mm 5mm; font-size: 9.2pt; }
+  .footnote-box { background: var(--teal-tint); border-radius: 3mm; padding: 4mm 5mm; font-size: 9.2pt; }
   .footnote-box strong { display: block; font-size: 9.6pt; margin-bottom: 1.5mm; color: var(--teal-deep); }
-  .footnote-box--tool { border-left-color: var(--accent); background: var(--accent-tint); }
-  .footnote-box--tool strong { color: var(--accent); }
+  .footnote-box--tool { background: var(--accent-tint); }
+  .footnote-box--tool strong { color: var(--accent-ink); }
 
   .side-note { margin: 2mm 0 0; font-size: 8.2pt; line-height: 1.35; color: var(--ink-60); }
   .side-note strong { color: var(--ink); }
@@ -249,7 +246,7 @@
 <!-- ============ PAGE 1 — Prüfweg auswählen ============ -->
 <section class="page">
   <div class="masthead">
-    <img class="masthead__logo" src="../../assets/brand/logo-sowespoke-logo%20horizontal%20kleiner.png" alt="Sowespoke" />
+    <img class="masthead__logo" src="../../assets/brand/logo-sws-black.png" alt="SWS Alliance" />
     <div class="masthead__meta"><strong>Microsoft Ads Kontoprüfung</strong> · Internes Lernset</div>
   </div>
 
@@ -291,7 +288,7 @@
 <!-- ============ PAGE 2 — Direct Manager und MCC prüfen ============ -->
 <section class="page">
   <div class="masthead">
-    <img class="masthead__logo" src="../../assets/brand/logo-sowespoke-logo%20horizontal%20kleiner.png" alt="Sowespoke" />
+    <img class="masthead__logo" src="../../assets/brand/logo-sws-black.png" alt="SWS Alliance" />
     <div class="masthead__meta"><strong>Microsoft Ads Kontoprüfung</strong> · Internes Lernset</div>
   </div>
 
@@ -332,7 +329,7 @@
 <!-- ============ PAGE 3 — Bill-to entscheiden ============ -->
 <section class="page">
   <div class="masthead">
-    <img class="masthead__logo" src="../../assets/brand/logo-sowespoke-logo%20horizontal%20kleiner.png" alt="Sowespoke" />
+    <img class="masthead__logo" src="../../assets/brand/logo-sws-black.png" alt="SWS Alliance" />
     <div class="masthead__meta"><strong>Microsoft Ads Kontoprüfung</strong> · Internes Lernset</div>
   </div>
 
@@ -391,7 +388,7 @@
 <!-- ============ PAGE 4 — Fristen & weiterführend ============ -->
 <section class="page">
   <div class="masthead">
-    <img class="masthead__logo" src="../../assets/brand/logo-sowespoke-logo%20horizontal%20kleiner.png" alt="Sowespoke" />
+    <img class="masthead__logo" src="../../assets/brand/logo-sws-black.png" alt="SWS Alliance" />
     <div class="masthead__meta"><strong>Microsoft Ads Kontoprüfung</strong> · Internes Lernset</div>
   </div>
 
@@ -417,9 +414,9 @@
     </div>
   </div>
 
-  <div class="footnote-box footnote-box--tool">
+  <div class="footnote-box footnote-box--tool" style="margin-top:7mm">
     <strong>Interaktives Prüf-Tool</strong>
-    Dieselbe Prüfung Schritt für Schritt, mit Live-Protokoll und kopierbarem Ergebnis: Sowespoke Wissenszentrum → „Kontoprüfung" in der linken Navigation.
+    Dieselbe Prüfung Schritt für Schritt, mit Live-Protokoll und kopierbarem Ergebnis: Sowespoke Wissenszentrum → Menüpunkt „Verknüpfungen“.
   </div>
 
   <div class="foot">

@@ -3375,3 +3375,21 @@ code {
 .countdown__grid { grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
 .countdown__head { flex-wrap: wrap; row-gap: var(--space-2); }
 @media (max-width: 767px) { .countdown__toggle { font-size: 0.85rem; } }
+
+/* -- Fix (2026-10-06, Nutzer-Screenshot Verknüpfungen): Leiste steckte dort
+      in einem Wrapper (.msads) und lief deshalb nicht randlos; gilt jetzt
+      für jede Tiefe unter #view. Download-Button ohne negativen Versatz,
+      damit er nicht unter die Leiste rutscht. ------------------------------ */
+.view .subnav {
+  position: sticky;
+  top: var(--topbar-h);
+  margin-inline: calc(50% - 50vw);
+  margin-bottom: var(--space-7);
+}
+@media (max-width: 767px) { .view .subnav { margin-bottom: var(--space-5); } }
+.msads-toolbar { margin-top: 0; }
+/* Verknüpfungen: Schritt-Pillen links, Lernset-Download rechts in einer Zeile */
+.msads-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-5); }
+.msads-bar .msads-progress, .msads-bar .msads-toolbar { margin: 0; }
+/* Programmatischer Fokus auf Überschriften (Screenreader-Ansage) ohne sichtbaren Rahmen */
+h1:focus, h2:focus, h3:focus { outline: none; }
