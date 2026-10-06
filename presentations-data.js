@@ -24,6 +24,29 @@ const DOCTYPE_VAR = {
 
 const PRESENTATIONS = [
   {
+    id: "sowespoke-2-0",
+    file: "SWS 2.0_Weil Wachstum gemeinsam mehr Spaß macht.pdf",
+    title: "SOWESPOKE 2.0: Weil Wachstum gemeinsam mehr Spaß macht",
+    // Eigenes Sowespoke-Deck (kein Microsoft-Material), auf Nutzer-Wunsch
+    // (2026-10-06) mit aufgenommen. Kein Foliendatum — Anzeigedatum =
+    // Upload-Tag. Zugleich Stil-Referenz des Intranets, siehe DESIGN.md.
+    date: "2026-10-06", dateKnown: true,
+    docType: "Sonstiges",
+    summaryDE: "Präsentation der SOWESPOKE AG zur nächsten Stufe der Zusammenarbeit mit den Partneragenturen ('Nice crew. Bigger universe.'). Was bleibt (Werte, Partnerschaft auf Augenhöhe, Qualität, die Agentur bleibt im Mittelpunkt der Kundenbeziehung) und was sich ändert: aus einzelnen Angeboten wird ein Ökosystem mit vier Bereichen — SO WE SCALE (Plattform-Partnerschaften mit Microsoft, Criteo und TikTok, drei Support-Modelle Core/Grow/Strategic, SWS Coins als plattformübergreifendes Incentive-System), SO WE GROW (SWS Lead Broker für neue Geschäftschancen), SO WE CONNECT (Austausch, Events, Offsites) und 'One more thing' (SWS Tool Factory mit AI-Tools für den Agenturalltag).",
+    customerBlurb: "Mit SOWESPOKE 2.0 wird aus unserer Partnerschaft ein ganzes Ökosystem: mehr Plattformen (neben Microsoft jetzt auch Criteo und TikTok), Support-Modelle passend zu eurem Wachstum, SWS Coins als gemeinsames Incentive-System und ab Q4 2026 ein Lead Broker und eine Tool Factory. Eure Kunden bleiben eure Kunden — lasst uns sprechen, welcher Teil euch als Nächstes weiterbringt.",
+    keyFactsDE: [
+      "Bestehende Basis: 110+ verbundene Agenturen, 6 Jahre Microsoft-Partnerschaft, 20+ realisierte Agentur-Events, 4 Tage Offsite in Barcelona.",
+      "SO WE SCALE: Microsoft Alliance, Criteo Alliance (Open Web Ads, Meta Ads via Criteo, ChatGPT Ads — laut Deck bereits gestartet) und TikTok Alliance; Microsoft-Ansprechpartnerin ist Elina Gulko, Product Lead Microsoft Advertising.",
+      "Drei Support-Modelle: Core (zentrale Services fürs Tagesgeschäft), Grow (erweiterter Support für mehr Wachstum), Strategic (enge Zusammenarbeit, priorisierter Support).",
+      "SWS Coins: für verwaltete Mediabudgets entstehen automatisch 2 % in Coins (1 SWS Coin = 2 €), einlösbar u. a. für Experten-Sparring, Business Coaching, zusätzlichen Ad Spend und im Reward Store (über 1.000 Artikel, u. a. Microsoft- und Apple-Produkte).",
+      "Launch Q4 2026: SWS Lead Broker (Kund:innen und Agenturen passend zusammenbringen, Leads im Netzwerk weitergeben) und SWS Tool Factory (AI-Tools gemeinsam mit Agenturen entwickelt). Ansprechpartner: Andy Kulosa (Vorstand) und Laki Couvaras (Director Business Operations).",
+    ],
+    emailHookDE: null,
+    // Eigenes Deck — Betreff ohne das sonst übliche "Neu bei Microsoft Advertising:"
+    mailSubjectDE: "SOWESPOKE 2.0: Weil Wachstum gemeinsam mehr Spaß macht",
+    pageCount: 22,
+  },
+  {
     id: "audience-ads-unique-benefits",
     file: "Audience-ads-unique-benefits-one-sheet.pdf",
     title: "Audience Ads auf einen Blick: Reichweite, Daten und Vorteile (One-Sheet)",

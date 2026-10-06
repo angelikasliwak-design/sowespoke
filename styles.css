@@ -170,9 +170,35 @@ mark {
 /* -- Shell / Sidebar --------------------------------------------------- */
 .shell {
   display: flex;
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: calc(100vh - var(--topbar-h));
+  min-height: calc(100dvh - var(--topbar-h));
 }
+/* Weiße Kopfleiste (SWS 2.0, 2026-10-06, Nutzer-Wahl) — wie die Leiste der
+   SWS-Plattform: Logo, Trennstrich, Bereichsname. Ersetzt die Logo-Kachel
+   in der Sidebar. */
+:root { --topbar-h: 60px; }
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  padding-inline: var(--space-6);
+  background: var(--c-surface);
+  border-bottom: var(--border-card);
+}
+.topbar__brand { display: flex; align-items: center; gap: var(--space-4); text-decoration: none; color: var(--ink-soft); }
+.topbar__logo { height: 34px; width: auto; }
+.topbar__title {
+  padding-left: var(--space-4);
+  border-left: 1px solid var(--line);
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.rail__logo { display: none; }
+
 /* Beschriftete Sidebar (2026-08-07-Mockup) statt Icon-only-Leiste — nur
    für tatsächlich existierende Seiten, keine erfundenen Menüpunkte. Auf
    Mobile fällt sie zurück auf die schmale Icon-only-Form (s. Media Query). */
@@ -189,9 +215,9 @@ mark {
      der Konturstärken-Skala, siehe --border-card in tokens.css. */
   border-right: var(--border-card);
   position: sticky;
-  top: 0;
-  height: 100vh;
-  height: 100dvh;
+  top: var(--topbar-h);
+  height: calc(100vh - var(--topbar-h));
+  height: calc(100dvh - var(--topbar-h));
 }
 /* Logo-Badge (2026-09-04, Nutzer-Wunsch: "Logo im Menü auch in Magenta-
    Rahmen, weißes Logo benutzen") — Magenta-Fläche + Ink-Rahmen statt der
@@ -402,49 +428,40 @@ mark {
    an die Sidebar und den rechten Fensterrand, da .shell__main selbst
    schon exakt diese Breite hat (kein zusätzlicher Gutter nötig). */
 .page-bg {
+  /* SWS 2.0 "Bühne" (2026-10-06, Nutzer-Wahl "oberer Bereich"): Verlauf +
+     konzentrische Ringe wie auf der SWS-Login-Seite, nur oben hinter
+     Seitenkopf und Suche. --stage-h setzt app.js (syncStage) auf die
+     Unterkante von Hero bzw. Detail-Titel; darunter 64px voll deckend
+     (Suche), dann 150px Auslauf ins Mist. */
+  --stage-solid: calc(var(--stage-h, 0px) + 64px);
   position: absolute;
   inset-inline: 0;
   top: 0;
-  height: clamp(420px, 55vh, 760px);
+  height: calc(var(--stage-solid) + 150px);
   z-index: -1;
   pointer-events: none;
-  background-color: var(--c-paper);
-  /* SWS 2.0 (2026-10-06): weiche Farbkugeln wie in den Deck-Folien
-     (Magenta oben rechts, Petrol links, Gold klein) statt Punktraster. */
+  background-color: var(--c-pink-500);
   background-image:
-    radial-gradient(circle at 92% 6%, color-mix(in srgb, var(--c-pink-500) 16%, transparent) 0, transparent 34%),
-    radial-gradient(circle at 4% 30%, color-mix(in srgb, var(--c-turquoise) 13%, transparent) 0, transparent 30%),
-    radial-gradient(circle at 70% 2%, color-mix(in srgb, var(--c-yellow-500) 16%, transparent) 0, transparent 16%);
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  /* Ein gemeinsames mask-image auf demselben Element sorgt dafür, dass
-     ALLE drei Hintergrund-Ebenen (Punktraster + beide Farbwolken)
-     gleichmäßig im selben Verlauf ausblenden, statt jede Ebene einzeln
-     und potenziell uneinheitlich zu verblassen. */
-  mask-image: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 1) 0%,
-    rgba(0, 0, 0, 1) 30%,
-    rgba(0, 0, 0, 0.5) 65%,
-    rgba(0, 0, 0, 0) 100%
-  );
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 1) 0%,
-    rgba(0, 0, 0, 1) 30%,
-    rgba(0, 0, 0, 0.5) 65%,
-    rgba(0, 0, 0, 0) 100%
-  );
+    repeating-radial-gradient(circle at 84% 34%, rgba(255, 255, 255, 0.13) 0 1px, transparent 1.5px 34px),
+    radial-gradient(120% 140% at 78% 8%, rgba(255, 255, 255, 0.16), transparent 55%),
+    radial-gradient(90% 90% at 12% 100%, color-mix(in srgb, var(--c-shadow) 18%, transparent), transparent 60%),
+    var(--grad-brand);
+  mask-image: linear-gradient(to bottom, black 0, black var(--stage-solid), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0, black var(--stage-solid), transparent 100%);
+  display: none;
 }
-@media (max-width: 767px) {
-  .page-bg {
-    height: clamp(280px, 40vh, 420px);
-  }
-}
+.shell__main.has-stage .page-bg { display: block; }
+/* Texte, die direkt auf der Bühne stehen (Detailseiten ohne Hero) */
+.has-stage .back-link,
+.has-stage .back-link:hover,
+.has-stage .detail > h1,
+.has-stage .detail__meta .detail__date { color: var(--c-surface); }
+.has-stage .back-link { opacity: 0.9; }
+.has-stage .back-link:hover { opacity: 1; }
 /* Nutzer:innen, die reduzierte Transparenz/Effekte bevorzugen: nur die
    flache Papier-Fläche, keine Farbwolken/kein Punktraster. */
 @media (prefers-reduced-transparency: reduce) {
-  .page-bg { background-image: none; }
+  .page-bg { background-image: var(--grad-brand); } /* nur Verlauf, ohne Ringe/Lichter */
 }
 
 /* -- Layout ------------------------------------------------------------ */
@@ -502,36 +519,26 @@ mark {
   flex-wrap: wrap;
   margin-bottom: var(--space-6);
   padding: var(--space-6) var(--space-6);
-  background: var(--grad-brand); /* SWS 2.0: Magenta→Petrol wie Login-Hero/Deck-Titelfolien */
+  /* SWS 2.0 (2026-10-06): Hero hat keine eigene Fläche mehr — er steht
+     direkt auf der Verlaufs-Bühne (.page-bg), wie Text auf den Deck-Titelfolien. */
+  background: none;
   border: 0;
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   /* Schatten-Hierarchie (SoWeSpike-Spezifikation B8.4, 2026-09-07) — genau
      zwei Elemente site-weit tragen noch einen Schatten, als Werkzeug für
      Hierarchie statt Dekoration. Ebene 1 (härtester/größter Versatz) ist
      ausschließlich der Hero; jede andere Karte/jedes Panel hat jetzt gar
      keinen Schatten mehr. */
-  box-shadow: var(--shadow-comic-l);
+  box-shadow: none;
   color: var(--on-accent);
 }
 /* Halbton-Punktmuster, dieselbe Technik wie .page-bg (radial-gradient-
    Punktraster), hier hell auf Magenta statt dunkel auf Papier — auf ein
    Pseudo-Element statt direkt auf .hero, damit .hero__scene/.hero__intro
    in einem eigenen Stacking-Kontext sauber darüber liegen. */
-.hero::before {
-  /* SWS 2.0 (2026-10-06): konzentrische Kreislinien (Ringmotiv der
-     SWS-Plattform) plus Lichtkante oben rechts statt Halbtonpunkten. */
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(120% 140% at 78% 8%, rgba(255, 255, 255, 0.16), transparent 55%),
-    repeating-radial-gradient(circle at 86% 30%, rgba(255, 255, 255, 0.16) 0 1px, transparent 1.5px 30px);
-  mask-image: radial-gradient(ellipse 65% 120% at 86% 30%, black 0%, transparent 78%);
-  -webkit-mask-image: radial-gradient(ellipse 65% 120% at 86% 30%, black 0%, transparent 78%);
-}
+.hero::before { content: none; } /* Ringe liegen jetzt auf .page-bg */
 .hero > * { position: relative; z-index: 1; }
+.hero, .hero--compact, .hero--connected { padding-inline: 0; }
 /* Hervorhebung auf dem Verlauf: Magenta-auf-Magenta wäre unsichtbar —
    Weiß mit gerader Gold-Linie (SWS --gold), keine Wellenlinie. */
 .hero mark {
@@ -2642,7 +2649,7 @@ code {
   .hero__illustration { display: none; }
   .hero__bubble { display: none; }
   .hero__scene { display: none; }
-  .hero { padding: var(--space-5); }
+  .hero { padding: var(--space-2) 0; }
   .rail {
     width: 100%;
     height: auto;
@@ -2653,7 +2660,12 @@ code {
     border-right: none;
     border-bottom: var(--border-card);
     position: sticky;
+    top: var(--topbar-h);
+    z-index: 20;
   }
+  :root { --topbar-h: 52px; }
+  .topbar { padding-inline: var(--space-4); }
+  .topbar__logo { height: 28px; }
   .rail__logo {
     flex-shrink: 0;
     width: auto;

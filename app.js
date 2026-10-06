@@ -2060,13 +2060,13 @@
             </div>
           </div>
           <div class="detail__side">
-            ${renderMailGen(p.id, [], `Neu bei Microsoft Advertising: ${p.title}`, p.customerBlurb, p.emailHookDE)}
+            ${renderMailGen(p.id, [], (p.mailSubjectDE || `Neu bei Microsoft Advertising: ${p.title}`), p.customerBlurb, p.emailHookDE)}
           </div>
         </div>
       </article>
     `;
 
-    wireMailGen(p.id, [], `Neu bei Microsoft Advertising: ${p.title}`, p.customerBlurb, p.emailHookDE);
+    wireMailGen(p.id, [], (p.mailSubjectDE || `Neu bei Microsoft Advertising: ${p.title}`), p.customerBlurb, p.emailHookDE);
     wireDetailTabs();
   }
 
@@ -4344,9 +4344,27 @@
     isInitialRender = false;
   }
 
+  /* SWS 2.0 (2026-10-06): Die Verlaufs-Bühne (.page-bg) reicht immer bis
+     unter den Seitenkopf — Hero oder, auf Detailseiten, den Titel. Gemessen
+     statt fester Höhe, weil Titel je nach Länge 1–4 Zeilen haben; weiße
+     Schrift darf nie in den hellen Auslauf rutschen. ResizeObserver fängt
+     nachgeladene Inhalte, Schriftwechsel und Fenstergrößen ab. */
+  const shellMain = document.querySelector(".shell__main");
+  function syncStage() {
+    if (!shellMain) return;
+    const head = view.querySelector(".hero") || view.querySelector(".detail > h1");
+    const bottom = head
+      ? head.getBoundingClientRect().bottom - shellMain.getBoundingClientRect().top
+      : 0;
+    shellMain.style.setProperty("--stage-h", Math.round(bottom) + "px");
+    shellMain.classList.toggle("has-stage", !!head);
+  }
+  if (shellMain && "ResizeObserver" in window) new ResizeObserver(syncStage).observe(view);
+
   let isInitialRender = true;
-  window.addEventListener("hashchange", render);
+  window.addEventListener("hashchange", () => { render(); syncStage(); });
   render();
+  syncStage();
 
   const logoutLink = document.getElementById("logout-link");
   if (logoutLink) {
