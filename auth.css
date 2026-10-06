@@ -64,7 +64,7 @@ body.auth-body::before {
   padding: 0.75rem max(1rem, calc((100% - 1080px) / 2));
   background: var(--paper);
 }
-.auth-bar__logo { height: 30px; width: auto; }
+.auth-bar__logo { height: 30px; width: auto; } /* schwarzes SWS-Logo (2026-10-06) */
 .auth-bar__title {
   padding-left: 1rem;
   border-left: 1px solid var(--line);

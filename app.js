@@ -463,6 +463,49 @@
     `;
   }
 
+  /* Countdown-Reihe (2026-10-06, Nutzer-Wahl): Anstehende Termine als
+     schmale Karten direkt unter dem Farbband, angelehnt an die Schwellen-
+     Karten auf support-tiers.sws-alliance.com (Punkt, Versal-Label, große
+     Zahl, kleine Zeile darunter). Ersetzt die Termine-Karte in der rechten
+     Spalte der News-Seite; renderCalendarCard bleibt für andere Stellen. */
+  function renderCountdownRow(expanded) {
+    const events = upcomingEvents(new Date(), expanded ? CALENDAR_EVENTS.length : 3);
+    const dots = ["--c-core", "--teal", "--c-gold-soft"];
+    return `
+      <section class="countdown" id="countdown" aria-labelledby="countdown-title">
+        <div class="countdown__head">
+          <h2 class="countdown__title" id="countdown-title">Anstehende Termine</h2>
+          ${CALENDAR_EVENTS.length > 3 ? `<button type="button" class="countdown__toggle" data-countdown-toggle>${expanded ? "Weniger anzeigen" : "Alle Termine anzeigen"} ${ICONS.arrowRight}</button>` : ""}
+        </div>
+        <ul class="countdown__grid">
+          ${events.map((ev, i) => {
+            const p = ev.presentationId ? findPresentation(ev.presentationId) : null;
+            const iso = ev.date.toISOString().slice(0, 10);
+            return `
+            <li class="countdown-card">
+              <span class="countdown-card__dot" style="background: var(${dots[i % 3]})" aria-hidden="true"></span>
+              <span class="countdown-card__name">${escapeHtml(ev.name)}</span>
+              <span class="countdown-card__days">${ev.days === 0 ? "heute" : ev.days === 1 ? "morgen" : `in ${ev.days} Tagen`}</span>
+              <span class="countdown-card__date">${formatDate(iso)}${ev.approx ? " (ca.)" : ""}</span>
+              ${ev.relevantFor ? `<span class="countdown-card__for">${escapeHtml(ev.relevantFor)}</span>` : ""}
+              ${p ? `<a class="countdown-card__link" href="#/praesentationen/${p.id}">${ICONS.fileText} Passende Präsentation</a>` : ""}
+            </li>`;
+          }).join("")}
+        </ul>
+      </section>
+    `;
+  }
+
+  function wireCountdownRow() {
+    const btn = document.querySelector("[data-countdown-toggle]");
+    if (!btn) return;
+    btn.addEventListener("click", () => {
+      const expanded = btn.textContent.trim().startsWith("Alle");
+      document.getElementById("countdown").outerHTML = renderCountdownRow(expanded);
+      wireCountdownRow();
+    });
+  }
+
   function wireCalendarCard() {
     const btn = document.querySelector("[data-calendar-expand]");
     if (!btn) return;
@@ -1602,7 +1645,8 @@
           <p>Aktuelle Trends, Updates &amp; Insights aus der Online-Marketing-Welt – mit besonderem Fokus auf Microsoft Advertising.</p>
         </div>
       </section>
-      <div class="layout-2col">
+      ${renderCountdownRow()}
+      <div class="news-layout">
         <div class="news-layout__main">
           <div class="toolbar">
             <label class="search">
@@ -1621,7 +1665,7 @@
             <div class="empty-state">${ICONS.news}<strong>Lade News …</strong></div>
           </div>
         </div>
-        <aside class="side-rail">${renderCalendarCard()}${renderFactSidebarCard()}${renderRecentCard()}</aside>
+        <div class="news-extras">${renderFactSidebarCard()}${renderRecentCard()}</div>
       </div>
     `;
 
@@ -1639,7 +1683,7 @@
     view.querySelectorAll(".tabs__item").forEach((btn) => {
       btn.addEventListener("click", () => renderNews(btn.dataset.ch));
     });
-    wireCalendarCard();
+    wireCountdownRow();
     wireFactSidebarCard();
 
     const data = await loadNews();
@@ -4353,9 +4397,24 @@
   }
   if (shellMain && "ResizeObserver" in window) new ResizeObserver(syncStage).observe(view);
 
+  /* Bereichsnavigation unter dem Farbband (2026-10-06, Nutzer-Aufnahme von
+     support-tiers.sws-alliance.com): die Leiste wird nach jedem Rendern
+     direkt hinter den Seitenkopf (Hero bzw. Detail-Titel) gesetzt. Der
+     Knoten bleibt dabei derselbe (Listener, aria-current bleiben erhalten);
+     ersetzt eine Seite #view per innerHTML, setzt der Observer ihn neu. */
+  const subnav = document.querySelector(".subnav");
+  function placeSubnav() {
+    if (!subnav) return;
+    const head = view.querySelector(".hero") || view.querySelector(".detail > h1");
+    if (head) { if (head.nextElementSibling !== subnav) head.after(subnav); }
+    else if (view.firstElementChild !== subnav) view.prepend(subnav);
+  }
+  if (subnav && "MutationObserver" in window) new MutationObserver(placeSubnav).observe(view, { childList: true });
+
   let isInitialRender = true;
-  window.addEventListener("hashchange", () => { render(); syncStage(); });
+  window.addEventListener("hashchange", () => { render(); placeSubnav(); syncStage(); });
   render();
+  placeSubnav();
   syncStage();
 
   const logoutLink = document.getElementById("logout-link");

@@ -3260,3 +3260,118 @@ code {
       Vorlagen/Serienmails). Auch aufgeklappt bleibt es jetzt flach. ------- */
 .rail__nav-sub, .rail__nav-sub.is-expanded { display: contents; }
 .rail__nav-sub a { margin: 0; }
+
+
+/* ==========================================================================
+   SWS 2.0 — Runde 5 (2026-10-06): Nutzer-Aufnahme + Benefits-Karten von
+   support-tiers.sws-alliance.com
+   ========================================================================== */
+:root { --radius: 14px; --stage-pad: 64px; }
+
+/* -- Logo: schwarzes SWS-Alliance-Logo wie auf der SWS-Seite ---------- */
+.topbar__logo { height: 30px; width: auto; }
+
+/* -- Hero wie .st-hero: Textblock mittig (720px), Titel Exo 800 bis 52px */
+.hero, .hero--compact, .hero--connected { padding-top: var(--space-5); margin-bottom: var(--stage-pad); }
+.hero__intro, .hero--connected .hero__intro { max-width: 720px; margin-inline: auto; }
+.hero__intro h1 { font-size: clamp(2rem, 1.1rem + 3vw, 3.25rem); line-height: 1.08; }
+.hero__intro p { font-size: clamp(1rem, 0.95rem + 0.3vw, 1.125rem); max-width: 600px; }
+.has-stage .detail > h1 { margin-bottom: var(--stage-pad); }
+
+/* -- Bereichsnavigation direkt unter dem Band, randlos, sticky -------- */
+.view > .subnav, .detail > .subnav {
+  position: sticky;
+  top: var(--topbar-h);
+  margin-inline: calc(50% - 50vw);
+  margin-bottom: var(--space-7);
+  border-top: 0;
+}
+.subnav__inner { max-width: var(--container); }
+.rail__nav { height: auto; gap: 30px; }
+.rail__nav a,
+.rail__nav a.rail__nav-group-link,
+.rail__nav-sub a {
+  padding: 15px 2px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  transition: color 150ms ease;
+}
+/* Unterstrich wächst beim Darüberfahren rosa auf (wie in der Aufnahme),
+   aktiver Punkt: Magenta mit voller Magenta-Linie. */
+.rail__nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: color-mix(in srgb, var(--c-pink-500) 35%, white);
+  transform: scaleX(0);
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.rail__nav a:hover { color: var(--accent); }
+.rail__nav a:hover::after { transform: scaleX(1); }
+.rail__nav a[aria-current="page"] { color: var(--accent); font-weight: 600; }
+.rail__nav a[aria-current="page"]::after { transform: scaleX(1); background: var(--accent); }
+
+/* -- Karten im Stil der SWS-Benefits-Karten (.st-benefit) -------------
+      weiß, 1px Linie, 14px Radius, 22/20px Innenabstand, Icon 42px mit
+      Magenta→Petrol-Verlauf; Bewerten-Daumen schweben oben rechts statt
+      eine eigene leere Zeile unter der Karte zu belegen. */
+.row { padding: 22px 20px; gap: 10px; }
+.row__thumb { width: 42px; height: 42px; border-radius: 12px; }
+.row__thumb svg { width: 20px; height: 20px; }
+.row__thumb:not(.row__thumb--brand) { background-image: linear-gradient(135deg, var(--c-pink-500), var(--c-turquoise)); }
+.row__thumb--brand svg { width: 24px; height: 24px; }
+.row__title { font-size: 1.05rem; line-height: 1.35; }
+.row__summary { font-size: 0.95rem; }
+.row__meta { font-size: 0.82rem; }
+.row__rate {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 0;
+  margin: 0;
+  gap: 4px;
+}
+.row__rate-btn { width: 34px; height: 34px; }
+.article-list { gap: 18px; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); }
+.card-badge { top: 14px; right: 14px; }
+
+/* -- News: Countdown-Reihe + volle Breite -------------------------------- */
+.countdown { margin-bottom: var(--space-7); }
+.countdown__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-4); }
+.countdown__title { font-family: var(--font-display); font-weight: 800; font-size: clamp(1.5rem, 1.2rem + 0.8vw, 1.9rem); letter-spacing: -0.01em; }
+.countdown__toggle { display: inline-flex; align-items: center; gap: 0.35em; font-weight: 700; font-size: 0.9rem; color: var(--accent-ink); }
+.countdown__toggle svg { width: 14px; height: 14px; }
+.countdown__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 18px; }
+.countdown-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 22px 20px;
+  background: var(--c-surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.countdown-card__dot { width: 12px; height: 12px; border-radius: 50%; margin-bottom: 8px; }
+.countdown-card__name { font-size: 0.82rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink); }
+.countdown-card__days { font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; line-height: 1.1; letter-spacing: -0.01em; color: var(--ink); }
+.countdown-card__date { font-size: 0.85rem; font-weight: 600; color: var(--ink-soft); }
+.countdown-card__for { font-size: 0.85rem; color: var(--ink-soft); line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.countdown-card__link { margin-top: auto; padding-top: 8px; display: inline-flex; align-items: center; gap: 0.35em; font-size: 0.85rem; font-weight: 700; color: var(--accent-ink); text-decoration: none; }
+.countdown-card__link svg { width: 14px; height: 14px; }
+.countdown-card__link:hover { text-decoration: underline; }
+.news-extras { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 18px; margin-top: var(--space-7); }
+.news-extras:empty { display: none; }
+
+@media (max-width: 767px) {
+  :root { --stage-pad: 40px; }
+  .view > .subnav, .detail > .subnav { margin-bottom: var(--space-5); }
+  .rail__nav { gap: 22px; }
+}
+.countdown__grid { grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
+.countdown__head { flex-wrap: wrap; row-gap: var(--space-2); }
+@media (max-width: 767px) { .countdown__toggle { font-size: 0.85rem; } }
