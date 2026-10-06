@@ -19,7 +19,7 @@
   /* -- Verifizierte Marken-Primitive (Live-Site-Presets) ----------------- */
   --c-pink-500:   #D40360; /* SWS --magenta */
   --c-yellow-500: #FFC000; /* SWS --gold */
-  --c-green-500:  #5F9C74; /* SWS --action */
+  --c-green-500:  #18A7B8; /* SWS --tier-growth (Name "green" historisch) */
   --c-green-200:  #B1C5A4; /* --wp--preset--color--accent-4 */
   --c-ink:        #1A1E22; /* SWS --ink */
   --c-ink-60:     #4B5560; /* SWS --ink-soft */
@@ -36,7 +36,7 @@
   /* green-500 erreicht auf Weiß nur ~3.6:1 Kontrast (< AA 4.5:1) — für
      Fließtext/Links um 20% abgedunkelt, exakt nach demselben Muster wie
      die bisherige --teal-text-Lösung. */
-  --c-green-700:  #2B5B3E; /* SWS --action-ink */
+  --c-green-700:  #0D7C8A; /* SWS --tier-growth-ink */
   /* Dunkleres Gelb ausschließlich für Halbton-Textur-Punkte auf gelben
      Flächen (Schattierung, keine eigenständige Akzentfarbe). */
   --c-yellow-700: #C98A00;
@@ -68,7 +68,7 @@
      eine eigene, dunklere Stufe nur für den gestrichelten Fall. */
   --c-line-dashed:   #D6E0E3; /* SWS --line-strong */
   --c-pink-tint:     #FDE6F1;
-  --c-green-tint:    #E1F2F5; /* helle Petrol-Fläche (Mix --petrol 12 % auf Weiß) */
+  --c-green-tint:    #E3F2F5; /* helle Fläche aus SWS --tier-core #94c9d3 */
   --c-success:       #146B3A;
   --c-success-tint:  #DCF1E3;
   --c-warning:       #7A4A00;
@@ -92,4 +92,8 @@
   /* Markenverlauf + Ringmotiv (Login-Hero der SWS-Plattform, Deck-Titelfolien) */
   --grad-brand: linear-gradient(135deg, var(--c-pink-700) 0%, var(--c-pink-500) 42%, var(--c-turquoise) 100%);
   --radius-lg: 22px;
+  /* Band der App-Seiten = SWS .st-hero (Petrol führt, Magenta rechts) */
+  --grad-band: linear-gradient(135deg, var(--c-turquoise-700) 0%, var(--c-turquoise) 48%, var(--c-pink-500) 100%);
+  --c-gold-soft:  #FFC90B; /* SWS --tier-strategic */
+  --c-core:       #94C9D3; /* SWS --tier-core */
 }

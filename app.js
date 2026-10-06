@@ -4352,11 +4352,6 @@
   }
   if (shellMain && "ResizeObserver" in window) new ResizeObserver(syncStage).observe(view);
 
-  /* Such-Button in der Kopfleiste (SWS 2.0: schwarze Pille rechts wie
-     "Kontakt" auf der SWS-Plattform) öffnet die globale Suche (Strg+K). */
-  const topbarSearch = document.getElementById("topbar-search");
-  if (topbarSearch) topbarSearch.addEventListener("click", () => { if (typeof openGlobalSearch === "function") openGlobalSearch(); });
-
   let isInitialRender = true;
   window.addEventListener("hashchange", () => { render(); syncStage(); });
   render();

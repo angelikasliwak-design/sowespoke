@@ -35,7 +35,10 @@
 
 const SOURCES = [
   { name: "Microsoft Advertising Blog", url: "https://about.ads.microsoft.com/en-us/blog/rss", channel: "Microsoft", lang: "en" },
-  { name: "Search Engine Land", url: "https://searchengineland.com/feed", channel: "Allgemein", lang: "en" },
+  // Search Engine Land entfernt (2026-10-06): der Feed antwortet
+  // automatisierten Abrufen nur noch mit HTTP 403 (Bot-Schutz), im Intranet
+  // stand dadurch dauerhaft "Quelle nicht erreichbar". Bereits archivierte
+  // Artikel bleiben im KV-Archiv sichtbar.
   { name: "adseed SEA-News", url: "https://www.adseed.de/blog/sea-news/feed/", channel: "Google", lang: "de" },
   { name: "OMR", url: "https://omr.com/de/feed/", channel: "Allgemein", lang: "de" },
   // t3n bewusst entfernt: kein eigener Marketing-Feed verfügbar (nur

@@ -16,18 +16,21 @@
 <a class="skip-link" href="#view">Zum Inhalt springen</a>
 
 <header class="topbar">
+  <div class="topbar__inner">
   <a class="topbar__brand" href="#/" aria-label="Sowespoke Wissenszentrum, zur Startseite">
     <img class="topbar__logo" src="assets/brand/logo-sowespoke-logo horizontal kleiner.png" alt="Sowespoke" />
     <span class="topbar__title">Wissenszentrum</span>
   </a>
-  <button type="button" class="topbar__cta" id="topbar-search" aria-keyshortcuts="Control+K">
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-    <span>Suchen</span><kbd>Strg K</kbd>
-  </button>
+  <div class="rail__profile topbar__profile" id="rail-profile"></div>
+  </div>
 </header>
 
-<div class="shell">
-  <aside class="rail">
+<!-- SWS 2.0 (2026-10-06): waagerechte Bereichsnavigation wie die Unterleiste
+     auf support-tiers.sws-alliance.com — ersetzt die linke Sidebar, damit der
+     Inhalt mittig auf einer Spalte steht. Klassen bleiben rail__nav*, weil
+     app.js (Icons, aktiver Punkt, Admin-Link, Untermenü) daran hängt. -->
+<div class="subnav">
+  <div class="subnav__inner">
     <nav class="rail__nav" aria-label="Hauptnavigation">
       <a href="#/" data-nav="news" aria-label="Neuigkeiten" title="Neuigkeiten"><span class="rail__nav-icon"></span><span class="rail__nav-label">News</span></a>
       <a href="#/praesentationen" data-nav="praesentationen" aria-label="Präsentationen" title="Präsentationen"><span class="rail__nav-icon"></span><span class="rail__nav-label">Präsentationen</span></a>
@@ -57,8 +60,10 @@
            403-Seite sieht. -->
       <a href="#/nutzer" data-nav="nutzer" aria-label="Nutzungsübersicht (nur Admins)" title="Nutzungsübersicht (nur Admins)" hidden><span class="rail__nav-icon"></span><span class="rail__nav-label">Nutzung</span></a>
     </nav>
-    <div class="rail__profile" id="rail-profile"></div>
-  </aside>
+  </div>
+</div>
+
+<div class="shell">
 
   <div class="shell__main">
     <div class="page-bg" aria-hidden="true"></div>
