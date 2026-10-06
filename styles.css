@@ -3252,3 +3252,11 @@ code {
 /* -- Hero linksbündig auf der Inhaltskante (2026-10-06, Nutzer: Überschrift
       dort, wo die Boxen anfangen) — löst den mittigen Textblock ab. ------- */
 .hero__intro, .hero--connected .hero__intro { margin-inline: 0; }
+
+/* -- Fix (2026-10-06, Nutzer-Screenshot "große Lücke" nach Serienmails):
+      die alte Sidebar-Regel .rail__nav-sub.is-expanded (display:flex,
+      flex-basis 100 %, Einrückung) griff in der waagerechten Leiste, sobald
+      das Untermenü einmal automatisch aufgeklappt war (nach Besuch von
+      Vorlagen/Serienmails). Auch aufgeklappt bleibt es jetzt flach. ------- */
+.rail__nav-sub, .rail__nav-sub.is-expanded { display: contents; }
+.rail__nav-sub a { margin: 0; }
