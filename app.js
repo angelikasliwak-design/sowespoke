@@ -1717,7 +1717,7 @@
       ${failedNotice}
       ${
         items.length
-          ? `<ul class="article-list article-list--news">${items.map((item, i) => newsRow(item, i === 0)).join("")}</ul>`
+          ? `<ul class="article-list article-list--news">${items.map((item) => newsRow(item, false)) /* 2026-10-06: kein großer Aufmacher mehr, alle Beiträge gleich groß (Nutzer-Wunsch) */.join("")}</ul>`
           : `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Kanal.</p></div>`
       }
     `;
@@ -1817,6 +1817,7 @@
             ${isNew ? `<span class="row__badge-new">Neu</span>` : ""}
             ${langBadge ? `<span class="row__head-lang">${langBadge}</span>` : ""}
           </span>
+          ${item.channel ? `<span class="row__channel" style="--ch: var(${chVar})">${escapeHtml(item.channel)}</span>` : ""}
           <span class="row__body">
             <span class="row__title">${escapeHtml(item.title)}</span>
             ${item.description ? `<span class="row__summary">${escapeHtml(item.description)}</span>` : ""}
