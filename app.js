@@ -24,7 +24,7 @@
     Allgemein: "--turquoise",
   };
 
-  const NAV_ICON = { newsletter: "mail", anleitungen: "fileText", news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass", nutzer: "gauge", "microsoft-ads-kontopruefung": "crosshair" };
+  const NAV_ICON = { konditionen: "scale", wissen: "book", newsletter: "mail", anleitungen: "fileText", news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass", nutzer: "gauge", "microsoft-ads-kontopruefung": "crosshair" };
   railLinks.forEach((a) => {
     const iconSlot = a.querySelector(".rail__nav-icon");
     if (iconSlot) iconSlot.innerHTML = ICONS[NAV_ICON[a.dataset.nav]];
@@ -2158,6 +2158,8 @@
      Status — kein neues UI-Konzept), Standard-Tab zeigt ausschließlich
      E-Mail-Vorlagen. */
   function renderTemplates(query, tab) {
+    // Best Practices liegen seit 2026-10-07 unter Wissen (Anleitungen)
+    if (tab === "practices") { location.replace(`#/anleitungen?${new URLSearchParams({ s: "bestpractices", q: query || "" })}`); return; }
     const q = (query || "").trim().toLowerCase();
     const activeTab = tab === "practices" ? "practices" : "mail";
 
@@ -2172,8 +2174,8 @@
     view.innerHTML = `
       <section class="hero hero--compact">
         <div class="hero__intro">
-          <h1>Vorlagen &amp; Wissen</h1>
-          <p>E-Mail-Vorlagen zum direkten Versand oder Best Practices zum Nachschlagen — beides an einem Ort, klar getrennt.</p>
+          <h1>E-Mail-Vorlagen</h1>
+          <p>Fertige E-Mail-Vorlagen für Agenturen und Kund:innen – Felder ausfüllen, prüfen, versenden. Geplante Serienmails und Anfragen an Microsoft findest du in der Zeile darüber.</p>
         </div>
       </section>
       <div class="toolbar">
@@ -2182,10 +2184,6 @@
           <input type="search" id="search-input" placeholder="${activeTab === "practices" ? "Best Practices durchsuchen …" : "E-Mail-Vorlagen durchsuchen …"}" value="${escapeHtml(query || "")}" aria-label="Vorlagen durchsuchen" />
           <button type="button" class="search__submit" id="search-submit" aria-label="Suche fokussieren">${ICONS.search}</button>
         </label>
-        <nav class="tabs" aria-label="Kategorie">
-          <button type="button" class="tabs__item ${activeTab === "mail" ? "is-active" : ""}" data-view="mail">E-Mail-Vorlagen</button>
-          <button type="button" class="tabs__item ${activeTab === "practices" ? "is-active" : ""}" data-view="practices">Best Practices</button>
-        </nav>
       </div>
 
       ${noResults ? `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Begriff.</p></div>` : ""}
@@ -4019,7 +4017,7 @@
       kind: "Best Practice",
       title: bp.title,
       snippet: bp.body,
-      href: `#/vorlagen?t=practices&q=${encodeURIComponent(bp.title)}`,
+      href: `#/anleitungen?s=bestpractices&q=${encodeURIComponent(bp.title)}`,
     }));
     const caseItems = CASE_STUDIES.map((c) => ({
       kind: "Case Study",
@@ -4033,7 +4031,8 @@
       snippet: `${g.category} · ${g.excerpt}`,
       href: `#/anleitungen/${g.id}`,
     }));
-    cmdkIndexCache = [...newsItems, ...presItems, ...templateItems, ...practiceItems, ...caseItems, ...guideItems];
+    const konItems = KONDITIONEN_DOCS.map((d) => ({ kind: "Konditionen", title: d.title, snippet: d.summary, href: "#/konditionen" }));
+    cmdkIndexCache = [...konItems, ...newsItems, ...presItems, ...templateItems, ...practiceItems, ...caseItems, ...guideItems];
     return cmdkIndexCache;
   }
 
@@ -4304,36 +4303,40 @@
     return { path, params };
   }
 
+  /* Gruppiertes Menü (2026-10-07): Hauptpunkt aktiv, wenn die Route zur
+     Gruppe gehört; Gruppen mit Unterpunkten zeigen darunter eine zweite
+     Zeile (Wissen: Anleitungen/Best Practices; E-Mail-Vorlagen: Vorlagen/
+     Serienmails/Anfragen an Microsoft). */
+  const NAV_GROUP_OF = (path, q) => {
+    if (path === "/") return "news";
+    const seg = path.split("/")[1];
+    if (seg === "anleitungen") return "wissen";
+    if (["vorlagen", "serienmails", "anfragen"].includes(seg)) return "vorlagen";
+    return seg;
+  };
+  const NAV_CHILDREN = {
+    wissen: [
+      { label: "Anleitungen", href: "#/anleitungen", on: (p, q) => q.get("s") !== "bestpractices" },
+      { label: "Best Practices", href: "#/anleitungen?s=bestpractices", on: (p, q) => q.get("s") === "bestpractices" },
+    ],
+    vorlagen: [
+      { label: "Vorlagen", href: "#/vorlagen", on: (p) => p.startsWith("/vorlagen") },
+      { label: "Serienmails", href: "#/serienmails", on: (p) => p.startsWith("/serienmails") },
+      { label: "Anfragen an Microsoft", href: "#/anfragen", on: (p) => p.startsWith("/anfragen") },
+    ],
+  };
   function updateNav(path) {
+    const q = new URLSearchParams(location.hash.split("?")[1] || "");
+    const group = NAV_GROUP_OF(path, q);
     railLinks.forEach((a) => {
-      const active =
-        (a.dataset.nav === "news" && path === "/") ||
-        (a.dataset.nav === "praesentationen" && path.startsWith("/praesentationen")) ||
-        (a.dataset.nav === "vorlagen" && path.startsWith("/vorlagen")) ||
-        (a.dataset.nav === "newsletter" && path.startsWith("/newsletter")) ||
-        (a.dataset.nav === "anleitungen" && path.startsWith("/anleitungen")) ||
-        (a.dataset.nav === "case-studies" && path.startsWith("/case-studies")) ||
-        (a.dataset.nav === "tickets" && path.startsWith("/tickets")) ||
-        (a.dataset.nav === "anfragen" && path.startsWith("/anfragen")) ||
-        (a.dataset.nav === "ideen" && path.startsWith("/ideen")) ||
-        (a.dataset.nav === "serienmails" && path.startsWith("/serienmails")) ||
-        (a.dataset.nav === "nutzer" && path.startsWith("/nutzer")) ||
-        (a.dataset.nav === "microsoft-ads-kontopruefung" && path.startsWith("/microsoft-ads-kontopruefung"));
-      if (active) a.setAttribute("aria-current", "page");
+      if (a.dataset.nav === group) a.setAttribute("aria-current", "page");
       else a.removeAttribute("aria-current");
     });
-
-    // Untermenü automatisch aufklappen, wenn die aktuelle Route zur Gruppe
-    // gehört (z. B. direkt auf #/serienmails gelandet) — klappt aber nie
-    // von allein wieder zu, wenn man weiternavigiert (kein nervöses
-    // Zuspringen; manuelles Zuklappen bleibt der Person selbst überlassen).
-    navGroups.forEach((group) => {
-      const belongsToGroup = Array.from(group.querySelectorAll("[data-nav]")).some((a) => path.startsWith(`/${a.dataset.nav}`));
-      if (belongsToGroup) {
-        group.querySelector("[data-nav-toggle]").setAttribute("aria-expanded", "true");
-        group.querySelector("[data-nav-sub]").classList.add("is-expanded");
-      }
-    });
+    const box = document.getElementById("subnav-children");
+    if (!box) return;
+    const kids = NAV_CHILDREN[group];
+    box.hidden = !kids;
+    box.innerHTML = kids ? kids.map((k) => `<a href="${k.href}"${k.on(path, q) ? ' aria-current="page"' : ""}>${k.label}</a>`).join("") : "";
   }
 
   /* ------------------------------------------------------- Anleitungen */
@@ -4417,6 +4420,7 @@
   }
 
   function renderGuides(query, section) {
+    if (section === "bestpractices") { renderBestPractices(query); return; }
     const lang = guideLang();
     const t = GUIDE_UI[lang];
     const sec = GUIDE_SECTIONS.includes(section) ? section : "all";
@@ -4455,6 +4459,159 @@
     view.querySelectorAll(".tabs__item[data-s]").forEach((btn) => btn.addEventListener("click", () => {
       location.hash = `#/anleitungen?${new URLSearchParams({ q: input.value, s: btn.dataset.s })}`;
     }));
+  }
+
+  /* Best Practices (2026-10-07 von "Vorlagen" nach "Wissen" verschoben,
+     Nutzer-Wunsch) – gleiche Karten wie zuvor, eigene Unterseite. */
+  function renderBestPractices(query) {
+    const q = (query || "").trim().toLowerCase();
+    const list = BEST_PRACTICES.filter((bp) => !q || [bp.title, bp.body].join(" ").toLowerCase().includes(q));
+    view.innerHTML = `
+      <section class="hero hero--compact">
+        <div class="hero__intro">
+          <h1>Best Practices</h1>
+          <p>Erprobte Vorgehensweisen aus unseren Konten zum Nachschlagen – ergänzend zu den Schritt-für-Schritt-Anleitungen.</p>
+        </div>
+      </section>
+      <div class="toolbar">
+        <label class="search">
+          ${ICONS.search}
+          <input type="search" id="bp-search" placeholder="Best Practices durchsuchen …" autocomplete="off" aria-label="Best Practices durchsuchen" value="${escapeHtml(query || "")}" />
+        </label>
+      </div>
+      ${list.length ? `
+      <h2 class="feed__title">Best Practices<span class="feed__title__count">${list.length} ${list.length === 1 ? "Eintrag" : "Einträge"}</span></h2>
+      <div class="card-grid">
+        ${list.map((bp, i) => `
+          <div class="side-card">
+            <span class="side-card__icon" style="background-color: var(${i % 2 ? "--teal" : "--accent"})">${ICONS.flash}</span>
+            <h3>${escapeHtml(bp.title)}</h3>
+            <p class="pre-line side-card__body">${escapeHtml(bp.body)}</p>
+            <button type="button" class="side-card__expand" data-expand>Vollständig anzeigen ${ICONS.arrowRight}</button>
+          </div>`).join("")}
+      </div>` : `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Kein Treffer</strong><p>Versuch einen anderen Begriff.</p></div>`}`;
+    const input = document.getElementById("bp-search");
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") location.hash = `#/anleitungen?${new URLSearchParams({ s: "bestpractices", q: input.value })}`; });
+    wireBestPracticeCards();
+  }
+
+  /* ------------------------------------------------------- Konditionen */
+  /* Konditionen (2026-10-07): Kontoklassifizierung und Performance Deal
+     FY 26/27 als lesbare Seite – Inhalte 1:1 aus den PDFs in
+     content/konditionen/ – plus Prüfhilfe "Wie wird dieses Konto
+     eingeordnet?" und Liste aller Unterlagen (konditionen-data.js). */
+  function kkClassify(linkIso, youngAccount, domainActive) {
+    const d = new Date(linkIso + "T00:00:00");
+    if (isNaN(d)) return null;
+    if (d <= new Date("2026-06-30T00:00:00")) return { cls: "Base", text: "Base Account (Ausgangsbestand) – sofern das Konto zum Stichtag 30.06.2026 bei der Agentur aktiv war." };
+    const y = d.getFullYear();
+    const next = d < new Date(`${y}-07-01T00:00:00`) ? `${y}-07-01` : `${y + 1}-01-01`;
+    const netNew = youngAccount && !domainActive;
+    return {
+      cls: netNew ? "Net New Business" : "Existing Business",
+      text: `bis ${formatDate(next)}, ab dann Base Account.${netNew ? "" : " Grund: " + (!youngAccount ? "Konto bei Verknüpfung ≥ 3 Monate alt" : "Kundendomäne war bereits auf Microsoft Advertising aktiv") + "."}`,
+    };
+  }
+
+  function renderKonditionen() {
+    const tier = (list) => ["CORE", "GROWTH", "STRATEGIC"].map((t) => `<span class="tier-tag tier-tag--${t.toLowerCase()}${list.includes(t) ? "" : " is-off"}">${t}</span>`).join("");
+    view.innerHTML = `
+      <section class="hero hero--compact">
+        <div class="hero__intro">
+          <h1>Unsere Konditionen</h1>
+          <p>Kontoklassifizierung und Performance Deal auf einen Blick – mit den Originalunterlagen zum Download.</p>
+        </div>
+      </section>
+
+      <section class="kd-section" id="klassifizierung">
+        <div class="kd-head">
+          <h2 class="feed__title">Kontoklassifizierung</h2>
+          <a class="btn btn--secondary" href="content/konditionen/Kontoklassifizierung_SOWESPOKE_v3.pdf" target="_blank" rel="noopener">${ICONS.download} PDF</a>
+        </div>
+        <p class="kd-lead">Base Accounts, Net New Business und Existing Business. Die Klassifizierung erfolgt immer auf Account-Ebene – ob die Agentur neu akquiriert wurde oder bereits im Bestand ist, spielt keine Rolle.</p>
+        <div class="kd-grid kd-grid--3">
+          <article class="kd-card kd-card--base"><h3>Base Accounts</h3><p class="kd-sub">= Base Business</p><p>Ausgangsbestand: Konten, die zum Stichtag 30.06.2026 bei den Agenturen aktiv waren. Danach werden alle zwischen den beiden Stichtagen neu verknüpften Accounts am 01.01. bzw. 01.07. zu Base.</p></article>
+          <article class="kd-card kd-card--new"><h3>Net New Business</h3><p>Neu verknüpft zwischen zwei Stichtagen. Bei Verknüpfung &lt; 3 Monate alt <strong>und</strong> Kundendomäne zuvor nicht auf Microsoft Advertising aktiv. Bis zum nächsten Stichtag Net New.</p></article>
+          <article class="kd-card kd-card--existing"><h3>Existing Business</h3><p>Neu verknüpft zwischen zwei Stichtagen, ohne die Net-New-Kriterien zu erfüllen, z. B. Konto ≥ 3 Monate alt oder Kundendomäne bereits aktiv. Bis zum nächsten Stichtag Existing.</p></article>
+        </div>
+        <p class="kd-callout">Am <strong>01.01.</strong> und <strong>01.07.</strong> werden alle zwischen den beiden Stichtagen neu verknüpften Accounts zu Base.</p>
+        <div class="kd-grid kd-grid--2">
+          <div class="kd-card">
+            <h3>Wie wird dieses Konto eingeordnet?</h3>
+            <div class="kd-form">
+              <label class="nl-field"><span>Verknüpft am</span><input type="date" id="kk-date" value="${new Date().toISOString().slice(0, 10)}" /></label>
+              <label class="kd-check"><input type="checkbox" id="kk-young" checked /> Konto war bei Verknüpfung jünger als 3 Monate</label>
+              <label class="kd-check"><input type="checkbox" id="kk-domain" /> Kundendomäne war vorher schon auf Microsoft Advertising aktiv</label>
+            </div>
+            <p class="kd-result" id="kk-result" aria-live="polite"></p>
+            <p class="kd-note">Prüfhilfe nach der Kurzlogik der Übersicht – maßgeblich bleibt die Kooperationsvereinbarung.</p>
+          </div>
+          <a class="kd-card kd-preview" href="content/konditionen/Kontoklassifizierung_SOWESPOKE_v3.pdf" target="_blank" rel="noopener" aria-label="Übersicht Kontoklassifizierung als PDF öffnen">
+            <img src="content/konditionen/kontoklassifizierung.png" alt="Übersicht Kontoklassifizierung mit Zeitstrahl und Beispielen" loading="lazy" />
+          </a>
+        </div>
+      </section>
+
+      <section class="kd-section" id="performance-deal">
+        <div class="kd-head">
+          <h2 class="feed__title">Performance Deal FY 26/27</h2>
+          <a class="btn btn--secondary" href="content/konditionen/SWS-Performance-Deals-FY2627_DE.pdf" target="_blank" rel="noopener">${ICONS.download} PDF</a>
+        </div>
+        <p class="kd-lead">Der Performance Deal honoriert Agenturen, die ihr Microsoft-Advertising-Geschäft aktiv ausbauen. <strong>Aktionszeitraum: 1. Oktober 2026 – 30. Juni 2027.</strong></p>
+        <p class="kd-callout kd-callout--warn"><strong>Wichtig:</strong> Die Teilnahme muss einmalig aktiv bestätigt werden (Partner-Dashboard). No-Change-Konten sind grundsätzlich von allen Vergütungen ausgeschlossen.</p>
+        <div class="kd-grid kd-grid--3">
+          <article class="kd-card">
+            <div class="kd-tiers">${tier(["CORE", "GROWTH", "STRATEGIC"])}</div>
+            <h3>01 · MSAN-Ausbau</h3>
+            <p>Statt regulär 4 % bis zu <strong>10 %</strong> Vergütung auf den Ad Spend eurer MSAN-Audience-Kampagnen – je höher der MSAN-Share, desto höher die Vergütung.</p>
+            <table class="kd-table"><thead><tr><th>MSAN-Share</th><th>Vergütung</th></tr></thead><tbody>
+              ${[5, 6, 7, 8, 9].map((n) => `<tr><td>${n} %</td><td>${n} %</td></tr>`).join("")}<tr><td>ab 10 %</td><td>10 %</td></tr></tbody></table>
+            <p class="kd-note">MSAN-Share = MSAN-Audience-Spend ÷ gesamter Ad Spend. Nur Kampagnentyp „Zielgruppe“. Bei 10–30 % MSAN-Share auf max. 10 % des MSAN-Spends gedeckelt. Kombinierbar mit New Account.</p>
+          </article>
+          <article class="kd-card">
+            <div class="kd-tiers">${tier(["CORE", "GROWTH", "STRATEGIC"])}</div>
+            <h3>02 · New Account</h3>
+            <p><strong>12 % statt 8 %</strong> Vergütung in Q2 2027 auf den Q2 Ad Spend qualifizierter New Accounts.</p>
+            <ol class="kd-steps">
+              <li><strong>Verknüpfen:</strong> New Account im Januar, spätestens bis Ende Februar 2027.</li>
+              <li><strong>Qualifizieren:</strong> bis Ende Februar mind. 1.000 € Ad Spend – ohne eingelöste Gutscheincodes.</li>
+              <li><strong>Profitieren:</strong> 12 % auf den Q2-2027-Ad-Spend des Accounts.</li>
+            </ol>
+            <p class="kd-note">„New Account“ = „Netto-Neugeschäft / Net New Business“ laut Kooperationsvereinbarung – siehe <a href="#klassifizierung">Kontoklassifizierung</a>.</p>
+          </article>
+          <article class="kd-card">
+            <div class="kd-tiers">${tier(["STRATEGIC"])}</div>
+            <h3>03 · Year-over-Year-Wachstum</h3>
+            <p><strong>2 %</strong> Vergütung auf den zusätzlichen Ad Spend gegenüber dem Vorjahresquartal (z. B. Q4 2026 vs. Q4 2025).</p>
+            <p>Maximal <strong>5.000 € bzw. 2.500 SWS Coins</strong> pro Quartal.</p>
+            <p class="kd-note">Nur möglich, wenn die Agentur im Vorjahreszeitraum bereits verknüpft war.</p>
+          </article>
+        </div>
+        <div class="kd-grid kd-grid--2">
+          <div class="kd-card kd-coins"><span class="kd-big">2 € = 1 SWS Coin</span><p>Alle Vergütungen werden quartalsweise geprüft, auf Basis des Ad Spends in Euro berechnet und als SWS-Coins-Guthaben gutgeschrieben.</p></div>
+          <div class="kd-card"><h3>Registrierung</h3><p>Einmalig im Aktionszeitraum. Wer sich innerhalb der ersten sechs Wochen eines Quartals registriert, nimmt für das ganze Quartal teil; bei späterer Registrierung ab dem folgenden Quartal. Keine nachträgliche Vergütung für abgeschlossene Quartale.</p><p class="kd-note">Fragen: <a href="mailto:info@sowespoke.com">info@sowespoke.com</a></p></div>
+        </div>
+      </section>
+
+      <section class="kd-section" id="unterlagen">
+        <h2 class="feed__title">Alle Unterlagen<span class="feed__title__count">${KONDITIONEN_DOCS.length}</span></h2>
+        <ul class="article-list">
+          ${KONDITIONEN_DOCS.map((d) => `
+          <li><a class="row" href="${escapeHtml(d.file)}" target="_blank" rel="noopener">
+            <span class="row__head"><span class="row__thumb">${ICONS.fileText}</span></span>
+            <span class="row__channel" style="--ch: var(--accent)">${escapeHtml(d.tag)}</span>
+            <span class="row__body"><span class="row__title">${escapeHtml(d.title)}</span><span class="row__summary">${escapeHtml(d.summary)}</span></span>
+            <span class="row__meta"><span class="row__date">Stand ${formatDate(d.updated)}</span><span class="row__cat">PDF öffnen</span></span>
+          </a></li>`).join("")}
+        </ul>
+      </section>`;
+    const upd = () => {
+      const r = kkClassify(document.getElementById("kk-date").value, document.getElementById("kk-young").checked, document.getElementById("kk-domain").checked);
+      document.getElementById("kk-result").innerHTML = r ? `<span class="kd-badge kd-badge--${r.cls.split(" ")[0].toLowerCase()}">${escapeHtml(r.cls)}</span> ${escapeHtml(r.text)}` : "Bitte Datum angeben.";
+    };
+    ["kk-date", "kk-young", "kk-domain"].forEach((id) => document.getElementById(id).addEventListener("input", upd));
+    upd();
+    view.querySelectorAll('a[href^="#klassifizierung"]').forEach((l) => l.addEventListener("click", (e) => { e.preventDefault(); document.getElementById("klassifizierung").scrollIntoView({ behavior: "smooth" }); }));
   }
 
   function renderGuideDetail(id) {
@@ -4792,6 +4949,8 @@
       renderStandaloneTemplateDetail(path.slice("/vorlagen/".length));
     } else if (path === "/vorlagen") {
       renderTemplates(params.get("q") || "", params.get("t") || "mail");
+    } else if (path === "/konditionen") {
+      renderKonditionen();
     } else if (path.startsWith("/newsletter/")) {
       renderNewsletterDetail(decodeURIComponent(path.slice("/newsletter/".length)));
     } else if (path === "/newsletter") {

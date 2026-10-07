@@ -8,9 +8,9 @@
 <meta name="robots" content="noindex, nofollow" />
 <link rel="icon" type="image/png" href="assets/brand/logo-sowespoke-vertical (1).png" />
 <!-- ?v= erzwingt nach jedem Deploy frische CSS/JS-Dateien im Browser (2026-10-06); bei Änderungen hochzählen -->
-<link rel="stylesheet" href="tokens.css?v=20261007-3" />
-<link rel="stylesheet" href="assets/fonts/fonts.css?v=20261007-3" />
-<link rel="stylesheet" href="styles.css?v=20261007-3" />
+<link rel="stylesheet" href="tokens.css?v=20261007-4" />
+<link rel="stylesheet" href="assets/fonts/fonts.css?v=20261007-4" />
+<link rel="stylesheet" href="styles.css?v=20261007-4" />
 </head>
 <body>
 
@@ -32,41 +32,25 @@
      app.js (Icons, aktiver Punkt, Admin-Link, Untermenü) daran hängt. -->
 <div class="subnav">
   <div class="subnav__inner">
+    <!-- Menü gruppiert (2026-10-07): Hauptpunkte oben, Unterpunkte von
+         "Wissen" und "E-Mail-Vorlagen" erscheinen als zweite Zeile
+         (.subnav__children, von app.js renderNavChildren gefüllt). -->
     <nav class="rail__nav" aria-label="Hauptnavigation">
-      <a href="#/" data-nav="news" aria-label="Neuigkeiten" title="Neuigkeiten"><span class="rail__nav-icon"></span><span class="rail__nav-label">News</span></a>
+      <a href="#/" data-nav="news" aria-label="News" title="News"><span class="rail__nav-icon"></span><span class="rail__nav-label">News</span></a>
+      <a href="#/konditionen" data-nav="konditionen" aria-label="Konditionen" title="Konditionen"><span class="rail__nav-icon"></span><span class="rail__nav-label">Konditionen</span></a>
       <a href="#/praesentationen" data-nav="praesentationen" aria-label="Präsentationen" title="Präsentationen"><span class="rail__nav-icon"></span><span class="rail__nav-label">Präsentationen</span></a>
-      <!-- Serienmails als aufklappbares Untermenü unter Vorlagen (2026-08-14,
-           Nutzer-Wunsch) — existiert nur, weil es aus dem Mail-Generator
-           innerhalb von Vorlagen entsteht. Erstes verschachteltes Nav-
-           Element in dieser App, siehe app.js (wireNavSubmenu) für die
-           Auf-/Zuklapp-Logik und Auto-Aufklappen auf passender Route. Auf
-           Mobile (horizontale Icon-Leiste, siehe styles.css) rendert die
-           Gruppe stattdessen flach — kein Platz für Einrückung/Aufklappen
-           in einer schmalen Zeile. -->
-      <div class="rail__nav-group" data-nav-group="vorlagen">
-        <a href="#/vorlagen" data-nav="vorlagen" aria-label="Vorlagen &amp; Wissensdatenbank" title="Vorlagen &amp; Wissensdatenbank" class="rail__nav-group-link"><span class="rail__nav-icon"></span><span class="rail__nav-label">Vorlagen</span></a>
-        <button type="button" class="rail__nav-toggle" data-nav-toggle aria-expanded="false" aria-controls="rail-nav-sub-vorlagen" aria-label="Untermenü Vorlagen ein-/ausblenden"></button>
-        <div class="rail__nav-sub" id="rail-nav-sub-vorlagen" data-nav-sub>
-          <a href="#/serienmails" data-nav="serienmails" aria-label="Geplante Serienmails" title="Geplante Serienmails"><span class="rail__nav-icon"></span><span class="rail__nav-label">Serienmails</span></a>
-        </div>
-      </div>
-      <!-- Anleitungen aus der SWS-Alliance-Wissensdatenbank (Zoho), 2026-10-06 -->
-      <!-- Newsletter: Archiv + Vorschlag aus Präsentationen/News (2026-10-07) -->
+      <a href="#/anleitungen" data-nav="wissen" aria-label="Wissen" title="Wissen"><span class="rail__nav-icon"></span><span class="rail__nav-label">Wissen</span></a>
+      <a href="#/vorlagen" data-nav="vorlagen" aria-label="E-Mail-Vorlagen" title="E-Mail-Vorlagen"><span class="rail__nav-icon"></span><span class="rail__nav-label">E-Mail-Vorlagen</span></a>
       <a href="#/newsletter" data-nav="newsletter" aria-label="Newsletter" title="Newsletter"><span class="rail__nav-icon"></span><span class="rail__nav-label">Newsletter</span></a>
-      <a href="#/anleitungen" data-nav="anleitungen" aria-label="Anleitungen" title="Anleitungen"><span class="rail__nav-icon"></span><span class="rail__nav-label">Anleitungen</span></a>
       <a href="#/case-studies" data-nav="case-studies" aria-label="Case Studies" title="Case Studies"><span class="rail__nav-icon"></span><span class="rail__nav-label">Case Studies</span></a>
-      <!-- Tickets vorerst ausgeblendet (2026-10-06, Nutzer: "brauchen wir zuerst
-           nicht"). Seite #/tickets bleibt erreichbar; zum Einblenden hidden entfernen. -->
-      <a href="#/tickets" data-nav="tickets" aria-label="Tickets" title="Tickets" hidden><span class="rail__nav-icon"></span><span class="rail__nav-label">Tickets</span></a>
-      <a href="#/anfragen" data-nav="anfragen" aria-label="Anfragen an Microsoft" title="Anfragen an Microsoft"><span class="rail__nav-icon"></span><span class="rail__nav-label">Anfragen</span></a>
       <a href="#/microsoft-ads-kontopruefung" data-nav="microsoft-ads-kontopruefung" aria-label="Verknüpfungen" title="Verknüpfungen"><span class="rail__nav-icon"></span><span class="rail__nav-label">Verknüpfungen</span></a>
-      <a href="#/ideen" data-nav="ideen" aria-label="Ideen &amp; Vorschläge" title="Ideen &amp; Vorschläge"><span class="rail__nav-icon"></span><span class="rail__nav-label">Ideen</span></a>
-      <!-- Nur für Admins (2026-08-14) — per JS eingeblendet, siehe app.js
-           (rail-profile-IIFE prüft isAdmin über /api/auth/me). Standardmäßig
-           versteckt, damit nicht jedes Teammitglied einen Link auf eine
-           403-Seite sieht. -->
-      <a href="#/nutzer" data-nav="nutzer" aria-label="Nutzungsübersicht (nur Admins)" title="Nutzungsübersicht (nur Admins)" hidden><span class="rail__nav-icon"></span><span class="rail__nav-label">Nutzung</span></a>
+      <a href="#/ideen" data-nav="ideen" aria-label="Ideen" title="Ideen"><span class="rail__nav-icon"></span><span class="rail__nav-label">Ideen</span></a>
+      <!-- Tickets vorerst ausgeblendet (2026-10-06); Seite #/tickets bleibt erreichbar. -->
+      <a href="#/tickets" data-nav="tickets" aria-label="Tickets" title="Tickets" hidden><span class="rail__nav-icon"></span><span class="rail__nav-label">Tickets</span></a>
+      <!-- Nur für Admins, per JS eingeblendet (rail-profile-IIFE). -->
+      <a href="#/nutzer" data-nav="nutzer" aria-label="Nutzung" title="Nutzung" hidden><span class="rail__nav-icon"></span><span class="rail__nav-label">Nutzung</span></a>
     </nav>
+    <nav class="subnav__children" id="subnav-children" aria-label="Unterbereiche" hidden></nav>
   </div>
 </div>
 
@@ -87,17 +71,18 @@
      Nur für die Performance-Chart-Karte auf Case-Study-Detailseiten
      gebraucht, deshalb erst kurz vor app.js statt bei den Datendateien. -->
 <script src="assets/vendor/chart.umd.min.js"></script>
-<script src="data.js?v=20261007-3"></script>
-<script src="presentations-data.js?v=20261007-3"></script>
-<script src="case-studies-data.js?v=20261007-3"></script>
-<script src="tickets-data.js?v=20261007-3"></script>
-<script src="microsoft-requests-data.js?v=20261007-3"></script>
-<script src="newsletters-data.js?v=20261007-3"></script>
-<script src="sws-events-data.js?v=20261007-3"></script>
-<script src="calendar-events.js?v=20261007-3"></script>
-<script src="fun-facts.js?v=20261007-3"></script>
-<script src="kb-guides-data.js?v=20261007-3"></script>
-<script src="icons.js?v=20261007-3"></script>
-<script src="app.js?v=20261007-3"></script>
+<script src="data.js?v=20261007-4"></script>
+<script src="presentations-data.js?v=20261007-4"></script>
+<script src="case-studies-data.js?v=20261007-4"></script>
+<script src="tickets-data.js?v=20261007-4"></script>
+<script src="microsoft-requests-data.js?v=20261007-4"></script>
+<script src="konditionen-data.js?v=20261007-4"></script>
+<script src="newsletters-data.js?v=20261007-4"></script>
+<script src="sws-events-data.js?v=20261007-4"></script>
+<script src="calendar-events.js?v=20261007-4"></script>
+<script src="fun-facts.js?v=20261007-4"></script>
+<script src="kb-guides-data.js?v=20261007-4"></script>
+<script src="icons.js?v=20261007-4"></script>
+<script src="app.js?v=20261007-4"></script>
 </body>
 </html>
