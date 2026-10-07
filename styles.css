@@ -3469,3 +3469,40 @@ h1:focus, h2:focus, h3:focus { outline: none; }
 .lang-toggle button[aria-pressed="true"] { background: var(--c-surface); color: var(--ink); }
 .detail__meta .lang-toggle { margin: 0 0 0 auto; }
 .detail__meta { flex-wrap: wrap; }
+
+
+/* ==========================================================================
+   Newsletter (2026-10-07): Archiv + Vorschlag
+   ========================================================================== */
+.nl-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-3); }
+.nl-hint { color: var(--ink-soft); font-size: 0.92rem; margin-bottom: var(--space-5); }
+.nl-subtabs { margin-bottom: var(--space-5); }
+.nl-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: var(--space-6); align-items: start; }
+@media (max-width: 1023px) { .nl-layout { grid-template-columns: 1fr; } }
+.nl-picks { display: flex; flex-direction: column; gap: var(--space-5); }
+.nl-group { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.nl-group legend { display: flex; align-items: center; gap: 0.6em; font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; margin-bottom: var(--space-3); padding: 0; }
+.nl-pick {
+  display: flex; gap: var(--space-3); align-items: flex-start; cursor: pointer;
+  padding: 14px 16px; background: var(--c-surface); border: 1px solid var(--line); border-radius: var(--radius);
+  transition: border-color 150ms ease;
+}
+.nl-pick:hover { border-color: var(--c-line-dashed); }
+.nl-pick:has(input:checked) { border-color: var(--turquoise); box-shadow: inset 0 0 0 1px var(--turquoise); }
+.nl-pick input { width: 18px; height: 18px; margin-top: 3px; accent-color: var(--c-turquoise-700); flex: none; }
+.nl-pick__body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.nl-pick__title { font-weight: 700; line-height: 1.35; }
+.nl-pick__meta { font-size: 0.82rem; color: var(--ink-soft); }
+.nl-draft { position: sticky; top: calc(var(--topbar-h) + var(--subnav-h) + var(--space-4)); display: flex; flex-direction: column; gap: var(--space-3); }
+.nl-field { display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; font-weight: 700; }
+.nl-field input, .nl-field textarea {
+  font: inherit; font-weight: 400; font-size: 0.95rem; line-height: 1.55; color: var(--ink);
+  border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--c-paper); width: 100%;
+}
+.nl-field textarea { resize: vertical; min-height: 18rem; }
+.nl-actions { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.nl-status { font-size: 0.88rem; color: var(--success); display: inline-flex; gap: 0.3em; align-items: center; }
+.nl-status svg { width: 14px; height: 14px; }
+.nl-note { font-size: 0.82rem; color: var(--ink-soft); }
+.nl-mail { background: var(--c-surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; }
+.nl-frame { display: block; width: 100%; min-height: 70vh; border: 0; background: #fff; }

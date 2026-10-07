@@ -24,7 +24,7 @@
     Allgemein: "--turquoise",
   };
 
-  const NAV_ICON = { anleitungen: "fileText", news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass", nutzer: "gauge", "microsoft-ads-kontopruefung": "crosshair" };
+  const NAV_ICON = { newsletter: "mail", anleitungen: "fileText", news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass", nutzer: "gauge", "microsoft-ads-kontopruefung": "crosshair" };
   railLinks.forEach((a) => {
     const iconSlot = a.querySelector(".rail__nav-icon");
     if (iconSlot) iconSlot.innerHTML = ICONS[NAV_ICON[a.dataset.nav]];
@@ -4310,6 +4310,7 @@
         (a.dataset.nav === "news" && path === "/") ||
         (a.dataset.nav === "praesentationen" && path.startsWith("/praesentationen")) ||
         (a.dataset.nav === "vorlagen" && path.startsWith("/vorlagen")) ||
+        (a.dataset.nav === "newsletter" && path.startsWith("/newsletter")) ||
         (a.dataset.nav === "anleitungen" && path.startsWith("/anleitungen")) ||
         (a.dataset.nav === "case-studies" && path.startsWith("/case-studies")) ||
         (a.dataset.nav === "tickets" && path.startsWith("/tickets")) ||
@@ -4494,6 +4495,201 @@
     wireLangToggle();
   }
 
+  /* ------------------------------------------------------- Newsletter */
+  /* Newsletter (2026-10-07): Archiv der versendeten Newsletter (Daten aus
+     newsletters-data.js, gefüllt per tools/import-newsletters.py) und ein
+     regelbasierter Vorschlag je Newsletter-Typ. Der Vorschlag nimmt aus dem
+     gewählten Zeitraum (Standard: seit dem letzten Newsletter dieses Typs,
+     sonst 30 Tage) Microsoft-Ads-relevante News und neue Präsentationen,
+     vorausgewählt nach Typ; Texte stammen aus den vorhandenen Kunden-
+     Zusammenfassungen (customerBlurb) bzw. den News-Teasern. Kein KI-Dienst. */
+  const NL_TYPES = {
+    operativ: { label: "Operativ", who: "Account Manager", docTypes: ["Beta-Feature", "Feature-Guide"], subject: "Microsoft Ads Update" },
+    strategisch: { label: "Strategisch", who: "Geschäftsführung / Teamleitung", docTypes: ["Strategie-Trend", "Saisonal", "Sonstiges", "Rechtliches"], subject: "SWS Alliance Insights" },
+  };
+  const MS_RE = /microsoft|bing|copilot|msan|audience ads|audience network|performance max|\bpmax\b|\buet\b|clarity|\bedge\b|linkedin/i;
+  const nlDay = (iso) => new Date(String(iso).slice(0, 10) + "T00:00:00");
+
+  function nlSince(typ, zeit) {
+    if (zeit !== "auto") return { from: new Date(Date.now() - Number(zeit) * 86400000), label: `letzte ${zeit} Tage` };
+    const last = NEWSLETTERS.filter((n) => n.type === typ && n.date).sort((x, y) => y.date.localeCompare(x.date))[0];
+    if (last) return { from: nlDay(last.date), label: `seit dem letzten Newsletter (${formatDate(last.date)})` };
+    return { from: new Date(Date.now() - 30 * 86400000), label: "letzte 30 Tage (noch kein Newsletter im Archiv)" };
+  }
+
+  async function nlCandidates(typ, zeit) {
+    const since = nlSince(typ, zeit);
+    const T = NL_TYPES[typ];
+    const pres = PRESENTATIONS.filter((p) => p.dateKnown && nlDay(p.date) >= since.from)
+      .sort((x, y) => y.date.localeCompare(x.date))
+      .map((p) => ({ key: "p:" + p.id, kind: "Präsentation", title: p.title, text: p.customerBlurb || p.summaryDE, date: p.date, link: "", pre: T.docTypes.includes(p.docType), meta: p.docType }));
+    const data = await loadNews();
+    const news = (data.items || []).filter((n) => n.pubDate && nlDay(n.pubDate) >= since.from && (n.channel === "Microsoft" || MS_RE.test(n.title + " " + (n.description || ""))))
+      .sort((x, y) => String(y.pubDate).localeCompare(String(x.pubDate)))
+      .map((n) => ({ key: "n:" + n.link, kind: "News", title: n.title, text: n.description || "", date: String(n.pubDate).slice(0, 10), link: n.link, pre: typ === "operativ", meta: n.source + (n.lang === "en" && !n.translated ? " · EN" : "") }));
+    const events = typ === "strategisch"
+      ? upcomingEvents(new Date(), 4).filter((e) => e.days <= 75).map((e) => ({ key: "e:" + e.name, kind: "Termin", title: e.name, text: e.relevantFor ? `Relevant für: ${e.relevantFor}` : "", date: e.date.toISOString().slice(0, 10), days: e.days, pre: true, meta: `in ${e.days} Tagen` }))
+      : [];
+    // Vorauswahl begrenzen, damit der Entwurf kompakt bleibt
+    let np = 0, nn = 0;
+    pres.forEach((x) => { if (x.pre && np++ >= 5) x.pre = false; });
+    news.forEach((x) => { if (x.pre && nn++ >= 4) x.pre = false; });
+    return { since, pres, news, events, newsError: !!data.error };
+  }
+
+  function nlDraft(typ, picked) {
+    const T = NL_TYPES[typ];
+    const month = new Date().toLocaleDateString("de-DE", { month: "long", year: "numeric" });
+    const p = picked.filter((x) => x.kind === "Präsentation"), n = picked.filter((x) => x.kind === "News"), e = picked.filter((x) => x.kind === "Termin");
+    const lead = p[0] || n[0];
+    const subject = `${T.subject} ${month}${lead ? ": " + lead.title.split(/[:–—(]/)[0].trim() : ""}`;
+    const parts = ["Hallo zusammen,", "",
+      typ === "operativ"
+        ? "hier die wichtigsten Neuerungen rund um Microsoft Advertising aus den letzten Wochen – kompakt zusammengefasst für euren Arbeitsalltag."
+        : "hier unser Überblick über die aktuellen Entwicklungen bei Microsoft Advertising und was sie für eure Planung bedeuten."];
+    const sec = (title, items, fmt) => { if (items.length) parts.push("", title.toUpperCase(), "", ...items.flatMap(fmt)); };
+    sec(typ === "operativ" ? "Neu bei Microsoft Advertising" : "Strategie & Trends", p, (x) => [`▸ ${x.title}`, x.text, ""]);
+    sec("Aus den News", n, (x) => [`▸ ${x.title}`, ...(x.text ? [x.text] : []), ...(x.link ? [`Mehr: ${x.link}`] : []), ""]);
+    sec("Termine im Blick", e, (x) => [`▸ ${x.title} – ${formatDate(x.date)} (in ${x.days} Tagen)`, ...(x.text ? [x.text] : []), ""]);
+    parts.push("", "Wenn ihr zu einem der Themen Fragen habt oder Unterstützung bei der Umsetzung braucht, meldet euch gern bei uns.", "", "Viele Grüße", "euer SOWESPOKE-Team");
+    return { subject, body: parts.join("\n").replace(/\n{3,}/g, "\n\n") };
+  }
+
+  function nlArchiveCard(nl) {
+    return `
+      <li>
+        <a class="row" href="#/newsletter/${encodeURIComponent(nl.id)}">
+          <span class="row__head"><span class="row__thumb">${ICONS.mail}</span></span>
+          <span class="row__channel" style="--ch: var(${nl.type === "strategisch" ? "--accent" : "--turquoise"})">${escapeHtml(NL_TYPES[nl.type] ? NL_TYPES[nl.type].label : "Newsletter")}</span>
+          <span class="row__body">
+            <span class="row__title">${escapeHtml(nl.subject)}</span>
+            <span class="row__summary">${escapeHtml(nl.excerpt || "")}</span>
+          </span>
+          <span class="row__meta">${nl.date ? `<span class="row__date">${formatDate(nl.date)}</span>` : ""}${nl.from ? `<span class="row__cat">${escapeHtml(nl.from)}</span>` : ""}</span>
+        </a>
+      </li>`;
+  }
+
+  async function renderNewsletter(v, typ, zeit) {
+    const view_ = v === "archiv" ? "archiv" : "vorschlag";
+    const t = NL_TYPES[typ] ? typ : "operativ";
+    const z = ["auto", "14", "30", "60", "90"].includes(zeit) ? zeit : "auto";
+    const go = (o) => { location.hash = `#/newsletter?${new URLSearchParams({ v: view_, typ: t, zeit: z, ...o })}`; };
+    view.innerHTML = `
+      <section class="hero hero--compact">
+        <div class="hero__intro">
+          <h1>Newsletter</h1>
+          <p>Alle bisher versendeten Newsletter an einem Ort – und ein Vorschlag für den nächsten, zusammengestellt aus neuen Präsentationen und Microsoft-Ads-News.</p>
+        </div>
+      </section>
+      <div class="toolbar">
+        <nav class="tabs" aria-label="Ansicht">
+          <button type="button" class="tabs__item ${view_ === "vorschlag" ? "is-active" : ""}" data-v="vorschlag">Vorschlag</button>
+          <button type="button" class="tabs__item ${view_ === "archiv" ? "is-active" : ""}" data-v="archiv">Archiv<span class="tabs__item-count">${NEWSLETTERS.length}</span></button>
+        </nav>
+      </div>
+      <div id="nl-body"></div>`;
+    view.querySelectorAll("[data-v]").forEach((b) => b.addEventListener("click", () => go({ v: b.dataset.v })));
+    const body = document.getElementById("nl-body");
+
+    if (view_ === "archiv") {
+      const counts = NEWSLETTERS.reduce((acc, n) => { acc[n.type] = (acc[n.type] || 0) + 1; return acc; }, {});
+      const list = NEWSLETTERS.filter((n) => typ === "alle" || !zeit || true);
+      body.innerHTML = NEWSLETTERS.length ? `
+        <nav class="tabs nl-subtabs" aria-label="Newsletter-Typ">
+          ${["alle", "operativ", "strategisch"].map((k) => `<button type="button" class="tabs__item ${(k === "alle" ? !["operativ", "strategisch"].includes(typ) || typ === "alle" : typ === k) ? "is-active" : ""}" data-typ="${k}">${k === "alle" ? "Alle" : NL_TYPES[k].label}<span class="tabs__item-count">${k === "alle" ? NEWSLETTERS.length : counts[k] || 0}</span></button>`).join("")}
+        </nav>
+        <ul class="article-list" id="nl-archive"></ul>` : `
+        <div class="empty-state">${ICONS.mail}<strong>Noch keine Newsletter im Archiv</strong>
+          <p>Newsletter in Gmail öffnen → ⋮ → „Nachricht herunterladen“ (.eml), Dateien nach <code>content/newsletter/</code> legen und <code>python tools/import-newsletters.py</code> ausführen.</p></div>`;
+      if (NEWSLETTERS.length) {
+        const k = ["operativ", "strategisch"].includes(params_typ()) ? params_typ() : "alle";
+        document.getElementById("nl-archive").innerHTML = NEWSLETTERS.filter((n) => k === "alle" || n.type === k).map(nlArchiveCard).join("");
+        body.querySelectorAll("[data-typ]").forEach((b) => b.addEventListener("click", () => go({ typ: b.dataset.typ })));
+      }
+      return;
+    }
+
+    body.innerHTML = `<div class="empty-state">${ICONS.mail}<strong>Stelle Vorschlag zusammen …</strong></div>`;
+    const c = await nlCandidates(t, z);
+    if (!document.getElementById("nl-body")) return;
+    const all = [...c.pres, ...c.news, ...c.events];
+    const groupHtml = (title, items) => items.length ? `
+      <fieldset class="nl-group"><legend>${title}<span class="feed__title__count">${items.length}</span></legend>
+        ${items.map((x) => `
+        <label class="nl-pick">
+          <input type="checkbox" data-key="${escapeHtml(x.key)}" ${x.pre ? "checked" : ""} />
+          <span class="nl-pick__body">
+            <span class="nl-pick__title">${escapeHtml(x.title)}</span>
+            <span class="nl-pick__meta">${escapeHtml(x.kind)} · ${formatDate(x.date)}${x.meta ? " · " + escapeHtml(x.meta) : ""}</span>
+          </span>
+        </label>`).join("")}
+      </fieldset>` : "";
+    body.innerHTML = `
+      <div class="nl-controls">
+        <nav class="tabs" aria-label="Newsletter-Typ">
+          ${Object.entries(NL_TYPES).map(([k, T]) => `<button type="button" class="tabs__item ${t === k ? "is-active" : ""}" data-typ="${k}">${T.label}</button>`).join("")}
+        </nav>
+        <label class="select-field"><span class="select-field__label">Zeitraum</span>
+          <select id="nl-zeit">
+            <option value="auto" ${z === "auto" ? "selected" : ""}>Seit letztem Newsletter</option>
+            ${["14", "30", "60", "90"].map((d) => `<option value="${d}" ${z === d ? "selected" : ""}>Letzte ${d} Tage</option>`).join("")}
+          </select>
+        </label>
+      </div>
+      <p class="nl-hint">Für <strong>${NL_TYPES[t].who}</strong> · ${escapeHtml(c.since.label)}. Vorausgewählt nach Typ – Häkchen setzen oder entfernen, der Entwurf rechts passt sich sofort an.${c.newsError ? " News sind gerade nicht abrufbar, nur Präsentationen berücksichtigt." : ""}</p>
+      <div class="nl-layout">
+        <div class="nl-picks">
+          ${groupHtml("Neue Präsentationen", c.pres)}${groupHtml("Microsoft-Ads-News", c.news)}${groupHtml("Anstehende Termine", c.events)}
+          ${all.length ? "" : `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Nichts Neues im Zeitraum</strong><p>Wähle einen längeren Zeitraum.</p></div>`}
+        </div>
+        <div class="side-card nl-draft">
+          <h2>Entwurf</h2>
+          <label class="nl-field"><span>Betreff</span><input type="text" id="nl-subject" /></label>
+          <label class="nl-field"><span>Text</span><textarea id="nl-text" rows="22"></textarea></label>
+          <div class="nl-actions">
+            <button type="button" class="btn btn--primary" id="nl-copy">${ICONS.copy} Entwurf kopieren</button>
+            <span class="nl-status" id="nl-status" aria-live="polite"></span>
+          </div>
+          <p class="nl-note">Vorschlag als Startpunkt – bitte vor dem Versand prüfen und im Ton anpassen. Interne Präsentationen sind für Kund:innen nicht verlinkbar.</p>
+        </div>
+      </div>`;
+    body.querySelectorAll("[data-typ]").forEach((b) => b.addEventListener("click", () => go({ typ: b.dataset.typ })));
+    document.getElementById("nl-zeit").addEventListener("change", (e) => go({ zeit: e.target.value }));
+    const subj = document.getElementById("nl-subject"), txt = document.getElementById("nl-text");
+    const update = () => {
+      const keys = new Set([...body.querySelectorAll("input[data-key]:checked")].map((i) => i.dataset.key));
+      const d = nlDraft(t, all.filter((x) => keys.has(x.key)));
+      subj.value = d.subject; txt.value = d.body;
+    };
+    body.querySelectorAll("input[data-key]").forEach((i) => i.addEventListener("change", update));
+    update();
+    document.getElementById("nl-copy").addEventListener("click", async () => {
+      const st = document.getElementById("nl-status");
+      try { await navigator.clipboard.writeText(`Betreff: ${subj.value}\n\n${txt.value}`); st.innerHTML = `${ICONS.check} Kopiert`; }
+      catch { st.textContent = "Bitte Text manuell markieren und kopieren"; }
+    });
+  }
+  function params_typ() { return new URLSearchParams((location.hash.split("?")[1]) || "").get("typ") || "alle"; }
+
+  function renderNewsletterDetail(id) {
+    const nl = NEWSLETTERS.find((n) => n.id === id);
+    if (!nl) { renderNotFound("/newsletter/" + id); return; }
+    view.innerHTML = `
+      <a class="back-link" href="#/newsletter?v=archiv">${ICONS.arrowLeft} Zum Newsletter-Archiv</a>
+      <article class="detail">
+        <div class="detail__meta">
+          <span class="chip" style="background-color: var(${nl.type === "strategisch" ? "--accent" : "--turquoise-text"})">${escapeHtml(NL_TYPES[nl.type] ? NL_TYPES[nl.type].label : "Newsletter")}</span>
+          <span class="detail__date">— ${nl.date ? formatDate(nl.date) : ""}${nl.from ? " · " + escapeHtml(nl.from) : ""}</span>
+        </div>
+        <h1>${escapeHtml(nl.subject)}</h1>
+        <div class="nl-mail"><iframe class="nl-frame" title="${escapeHtml(nl.subject)}" sandbox="allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"></iframe></div>
+      </article>`;
+    const fr = view.querySelector(".nl-frame");
+    fr.srcdoc = `<base target="_blank">${nl.html}`;
+    fr.addEventListener("load", () => { try { fr.style.height = fr.contentDocument.documentElement.scrollHeight + 20 + "px"; } catch {} });
+  }
+
   function renderNotFound(path) {
     view.innerHTML = `
       <div class="empty-state">
@@ -4519,6 +4715,10 @@
       renderStandaloneTemplateDetail(path.slice("/vorlagen/".length));
     } else if (path === "/vorlagen") {
       renderTemplates(params.get("q") || "", params.get("t") || "mail");
+    } else if (path.startsWith("/newsletter/")) {
+      renderNewsletterDetail(decodeURIComponent(path.slice("/newsletter/".length)));
+    } else if (path === "/newsletter") {
+      renderNewsletter(params.get("v") || "vorschlag", params.get("typ") || "operativ", params.get("zeit") || "auto");
     } else if (path.startsWith("/anleitungen/")) {
       renderGuideDetail(decodeURIComponent(path.slice("/anleitungen/".length)));
     } else if (path === "/anleitungen") {

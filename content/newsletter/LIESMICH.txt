@@ -1,0 +1,3 @@
+Hier die heruntergeladenen Newsletter (.eml) ablegen, dann im Repo-Root:
+  python tools/import-newsletters.py
+Die .eml-Dateien werden nicht ins Repo übernommen.

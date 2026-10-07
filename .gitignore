@@ -4,3 +4,6 @@ desktop.ini
 Thumbs.db
 .impeccable/live/
 .wrangler/
+
+# Newsletter-Rohdateien (persönliche Postfach-Exporte) nicht ins Repo
+content/newsletter/*.eml
