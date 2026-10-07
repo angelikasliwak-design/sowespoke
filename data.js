@@ -77,14 +77,22 @@ const STANDALONE_TEMPLATES = [
     id: "neue-konto-erstellung",
     title: "Neues Konto erstellt",
     summary: "Informiert Kund:innen über ein neu erstelltes Microsoft-Advertising-Konto inkl. Verwaltungskonto, Adaccount und Verknüpfungsschritten.",
+    // Aktualisiert (2026-10-07) nach der vom Nutzer eingefügten aktuellen
+    // Fassung: vier nummerierte Schritte inkl. "mich als Nutzer löschen" und
+    // "Kunden zum primären Kontakt machen", Platzhalter für den Screenshot
+    // der Kontonummern. Infinitiv-Formulierung wie die übrigen Vorlagen,
+    // damit ihr/du-Umschaltung (toDu) korrekt bleibt.
     extraFields: [
       { key: "KundenName", label: "Kundenname/Firma", placeholder: "z. B. Musterfirma GmbH" },
-      { key: "Verwaltungskonto", label: "Kontonummer Verwaltungskonto (MCC)", placeholder: "z. B. K120005U88" },
+      { key: "Verwaltungskonto", label: "Kontonummer Verwaltungskonto", placeholder: "z. B. K120005U88" },
       { key: "Adaccount", label: "Adaccount-Nummer", placeholder: "z. B. F1104JH6" },
+      { key: "Einladung", label: "E-Mail-Adresse, an die die Einladung ging", placeholder: "z. B. marketing@musterfirma.de" },
+      { key: "Kontakt", label: "Primärer Kontakt beim Kunden", placeholder: "z. B. Max Mustermann" },
+      { key: "MeinNutzer", label: "Deine E-Mail-Adresse (wird als Nutzer entfernt)", placeholder: "z. B. a.tschirschwitz@sowespoke.com" },
     ],
     subject: "Euer neues Microsoft-Advertising-Konto ist eingerichtet",
     contentIhr:
-      "Ich habe soeben folgendes Konto für {KundenName} erstellt: {Verwaltungskonto}.\n\nBei diesem Konto handelt es sich um das sogenannte Verwaltungskonto. Darin kann die Zahlungsmethode hinterlegt und für den Adaccount genutzt werden. Hinter {Adaccount} verbirgt sich der zugehörige Adaccount, der für die Anzeigenschaltung genutzt wird.\n\nBitte die Einladung annehmen, die an {KundenName} geschickt wurde. Anschließend im Verwaltungskonto unter „Kontozusammenfassung” > „Anfragen” > „Konto verknüpfen” die 8-stellige Kontonummer eingeben.\n\nEine detaillierte Anleitung dazu: https://sowespokealliance.zohodesk.eu/portal/de/kb/articles/accountverkn%C3%BCpfung\n\nBitte beachten: Die AIV-Prüfung muss innerhalb der nächsten 30 Tage durchgeführt werden.",
+      "Ich habe soeben folgende Konten für {KundenName} erstellt:\n[Screenshot der Kontonummern hier einfügen]\n\nBeim Konto {Verwaltungskonto} handelt es sich um das sogenannte Verwaltungskonto. Im Verwaltungskonto kann die Zahlungsmethode hinterlegt und für den Adaccount in Verwendung genommen werden. Hinter {Adaccount} verbirgt sich der zugehörige Adaccount, der für die Anzeigenschaltung genutzt werden kann.\n\n1. Bitte die Einladung annehmen, die ich an {Einladung} geschickt habe.\n2. Mich als Nutzer löschen: {MeinNutzer}\n3. {Kontakt} zum primären Kontakt machen.\n4. Anschließend im Verwaltungskonto auf „Kontozusammenfassung“ > „Anfragen“ > „Konto verknüpfen“ gehen und hier die 8-stellige Kontonummer eingeben.\n\nEine detaillierte Anleitung dazu: https://sowespokealliance.zohodesk.eu/portal/de/kb/articles/accountverkn%C3%BCpfung\n\nBitte beachten: Die AIV-Prüfung muss innerhalb der nächsten 30 Tage durchgeführt werden.",
   },
   {
     id: "onboarding",
