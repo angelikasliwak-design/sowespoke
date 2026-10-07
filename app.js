@@ -4708,36 +4708,49 @@
   /* ------------------------------------------------------- Newsletter */
   /* Newsletter (2026-10-07): Archiv der versendeten "Neues aus der SWS-
      Alliance"-Ausgaben (newsletters-data.js, Import per tools/import-
-     newsletters.py) und ein Vorschlag für die nächste Ausgabe im selben
-     Aufbau wie bisher: Microsoft-Advertising-News (was sich ändert + was das
-     für euch bedeutet), neue Betas/Piloten, Insights & Webinare, unsere
-     nächsten Veranstaltungen. Themen, die schon in einem früheren Newsletter
-     standen, werden erkannt und nicht vorausgewählt. Regelbasiert, ohne KI. */
+     newsletters.py) und ein Vorschlag für die nächste Ausgabe.
+     Was die bisherigen Ausgaben ausmacht (Analyse der 5 Archiv-Ausgaben):
+     immer Deutsch, "ihr/euch", kurz; 3 Themen unter "Microsoft Advertising
+     News!", jeweils Überschrift "Feature + was passiert", ein Absatz was sich
+     ändert (Datum, Kampagnentyp, Bedingungen), dann "Was bedeutet das für
+     euch?" aus Sicht der Kontoentwicklung (für welche Konten interessant, wie
+     künftig steuern), ggf. "Wichtig:" und bei Betas das Whitelisting-Angebot
+     über uns; am Ende "Unsere nächsten Veranstaltungen:" als Datumsliste.
+     Auswahl regelbasiert; Formulieren optional über /api/newsletter-draft. */
   const MS_RE = /microsoft|bing|copilot|msan|audience ads|audience network|performance max|\bpmax\b|\buet\b|clarity|\bedge\b|linkedin|ai max/i;
   const BETA_RE = /\bbeta\b|pilot|whitelist|open beta|closed beta/i;
   const NL_STOP = new Set("microsoft advertising neue neuer neues jetzt mehr ihre eure euch kampagnen kampagne werbung anzeigen performance audience search guide feature update updates überblick über einen eine einer und oder mit für von bei aus auf der die das den dem des wie was wird werden kann können ihre this with your from that into more about dein deine network daten best practices guide feature-guide blick neue vorteile einrichtung optimieren struktur zeitplan formaten spezifikationen creative reichweite alle optionen leistungswerten insights strategie trends saison webinar deck pitch kunden partner agenturen".split(" "));
   const NL_MONTHS = /^(januar|februar|märz|april|mai|juni|juli|august|september|oktober|november|dezember|january|february|march|may|june|july|october|december)$/;
   const nlDay = (iso) => new Date(String(iso).slice(0, 10) + "T00:00:00");
+  const nlDotDate = (iso) => String(iso).slice(0, 10).split("-").reverse().join(".");
   // Nutzer-Vorgabe (2026-10-07): keine Aufteilung in Unterrubriken, einfach
   // die 3 sinnvollsten, wirklich neuen Themen – die Newsletter sind kurz.
   const NL_TOPICS = 3;
   const NL_SECTIONS = [
-    { key: "ms", title: "Microsoft Advertising News" },
-    { key: "events", title: "Unsere nächsten Veranstaltungen" },
+    { key: "ms", title: "Microsoft Advertising News!" },
+    { key: "events", title: "Unsere nächsten Veranstaltungen:" },
   ];
   // "Wirklich neu": Ankündigungen/Änderungen zählen, Ratgeber & Vertriebs-
-  // material nicht. Punkte nur zur Reihenfolge, Begründung wird angezeigt.
-  const NL_NEWS_RE = /jetzt verfügbar|ab sofort|ab dem|neu(e|er|es)? |führt .* ein|eingeführt|startet|start|launch|introduc|now available|available|rolling out|rollout|ausgerollt|general availability|GA|einschränk|wird .* (geändert|entfernt|abgeschaltet)|änder|update|ankündig|announc|roadmap/i;
-  const NL_EVERGREEN_RE = /tipps?|tips|how to|so gelingt|best practices?|leitfaden|guide|playbook|pitch|one-sheet|checkliste|spezifikation|webinar|recap|rückblick|case study|fallstudie|trends? im|insights?|whitepaper/i;
+  // material nicht. "Kontoentwicklung": Themen, die ändern, wie Agenturen
+  // Konten aufsetzen, steuern und ausbauen (Gebote, Targeting, Kampagnentypen,
+  // Conversions, Importe, Reporting, Betas) – das ist die Richtung der
+  // bisherigen Ausgaben. Allgemeine Konzern-/Branchenmeldungen fallen ab.
+  // Punkte nur zur Reihenfolge, Begründung wird angezeigt.
+  const NL_NEWS_RE = /jetzt verfügbar|ab sofort|ab dem|neu(e|er|es)? |führt .* ein|eingeführt|startet|launch|introduc|now available|available|rolling out|rollout|ausgerollt|general availability|\bGA\b|einschränk|wird .* (geändert|entfernt|abgeschaltet)|änder|ankündig|announc|roadmap|deprecat|sunset|retir|abgekündigt/i;
+  const NL_ACCOUNT_RE = /gebot|bidding|\bbid|max cpc|\bcpc\b|\bcpa\b|roas|budget|conversion|\buet\b|targeting|zielgrupp|keyword|match type|suchbegriff|search term|asset|performance max|\bpmax\b|ai max|shopping|feed|import|report|bericht|attribution|placement|ausschl|negative|msan|audience network|linkedin|kampagnentyp|campaign type|richtlinie|policy|frist|deadline|abschalt|whitelist|beta|pilot/i;
+  const NL_OFFTOPIC_RE = /quartal|earnings|aktie|umsatz von microsoft|windows|xbox|edge-browser|surface|teams|office|karriere|jobs|award|preisverleihung|podcast|interview|personalie/i;
+  const NL_EVERGREEN_RE = /tipps?|tips|how to|so gelingt|best practices?|leitfaden|guide|playbook|pitch|one-sheet|checkliste|spezifikation|webinar|recap|rückblick|case study|fallstudie|success story|trends? im|insights?|whitepaper/i;
   function nlScore(x) {
     let s = 0; const why = [];
     const t = x.title + " " + (x.text || "");
     if (x.src === "News" && /microsoft advertising blog/i.test(x.meta)) { s += 5; why.push("Microsoft Advertising Blog"); }
     else if (x.src === "News") { s += 1; }
     if (NL_NEWS_RE.test(x.title)) { s += 3; why.push("Ankündigung/Änderung"); }
+    if (NL_ACCOUNT_RE.test(t)) { s += 2; why.push("Kontoentwicklung"); }
     if (BETA_RE.test(t)) { s += 2; why.push("Beta/Pilot"); }
     if (x.src === "Präsentation" && x.docType === "Beta-Feature") { s += 2; if (!why.includes("Beta/Pilot")) why.push("Beta-Feature"); }
     if (NL_EVERGREEN_RE.test(x.title)) { s -= 4; why.push("eher Ratgeber/Vertriebsmaterial"); }
+    if (NL_OFFTOPIC_RE.test(x.title)) { s -= 4; why.push("keine Kontoentwicklung"); }
     const age = (Date.now() - nlDay(x.date)) / 86400000; s += Math.max(0, 2 - age / 14);
     return { s, why };
   }
@@ -4770,12 +4783,12 @@
     });
     const data = await loadNews();
     (data.items || []).filter((n) => n.pubDate && nlDay(n.pubDate) >= since.from && (n.channel === "Microsoft" || MS_RE.test(n.title + " " + (n.description || ""))))
-      .forEach((n) => items.push({ key: "n:" + n.link, sec: "ms", src: "News", title: n.title, text: n.description || "", date: String(n.pubDate).slice(0, 10), link: n.link, meta: n.source + (n.lang === "en" && !n.translated ? " · englisch" : "") }));
+      .forEach((n) => items.push({ key: "n:" + n.link, sec: "ms", src: "News", title: n.title, text: n.description || "", date: String(n.pubDate).slice(0, 10), link: n.link, english: n.lang === "en" && !n.translated, meta: n.source + (n.lang === "en" && !n.translated ? " · englisch" : "") }));
     const today = new Date(); today.setHours(0, 0, 0, 0);
     const events = SWS_EVENTS.filter((e) => nlDay(e.date) >= today).sort((x, y) => x.date.localeCompare(y.date))
       .map((e) => ({ key: "e:" + e.date + e.title, sec: "events", src: "Veranstaltung", title: e.title, text: "", date: e.date, link: e.link || "", meta: "", pre: true }));
     // Bewerten, schon behandelte Themen aussortieren, die besten 3 vorauswählen
-    items.forEach((x) => { x.covered = nlCoveredIn(x.title); const r = nlScore(x); x.score = x.covered ? -99 : r.s; x.why = r.why; });
+    items.forEach((x) => { x.covered = nlCoveredIn(x.title); const r = nlScore(x); x.score = x.covered ? -99 : r.s; x.why = r.why; x.beta = BETA_RE.test(x.title + " " + x.text) || x.docType === "Beta-Feature"; });
     items.sort((x, y) => y.score - x.score || y.date.localeCompare(x.date));
     let n = 0;
     items.forEach((x) => { x.pre = !x.covered && x.score > 0 && n < NL_TOPICS; if (x.pre) n++; });
@@ -4783,23 +4796,36 @@
     return { since, items, newsError: !!data.error };
   }
 
-  // Entwurf als HTML im Stil der bisherigen Ausgaben (fette Themen-Überschrift,
-  // kurzer Absatz, Veranstaltungen als Datumsliste)
+  const NL_CTA_BETA = "Bei Interesse meldet euch gerne mit dem entsprechenden Account bei uns. Wir prüfen gemeinsam, ob der Account geeignet ist, und können anschließend das Whitelisting bei Microsoft anfragen.";
+
+  // Entwurf im Aufbau der bisherigen Ausgaben. x.ai = von /api/newsletter-
+  // draft formulierter Block; ohne den ein Gerüst aus Titel/Kurztext mit
+  // [Platzhaltern] für "Was bedeutet das für euch?".
   function nlDraftHtml(picked) {
     const esc = escapeHtml;
     const out = [`<p>Liebe {Vorname},</p>`];
     NL_SECTIONS.forEach((s) => {
       const list = picked.filter((x) => x.sec === s.key);
       if (!list.length) return;
-      out.push(`<h2>${esc(s.title)}</h2>`);
       if (s.key === "events") {
-        out.push(`<p>${list.map((x) => `${formatDate(x.date)}&nbsp;&nbsp;${esc(x.title)}`).join("<br>")}</p>`);
+        out.push(`<p><strong>${esc(s.title)}</strong><br>${list.map((x) => `${nlDotDate(x.date)}&nbsp;&nbsp;${esc(x.title)}`).join("<br>")}</p>`);
         return;
       }
+      out.push(`<h2>${esc(s.title)}</h2>`);
       list.forEach((x) => {
-        out.push(`<h3>${esc(x.title)}</h3>`);
-        if (x.text) out.push(`<p>${esc(x.text)}</p>`);
-        if (x.link) out.push(`<p><a href="${esc(x.link)}">Mehr erfahren</a></p>`);
+        const a = x.ai;
+        out.push(`<h3>${esc(a && a.headline ? a.headline : x.title)}</h3>`);
+        if (a) {
+          if (a.body) out.push(`<p>${esc(a.body)}</p>`);
+          if (a.forYou) out.push(`<p><strong>Was bedeutet das für euch?</strong> ${esc(a.forYou)}</p>`);
+          if (a.important) out.push(`<p><strong>Wichtig:</strong> ${esc(a.important)}</p>`);
+          if (a.cta) out.push(`<p>${esc(a.cta)}</p>`);
+        } else {
+          out.push(`<p>${x.text ? esc(x.text) : "[Was ändert sich? Datum, Kampagnentyp, Bedingungen]"}${x.english ? " [englischer Ausgangstext – bitte auf Deutsch formulieren]" : ""}</p>`);
+          out.push(`<p><strong>Was bedeutet das für euch?</strong> [Für welche Konten ist das interessant und wie sollten Kampagnen künftig gesteuert werden?]</p>`);
+          if (x.beta) out.push(`<p>${esc(NL_CTA_BETA)}</p>`);
+        }
+        if (x.link) out.push(`<p>Weitere Infos findet ihr <a href="${esc(x.link)}">hier</a>.</p>`);
       });
     });
     out.push(`<p>Sonnige Grüße<br>Euer SWS-Alliance Team</p>`);
@@ -4828,7 +4854,7 @@
       <section class="hero hero--compact">
         <div class="hero__intro">
           <h1>Newsletter</h1>
-          <p>„Neues aus der SWS-Alliance“ – alle bisherigen Ausgaben und ein Vorschlag für die nächste: was sich bei Microsoft Advertising ändert, neue Betas, Insights und unsere Veranstaltungen.</p>
+          <p>„Neues aus der SWS-Alliance“ – alle bisherigen Ausgaben und ein Vorschlag für die nächste: drei Microsoft-Advertising-Neuerungen, die für die Kontoentwicklung zählen, und unsere Veranstaltungen.</p>
         </div>
       </section>
       <div class="toolbar">
@@ -4885,12 +4911,13 @@
           <div class="nl-draft__head">
             <h2>Entwurf</h2>
             <div class="nl-actions">
+              <button type="button" class="btn btn--secondary" id="nl-write">Im Newsletter-Stil formulieren</button>
               <button type="button" class="btn btn--primary" id="nl-copy">${ICONS.copy} Kopieren</button>
             </div>
           </div>
           <label class="nl-field"><span>Betreff</span><input type="text" id="nl-subject" value="Neues aus der SWS-Alliance" /></label>
           <div class="nl-preview" id="nl-preview" contenteditable="true" aria-label="Newsletter-Entwurf, bearbeitbar"></div>
-          <p class="nl-note"><span class="nl-status" id="nl-status" aria-live="polite"></span> Texte direkt im Entwurf anpassen. „Kopieren“ übernimmt die Formatierung (Überschriften, Absätze) zum Einfügen in Zoho Campaigns oder eine Mail. Präsentationen sind intern – für Partner ohne Link.</p>
+          <p class="nl-note"><span class="nl-status" id="nl-status" aria-live="polite"></span> „Im Newsletter-Stil formulieren“ schreibt die Themen auf Deutsch im Aufbau der bisherigen Ausgaben (was ist neu → was bedeutet das für euch). Danach direkt im Entwurf anpassen. „Kopieren“ übernimmt die Formatierung (Überschriften, Absätze) zum Einfügen in Zoho Campaigns oder eine Mail. Präsentationen sind intern – für Partner ohne Link.</p>
         </div>
       </div>`;
     document.getElementById("nl-zeit").addEventListener("change", (e) => go({ zeit: e.target.value }));
@@ -4907,6 +4934,24 @@
     };
     body.querySelectorAll("input[data-key]").forEach((i) => i.addEventListener("change", update));
     update();
+    document.getElementById("nl-write").addEventListener("click", async (e) => {
+      const btn = e.currentTarget, st = document.getElementById("nl-status");
+      const keys = new Set([...body.querySelectorAll("input[data-key]:checked")].map((i) => i.dataset.key));
+      const todo = c.items.filter((x) => keys.has(x.key) && x.sec === "ms");
+      if (!todo.length) { st.textContent = "Erst Themen auswählen."; return; }
+      btn.disabled = true; st.textContent = "Formuliere …";
+      try {
+        const res = await fetch("/api/newsletter-draft", { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ items: todo.map((x) => ({ id: x.key, title: x.title, text: x.text, source: x.src === "News" ? x.meta : "SWS-Präsentation", beta: x.beta })) }) });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error === "no-key" ? "Formulieren ist noch nicht eingerichtet (Cloudflare-Secret GEMINI_API_KEY fehlt) – Gerüst bitte von Hand füllen." : (data.error || `Fehler ${res.status}`));
+        const byId = new Map((data.items || []).map((t) => [t.id, t]));
+        todo.forEach((x) => { if (byId.has(x.key)) x.ai = byId.get(x.key); });
+        update();
+        st.innerHTML = `${ICONS.check} Formuliert – bitte gegenlesen.`;
+      } catch (err) { st.textContent = err.message; }
+      btn.disabled = false;
+    });
     document.getElementById("nl-copy").addEventListener("click", async () => {
       const st = document.getElementById("nl-status");
       const subj = document.getElementById("nl-subject").value;
