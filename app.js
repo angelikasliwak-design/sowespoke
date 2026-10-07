@@ -4718,12 +4718,29 @@
   const NL_STOP = new Set("microsoft advertising neue neuer neues jetzt mehr ihre eure euch kampagnen kampagne werbung anzeigen performance audience search guide feature update updates überblick über einen eine einer und oder mit für von bei aus auf der die das den dem des wie was wird werden kann können ihre this with your from that into more about dein deine network daten best practices guide feature-guide blick neue vorteile einrichtung optimieren struktur zeitplan formaten spezifikationen creative reichweite alle optionen leistungswerten insights strategie trends saison webinar deck pitch kunden partner agenturen".split(" "));
   const NL_MONTHS = /^(januar|februar|märz|april|mai|juni|juli|august|september|oktober|november|dezember|january|february|march|may|june|july|october|december)$/;
   const nlDay = (iso) => new Date(String(iso).slice(0, 10) + "T00:00:00");
+  // Nutzer-Vorgabe (2026-10-07): keine Aufteilung in Unterrubriken, einfach
+  // die 3 sinnvollsten, wirklich neuen Themen – die Newsletter sind kurz.
+  const NL_TOPICS = 3;
   const NL_SECTIONS = [
     { key: "ms", title: "Microsoft Advertising News" },
-    { key: "beta", title: "Neue Betas & Pilotprogramme" },
-    { key: "insight", title: "Insights & Webinare" },
     { key: "events", title: "Unsere nächsten Veranstaltungen" },
   ];
+  // "Wirklich neu": Ankündigungen/Änderungen zählen, Ratgeber & Vertriebs-
+  // material nicht. Punkte nur zur Reihenfolge, Begründung wird angezeigt.
+  const NL_NEWS_RE = /jetzt verfügbar|ab sofort|ab dem|neu(e|er|es)? |führt .* ein|eingeführt|startet|start|launch|introduc|now available|available|rolling out|rollout|ausgerollt|general availability|GA|einschränk|wird .* (geändert|entfernt|abgeschaltet)|änder|update|ankündig|announc|roadmap/i;
+  const NL_EVERGREEN_RE = /tipps?|tips|how to|so gelingt|best practices?|leitfaden|guide|playbook|pitch|one-sheet|checkliste|spezifikation|webinar|recap|rückblick|case study|fallstudie|trends? im|insights?|whitepaper/i;
+  function nlScore(x) {
+    let s = 0; const why = [];
+    const t = x.title + " " + (x.text || "");
+    if (x.src === "News" && /microsoft advertising blog/i.test(x.meta)) { s += 5; why.push("Microsoft Advertising Blog"); }
+    else if (x.src === "News") { s += 1; }
+    if (NL_NEWS_RE.test(x.title)) { s += 3; why.push("Ankündigung/Änderung"); }
+    if (BETA_RE.test(t)) { s += 2; why.push("Beta/Pilot"); }
+    if (x.src === "Präsentation" && x.docType === "Beta-Feature") { s += 2; if (!why.includes("Beta/Pilot")) why.push("Beta-Feature"); }
+    if (NL_EVERGREEN_RE.test(x.title)) { s -= 4; why.push("eher Ratgeber/Vertriebsmaterial"); }
+    const age = (Date.now() - nlDay(x.date)) / 86400000; s += Math.max(0, 2 - age / 14);
+    return { s, why };
+  }
 
   // Wurde das Thema schon in einem Newsletter behandelt? Zwei markante
   // Begriffe aus dem Titel müssen im selben früheren Newsletter vorkommen.
@@ -4749,24 +4766,20 @@
     const since = nlSince(zeit);
     const items = [];
     PRESENTATIONS.filter((p) => p.dateKnown && nlDay(p.date) >= since.from).forEach((p) => {
-      const sec = p.docType === "Beta-Feature" || BETA_RE.test(p.title) ? "beta" : p.docType === "Feature-Guide" ? "ms" : "insight";
-      items.push({ key: "p:" + p.id, sec, src: "Präsentation", title: p.title, text: p.customerBlurb || p.summaryDE, date: p.date, link: "", meta: p.docType });
+      items.push({ key: "p:" + p.id, sec: "ms", src: "Präsentation", title: p.title, text: p.customerBlurb || p.summaryDE, date: p.date, link: "", meta: p.docType, docType: p.docType });
     });
     const data = await loadNews();
     (data.items || []).filter((n) => n.pubDate && nlDay(n.pubDate) >= since.from && (n.channel === "Microsoft" || MS_RE.test(n.title + " " + (n.description || ""))))
-      .forEach((n) => items.push({ key: "n:" + n.link, sec: BETA_RE.test(n.title + " " + (n.description || "")) ? "beta" : "ms", src: "News", title: n.title, text: n.description || "", date: String(n.pubDate).slice(0, 10), link: n.link, meta: n.source + (n.lang === "en" && !n.translated ? " · englisch" : "") }));
+      .forEach((n) => items.push({ key: "n:" + n.link, sec: "ms", src: "News", title: n.title, text: n.description || "", date: String(n.pubDate).slice(0, 10), link: n.link, meta: n.source + (n.lang === "en" && !n.translated ? " · englisch" : "") }));
     const today = new Date(); today.setHours(0, 0, 0, 0);
-    SWS_EVENTS.filter((e) => nlDay(e.date) >= today).sort((x, y) => x.date.localeCompare(y.date))
-      .forEach((e) => items.push({ key: "e:" + e.date + e.title, sec: "events", src: "Veranstaltung", title: e.title, text: "", date: e.date, link: e.link || "", meta: "" }));
-    // Vorauswahl: neu (nicht schon im Newsletter), je Abschnitt begrenzt
-    const limit = { ms: 4, beta: 3, insight: 1, events: 99 };
-    const used = {};
-    items.sort((x, y) => y.date.localeCompare(x.date)).forEach((x) => {
-      x.covered = x.sec === "events" ? null : nlCoveredIn(x.title);
-      used[x.sec] = used[x.sec] || 0;
-      x.pre = !x.covered && used[x.sec] < limit[x.sec];
-      if (x.pre) used[x.sec]++;
-    });
+    const events = SWS_EVENTS.filter((e) => nlDay(e.date) >= today).sort((x, y) => x.date.localeCompare(y.date))
+      .map((e) => ({ key: "e:" + e.date + e.title, sec: "events", src: "Veranstaltung", title: e.title, text: "", date: e.date, link: e.link || "", meta: "", pre: true }));
+    // Bewerten, schon behandelte Themen aussortieren, die besten 3 vorauswählen
+    items.forEach((x) => { x.covered = nlCoveredIn(x.title); const r = nlScore(x); x.score = x.covered ? -99 : r.s; x.why = r.why; });
+    items.sort((x, y) => y.score - x.score || y.date.localeCompare(x.date));
+    let n = 0;
+    items.forEach((x) => { x.pre = !x.covered && x.score > 0 && n < NL_TOPICS; if (x.pre) n++; });
+    items.push(...events);
     return { since, items, newsError: !!data.error };
   }
 
@@ -4844,20 +4857,21 @@
         <span class="nl-pick__body">
           <span class="nl-pick__title">${escapeHtml(x.title)}</span>
           <span class="nl-pick__meta">${escapeHtml(x.src)} · ${formatDate(x.date)}${x.meta ? " · " + escapeHtml(x.meta) : ""}</span>
+          ${x.why && x.why.length && !x.covered ? `<span class="nl-pick__why">${x.why.map(escapeHtml).join(" · ")}</span>` : ""}
           ${x.covered ? `<span class="nl-pick__covered">Schon im Newsletter vom ${formatDate(x.covered.date)}</span>` : ""}
         </span>
       </label>`;
     const sections = NL_SECTIONS.map((s) => {
       const list = c.items.filter((x) => x.sec === s.key);
       return `
-      <details class="nl-sec" ${list.some((x) => x.pre) || s.key === "ms" ? "open" : ""}>
+      <details class="nl-sec" open>
         <summary><span class="nl-sec__title">${s.title}</span><span class="nl-sec__count" data-count="${s.key}"></span></summary>
         <div class="nl-sec__list">${list.length ? list.map(row).join("") : `<p class="nl-sec__empty">${s.key === "events" ? "Keine kommenden Veranstaltungen eingetragen (sws-events-data.js)." : "Nichts Neues im Zeitraum."}</p>`}</div>
       </details>`;
     }).join("");
     body.innerHTML = `
       <div class="nl-bar">
-        <p class="nl-bar__info"><strong id="nl-picked">0</strong> Themen ausgewählt · ${escapeHtml(c.since.label)}${c.newsError ? " · News gerade nicht abrufbar" : ""}</p>
+        <p class="nl-bar__info"><strong id="nl-picked">0</strong> Themen ausgewählt (Empfehlung: ${NL_TOPICS}) · ${escapeHtml(c.since.label)}${c.newsError ? " · News gerade nicht abrufbar" : ""}</p>
         <label class="select-field"><span class="select-field__label">Zeitraum</span>
           <select id="nl-zeit">
             <option value="auto" ${z === "auto" ? "selected" : ""}>Seit letztem Newsletter</option>
@@ -4885,7 +4899,7 @@
       const keys = new Set([...body.querySelectorAll("input[data-key]:checked")].map((i) => i.dataset.key));
       const picked = c.items.filter((x) => keys.has(x.key));
       prev.innerHTML = nlDraftHtml(picked);
-      document.getElementById("nl-picked").textContent = picked.length;
+      document.getElementById("nl-picked").textContent = picked.filter((x) => x.sec !== "events").length;
       NL_SECTIONS.forEach((s) => {
         const n = picked.filter((x) => x.sec === s.key).length, tot = c.items.filter((x) => x.sec === s.key).length;
         body.querySelector(`[data-count="${s.key}"]`).textContent = tot ? `${n} von ${tot}` : "–";
