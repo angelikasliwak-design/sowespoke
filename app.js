@@ -4350,8 +4350,8 @@
   };
   const GUIDE_SECTIONS = ["Accounthandhabung", "Abrechnung und Zahlungen", "Accountverknüpfung", "Allgemeines"];
   const GUIDE_UI = {
-    de: { title: "Anleitungen", lead: "Schritt-für-Schritt-Anleitungen aus der SWS-Alliance-Wissensdatenbank – Tracking, Targeting, Abrechnung, Accountverknüpfung und mehr.", search: "Anleitungen durchsuchen …", all: "Alle", one: "Anleitung", many: "Anleitungen", updated: "Stand", none: "Keine Anleitung gefunden", noneHint: "Versuch einen anderen Begriff oder Bereich.", source: "Quelle: SWS-Alliance-Wissensdatenbank (Zoho Desk), übernommen am 6. Okt. 2026. Jede Anleitung verlinkt ihr Original.", back: "Zu den Anleitungen", original: "Original", originalText: "Diese Anleitung stammt aus der SWS-Alliance-Wissensdatenbank. Das Original kann neuer sein.", open: "In Zoho öffnen", more: "Mehr zu", areas: "Bereiche" },
-    en: { title: "Guides", lead: "Step-by-step guides from the SWS Alliance knowledge base – tracking, targeting, billing, account linking and more.", search: "Search guides …", all: "All", one: "guide", many: "guides", updated: "Updated", none: "No guide found", noneHint: "Try a different term or area.", source: "Source: SWS Alliance knowledge base (Zoho Desk), imported on 6 Oct 2026 and translated from German. Each guide links to its German original.", back: "Back to guides", original: "Original", originalText: "This guide comes from the SWS Alliance knowledge base (German original). The original may be more recent.", open: "Open in Zoho", more: "More on", areas: "Areas" },
+    de: { title: "Anleitungen", lead: "Schritt-für-Schritt-Anleitungen aus der SWS-Alliance-Wissensdatenbank – Tracking, Targeting, Abrechnung, Accountverknüpfung und mehr.", search: "Anleitungen durchsuchen …", all: "Alle", one: "Anleitung", many: "Anleitungen", updated: "Stand", none: "Keine Anleitung gefunden", noneHint: "Versuch einen anderen Begriff oder Bereich.", source: "Quelle: SWS-Alliance-Wissensdatenbank (Zoho Desk), übernommen am 6. Okt. 2026. Jede Anleitung verlinkt ihr Original.", back: "Zu den Anleitungen", original: "Original", originalText: "Diese Anleitung stammt aus der SWS-Alliance-Wissensdatenbank. Das Original kann neuer sein.", open: "In Zoho öffnen", more: "Mehr zu", areas: "Bereiche", copy: "Anleitung kopieren", copyHint: "Kopiert Titel, Text und Bilder – zum Einfügen in eine E-Mail.", copying: "Bilder werden eingebettet …", copied: "Kopiert – jetzt in die E-Mail einfügen (Strg+V).", copyFail: "Kopieren nicht möglich – bitte Text markieren und Strg+C.", video: "Video ansehen" },
+    en: { title: "Guides", lead: "Step-by-step guides from the SWS Alliance knowledge base – tracking, targeting, billing, account linking and more.", search: "Search guides …", all: "All", one: "guide", many: "guides", updated: "Updated", none: "No guide found", noneHint: "Try a different term or area.", source: "Source: SWS Alliance knowledge base (Zoho Desk), imported on 6 Oct 2026 and translated from German. Each guide links to its German original.", back: "Back to guides", original: "Original", originalText: "This guide comes from the SWS Alliance knowledge base (German original). The original may be more recent.", open: "Open in Zoho", more: "More on", areas: "Areas", copy: "Copy guide", copyHint: "Copies title, text and images – ready to paste into an email.", copying: "Embedding images …", copied: "Copied – now paste into your email (Ctrl+V).", copyFail: "Copy failed – please select the text and press Ctrl+C.", video: "Watch video" },
   };
   function guideLang() {
     try { return localStorage.getItem("guidesLang") === "en" ? "en" : "de"; } catch { return "de"; }
@@ -4478,6 +4478,10 @@
             <div class="kb-article">${gf(g, "html", lang)}</div>
           </div>
           <aside class="guide-aside">
+            <div class="side-card guide-copy">
+              <button type="button" class="btn btn--primary" id="guide-copy">${ICONS.copy} ${t.copy}</button>
+              <p class="guide-aside__text" id="guide-copy-status" aria-live="polite">${t.copyHint}</p>
+            </div>
             <div class="side-card">
               <h2>${t.original}</h2>
               <p class="guide-aside__text">${t.originalText}</p>
@@ -4493,66 +4497,142 @@
       </article>
     `;
     wireLangToggle();
+    wireGuideCopy(g, lang, t);
   }
+
+  /* "Anleitung kopieren" (2026-10-07): HTML mit eingebetteten Bildern (data:
+     URIs) in die Zwischenablage, damit die Bilder beim Empfänger erscheinen –
+     Links auf das Intranet wären für Externe nicht abrufbar (Login). Videos
+     werden zu Links, Formatierung als Inline-Styles für Mailprogramme. */
+  async function guideToMailHtml(g, lang, t) {
+    const box = document.createElement("div");
+    box.innerHTML = gf(g, "html", lang);
+    box.querySelectorAll(".kb-video").forEach((v) => {
+      const m = (v.querySelector("iframe") || {}).src && v.querySelector("iframe").src.match(/embed\/([\w-]+)/);
+      const p = document.createElement("p");
+      if (m) p.innerHTML = `<a href="https://www.youtube.com/watch?v=${m[1]}">▶ ${t.video}</a>`;
+      v.replaceWith(p);
+    });
+    await Promise.all([...box.querySelectorAll("img")].map(async (img) => {
+      try {
+        const blob = await (await fetch(img.getAttribute("src"))).blob();
+        const url = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(blob); });
+        img.setAttribute("src", url);
+      } catch { img.remove(); }
+      img.removeAttribute("loading");
+      img.setAttribute("style", "max-width:600px;width:100%;height:auto;border:1px solid #e3eaec;border-radius:6px;margin:8px 0;");
+    }));
+    box.querySelectorAll("h2,h3,h4").forEach((h) => h.setAttribute("style", "font-family:Arial,sans-serif;color:#1a1e22;margin:18px 0 6px;"));
+    box.querySelectorAll("a").forEach((l) => l.setAttribute("style", "color:#9e0249;"));
+    box.querySelectorAll("pre").forEach((pre) => pre.setAttribute("style", "background:#f4f8f9;border:1px solid #e3eaec;padding:10px;border-radius:6px;white-space:pre-wrap;font-family:Consolas,monospace;font-size:13px;"));
+    box.querySelectorAll("code").forEach((c) => { if (!c.closest("pre")) c.setAttribute("style", "background:#f4f8f9;padding:1px 4px;border-radius:4px;font-family:Consolas,monospace;"); });
+    return `<div style="font-family:Arial,sans-serif;font-size:14px;line-height:1.55;color:#1a1e22;"><h2 style="font-family:Arial,sans-serif;font-size:20px;margin:0 0 12px;">${escapeHtml(gf(g, "title", lang))}</h2>${box.innerHTML}</div>`;
+  }
+
+  function wireGuideCopy(g, lang, t) {
+    const btn = document.getElementById("guide-copy");
+    const st = document.getElementById("guide-copy-status");
+    if (!btn) return;
+    btn.addEventListener("click", async () => {
+      btn.disabled = true; st.textContent = t.copying;
+      try {
+        const html = await guideToMailHtml(g, lang, t);
+        const tmp = document.createElement("div"); tmp.innerHTML = html;
+        const text = tmp.innerText;
+        await navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([text], { type: "text/plain" }) })]);
+        st.innerHTML = `${ICONS.check} ${t.copied}`;
+      } catch { st.textContent = t.copyFail; }
+      btn.disabled = false;
+    });
+  }
+
 
   /* ------------------------------------------------------- Newsletter */
-  /* Newsletter (2026-10-07): Archiv der versendeten Newsletter (Daten aus
-     newsletters-data.js, gefüllt per tools/import-newsletters.py) und ein
-     regelbasierter Vorschlag je Newsletter-Typ. Der Vorschlag nimmt aus dem
-     gewählten Zeitraum (Standard: seit dem letzten Newsletter dieses Typs,
-     sonst 30 Tage) Microsoft-Ads-relevante News und neue Präsentationen,
-     vorausgewählt nach Typ; Texte stammen aus den vorhandenen Kunden-
-     Zusammenfassungen (customerBlurb) bzw. den News-Teasern. Kein KI-Dienst. */
-  const NL_TYPES = {
-    operativ: { label: "Operativ", who: "Account Manager", docTypes: ["Beta-Feature", "Feature-Guide"], subject: "Microsoft Ads Update" },
-    strategisch: { label: "Strategisch", who: "Geschäftsführung / Teamleitung", docTypes: ["Strategie-Trend", "Saisonal", "Sonstiges", "Rechtliches"], subject: "SWS Alliance Insights" },
-  };
-  const MS_RE = /microsoft|bing|copilot|msan|audience ads|audience network|performance max|\bpmax\b|\buet\b|clarity|\bedge\b|linkedin/i;
+  /* Newsletter (2026-10-07): Archiv der versendeten "Neues aus der SWS-
+     Alliance"-Ausgaben (newsletters-data.js, Import per tools/import-
+     newsletters.py) und ein Vorschlag für die nächste Ausgabe im selben
+     Aufbau wie bisher: Microsoft-Advertising-News (was sich ändert + was das
+     für euch bedeutet), neue Betas/Piloten, Insights & Webinare, unsere
+     nächsten Veranstaltungen. Themen, die schon in einem früheren Newsletter
+     standen, werden erkannt und nicht vorausgewählt. Regelbasiert, ohne KI. */
+  const MS_RE = /microsoft|bing|copilot|msan|audience ads|audience network|performance max|\bpmax\b|\buet\b|clarity|\bedge\b|linkedin|ai max/i;
+  const BETA_RE = /\bbeta\b|pilot|whitelist|open beta|closed beta/i;
+  const NL_STOP = new Set("microsoft advertising neue neuer neues jetzt mehr ihre eure euch kampagnen kampagne werbung anzeigen performance audience search guide feature update updates überblick über einen eine einer und oder mit für von bei aus auf der die das den dem des wie was wird werden kann können ihre this with your from that into more about dein deine network daten best practices guide feature-guide blick neue vorteile einrichtung optimieren struktur zeitplan formaten spezifikationen creative reichweite alle optionen leistungswerten insights strategie trends saison webinar deck pitch kunden partner agenturen".split(" "));
+  const NL_MONTHS = /^(januar|februar|märz|april|mai|juni|juli|august|september|oktober|november|dezember|january|february|march|may|june|july|october|december)$/;
   const nlDay = (iso) => new Date(String(iso).slice(0, 10) + "T00:00:00");
+  const NL_SECTIONS = [
+    { key: "ms", title: "Microsoft Advertising News" },
+    { key: "beta", title: "Neue Betas & Pilotprogramme" },
+    { key: "insight", title: "Insights & Webinare" },
+    { key: "events", title: "Unsere nächsten Veranstaltungen" },
+  ];
 
-  function nlSince(typ, zeit) {
+  // Wurde das Thema schon in einem Newsletter behandelt? Zwei markante
+  // Begriffe aus dem Titel müssen im selben früheren Newsletter vorkommen.
+  function nlCoveredIn(title) {
+    const words = [...new Set(title.toLowerCase().replace(/[^a-zäöüß0-9+ -]/g, " ").split(/\s+/).filter((w) => w.length >= 4 && !NL_STOP.has(w) && !/^\d+$/.test(w) && !NL_MONTHS.test(w)))];
+    if (words.length < 2) return null;
+    for (const n of NEWSLETTERS) {
+      const t = " " + (n.searchText || "").toLowerCase().replace(/[^a-zäöüß0-9+ -]/g, " ") + " ";
+      const hits = words.filter((w) => t.includes(" " + w)).length;
+      if (hits >= 2 && hits / words.length >= 0.6) return n;
+    }
+    return null;
+  }
+
+  function nlSince(zeit) {
     if (zeit !== "auto") return { from: new Date(Date.now() - Number(zeit) * 86400000), label: `letzte ${zeit} Tage` };
-    const last = NEWSLETTERS.filter((n) => n.type === typ && n.date).sort((x, y) => y.date.localeCompare(x.date))[0];
-    if (last) return { from: nlDay(last.date), label: `seit dem letzten Newsletter (${formatDate(last.date)})` };
-    return { from: new Date(Date.now() - 30 * 86400000), label: "letzte 30 Tage (noch kein Newsletter im Archiv)" };
+    const last = NEWSLETTERS.filter((n) => n.date).sort((x, y) => y.date.localeCompare(x.date))[0];
+    if (last) return { from: nlDay(last.date), label: `seit dem letzten Newsletter vom ${formatDate(last.date)}`, last };
+    return { from: new Date(Date.now() - 30 * 86400000), label: "letzte 30 Tage" };
   }
 
-  async function nlCandidates(typ, zeit) {
-    const since = nlSince(typ, zeit);
-    const T = NL_TYPES[typ];
-    const pres = PRESENTATIONS.filter((p) => p.dateKnown && nlDay(p.date) >= since.from)
-      .sort((x, y) => y.date.localeCompare(x.date))
-      .map((p) => ({ key: "p:" + p.id, kind: "Präsentation", title: p.title, text: p.customerBlurb || p.summaryDE, date: p.date, link: "", pre: T.docTypes.includes(p.docType), meta: p.docType }));
+  async function nlCandidates(zeit) {
+    const since = nlSince(zeit);
+    const items = [];
+    PRESENTATIONS.filter((p) => p.dateKnown && nlDay(p.date) >= since.from).forEach((p) => {
+      const sec = p.docType === "Beta-Feature" || BETA_RE.test(p.title) ? "beta" : p.docType === "Feature-Guide" ? "ms" : "insight";
+      items.push({ key: "p:" + p.id, sec, src: "Präsentation", title: p.title, text: p.customerBlurb || p.summaryDE, date: p.date, link: "", meta: p.docType });
+    });
     const data = await loadNews();
-    const news = (data.items || []).filter((n) => n.pubDate && nlDay(n.pubDate) >= since.from && (n.channel === "Microsoft" || MS_RE.test(n.title + " " + (n.description || ""))))
-      .sort((x, y) => String(y.pubDate).localeCompare(String(x.pubDate)))
-      .map((n) => ({ key: "n:" + n.link, kind: "News", title: n.title, text: n.description || "", date: String(n.pubDate).slice(0, 10), link: n.link, pre: typ === "operativ", meta: n.source + (n.lang === "en" && !n.translated ? " · EN" : "") }));
-    const events = typ === "strategisch"
-      ? upcomingEvents(new Date(), 4).filter((e) => e.days <= 75).map((e) => ({ key: "e:" + e.name, kind: "Termin", title: e.name, text: e.relevantFor ? `Relevant für: ${e.relevantFor}` : "", date: e.date.toISOString().slice(0, 10), days: e.days, pre: true, meta: `in ${e.days} Tagen` }))
-      : [];
-    // Vorauswahl begrenzen, damit der Entwurf kompakt bleibt
-    let np = 0, nn = 0;
-    pres.forEach((x) => { if (x.pre && np++ >= 5) x.pre = false; });
-    news.forEach((x) => { if (x.pre && nn++ >= 4) x.pre = false; });
-    return { since, pres, news, events, newsError: !!data.error };
+    (data.items || []).filter((n) => n.pubDate && nlDay(n.pubDate) >= since.from && (n.channel === "Microsoft" || MS_RE.test(n.title + " " + (n.description || ""))))
+      .forEach((n) => items.push({ key: "n:" + n.link, sec: BETA_RE.test(n.title + " " + (n.description || "")) ? "beta" : "ms", src: "News", title: n.title, text: n.description || "", date: String(n.pubDate).slice(0, 10), link: n.link, meta: n.source + (n.lang === "en" && !n.translated ? " · englisch" : "") }));
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    SWS_EVENTS.filter((e) => nlDay(e.date) >= today).sort((x, y) => x.date.localeCompare(y.date))
+      .forEach((e) => items.push({ key: "e:" + e.date + e.title, sec: "events", src: "Veranstaltung", title: e.title, text: "", date: e.date, link: e.link || "", meta: "" }));
+    // Vorauswahl: neu (nicht schon im Newsletter), je Abschnitt begrenzt
+    const limit = { ms: 4, beta: 3, insight: 1, events: 99 };
+    const used = {};
+    items.sort((x, y) => y.date.localeCompare(x.date)).forEach((x) => {
+      x.covered = x.sec === "events" ? null : nlCoveredIn(x.title);
+      used[x.sec] = used[x.sec] || 0;
+      x.pre = !x.covered && used[x.sec] < limit[x.sec];
+      if (x.pre) used[x.sec]++;
+    });
+    return { since, items, newsError: !!data.error };
   }
 
-  function nlDraft(typ, picked) {
-    const T = NL_TYPES[typ];
-    const month = new Date().toLocaleDateString("de-DE", { month: "long", year: "numeric" });
-    const p = picked.filter((x) => x.kind === "Präsentation"), n = picked.filter((x) => x.kind === "News"), e = picked.filter((x) => x.kind === "Termin");
-    const lead = p[0] || n[0];
-    const subject = `${T.subject} ${month}${lead ? ": " + lead.title.split(/[:–—(]/)[0].trim() : ""}`;
-    const parts = ["Hallo zusammen,", "",
-      typ === "operativ"
-        ? "hier die wichtigsten Neuerungen rund um Microsoft Advertising aus den letzten Wochen – kompakt zusammengefasst für euren Arbeitsalltag."
-        : "hier unser Überblick über die aktuellen Entwicklungen bei Microsoft Advertising und was sie für eure Planung bedeuten."];
-    const sec = (title, items, fmt) => { if (items.length) parts.push("", title.toUpperCase(), "", ...items.flatMap(fmt)); };
-    sec(typ === "operativ" ? "Neu bei Microsoft Advertising" : "Strategie & Trends", p, (x) => [`▸ ${x.title}`, x.text, ""]);
-    sec("Aus den News", n, (x) => [`▸ ${x.title}`, ...(x.text ? [x.text] : []), ...(x.link ? [`Mehr: ${x.link}`] : []), ""]);
-    sec("Termine im Blick", e, (x) => [`▸ ${x.title} – ${formatDate(x.date)} (in ${x.days} Tagen)`, ...(x.text ? [x.text] : []), ""]);
-    parts.push("", "Wenn ihr zu einem der Themen Fragen habt oder Unterstützung bei der Umsetzung braucht, meldet euch gern bei uns.", "", "Viele Grüße", "euer SOWESPOKE-Team");
-    return { subject, body: parts.join("\n").replace(/\n{3,}/g, "\n\n") };
+  // Entwurf als HTML im Stil der bisherigen Ausgaben (fette Themen-Überschrift,
+  // kurzer Absatz, Veranstaltungen als Datumsliste)
+  function nlDraftHtml(picked) {
+    const esc = escapeHtml;
+    const out = [`<p>Liebe {Vorname},</p>`];
+    NL_SECTIONS.forEach((s) => {
+      const list = picked.filter((x) => x.sec === s.key);
+      if (!list.length) return;
+      out.push(`<h2>${esc(s.title)}</h2>`);
+      if (s.key === "events") {
+        out.push(`<p>${list.map((x) => `${formatDate(x.date)}&nbsp;&nbsp;${esc(x.title)}`).join("<br>")}</p>`);
+        return;
+      }
+      list.forEach((x) => {
+        out.push(`<h3>${esc(x.title)}</h3>`);
+        if (x.text) out.push(`<p>${esc(x.text)}</p>`);
+        if (x.link) out.push(`<p><a href="${esc(x.link)}">Mehr erfahren</a></p>`);
+      });
+    });
+    out.push(`<p>Sonnige Grüße<br>Euer SWS-Alliance Team</p>`);
+    return out.join("\n");
   }
 
   function nlArchiveCard(nl) {
@@ -4560,31 +4640,29 @@
       <li>
         <a class="row" href="#/newsletter/${encodeURIComponent(nl.id)}">
           <span class="row__head"><span class="row__thumb">${ICONS.mail}</span></span>
-          <span class="row__channel" style="--ch: var(${nl.type === "strategisch" ? "--accent" : "--turquoise"})">${escapeHtml(NL_TYPES[nl.type] ? NL_TYPES[nl.type].label : "Newsletter")}</span>
           <span class="row__body">
             <span class="row__title">${escapeHtml(nl.subject)}</span>
-            <span class="row__summary">${escapeHtml(nl.excerpt || "")}</span>
+            <span class="row__summary">${escapeHtml((nl.excerpt || "").replace(/^\W*\d*\s*Liebe \{Vorname\},?\s*/, ""))}</span>
           </span>
-          <span class="row__meta">${nl.date ? `<span class="row__date">${formatDate(nl.date)}</span>` : ""}${nl.from ? `<span class="row__cat">${escapeHtml(nl.from)}</span>` : ""}</span>
+          <span class="row__meta">${nl.date ? `<span class="row__date">${formatDate(nl.date)}</span>` : ""}</span>
         </a>
       </li>`;
   }
 
-  async function renderNewsletter(v, typ, zeit) {
+  async function renderNewsletter(v, _typ, zeit) {
     const view_ = v === "archiv" ? "archiv" : "vorschlag";
-    const t = NL_TYPES[typ] ? typ : "operativ";
     const z = ["auto", "14", "30", "60", "90"].includes(zeit) ? zeit : "auto";
-    const go = (o) => { location.hash = `#/newsletter?${new URLSearchParams({ v: view_, typ: t, zeit: z, ...o })}`; };
+    const go = (o) => { location.hash = `#/newsletter?${new URLSearchParams({ v: view_, zeit: z, ...o })}`; };
     view.innerHTML = `
       <section class="hero hero--compact">
         <div class="hero__intro">
           <h1>Newsletter</h1>
-          <p>Alle bisher versendeten Newsletter an einem Ort – und ein Vorschlag für den nächsten, zusammengestellt aus neuen Präsentationen und Microsoft-Ads-News.</p>
+          <p>„Neues aus der SWS-Alliance“ – alle bisherigen Ausgaben und ein Vorschlag für die nächste: was sich bei Microsoft Advertising ändert, neue Betas, Insights und unsere Veranstaltungen.</p>
         </div>
       </section>
       <div class="toolbar">
         <nav class="tabs" aria-label="Ansicht">
-          <button type="button" class="tabs__item ${view_ === "vorschlag" ? "is-active" : ""}" data-v="vorschlag">Vorschlag</button>
+          <button type="button" class="tabs__item ${view_ === "vorschlag" ? "is-active" : ""}" data-v="vorschlag">Nächste Ausgabe</button>
           <button type="button" class="tabs__item ${view_ === "archiv" ? "is-active" : ""}" data-v="archiv">Archiv<span class="tabs__item-count">${NEWSLETTERS.length}</span></button>
         </nav>
       </div>
@@ -4593,43 +4671,35 @@
     const body = document.getElementById("nl-body");
 
     if (view_ === "archiv") {
-      const counts = NEWSLETTERS.reduce((acc, n) => { acc[n.type] = (acc[n.type] || 0) + 1; return acc; }, {});
-      const list = NEWSLETTERS.filter((n) => typ === "alle" || !zeit || true);
-      body.innerHTML = NEWSLETTERS.length ? `
-        <nav class="tabs nl-subtabs" aria-label="Newsletter-Typ">
-          ${["alle", "operativ", "strategisch"].map((k) => `<button type="button" class="tabs__item ${(k === "alle" ? !["operativ", "strategisch"].includes(typ) || typ === "alle" : typ === k) ? "is-active" : ""}" data-typ="${k}">${k === "alle" ? "Alle" : NL_TYPES[k].label}<span class="tabs__item-count">${k === "alle" ? NEWSLETTERS.length : counts[k] || 0}</span></button>`).join("")}
-        </nav>
-        <ul class="article-list" id="nl-archive"></ul>` : `
-        <div class="empty-state">${ICONS.mail}<strong>Noch keine Newsletter im Archiv</strong>
-          <p>Newsletter in Gmail öffnen → ⋮ → „Nachricht herunterladen“ (.eml), Dateien nach <code>content/newsletter/</code> legen und <code>python tools/import-newsletters.py</code> ausführen.</p></div>`;
-      if (NEWSLETTERS.length) {
-        const k = ["operativ", "strategisch"].includes(params_typ()) ? params_typ() : "alle";
-        document.getElementById("nl-archive").innerHTML = NEWSLETTERS.filter((n) => k === "alle" || n.type === k).map(nlArchiveCard).join("");
-        body.querySelectorAll("[data-typ]").forEach((b) => b.addEventListener("click", () => go({ typ: b.dataset.typ })));
-      }
+      body.innerHTML = NEWSLETTERS.length
+        ? `<ul class="article-list">${NEWSLETTERS.map(nlArchiveCard).join("")}</ul>`
+        : `<div class="empty-state">${ICONS.mail}<strong>Noch keine Newsletter im Archiv</strong><p>Newsletter in Gmail öffnen → ⋮ → „Nachricht herunterladen“ (.eml), nach <code>content/newsletter/</code> legen und <code>python tools/import-newsletters.py</code> ausführen.</p></div>`;
       return;
     }
 
     body.innerHTML = `<div class="empty-state">${ICONS.mail}<strong>Stelle Vorschlag zusammen …</strong></div>`;
-    const c = await nlCandidates(t, z);
+    const c = await nlCandidates(z);
     if (!document.getElementById("nl-body")) return;
-    const all = [...c.pres, ...c.news, ...c.events];
-    const groupHtml = (title, items) => items.length ? `
-      <fieldset class="nl-group"><legend>${title}<span class="feed__title__count">${items.length}</span></legend>
-        ${items.map((x) => `
-        <label class="nl-pick">
-          <input type="checkbox" data-key="${escapeHtml(x.key)}" ${x.pre ? "checked" : ""} />
-          <span class="nl-pick__body">
-            <span class="nl-pick__title">${escapeHtml(x.title)}</span>
-            <span class="nl-pick__meta">${escapeHtml(x.kind)} · ${formatDate(x.date)}${x.meta ? " · " + escapeHtml(x.meta) : ""}</span>
-          </span>
-        </label>`).join("")}
-      </fieldset>` : "";
+    const row = (x) => `
+      <label class="nl-pick${x.covered ? " is-covered" : ""}">
+        <input type="checkbox" data-key="${escapeHtml(x.key)}" ${x.pre ? "checked" : ""} />
+        <span class="nl-pick__body">
+          <span class="nl-pick__title">${escapeHtml(x.title)}</span>
+          <span class="nl-pick__meta">${escapeHtml(x.src)} · ${formatDate(x.date)}${x.meta ? " · " + escapeHtml(x.meta) : ""}</span>
+          ${x.covered ? `<span class="nl-pick__covered">Schon im Newsletter vom ${formatDate(x.covered.date)}</span>` : ""}
+        </span>
+      </label>`;
+    const sections = NL_SECTIONS.map((s) => {
+      const list = c.items.filter((x) => x.sec === s.key);
+      return `
+      <details class="nl-sec" ${list.some((x) => x.pre) || s.key === "ms" ? "open" : ""}>
+        <summary><span class="nl-sec__title">${s.title}</span><span class="nl-sec__count" data-count="${s.key}"></span></summary>
+        <div class="nl-sec__list">${list.length ? list.map(row).join("") : `<p class="nl-sec__empty">${s.key === "events" ? "Keine kommenden Veranstaltungen eingetragen (sws-events-data.js)." : "Nichts Neues im Zeitraum."}</p>`}</div>
+      </details>`;
+    }).join("");
     body.innerHTML = `
-      <div class="nl-controls">
-        <nav class="tabs" aria-label="Newsletter-Typ">
-          ${Object.entries(NL_TYPES).map(([k, T]) => `<button type="button" class="tabs__item ${t === k ? "is-active" : ""}" data-typ="${k}">${T.label}</button>`).join("")}
-        </nav>
+      <div class="nl-bar">
+        <p class="nl-bar__info"><strong id="nl-picked">0</strong> Themen ausgewählt · ${escapeHtml(c.since.label)}${c.newsError ? " · News gerade nicht abrufbar" : ""}</p>
         <label class="select-field"><span class="select-field__label">Zeitraum</span>
           <select id="nl-zeit">
             <option value="auto" ${z === "auto" ? "selected" : ""}>Seit letztem Newsletter</option>
@@ -4637,40 +4707,47 @@
           </select>
         </label>
       </div>
-      <p class="nl-hint">Für <strong>${NL_TYPES[t].who}</strong> · ${escapeHtml(c.since.label)}. Vorausgewählt nach Typ – Häkchen setzen oder entfernen, der Entwurf rechts passt sich sofort an.${c.newsError ? " News sind gerade nicht abrufbar, nur Präsentationen berücksichtigt." : ""}</p>
       <div class="nl-layout">
-        <div class="nl-picks">
-          ${groupHtml("Neue Präsentationen", c.pres)}${groupHtml("Microsoft-Ads-News", c.news)}${groupHtml("Anstehende Termine", c.events)}
-          ${all.length ? "" : `<div class="empty-state">${ICONS.magnifyEmpty}<strong>Nichts Neues im Zeitraum</strong><p>Wähle einen längeren Zeitraum.</p></div>`}
-        </div>
+        <div class="nl-picks">${sections}</div>
         <div class="side-card nl-draft">
-          <h2>Entwurf</h2>
-          <label class="nl-field"><span>Betreff</span><input type="text" id="nl-subject" /></label>
-          <label class="nl-field"><span>Text</span><textarea id="nl-text" rows="22"></textarea></label>
-          <div class="nl-actions">
-            <button type="button" class="btn btn--primary" id="nl-copy">${ICONS.copy} Entwurf kopieren</button>
-            <span class="nl-status" id="nl-status" aria-live="polite"></span>
+          <div class="nl-draft__head">
+            <h2>Entwurf</h2>
+            <div class="nl-actions">
+              <button type="button" class="btn btn--primary" id="nl-copy">${ICONS.copy} Kopieren</button>
+            </div>
           </div>
-          <p class="nl-note">Vorschlag als Startpunkt – bitte vor dem Versand prüfen und im Ton anpassen. Interne Präsentationen sind für Kund:innen nicht verlinkbar.</p>
+          <label class="nl-field"><span>Betreff</span><input type="text" id="nl-subject" value="Neues aus der SWS-Alliance" /></label>
+          <div class="nl-preview" id="nl-preview" contenteditable="true" aria-label="Newsletter-Entwurf, bearbeitbar"></div>
+          <p class="nl-note"><span class="nl-status" id="nl-status" aria-live="polite"></span> Texte direkt im Entwurf anpassen. „Kopieren“ übernimmt die Formatierung (Überschriften, Absätze) zum Einfügen in Zoho Campaigns oder eine Mail. Präsentationen sind intern – für Partner ohne Link.</p>
         </div>
       </div>`;
-    body.querySelectorAll("[data-typ]").forEach((b) => b.addEventListener("click", () => go({ typ: b.dataset.typ })));
     document.getElementById("nl-zeit").addEventListener("change", (e) => go({ zeit: e.target.value }));
-    const subj = document.getElementById("nl-subject"), txt = document.getElementById("nl-text");
+    const prev = document.getElementById("nl-preview");
     const update = () => {
       const keys = new Set([...body.querySelectorAll("input[data-key]:checked")].map((i) => i.dataset.key));
-      const d = nlDraft(t, all.filter((x) => keys.has(x.key)));
-      subj.value = d.subject; txt.value = d.body;
+      const picked = c.items.filter((x) => keys.has(x.key));
+      prev.innerHTML = nlDraftHtml(picked);
+      document.getElementById("nl-picked").textContent = picked.length;
+      NL_SECTIONS.forEach((s) => {
+        const n = picked.filter((x) => x.sec === s.key).length, tot = c.items.filter((x) => x.sec === s.key).length;
+        body.querySelector(`[data-count="${s.key}"]`).textContent = tot ? `${n} von ${tot}` : "–";
+      });
     };
     body.querySelectorAll("input[data-key]").forEach((i) => i.addEventListener("change", update));
     update();
     document.getElementById("nl-copy").addEventListener("click", async () => {
       const st = document.getElementById("nl-status");
-      try { await navigator.clipboard.writeText(`Betreff: ${subj.value}\n\n${txt.value}`); st.innerHTML = `${ICONS.check} Kopiert`; }
-      catch { st.textContent = "Bitte Text manuell markieren und kopieren"; }
+      const subj = document.getElementById("nl-subject").value;
+      const html = `<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.55;color:#1a1e22">${prev.innerHTML}</div>`;
+      const text = `Betreff: ${subj}\n\n${prev.innerText}`;
+      try {
+        await navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([text], { type: "text/plain" }) })]);
+        st.innerHTML = `${ICONS.check} Kopiert (mit Formatierung).`;
+      } catch {
+        try { await navigator.clipboard.writeText(text); st.innerHTML = `${ICONS.check} Als Text kopiert.`; } catch { st.textContent = "Bitte Entwurf markieren und mit Strg+C kopieren."; }
+      }
     });
   }
-  function params_typ() { return new URLSearchParams((location.hash.split("?")[1]) || "").get("typ") || "alle"; }
 
   function renderNewsletterDetail(id) {
     const nl = NEWSLETTERS.find((n) => n.id === id);
@@ -4679,15 +4756,15 @@
       <a class="back-link" href="#/newsletter?v=archiv">${ICONS.arrowLeft} Zum Newsletter-Archiv</a>
       <article class="detail">
         <div class="detail__meta">
-          <span class="chip" style="background-color: var(${nl.type === "strategisch" ? "--accent" : "--turquoise-text"})">${escapeHtml(NL_TYPES[nl.type] ? NL_TYPES[nl.type].label : "Newsletter")}</span>
-          <span class="detail__date">— ${nl.date ? formatDate(nl.date) : ""}${nl.from ? " · " + escapeHtml(nl.from) : ""}</span>
+          <span class="chip" style="background-color: var(--turquoise-text)">Newsletter</span>
+          <span class="detail__date">— ${nl.date ? formatDate(nl.date) : ""}</span>
         </div>
         <h1>${escapeHtml(nl.subject)}</h1>
-        <div class="nl-mail"><iframe class="nl-frame" title="${escapeHtml(nl.subject)}" sandbox="allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"></iframe></div>
+        <div class="nl-mail"><iframe class="nl-frame" title="${escapeHtml(nl.subject)}" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"></iframe></div>
       </article>`;
     const fr = view.querySelector(".nl-frame");
+    fr.addEventListener("load", () => { try { fr.style.height = fr.contentDocument.documentElement.scrollHeight + 24 + "px"; } catch {} });
     fr.srcdoc = `<base target="_blank">${nl.html}`;
-    fr.addEventListener("load", () => { try { fr.style.height = fr.contentDocument.documentElement.scrollHeight + 20 + "px"; } catch {} });
   }
 
   function renderNotFound(path) {

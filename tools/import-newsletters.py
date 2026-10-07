@@ -36,7 +36,23 @@ def clean_html(h):
     # Personalisierte Abmelde-/Profil-Links: Link entfernen, Text behalten
     h = re.sub(r'(?is)<a\b[^>]*href=["\'][^"\']*(?:unsub|optout|opt-out|abmeld|unsubscribe|/ua/|manage[-_]?pref|updateprofile|profile)[^"\']*["\'][^>]*>(.*?)</a>',
                r"\1", h)
+    # Personalisierte Klick-Zähler von Zoho Campaigns (…/click/…): Link
+    # entfernen, Text behalten – Klicks im Intranet würden sonst der Person
+    # zugerechnet, die die Mail exportiert hat, und das Ziel ist ohne Klick
+    # nicht ermittelbar (könnte auch Abmelden sein).
+    h = re.sub(r'(?is)<a\b[^>]*href=["\'][^"\']*maillist-manage\.[a-z]+/click/[^"\']*["\'][^>]*>(.*?)</a>', r"\1", h)
+    # Restliche Klick-Zähler (z. B. in Outlook-VML-Buttons) als Attribut entfernen
+    h = re.sub(r'(?i)\s+href=["\'][^"\']*maillist-manage\.[a-z]+/click/[^"\']*["\']', "", h)
     return h
+
+def strip_forward(h):
+    """Weitergeleitete Mails: alles bis einschließlich Weiterleitungs-Kopf entfernen."""
+    m = re.search(r"(?is)-{3,}\s*Forwarded message\s*-{3,}.*?(?:To|An):[^<]*?(?:<[^>]*>[^<]*?){0,6}?(?=Liebe|Hallo|Hi )", h)
+    return h[m.end():] if m else h
+
+def neutral_greeting(h):
+    # "Liebe Angelika," -> "Liebe {Vorname}," (Archiv zeigt keinen echten Empfänger)
+    return re.sub(r"(Liebe[rs]?|Hallo|Hi)\s+[A-ZÄÖÜ][\wäöüß-]+\s*,", r"\1 {Vorname},", h, count=1)
 
 def guess_type(subject, text):
     s = (subject + " " + text[:3000]).lower()
@@ -45,7 +61,9 @@ def guess_type(subject, text):
     return "strategisch" if strat > oper else "operativ"
 
 def main():
-    files = sorted(SRC.glob("*.eml"))
+    # Originale vor Weiterleitungen verarbeiten, damit bei Duplikaten das
+    # Original (vom Absender, ohne Weiterleitungs-Kopf) im Archiv landet
+    files = sorted(SRC.glob("*.eml"), key=lambda f: (bool(re.match(r"(?i)(fwd?|wg|fw)[_:]", f.name)), f.name))
     if not files:
         print(f"Keine .eml-Dateien in {SRC}")
         return
@@ -64,13 +82,19 @@ def main():
         body = part.get_content() if part else ""
         if part and part.get_content_type() == "text/plain":
             body = "<pre style='white-space:pre-wrap;font-family:inherit'>" + html.escape(body) + "</pre>"
-        body = clean_html(body)
+        if re.match(r"(?i)\s*(fwd?|wg|fw):", subject):
+            subject = re.sub(r"(?i)^\s*(fwd?|wg|fw):\s*", "", subject)
+            body = strip_forward(body)
+        body = neutral_greeting(clean_html(body))
         text = re.sub(r"\s+", " ", html.unescape(re.sub(r"(?s)<style.*?</style>|<[^>]+>", " ", body))).strip()
-        nid = hashlib.sha1((subject + date).encode("utf-8")).hexdigest()[:12]
+        # Inhalt ab der Anrede als Schlüssel: erkennt Weiterleitungen derselben Ausgabe
+        core = re.sub(r"\W+", "", text[text.find("{Vorname}"):][:1500] if "{Vorname}" in text else text[:1500]).lower()
+        nid = hashlib.sha1(core.encode("utf-8")).hexdigest()[:12]
         if nid in known:
+            print(f"  übersprungen (gleiche Ausgabe schon vorhanden): {f.name}")
             continue
         items.append({"id": nid, "subject": subject, "date": date, "from": sender,
-                      "type": guess_type(subject, text), "excerpt": text[:260], "searchText": text[:5000], "html": body})
+                      "type": "newsletter", "excerpt": text[:260], "searchText": text[:5000], "html": body})
         known.add(nid); added += 1
     items.sort(key=lambda i: i["date"], reverse=True)
     js = ("/**\n * Bisher versendete Newsletter (Archiv), erzeugt von tools/import-newsletters.py\n"
