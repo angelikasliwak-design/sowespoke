@@ -4546,9 +4546,10 @@
             <p class="kd-result" id="kk-result" aria-live="polite"></p>
             <p class="kd-note">Prüfhilfe nach der Kurzlogik der Übersicht – maßgeblich bleibt die Kooperationsvereinbarung.</p>
           </div>
-          <a class="kd-card kd-preview" href="content/konditionen/Kontoklassifizierung_SOWESPOKE_v3.pdf" target="_blank" rel="noopener" aria-label="Übersicht Kontoklassifizierung als PDF öffnen">
+          <button type="button" class="kd-card kd-preview" data-zoom="content/konditionen/kontoklassifizierung.png" data-zoom-pdf="content/konditionen/Kontoklassifizierung_SOWESPOKE_v3.pdf" aria-label="Übersicht Kontoklassifizierung vergrößern">
             <img src="content/konditionen/kontoklassifizierung.png" alt="Übersicht Kontoklassifizierung mit Zeitstrahl und Beispielen" loading="lazy" />
-          </a>
+            <span class="kd-zoom-hint">${ICONS.search} Zum Vergrößern klicken</span>
+          </button>
         </div>
       </section>
 
@@ -5023,6 +5024,26 @@
     if (nav && cur && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = cur.offsetLeft - nav.clientWidth / 2 + cur.offsetWidth / 2;
   }
   if (subnav && "MutationObserver" in window) new MutationObserver(placeSubnav).observe(view, { childList: true });
+
+  /* Vergrößerungsfenster (2026-10-07, Nutzer-Wunsch): Klick auf ein Bild mit
+     data-zoom bzw. auf einen Screenshot in einer Anleitung öffnet es groß
+     in einem <dialog>; schließen per ×, Esc oder Klick auf den Hintergrund. */
+  const zoomDlg = document.createElement("dialog");
+  zoomDlg.className = "zoom";
+  zoomDlg.innerHTML = `<div class="zoom__bar"><a class="zoom__pdf" target="_blank" rel="noopener" hidden>${ICONS.download} PDF öffnen</a><button type="button" class="zoom__close" aria-label="Schließen">×</button></div><img class="zoom__img" alt="" />`;
+  document.body.appendChild(zoomDlg);
+  zoomDlg.addEventListener("click", (e) => { if (e.target === zoomDlg || e.target.closest(".zoom__close")) zoomDlg.close(); });
+  view.addEventListener("click", (e) => {
+    const t = e.target.closest("[data-zoom], .kb-article img");
+    if (!t) return;
+    e.preventDefault();
+    const src = t.dataset.zoom || t.getAttribute("src");
+    const img = zoomDlg.querySelector(".zoom__img");
+    img.src = src; img.alt = (t.querySelector("img") || t).getAttribute("alt") || "";
+    const pdf = zoomDlg.querySelector(".zoom__pdf");
+    pdf.hidden = !t.dataset.zoomPdf; if (t.dataset.zoomPdf) pdf.href = t.dataset.zoomPdf;
+    zoomDlg.showModal();
+  });
 
   let isInitialRender = true;
   window.addEventListener("hashchange", () => { render(); placeSubnav(); syncStage(); });

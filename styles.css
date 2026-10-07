@@ -3598,3 +3598,17 @@ h1:focus, h2:focus, h3:focus { outline: none; }
 .kd-coins p { color: rgba(255, 255, 255, 0.92); }
 .kd-big { font-family: var(--font-display); font-weight: 800; font-size: 2rem; line-height: 1.1; }
 .subnav__inner .subnav__children { padding-inline: 0; max-width: none; }
+
+/* Vergrößerungsfenster (2026-10-07) */
+.kd-preview { position: relative; cursor: zoom-in; font: inherit; text-align: left; }
+.kd-zoom-hint { position: absolute; right: 18px; bottom: 18px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: rgba(26, 30, 34, 0.82); color: #fff; font-size: 0.8rem; font-weight: 600; opacity: 0; transition: opacity 150ms ease; }
+.kd-zoom-hint svg { width: 14px; height: 14px; }
+.kd-preview:hover .kd-zoom-hint, .kd-preview:focus-visible .kd-zoom-hint { opacity: 1; }
+.kb-article img { cursor: zoom-in; }
+.zoom { width: min(96vw, 1500px); max-width: none; max-height: 94vh; padding: 0; border: 0; border-radius: var(--radius); background: #fff; box-shadow: 0 30px 80px rgba(15, 40, 50, 0.35); overflow: auto; }
+.zoom::backdrop { background: rgba(15, 25, 30, 0.72); }
+.zoom__bar { position: sticky; top: 0; display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 10px 12px; background: rgba(255, 255, 255, 0.94); border-bottom: 1px solid var(--line); }
+.zoom__pdf { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink); font-weight: 600; font-size: 0.88rem; text-decoration: none; }
+.zoom__pdf svg { width: 15px; height: 15px; }
+.zoom__close { width: 40px; height: 40px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 1.5rem; line-height: 1; }
+.zoom__img { display: block; width: 100%; height: auto; }
