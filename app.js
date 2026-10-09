@@ -24,7 +24,7 @@
     Allgemein: "--turquoise",
   };
 
-  const NAV_ICON = { konditionen: "scale", wissen: "book", newsletter: "mail", anleitungen: "fileText", news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass", nutzer: "gauge", "microsoft-ads-kontopruefung": "crosshair" };
+  const NAV_ICON = { konditionen: "scale", wissen: "book", anleitungen: "fileText", news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass", nutzer: "gauge", "microsoft-ads-kontopruefung": "crosshair" };
   railLinks.forEach((a) => {
     const iconSlot = a.querySelector(".rail__nav-icon");
     if (iconSlot) iconSlot.innerHTML = ICONS[NAV_ICON[a.dataset.nav]];
@@ -4496,8 +4496,8 @@
   }
 
   /* ------------------------------------------------------- Konditionen */
-  /* Konditionen (2026-10-07): Kontoklassifizierung und Performance Deal
-     FY 26/27 als lesbare Seite – Inhalte 1:1 aus den PDFs in
+  /* Konditionen (2026-10-07): Kontoklassifizierung als lesbare Seite
+     (Performance Deal am 2026-10-09 auf Wunsch entfernt) – Inhalte 1:1 aus den PDFs in
      content/konditionen/ – plus Prüfhilfe "Wie wird dieses Konto
      eingeordnet?" und Liste aller Unterlagen (konditionen-data.js). */
   function kkClassify(linkIso, youngAccount, domainActive) {
@@ -4514,12 +4514,11 @@
   }
 
   function renderKonditionen() {
-    const tier = (list) => ["CORE", "GROWTH", "STRATEGIC"].map((t) => `<span class="tier-tag tier-tag--${t.toLowerCase()}${list.includes(t) ? "" : " is-off"}">${t}</span>`).join("");
     view.innerHTML = `
       <section class="hero hero--compact">
         <div class="hero__intro">
           <h1>Unsere Konditionen</h1>
-          <p>Kontoklassifizierung und Performance Deal auf einen Blick – mit den Originalunterlagen zum Download.</p>
+          <p>Kontoklassifizierung auf einen Blick – mit den Originalunterlagen zum Download.</p>
         </div>
       </section>
 
@@ -4553,47 +4552,6 @@
         </div>
       </section>
 
-      <section class="kd-section" id="performance-deal">
-        <div class="kd-head">
-          <h2 class="feed__title">Performance Deal FY 26/27</h2>
-          <a class="btn btn--secondary" href="content/konditionen/SWS-Performance-Deals-FY2627_DE.pdf" target="_blank" rel="noopener">${ICONS.download} PDF</a>
-        </div>
-        <p class="kd-lead">Der Performance Deal honoriert Agenturen, die ihr Microsoft-Advertising-Geschäft aktiv ausbauen. <strong>Aktionszeitraum: 1. Oktober 2026 – 30. Juni 2027.</strong></p>
-        <p class="kd-callout kd-callout--warn"><strong>Wichtig:</strong> Die Teilnahme muss einmalig aktiv bestätigt werden (Partner-Dashboard). No-Change-Konten sind grundsätzlich von allen Vergütungen ausgeschlossen.</p>
-        <div class="kd-grid kd-grid--3">
-          <article class="kd-card">
-            <div class="kd-tiers">${tier(["CORE", "GROWTH", "STRATEGIC"])}</div>
-            <h3>01 · MSAN-Ausbau</h3>
-            <p>Statt regulär 4 % bis zu <strong>10 %</strong> Vergütung auf den Ad Spend eurer MSAN-Audience-Kampagnen – je höher der MSAN-Share, desto höher die Vergütung.</p>
-            <table class="kd-table"><thead><tr><th>MSAN-Share</th><th>Vergütung</th></tr></thead><tbody>
-              ${[5, 6, 7, 8, 9].map((n) => `<tr><td>${n} %</td><td>${n} %</td></tr>`).join("")}<tr><td>ab 10 %</td><td>10 %</td></tr></tbody></table>
-            <p class="kd-note">MSAN-Share = MSAN-Audience-Spend ÷ gesamter Ad Spend. Nur Kampagnentyp „Zielgruppe“. Bei 10–30 % MSAN-Share auf max. 10 % des MSAN-Spends gedeckelt. Kombinierbar mit New Account.</p>
-          </article>
-          <article class="kd-card">
-            <div class="kd-tiers">${tier(["CORE", "GROWTH", "STRATEGIC"])}</div>
-            <h3>02 · New Account</h3>
-            <p><strong>12 % statt 8 %</strong> Vergütung in Q2 2027 auf den Q2 Ad Spend qualifizierter New Accounts.</p>
-            <ol class="kd-steps">
-              <li><strong>Verknüpfen:</strong> New Account im Januar, spätestens bis Ende Februar 2027.</li>
-              <li><strong>Qualifizieren:</strong> bis Ende Februar mind. 1.000 € Ad Spend – ohne eingelöste Gutscheincodes.</li>
-              <li><strong>Profitieren:</strong> 12 % auf den Q2-2027-Ad-Spend des Accounts.</li>
-            </ol>
-            <p class="kd-note">„New Account“ = „Netto-Neugeschäft / Net New Business“ laut Kooperationsvereinbarung – siehe <a href="#klassifizierung">Kontoklassifizierung</a>.</p>
-          </article>
-          <article class="kd-card">
-            <div class="kd-tiers">${tier(["STRATEGIC"])}</div>
-            <h3>03 · Year-over-Year-Wachstum</h3>
-            <p><strong>2 %</strong> Vergütung auf den zusätzlichen Ad Spend gegenüber dem Vorjahresquartal (z. B. Q4 2026 vs. Q4 2025).</p>
-            <p>Maximal <strong>5.000 € bzw. 2.500 SWS Coins</strong> pro Quartal.</p>
-            <p class="kd-note">Nur möglich, wenn die Agentur im Vorjahreszeitraum bereits verknüpft war.</p>
-          </article>
-        </div>
-        <div class="kd-grid kd-grid--2">
-          <div class="kd-card kd-coins"><span class="kd-big">2 € = 1 SWS Coin</span><p>Alle Vergütungen werden quartalsweise geprüft, auf Basis des Ad Spends in Euro berechnet und als SWS-Coins-Guthaben gutgeschrieben.</p></div>
-          <div class="kd-card"><h3>Registrierung</h3><p>Einmalig im Aktionszeitraum. Wer sich innerhalb der ersten sechs Wochen eines Quartals registriert, nimmt für das ganze Quartal teil; bei späterer Registrierung ab dem folgenden Quartal. Keine nachträgliche Vergütung für abgeschlossene Quartale.</p><p class="kd-note">Fragen: <a href="mailto:info@sowespoke.com">info@sowespoke.com</a></p></div>
-        </div>
-      </section>
-
       <section class="kd-section" id="unterlagen">
         <h2 class="feed__title">Alle Unterlagen<span class="feed__title__count">${KONDITIONEN_DOCS.length}</span></h2>
         <ul class="article-list">
@@ -4612,7 +4570,6 @@
     };
     ["kk-date", "kk-young", "kk-domain"].forEach((id) => document.getElementById(id).addEventListener("input", upd));
     upd();
-    view.querySelectorAll('a[href^="#klassifizierung"]').forEach((l) => l.addEventListener("click", (e) => { e.preventDefault(); document.getElementById("klassifizierung").scrollIntoView({ behavior: "smooth" }); }));
   }
 
   function renderGuideDetail(id) {
@@ -4700,285 +4657,6 @@
   }
 
 
-  /* ------------------------------------------------------- Newsletter */
-  /* Newsletter (2026-10-07): Archiv der versendeten "Neues aus der SWS-
-     Alliance"-Ausgaben (newsletters-data.js, Import per tools/import-
-     newsletters.py) und ein Vorschlag für die nächste Ausgabe.
-     Was die bisherigen Ausgaben ausmacht (Analyse der 5 Archiv-Ausgaben):
-     immer Deutsch, "ihr/euch", kurz; 3 Themen unter "Microsoft Advertising
-     News!", jeweils Überschrift "Feature + was passiert", ein Absatz was sich
-     ändert (Datum, Kampagnentyp, Bedingungen), dann "Was bedeutet das für
-     euch?" aus Sicht der Kontoentwicklung (für welche Konten interessant, wie
-     künftig steuern), ggf. "Wichtig:" und bei Betas das Whitelisting-Angebot
-     über uns; am Ende "Unsere nächsten Veranstaltungen:" als Datumsliste.
-     Auswahl regelbasiert; Formulieren optional über /api/newsletter-draft. */
-  const MS_RE = /microsoft|bing|copilot|msan|audience ads|audience network|performance max|\bpmax\b|\buet\b|clarity|\bedge\b|linkedin|ai max/i;
-  const BETA_RE = /\bbeta\b|pilot|whitelist|open beta|closed beta/i;
-  const NL_STOP = new Set("microsoft advertising neue neuer neues jetzt mehr ihre eure euch kampagnen kampagne werbung anzeigen performance audience search guide feature update updates überblick über einen eine einer und oder mit für von bei aus auf der die das den dem des wie was wird werden kann können ihre this with your from that into more about dein deine network daten best practices guide feature-guide blick neue vorteile einrichtung optimieren struktur zeitplan formaten spezifikationen creative reichweite alle optionen leistungswerten insights strategie trends saison webinar deck pitch kunden partner agenturen".split(" "));
-  const NL_MONTHS = /^(januar|februar|märz|april|mai|juni|juli|august|september|oktober|november|dezember|january|february|march|may|june|july|october|december)$/;
-  const nlDay = (iso) => new Date(String(iso).slice(0, 10) + "T00:00:00");
-  const nlDotDate = (iso) => String(iso).slice(0, 10).split("-").reverse().join(".");
-  // Nutzer-Vorgabe (2026-10-07): keine Aufteilung in Unterrubriken, einfach
-  // die 3 sinnvollsten, wirklich neuen Themen – die Newsletter sind kurz.
-  const NL_TOPICS = 3;
-  const NL_SECTIONS = [
-    { key: "ms", title: "Microsoft Advertising News!" },
-    { key: "events", title: "Unsere nächsten Veranstaltungen:" },
-  ];
-  // "Wirklich neu": Ankündigungen/Änderungen zählen, Ratgeber & Vertriebs-
-  // material nicht. "Kontoentwicklung": Themen, die ändern, wie Agenturen
-  // Konten aufsetzen, steuern und ausbauen (Gebote, Targeting, Kampagnentypen,
-  // Conversions, Importe, Reporting, Betas) – das ist die Richtung der
-  // bisherigen Ausgaben. Allgemeine Konzern-/Branchenmeldungen fallen ab.
-  // Punkte nur zur Reihenfolge, Begründung wird angezeigt.
-  const NL_NEWS_RE = /jetzt verfügbar|ab sofort|ab dem|neu(e|er|es)? |führt .* ein|eingeführt|startet|launch|introduc|now available|available|rolling out|rollout|ausgerollt|general availability|\bGA\b|einschränk|wird .* (geändert|entfernt|abgeschaltet)|änder|ankündig|announc|roadmap|deprecat|sunset|retir|abgekündigt/i;
-  const NL_ACCOUNT_RE = /gebot|bidding|\bbid|max cpc|\bcpc\b|\bcpa\b|roas|budget|conversion|\buet\b|targeting|zielgrupp|keyword|match type|suchbegriff|search term|asset|performance max|\bpmax\b|ai max|shopping|feed|import|report|bericht|attribution|placement|ausschl|negative|msan|audience network|linkedin|kampagnentyp|campaign type|richtlinie|policy|frist|deadline|abschalt|whitelist|beta|pilot/i;
-  const NL_OFFTOPIC_RE = /quartal|earnings|aktie|umsatz von microsoft|windows|xbox|edge-browser|surface|teams|office|karriere|jobs|award|preisverleihung|podcast|interview|personalie/i;
-  const NL_EVERGREEN_RE = /tipps?|tips|how to|so gelingt|best practices?|leitfaden|guide|playbook|pitch|one-sheet|checkliste|spezifikation|webinar|recap|rückblick|case study|fallstudie|success story|trends? im|insights?|whitepaper/i;
-  function nlScore(x) {
-    let s = 0; const why = [];
-    const t = x.title + " " + (x.text || "");
-    if (x.src === "News" && /microsoft advertising blog/i.test(x.meta)) { s += 5; why.push("Microsoft Advertising Blog"); }
-    else if (x.src === "News") { s += 1; }
-    if (NL_NEWS_RE.test(x.title)) { s += 3; why.push("Ankündigung/Änderung"); }
-    if (NL_ACCOUNT_RE.test(t)) { s += 2; why.push("Kontoentwicklung"); }
-    if (BETA_RE.test(t)) { s += 2; why.push("Beta/Pilot"); }
-    if (x.src === "Präsentation" && x.docType === "Beta-Feature") { s += 2; if (!why.includes("Beta/Pilot")) why.push("Beta-Feature"); }
-    if (NL_EVERGREEN_RE.test(x.title)) { s -= 4; why.push("eher Ratgeber/Vertriebsmaterial"); }
-    if (NL_OFFTOPIC_RE.test(x.title)) { s -= 4; why.push("keine Kontoentwicklung"); }
-    const age = (Date.now() - nlDay(x.date)) / 86400000; s += Math.max(0, 2 - age / 14);
-    return { s, why };
-  }
-
-  // Wurde das Thema schon in einem Newsletter behandelt? Zwei markante
-  // Begriffe aus dem Titel müssen im selben früheren Newsletter vorkommen.
-  function nlCoveredIn(title) {
-    const words = [...new Set(title.toLowerCase().replace(/[^a-zäöüß0-9+ -]/g, " ").split(/\s+/).filter((w) => w.length >= 4 && !NL_STOP.has(w) && !/^\d+$/.test(w) && !NL_MONTHS.test(w)))];
-    if (words.length < 2) return null;
-    for (const n of NEWSLETTERS) {
-      const t = " " + (n.searchText || "").toLowerCase().replace(/[^a-zäöüß0-9+ -]/g, " ") + " ";
-      const hits = words.filter((w) => t.includes(" " + w)).length;
-      if (hits >= 2 && hits / words.length >= 0.6) return n;
-    }
-    return null;
-  }
-
-  function nlSince(zeit) {
-    if (zeit !== "auto") return { from: new Date(Date.now() - Number(zeit) * 86400000), label: `letzte ${zeit} Tage` };
-    const last = NEWSLETTERS.filter((n) => n.date).sort((x, y) => y.date.localeCompare(x.date))[0];
-    if (last) return { from: nlDay(last.date), label: `seit dem letzten Newsletter vom ${formatDate(last.date)}`, last };
-    return { from: new Date(Date.now() - 30 * 86400000), label: "letzte 30 Tage" };
-  }
-
-  async function nlCandidates(zeit) {
-    const since = nlSince(zeit);
-    const items = [];
-    PRESENTATIONS.filter((p) => p.dateKnown && nlDay(p.date) >= since.from).forEach((p) => {
-      items.push({ key: "p:" + p.id, sec: "ms", src: "Präsentation", title: p.title, text: p.customerBlurb || p.summaryDE, date: p.date, link: "", meta: p.docType, docType: p.docType });
-    });
-    const data = await loadNews();
-    (data.items || []).filter((n) => n.pubDate && nlDay(n.pubDate) >= since.from && (n.channel === "Microsoft" || MS_RE.test(n.title + " " + (n.description || ""))))
-      .forEach((n) => items.push({ key: "n:" + n.link, sec: "ms", src: "News", title: n.title, text: n.description || "", date: String(n.pubDate).slice(0, 10), link: n.link, english: n.lang === "en" && !n.translated, meta: n.source + (n.lang === "en" && !n.translated ? " · englisch" : "") }));
-    const today = new Date(); today.setHours(0, 0, 0, 0);
-    const events = SWS_EVENTS.filter((e) => nlDay(e.date) >= today).sort((x, y) => x.date.localeCompare(y.date))
-      .map((e) => ({ key: "e:" + e.date + e.title, sec: "events", src: "Veranstaltung", title: e.title, text: "", date: e.date, link: e.link || "", meta: "", pre: true }));
-    // Bewerten, schon behandelte Themen aussortieren, die besten 3 vorauswählen
-    items.forEach((x) => { x.covered = nlCoveredIn(x.title); const r = nlScore(x); x.score = x.covered ? -99 : r.s; x.why = r.why; x.beta = BETA_RE.test(x.title + " " + x.text) || x.docType === "Beta-Feature"; });
-    items.sort((x, y) => y.score - x.score || y.date.localeCompare(x.date));
-    let n = 0;
-    items.forEach((x) => { x.pre = !x.covered && x.score > 0 && n < NL_TOPICS; if (x.pre) n++; });
-    items.push(...events);
-    return { since, items, newsError: !!data.error };
-  }
-
-  const NL_CTA_BETA = "Bei Interesse meldet euch gerne mit dem entsprechenden Account bei uns. Wir prüfen gemeinsam, ob der Account geeignet ist, und können anschließend das Whitelisting bei Microsoft anfragen.";
-
-  // Entwurf im Aufbau der bisherigen Ausgaben. x.ai = von /api/newsletter-
-  // draft formulierter Block; ohne den ein Gerüst aus Titel/Kurztext mit
-  // [Platzhaltern] für "Was bedeutet das für euch?".
-  function nlDraftHtml(picked) {
-    const esc = escapeHtml;
-    const out = [`<p>Liebe {Vorname},</p>`];
-    NL_SECTIONS.forEach((s) => {
-      const list = picked.filter((x) => x.sec === s.key);
-      if (!list.length) return;
-      if (s.key === "events") {
-        out.push(`<p><strong>${esc(s.title)}</strong><br>${list.map((x) => `${nlDotDate(x.date)}&nbsp;&nbsp;${esc(x.title)}`).join("<br>")}</p>`);
-        return;
-      }
-      out.push(`<h2>${esc(s.title)}</h2>`);
-      list.forEach((x) => {
-        const a = x.ai;
-        out.push(`<h3>${esc(a && a.headline ? a.headline : x.title)}</h3>`);
-        if (a) {
-          if (a.body) out.push(`<p>${esc(a.body)}</p>`);
-          if (a.forYou) out.push(`<p><strong>Was bedeutet das für euch?</strong> ${esc(a.forYou)}</p>`);
-          if (a.important) out.push(`<p><strong>Wichtig:</strong> ${esc(a.important)}</p>`);
-          if (a.cta) out.push(`<p>${esc(a.cta)}</p>`);
-        } else {
-          out.push(`<p>${x.text ? esc(x.text) : "[Was ändert sich? Datum, Kampagnentyp, Bedingungen]"}${x.english ? " [englischer Ausgangstext – bitte auf Deutsch formulieren]" : ""}</p>`);
-          out.push(`<p><strong>Was bedeutet das für euch?</strong> [Für welche Konten ist das interessant und wie sollten Kampagnen künftig gesteuert werden?]</p>`);
-          if (x.beta) out.push(`<p>${esc(NL_CTA_BETA)}</p>`);
-        }
-        if (x.link) out.push(`<p>Weitere Infos findet ihr <a href="${esc(x.link)}">hier</a>.</p>`);
-      });
-    });
-    out.push(`<p>Sonnige Grüße<br>Euer SWS-Alliance Team</p>`);
-    return out.join("\n");
-  }
-
-  function nlArchiveCard(nl) {
-    return `
-      <li>
-        <a class="row" href="#/newsletter/${encodeURIComponent(nl.id)}">
-          <span class="row__head"><span class="row__thumb">${ICONS.mail}</span></span>
-          <span class="row__body">
-            <span class="row__title">${escapeHtml(nl.subject)}</span>
-            <span class="row__summary">${escapeHtml((nl.excerpt || "").replace(/^\W*\d*\s*Liebe \{Vorname\},?\s*/, ""))}</span>
-          </span>
-          <span class="row__meta">${nl.date ? `<span class="row__date">${formatDate(nl.date)}</span>` : ""}</span>
-        </a>
-      </li>`;
-  }
-
-  async function renderNewsletter(v, _typ, zeit) {
-    const view_ = v === "archiv" ? "archiv" : "vorschlag";
-    const z = ["auto", "14", "30", "60", "90"].includes(zeit) ? zeit : "auto";
-    const go = (o) => { location.hash = `#/newsletter?${new URLSearchParams({ v: view_, zeit: z, ...o })}`; };
-    view.innerHTML = `
-      <section class="hero hero--compact">
-        <div class="hero__intro">
-          <h1>Newsletter</h1>
-          <p>„Neues aus der SWS-Alliance“ – alle bisherigen Ausgaben und ein Vorschlag für die nächste: drei Microsoft-Advertising-Neuerungen, die für die Kontoentwicklung zählen, und unsere Veranstaltungen.</p>
-        </div>
-      </section>
-      <div class="toolbar">
-        <nav class="tabs" aria-label="Ansicht">
-          <button type="button" class="tabs__item ${view_ === "vorschlag" ? "is-active" : ""}" data-v="vorschlag">Nächste Ausgabe</button>
-          <button type="button" class="tabs__item ${view_ === "archiv" ? "is-active" : ""}" data-v="archiv">Archiv<span class="tabs__item-count">${NEWSLETTERS.length}</span></button>
-        </nav>
-      </div>
-      <div id="nl-body"></div>`;
-    view.querySelectorAll("[data-v]").forEach((b) => b.addEventListener("click", () => go({ v: b.dataset.v })));
-    const body = document.getElementById("nl-body");
-
-    if (view_ === "archiv") {
-      body.innerHTML = NEWSLETTERS.length
-        ? `<ul class="article-list">${NEWSLETTERS.map(nlArchiveCard).join("")}</ul>`
-        : `<div class="empty-state">${ICONS.mail}<strong>Noch keine Newsletter im Archiv</strong><p>Newsletter in Gmail öffnen → ⋮ → „Nachricht herunterladen“ (.eml), nach <code>content/newsletter/</code> legen und <code>python tools/import-newsletters.py</code> ausführen.</p></div>`;
-      return;
-    }
-
-    body.innerHTML = `<div class="empty-state">${ICONS.mail}<strong>Stelle Vorschlag zusammen …</strong></div>`;
-    const c = await nlCandidates(z);
-    if (!document.getElementById("nl-body")) return;
-    const row = (x) => `
-      <label class="nl-pick${x.covered ? " is-covered" : ""}">
-        <input type="checkbox" data-key="${escapeHtml(x.key)}" ${x.pre ? "checked" : ""} />
-        <span class="nl-pick__body">
-          <span class="nl-pick__title">${escapeHtml(x.title)}</span>
-          <span class="nl-pick__meta">${escapeHtml(x.src)} · ${formatDate(x.date)}${x.meta ? " · " + escapeHtml(x.meta) : ""}</span>
-          ${x.why && x.why.length && !x.covered ? `<span class="nl-pick__why">${x.why.map(escapeHtml).join(" · ")}</span>` : ""}
-          ${x.covered ? `<span class="nl-pick__covered">Schon im Newsletter vom ${formatDate(x.covered.date)}</span>` : ""}
-        </span>
-      </label>`;
-    const sections = NL_SECTIONS.map((s) => {
-      const list = c.items.filter((x) => x.sec === s.key);
-      return `
-      <details class="nl-sec" open>
-        <summary><span class="nl-sec__title">${s.title}</span><span class="nl-sec__count" data-count="${s.key}"></span></summary>
-        <div class="nl-sec__list">${list.length ? list.map(row).join("") : `<p class="nl-sec__empty">${s.key === "events" ? "Keine kommenden Veranstaltungen eingetragen (sws-events-data.js)." : "Nichts Neues im Zeitraum."}</p>`}</div>
-      </details>`;
-    }).join("");
-    body.innerHTML = `
-      <div class="nl-bar">
-        <p class="nl-bar__info"><strong id="nl-picked">0</strong> Themen ausgewählt (Empfehlung: ${NL_TOPICS}) · ${escapeHtml(c.since.label)}${c.newsError ? " · News gerade nicht abrufbar" : ""}</p>
-        <label class="select-field"><span class="select-field__label">Zeitraum</span>
-          <select id="nl-zeit">
-            <option value="auto" ${z === "auto" ? "selected" : ""}>Seit letztem Newsletter</option>
-            ${["14", "30", "60", "90"].map((d) => `<option value="${d}" ${z === d ? "selected" : ""}>Letzte ${d} Tage</option>`).join("")}
-          </select>
-        </label>
-      </div>
-      <div class="nl-layout">
-        <div class="nl-picks">${sections}</div>
-        <div class="side-card nl-draft">
-          <div class="nl-draft__head">
-            <h2>Entwurf</h2>
-            <div class="nl-actions">
-              <button type="button" class="btn btn--secondary" id="nl-write">Im Newsletter-Stil formulieren</button>
-              <button type="button" class="btn btn--primary" id="nl-copy">${ICONS.copy} Kopieren</button>
-            </div>
-          </div>
-          <label class="nl-field"><span>Betreff</span><input type="text" id="nl-subject" value="Neues aus der SWS-Alliance" /></label>
-          <div class="nl-preview" id="nl-preview" contenteditable="true" aria-label="Newsletter-Entwurf, bearbeitbar"></div>
-          <p class="nl-note"><span class="nl-status" id="nl-status" aria-live="polite"></span> „Im Newsletter-Stil formulieren“ schreibt die Themen auf Deutsch im Aufbau der bisherigen Ausgaben (was ist neu → was bedeutet das für euch). Danach direkt im Entwurf anpassen. „Kopieren“ übernimmt die Formatierung (Überschriften, Absätze) zum Einfügen in Zoho Campaigns oder eine Mail. Präsentationen sind intern – für Partner ohne Link.</p>
-        </div>
-      </div>`;
-    document.getElementById("nl-zeit").addEventListener("change", (e) => go({ zeit: e.target.value }));
-    const prev = document.getElementById("nl-preview");
-    const update = () => {
-      const keys = new Set([...body.querySelectorAll("input[data-key]:checked")].map((i) => i.dataset.key));
-      const picked = c.items.filter((x) => keys.has(x.key));
-      prev.innerHTML = nlDraftHtml(picked);
-      document.getElementById("nl-picked").textContent = picked.filter((x) => x.sec !== "events").length;
-      NL_SECTIONS.forEach((s) => {
-        const n = picked.filter((x) => x.sec === s.key).length, tot = c.items.filter((x) => x.sec === s.key).length;
-        body.querySelector(`[data-count="${s.key}"]`).textContent = tot ? `${n} von ${tot}` : "–";
-      });
-    };
-    body.querySelectorAll("input[data-key]").forEach((i) => i.addEventListener("change", update));
-    update();
-    document.getElementById("nl-write").addEventListener("click", async (e) => {
-      const btn = e.currentTarget, st = document.getElementById("nl-status");
-      const keys = new Set([...body.querySelectorAll("input[data-key]:checked")].map((i) => i.dataset.key));
-      const todo = c.items.filter((x) => keys.has(x.key) && x.sec === "ms");
-      if (!todo.length) { st.textContent = "Erst Themen auswählen."; return; }
-      btn.disabled = true; st.textContent = "Formuliere …";
-      try {
-        const res = await fetch("/api/newsletter-draft", { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ items: todo.map((x) => ({ id: x.key, title: x.title, text: x.text, source: x.src === "News" ? x.meta : "SWS-Präsentation", beta: x.beta })) }) });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.error === "no-key" ? "Formulieren ist noch nicht eingerichtet (Cloudflare-Secret GEMINI_API_KEY fehlt) – Gerüst bitte von Hand füllen." : (data.error || `Fehler ${res.status}`));
-        const byId = new Map((data.items || []).map((t) => [t.id, t]));
-        todo.forEach((x) => { if (byId.has(x.key)) x.ai = byId.get(x.key); });
-        update();
-        st.innerHTML = `${ICONS.check} Formuliert – bitte gegenlesen.`;
-      } catch (err) { st.textContent = err.message; }
-      btn.disabled = false;
-    });
-    document.getElementById("nl-copy").addEventListener("click", async () => {
-      const st = document.getElementById("nl-status");
-      const subj = document.getElementById("nl-subject").value;
-      const html = `<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.55;color:#1a1e22">${prev.innerHTML}</div>`;
-      const text = `Betreff: ${subj}\n\n${prev.innerText}`;
-      try {
-        await navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([text], { type: "text/plain" }) })]);
-        st.innerHTML = `${ICONS.check} Kopiert (mit Formatierung).`;
-      } catch {
-        try { await navigator.clipboard.writeText(text); st.innerHTML = `${ICONS.check} Als Text kopiert.`; } catch { st.textContent = "Bitte Entwurf markieren und mit Strg+C kopieren."; }
-      }
-    });
-  }
-
-  function renderNewsletterDetail(id) {
-    const nl = NEWSLETTERS.find((n) => n.id === id);
-    if (!nl) { renderNotFound("/newsletter/" + id); return; }
-    view.innerHTML = `
-      <a class="back-link" href="#/newsletter?v=archiv">${ICONS.arrowLeft} Zum Newsletter-Archiv</a>
-      <article class="detail">
-        <div class="detail__meta">
-          <span class="chip" style="background-color: var(--turquoise-text)">Newsletter</span>
-          <span class="detail__date">— ${nl.date ? formatDate(nl.date) : ""}</span>
-        </div>
-        <h1>${escapeHtml(nl.subject)}</h1>
-        <div class="nl-mail"><iframe class="nl-frame" title="${escapeHtml(nl.subject)}" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"></iframe></div>
-      </article>`;
-    const fr = view.querySelector(".nl-frame");
-    fr.addEventListener("load", () => { try { fr.style.height = fr.contentDocument.documentElement.scrollHeight + 24 + "px"; } catch {} });
-    fr.srcdoc = `<base target="_blank">${nl.html}`;
-  }
-
   function renderNotFound(path) {
     view.innerHTML = `
       <div class="empty-state">
@@ -5006,10 +4684,6 @@
       renderTemplates(params.get("q") || "", params.get("t") || "mail");
     } else if (path === "/konditionen") {
       renderKonditionen();
-    } else if (path.startsWith("/newsletter/")) {
-      renderNewsletterDetail(decodeURIComponent(path.slice("/newsletter/".length)));
-    } else if (path === "/newsletter") {
-      renderNewsletter(params.get("v") || "vorschlag", params.get("typ") || "operativ", params.get("zeit") || "auto");
     } else if (path.startsWith("/anleitungen/")) {
       renderGuideDetail(decodeURIComponent(path.slice("/anleitungen/".length)));
     } else if (path === "/anleitungen") {

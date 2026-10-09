@@ -98,16 +98,6 @@ const server = http.createServer(async (req, res) => {
     res.end(JSON.stringify(mockNews()));
     return;
   }
-  // Mock für functions/api/newsletter-draft.js (echte Version ruft Gemini)
-  if (urlPath === "/api/newsletter-draft" && req.method === "POST") {
-    const body = JSON.parse((await readBody(req)) || "{}");
-    res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ items: (body.items || []).map((x) => ({
-      id: x.id, headline: `${x.title} (Mock)`, body: "Mock: was sich ändert.", forYou: "Mock: für welche Konten interessant.",
-      important: "", cta: x.beta ? "Bei Interesse meldet euch gerne mit dem entsprechenden Account bei uns." : "",
-    })) }));
-    return;
-  }
   if (urlPath === "/api/auth/me") {
     // ?admin=0 anhängen, um lokal die Nicht-Admin-Ansicht zu testen
     // (Standard hier: Admin, damit der Löschen-Button ohne Zusatzschritt
