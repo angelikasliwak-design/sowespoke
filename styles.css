@@ -3613,3 +3613,6 @@ h1:focus, h2:focus, h3:focus { outline: none; }
 .zoom__close { width: 40px; height: 40px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 1.5rem; line-height: 1; }
 .zoom__img { display: block; width: 100%; height: auto; }
 .nl-pick__why { font-size: 0.75rem; color: var(--turquoise-text); font-weight: 600; }
+
+/* 2026-10-09 (Nutzer): Vorlagen nur kopieren – Versand-Elemente bleiben im DOM für wireMailGen, sind aber immer aus */
+.mailgen [hidden] { display: none !important; }

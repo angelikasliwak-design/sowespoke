@@ -874,7 +874,7 @@
         </div>
         <div class="mailgen__field mailgen__recipients" id="recipients-${topicKey}" hidden>
           <span class="mailgen__radiogroup-label">Empfänger:innen — jede Person bekommt eine eigene, separate Mail</span>
-          <p class="mailgen__hint">"In Gmail öffnen" und "In Zwischenablage kopieren" wirken immer nur auf die gerade aktive Zeile (unten als "Vorschau für: …" markiert) — für jede weitere Person erst in ihre Zeile klicken, dann erneut "In Gmail öffnen". "Alle jetzt per Gmail senden" verschickt stattdessen automatisch an alle auf einmal.</p>
+          <p class="mailgen__hint">"In Zwischenablage kopieren" wirkt immer nur auf die gerade aktive Zeile (unten als "Vorschau für: …" markiert) — für jede weitere Person erst in ihre Zeile klicken, dann erneut kopieren.</p>
           <div class="mailgen__recipient-rows" data-recip-rows>
             ${recipientRowHtml(topicKey, crypto.randomUUID())}
             ${recipientRowHtml(topicKey, crypto.randomUUID())}
@@ -915,20 +915,20 @@
         <p class="mailgen__warning" id="warning-${topicKey}" hidden>${ICONS.flash}<span>Noch nicht ausgefüllt: <strong></strong> — wird sonst als Platzhalter mitkopiert.</span></p>
         <details class="mailgen__signature">
           <summary>Signatur<span class="mailgen__signature-status" id="sig-status-${topicKey}"></span></summary>
-          <p class="mailgen__hint">Einmal hinterlegen, gilt für alle Vorlagen in diesem Browser — wird automatisch als Text an jede generierte Mail angehängt (Gmail übernimmt die eigene Signatur beim Öffnen über einen vorausgefüllten Link nicht zuverlässig).</p>
+          <p class="mailgen__hint">Einmal hinterlegen, gilt für alle Vorlagen in diesem Browser — wird automatisch als Text an jede generierte Mail angehängt.</p>
           <textarea id="sig-${topicKey}" data-signature-input rows="4" placeholder="z. B.&#10;Beste Grüße&#10;Angelika Sliwak&#10;Sowespoke"></textarea>
           <div class="mailgen__signature-rich">
             <button class="btn btn--secondary" data-copy-rich-signature="${topicKey}" type="button">${ICONS.copy} Signatur mit Logo kopieren</button>
             <span class="mailgen__status" id="sig-rich-status-${topicKey}">${ICONS.check} Kopiert</span>
           </div>
-          <p class="mailgen__hint">Gmails Compose-Link kann keine Bilder/Schriftarten übertragen (harte Grenze, kein Darstellungsfehler) — diese Version landet mit Logo und Verdana-Schrift in der Zwischenablage, danach im Gmail-Fenster einmal manuell mit Strg+V an gewünschter Stelle einfügen.</p>
+          <p class="mailgen__hint">Diese Version landet mit Logo und Verdana-Schrift in der Zwischenablage – danach in der Mail mit Strg+V an gewünschter Stelle einfügen.</p>
         </details>
         <div class="mailgen__actions">
-          <a class="btn btn--primary" data-send="${topicKey}" href="#" target="_blank" rel="noopener">${ICONS.mail} In Gmail öffnen</a>
-          <button class="btn btn--secondary" data-copy="${topicKey}" type="button">${ICONS.copy} In Zwischenablage kopieren</button>
+          <a class="btn btn--primary" data-send="${topicKey}" href="#" target="_blank" rel="noopener" hidden>${ICONS.mail} In Gmail öffnen</a>
+          <button class="btn btn--primary" data-copy="${topicKey}" type="button">${ICONS.copy} In Zwischenablage kopieren</button>
           <span class="mailgen__status" id="status-${topicKey}">${ICONS.check} Kopiert</span>
         </div>
-        <div class="mailgen__gmail-send">
+        <div class="mailgen__gmail-send" hidden>
           <p class="mailgen__hint"><span class="flash">${ICONS.hourglass} Im Aufbau</span> Direkter Versand über die Gmail-API — verschickt sofort im Hintergrund, ohne Gmail-Compose-Fenster zum letzten Check. Vorschau oben vorher genau prüfen. Die Verbindung zur Gmail-API wird gerade eingerichtet — kann daher noch nicht bei jeder Person zuverlässig funktionieren.</p>
           <div class="mailgen__gmail-send-row">
             <button type="button" class="btn btn--secondary" data-gmail-connect hidden>${ICONS.mail} Mit Gmail verbinden</button>
@@ -942,7 +942,7 @@
           </div>
           <p class="mailgen__hint" data-schedule-link hidden><a href="#/serienmails">${ICONS.hourglass} Geplante Mails ansehen</a></p>
         </div>
-        <details class="mailgen__hint-toggle">
+        <details class="mailgen__hint-toggle" hidden>
           <summary aria-label="Hinweis zum Versand anzeigen">${ICONS.info}</summary>
           <p class="mailgen__hint">„In Gmail öffnen" öffnet ein neues Gmail-Compose-Fenster mit fertig ausgefüllter Nachricht — du prüfst und schickst sie von dort aus ab, sie landet danach ganz normal in deinem Gesendet-Ordner. Bei sehr langem Text lieber „In Zwischenablage kopieren" nutzen.</p>
         </details>
@@ -4031,7 +4031,7 @@
       snippet: `${g.category} · ${g.excerpt}`,
       href: `#/anleitungen/${g.id}`,
     }));
-    const konItems = KONDITIONEN_DOCS.map((d) => ({ kind: "Konditionen", title: d.title, snippet: d.summary, href: "#/konditionen" }));
+    const konItems = KONDITIONEN_DOCS.map((d) => ({ kind: "Kontoklassifizierung", title: d.title, snippet: d.summary, href: "#/kontoklassifizierung" }));
     cmdkIndexCache = [...konItems, ...newsItems, ...presItems, ...templateItems, ...practiceItems, ...caseItems, ...guideItems];
     return cmdkIndexCache;
   }
@@ -4311,6 +4311,7 @@
     if (path === "/") return "news";
     const seg = path.split("/")[1];
     if (seg === "anleitungen") return "wissen";
+    if (seg === "kontoklassifizierung") return "konditionen";
     if (["vorlagen", "serienmails", "anfragen"].includes(seg)) return "vorlagen";
     return seg;
   };
@@ -4517,14 +4518,14 @@
     view.innerHTML = `
       <section class="hero hero--compact">
         <div class="hero__intro">
-          <h1>Unsere Konditionen</h1>
-          <p>Kontoklassifizierung auf einen Blick – mit den Originalunterlagen zum Download.</p>
+          <h1>Kontoklassifizierung</h1>
+          <p>Base Accounts, Net New Business und Existing Business auf einen Blick – mit Prüfhilfe und Originalunterlage zum Download.</p>
         </div>
       </section>
 
       <section class="kd-section" id="klassifizierung">
         <div class="kd-head">
-          <h2 class="feed__title">Kontoklassifizierung</h2>
+          <h2 class="feed__title">So werden Konten eingeordnet</h2>
           <a class="btn btn--secondary" href="content/konditionen/Kontoklassifizierung_SOWESPOKE_v3.pdf" target="_blank" rel="noopener">${ICONS.download} PDF</a>
         </div>
         <p class="kd-lead">Base Accounts, Net New Business und Existing Business. Die Klassifizierung erfolgt immer auf Account-Ebene – ob die Agentur neu akquiriert wurde oder bereits im Bestand ist, spielt keine Rolle.</p>
@@ -4682,7 +4683,7 @@
       renderStandaloneTemplateDetail(path.slice("/vorlagen/".length));
     } else if (path === "/vorlagen") {
       renderTemplates(params.get("q") || "", params.get("t") || "mail");
-    } else if (path === "/konditionen") {
+    } else if (path === "/kontoklassifizierung" || path === "/konditionen") {
       renderKonditionen();
     } else if (path.startsWith("/anleitungen/")) {
       renderGuideDetail(decodeURIComponent(path.slice("/anleitungen/".length)));
