@@ -391,6 +391,20 @@ const PRESENTATIONS = [
     // Upload-Tag.
     date: "2026-10-05", dateKnown: true,
     docType: "Saisonal",
+    // Aufzeichnung des gemeinsamen Webinars (2026-10-14, Nutzer-Wunsch:
+    // "Video neben passende Folie, zum Herunterladen"). Das Webinar-Deck
+    // "#retailreadiness 2026" liegt nicht als eigenes PDF vor; Folien wie
+    // "Prioritise Audience and Shopping Ads…" und "AI adoption is widespread
+    // across EMEA" stammen aus diesem Deck. Komprimiert auf 720p/8 fps,
+    // weil Cloudflare Pages max. 25 MB pro Datei ausliefert.
+    video: {
+      file: "content/videos/Webinar_RetailReadiness2026_2026-09-17.mp4",
+      title: "Webinar-Aufzeichnung: #retailreadiness 2026 – Planning for peak success",
+      date: "2026-09-17",
+      duration: "54 Min.",
+      size: "22 MB",
+      note: "Gemeinsames Webinar mit Microsoft Advertising. Teile der Webinar-Folien stammen aus dieser Präsentation; zum Schluss stellt Tracking Expert serverseitiges Tracking vor.",
+    },
     summaryDE: "Microsoft-Deck zur Retail-Saison 2026 mit Deutschland-Schwerpunkt in sechs Teilen: Wirtschaftsausblick (Inflation, Iran-Konflikt und Straße von Hormus, Konsumklima), KI in der Suche, Marktentwicklung mit Klick- und CPC-Verlauf in sechs EU-Märkten, Prognose Oktober–Dezember 2026 für Deutschland je Kategorie, Wert der Marke (Markenoffenheit, Discovery-Fenster) sowie Performance Max und Audience Ads mit Fallstudien. Abschließend ein Aktivierungskalender: Audience Ads ab Oktober, PMax durch die Spitze, Search/Shopping für die Kaufabsicht, Remarketing bis in den Januar.",
     customerBlurb: "Microsofts aktuelle Prognose für das Weihnachtsgeschäft 2026 in Deutschland: etwas weniger Suchanfragen, aber rund 5 % mehr Klicks als im Vorjahr — und Käufer:innen, die rund zehn Wochen offen für neue Marken bleiben. Gerne leiten wir daraus gemeinsam einen Zeitplan für eure Kampagnen ab.",
     keyFactsDE: [

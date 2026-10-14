@@ -1963,8 +1963,9 @@
     const docTypes = Object.keys(DOCTYPE_VAR);
 
     let items = sortPresentations(PRESENTATIONS, sort);
-    if (dt !== "all") items = items.filter((p) => p.docType === dt);
-    if (q) items = items.filter((p) => [p.title, p.summaryDE, p.docType].join(" ").toLowerCase().includes(q));
+    if (dt === "video") items = items.filter((p) => p.video);
+    else if (dt !== "all") items = items.filter((p) => p.docType === dt);
+    if (q) items = items.filter((p) => [p.title, p.summaryDE, p.docType, p.video ? "video webinar aufzeichnung " + p.video.title : ""].join(" ").toLowerCase().includes(q));
 
     // Trefferzahl je Doctype-Chip (SoWeSpike-Spezifikation B4.4, 2026-09-07)
     // — gegen die vollständige, ungefilterte PRESENTATIONS-Liste gezählt
@@ -1992,6 +1993,7 @@
         <nav class="tabs" aria-label="Art">
           <button type="button" class="tabs__item ${dt === "all" ? "is-active" : ""}" data-dt="all">Alle<span class="tabs__item-count">${PRESENTATIONS.length}</span></button>
           ${docTypes.map((d) => `<button type="button" class="tabs__item ${dt === d ? "is-active" : ""}" data-dt="${escapeHtml(d)}">${escapeHtml(d)}<span class="tabs__item-count">${docTypeCounts[d] || 0}</span></button>`).join("")}
+          <button type="button" class="tabs__item ${dt === "video" ? "is-active" : ""}" data-dt="video">Mit Video<span class="tabs__item-count">${PRESENTATIONS.filter((p) => p.video).length}</span></button>
         </nav>
         <label class="select-field">
           <span class="select-field__label">Sortieren</span>
@@ -2042,6 +2044,7 @@
             <span class="row__meta">
               ${p.dateKnown ? `<span class="row__date">— ${formatDate(p.date)}</span>` : ""}
               <span class="row__cat">${escapeHtml(p.docType)}</span>
+              ${p.video ? `<span class="row__video">${ICONS.play} Webinar-Video</span>` : ""}
             </span>
             <span class="row__title">${escapeHtml(p.title)}</span>
             <span class="row__summary">${escapeHtml(p.summaryDE.slice(0, 180))}${p.summaryDE.length > 180 ? "…" : ""}</span>
@@ -2102,6 +2105,14 @@
             </div>
           </div>
           <div class="detail__side">
+            ${p.video ? `
+            <div class="side-card video-card" id="video">
+              <span class="video-card__icon">${ICONS.play}</span>
+              <h2>${escapeHtml(p.video.title)}</h2>
+              <p class="video-card__meta">${formatDate(p.video.date)} · ${escapeHtml(p.video.duration)} · MP4, ${escapeHtml(p.video.size)}</p>
+              <p class="video-card__note">${escapeHtml(p.video.note)}</p>
+              <a class="btn btn--primary" href="${encodeURI(p.video.file)}" download>${ICONS.download} Video herunterladen</a>
+            </div>` : ""}
             ${renderMailGen(p.id, [], (p.mailSubjectDE || `Neu bei Microsoft Advertising: ${p.title}`), p.customerBlurb, p.emailHookDE)}
           </div>
         </div>
@@ -4002,6 +4013,12 @@
       kind: "Präsentation",
       title: p.title,
       snippet: p.summaryDE,
+      href: `#/praesentationen/${p.id}`,
+    }));
+    PRESENTATIONS.filter((p) => p.video).forEach((p) => presItems.push({
+      kind: "Video",
+      title: p.video.title,
+      snippet: p.video.note,
       href: `#/praesentationen/${p.id}`,
     }));
     const templateItems = STANDALONE_TEMPLATES.map((t) => ({

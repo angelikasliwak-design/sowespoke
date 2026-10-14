@@ -7,3 +7,6 @@ Thumbs.db
 
 # Newsletter-Rohdateien (persönliche Postfach-Exporte) nicht ins Repo
 content/newsletter/*.eml
+
+# Original-Aufzeichnungen (zu groß für Cloudflare Pages, max. 25 MB) – komprimierte Fassung liegt in content/videos/
+content/*Meeting Recording*.mp4

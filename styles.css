@@ -3616,3 +3616,14 @@ h1:focus, h2:focus, h3:focus { outline: none; }
 
 /* 2026-10-09 (Nutzer): Vorlagen nur kopieren – Versand-Elemente bleiben im DOM für wireMailGen, sind aber immer aus */
 .mailgen [hidden] { display: none !important; }
+
+/* 2026-10-14: Webinar-Video zu einer Präsentation (nur Download, kein Player) */
+.row__video { display: inline-flex; align-items: center; gap: 4px; color: var(--accent); font-weight: 600; }
+.row__video svg { width: 14px; height: 14px; }
+.video-card { display: grid; gap: 10px; margin-bottom: 20px; }
+.video-card__icon { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--grad-brand); color: #fff; }
+.video-card__icon svg { width: 20px; height: 20px; }
+.video-card h2 { margin: 0; font-size: 1.05rem; line-height: 1.35; }
+.video-card__meta { margin: 0; color: var(--ink-soft); font-size: .875rem; }
+.video-card__note { margin: 0; font-size: .9rem; line-height: 1.5; }
+.video-card .btn { justify-self: start; }
