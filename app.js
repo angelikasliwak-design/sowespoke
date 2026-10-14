@@ -24,7 +24,7 @@
     Allgemein: "--turquoise",
   };
 
-  const NAV_ICON = { konditionen: "scale", wissen: "book", anleitungen: "fileText", news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass", nutzer: "gauge", "microsoft-ads-kontopruefung": "crosshair" };
+  const NAV_ICON = { cockpit: "chartLine", konditionen: "scale", wissen: "book", anleitungen: "fileText", news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass", nutzer: "gauge", "microsoft-ads-kontopruefung": "crosshair" };
   railLinks.forEach((a) => {
     const iconSlot = a.querySelector(".rail__nav-icon");
     if (iconSlot) iconSlot.innerHTML = ICONS[NAV_ICON[a.dataset.nav]];
@@ -4699,6 +4699,8 @@
       renderStandaloneTemplateDetail(path.slice("/vorlagen/".length));
     } else if (path === "/vorlagen") {
       renderTemplates(params.get("q") || "", params.get("t") || "mail");
+    } else if (path === "/cockpit") {
+      window.SWS_COCKPIT.render(view, { escapeHtml, formatDate, ICONS }, params);
     } else if (path === "/kontoklassifizierung" || path === "/konditionen") {
       renderKonditionen();
     } else if (path.startsWith("/anleitungen/")) {
