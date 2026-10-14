@@ -2110,7 +2110,6 @@
               <span class="video-card__icon">${ICONS.play}</span>
               <h2>${escapeHtml(p.video.title)}</h2>
               <p class="video-card__meta">${formatDate(p.video.date)} · ${escapeHtml(p.video.duration)} · MP4, ${escapeHtml(p.video.size)}</p>
-              <p class="video-card__note">${escapeHtml(p.video.note)}</p>
               <a class="btn btn--primary" href="${encodeURI(p.video.file)}" download>${ICONS.download} Video herunterladen</a>
             </div>` : ""}
             ${renderMailGen(p.id, [], (p.mailSubjectDE || `Neu bei Microsoft Advertising: ${p.title}`), p.customerBlurb, p.emailHookDE)}
@@ -4018,7 +4017,7 @@
     PRESENTATIONS.filter((p) => p.video).forEach((p) => presItems.push({
       kind: "Video",
       title: p.video.title,
-      snippet: p.video.note,
+      snippet: `${formatDate(p.video.date)} · ${p.video.duration} · zum Herunterladen`,
       href: `#/praesentationen/${p.id}`,
     }));
     const templateItems = STANDALONE_TEMPLATES.map((t) => ({
