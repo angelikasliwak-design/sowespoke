@@ -3425,9 +3425,9 @@
     },
     account: {
       title: "Advertiser-Konto prüfen",
-      question: "Ist SOWESPOKE auf dem Advertiser-Konto als Direct Manager sichtbar?",
-      help: "Dabei den Namen SOWESPOKE und die MCC-Nummer kontrollieren.",
-      log: "SOWESPOKE ist Direct Manager des Advertiser-Kontos; MCC-Name und Nummer stimmen.",
+      question: "Ist auf dem Advertiser-Konto die Agentur als Direct Manager sichtbar?",
+      help: "Dabei den Namen der Agentur-MCC und ihre MCC-Nummer kontrollieren – nicht die SOWESPOKE-Daten.",
+      log: "Agentur ist Direct Manager des Advertiser-Kontos; MCC-Name und Nummer stimmen.",
     },
   };
   const msadsRecencyQuestion = (subject) => ({
@@ -3785,7 +3785,7 @@
       route = value;
       checks = [];
       atLeafCheck = value === "account";
-      levelQuestions = [MSADS_TOP_LEVEL_QUESTION[value], msadsRecencyQuestion("SOWESPOKE")];
+      levelQuestions = [MSADS_TOP_LEVEL_QUESTION[value], msadsRecencyQuestion(value === "account" ? "die Agentur" : "SOWESPOKE")];
       questionIndex = 0;
       stage = "manager";
       renderStage();

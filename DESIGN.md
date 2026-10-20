@@ -1023,3 +1023,5 @@ Nutzer-Feedback: die gedämpfte Gold-Variante (`--yellow-text`) wirkte an der St
 - **Don't** Emoji oder Icon-Fonts anstelle der gezeichneten Line-Art-Icons (`icons.js`) verwenden.
 - **Don't** neue Strukturmuster erfinden, ohne sie gegen das Editorial-Referenzlayout zu prüfen — Struktur ist bewusst von einem konkreten Vorbild abgeleitet, nicht frei gestaltet.
 - **Don't** die `--cat-*`-Token (Lila/Oliv/Rost/Dunkelblau) für neue sichtbare, sich wiederholende UI-Farbzyklen verwenden — sie sind keine echten Sowespoke-Marken-Farben (siehe Farb-Bereinigung 2026-08-14), ihre einzige verbliebene Verwendung ist die Konfetti-Textur einer Illustration in `icons.js`.
+
+**Prüfweg B (Einzelnes Advertiser-Konto): Agentur statt SOWESPOKE als Direct Manager (2026-10-20, Nutzer-Korrektur).** Auf Advertiser-Kontoebene muss die Agentur(-MCC) als Direct Manager sichtbar sein, nicht SOWESPOKE. Hauptfrage, Hilfetext, Protokollzeile und Reihenfolge-Frage („die Agentur“) in app.js angepasst; PDF-Lernset Seite 1, Route-B-Schritte 1–2 nachgezogen und neu gerendert. Prüfweg A unverändert (SOWESPOKE auf der Agentur-Shell, Agentur-MCC auf Kontoebene).
