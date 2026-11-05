@@ -1,0 +1,231 @@
+<!-- impeccable-disable design-system-color, design-system-radius -- standalone
+     print-to-PDF build source (wie content/microsoft-ads-kontopruefung/
+     lernset-source.html): erzeugt Kontoklassifizierung_SOWESPOKE_v3.pdf und
+     die Vorschau kontoklassifizierung.png. Inhalt 1:1 aus der bisherigen,
+     extern erstellten Folie (Stand 2026-10-02) übernommen, nur der Stil ist
+     neu (Tool-Factory-Stil, 2026-11-05). -->
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<title>Kontoklassifizierung — SOWESPOKE</title>
+<style>
+  @font-face { font-family: "Source Sans 3"; font-weight: 200 900; src: url("../../assets/fonts/SourceSans3-Variable.woff2") format("woff2"); }
+  @font-face { font-family: "Exo 2"; font-weight: 100 900; src: url("../../assets/fonts/Exo2-Variable.woff2") format("woff2"); }
+
+  /* Palette wie tokens.css (--c-tf-*) */
+  :root {
+    --petrol: #1F5E6A;
+    --petrol-deep: #19505B;
+    --petrol-tint: #E2ECEC;
+    --cream: #F3ECE1;
+    --card: #FBF8F3;
+    --line: #E6DED1;
+    --ink: #13242A;
+    --ink-60: #4A5A60;
+    --orange: #D9774B;
+    --orange-ink: #A8532C;
+    --orange-tint: #FBEDE4;
+    --orange-light: #F2A983;
+    --mono: "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+  }
+
+  /* 16:9-Folie, gleiches Format wie die bisherige Datei (960 × 540 pt) */
+  @page { size: 960pt 540pt; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: "Source Sans 3", "Segoe UI", sans-serif; color: var(--ink); background: #ccc; }
+
+  .slide {
+    position: relative;
+    width: 1280px;
+    height: 720px;
+    overflow: hidden;
+    background: var(--cream);
+  }
+
+  /* Kopf: Petrol-Band mit Kreis-Motiv */
+  .head {
+    position: relative;
+    height: 150px;
+    padding: 26px 56px 0;
+    background-color: var(--petrol);
+    background-image:
+      radial-gradient(circle at 90% 30%, transparent 0 118px, rgba(111, 163, 172, 0.55) 119px 126px, transparent 127px),
+      radial-gradient(circle at 90% 30%, var(--petrol-deep) 0 190px, transparent 191px);
+    border-bottom: 5px solid var(--orange);
+    color: #fff;
+  }
+  .eyebrow { font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--orange-light); }
+  .head h1 { margin: 8px 0 0; font-family: "Exo 2", sans-serif; font-weight: 900; font-size: 46px; line-height: 1; letter-spacing: -0.02em; text-transform: uppercase; }
+  .head p { margin: 8px 0 0; font-size: 17px; color: rgba(255, 255, 255, 0.86); }
+  .brand { position: absolute; right: 56px; top: 26px; display: flex; align-items: center; gap: 10px; }
+  .brand__mark { height: 34px; }
+  .brand__logo { height: 15px; }
+
+  .body { padding: 16px 56px 0; }
+
+  /* Drei Karten */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .card {
+    position: relative;
+    background: var(--card);
+    border-radius: 12px;
+    padding: 20px 18px 14px;
+    box-shadow: 0 1px 2px rgba(19, 36, 42, 0.05), 0 10px 22px -14px rgba(19, 36, 42, 0.28);
+    font-size: 13.4px;
+    line-height: 1.4;
+    color: var(--ink-60);
+  }
+  .card::before { content: ""; position: absolute; top: 0; left: 20px; width: 52px; height: 5px; border-radius: 0 0 3px 3px; background: var(--ink); }
+  .card h2 { margin: 0 0 6px; font-family: "Exo 2", sans-serif; font-weight: 900; font-size: 21px; line-height: 1.1; color: var(--ink); text-transform: uppercase; letter-spacing: -0.01em; }
+  .card p { margin: 0; }
+  .card .sub { font-size: 12px; margin: -2px 0 4px; }
+  .card--new::before { background: var(--orange); }
+  .card--new h2 { color: var(--orange-ink); }
+  .card--existing::before { background: var(--petrol); }
+  .card--existing h2 { color: var(--petrol); }
+
+  /* Hinweiszeile */
+  .callout {
+    margin-top: 12px;
+    display: flex; align-items: center; gap: 12px;
+    background: var(--ink);
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-size: 15px; font-weight: 700;
+    border-left: 6px solid var(--orange);
+  }
+
+  /* Zeitstrahl */
+  .timeline {
+    margin-top: 12px;
+    background: var(--card);
+    border-radius: 12px;
+    padding: 12px 20px 8px;
+    box-shadow: 0 1px 2px rgba(19, 36, 42, 0.05), 0 10px 22px -14px rgba(19, 36, 42, 0.28);
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    column-gap: 12px;
+  }
+  .timeline h3 { margin: 0; font-family: "Exo 2", sans-serif; font-weight: 900; font-size: 18px; text-transform: uppercase; align-self: start; }
+  .track { position: relative; height: 54px; }
+  .axis { position: absolute; left: 0; right: 0; top: 30px; height: 1.5px; background: #B9B1A4; }
+  .tick { position: absolute; top: 26px; width: 9px; height: 9px; margin-left: -4.5px; border-radius: 50%; background: #8E877C; }
+  .tick-label { position: absolute; font-size: 12px; font-weight: 700; transform: translateX(-50%); white-space: nowrap; }
+  .tick-label--up { top: 6px; }
+  .tick-label--down { top: 38px; }
+  .half { position: absolute; top: 0; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-60); transform: translateX(-50%); }
+
+  .row { display: contents; }
+  .row__label { font-size: 13px; align-self: center; display: flex; gap: 10px; }
+  .row__label b { font-family: "Exo 2", sans-serif; font-weight: 800; width: 76px; }
+  .row__label span { color: var(--ink-60); }
+  .lane { position: relative; height: 25px; margin: 2px 0; }
+  .lane::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--line); }
+  .bar {
+    position: absolute; top: 0; bottom: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12.5px; font-weight: 700; color: #fff; white-space: nowrap;
+  }
+  .bar--new { background: var(--orange); color: var(--ink); }
+  .bar--existing { background: var(--petrol); }
+  .bar--base { background: var(--ink); }
+  .dot { position: absolute; top: 50%; width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; border-radius: 50%; background: #fff; border: 2.5px solid var(--orange); z-index: 1; }
+  .dot--existing { border-color: var(--petrol); }
+  .divider { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(19, 36, 42, 0.18); }
+  .note { font-size: 10.5px; color: var(--ink-60); text-align: right; grid-column: 2; margin-top: -1px; }
+
+  /* Kurzlogik */
+  .logic {
+    margin-top: 10px;
+    display: flex; align-items: center; gap: 18px;
+    background: var(--card);
+    border-radius: 12px;
+    padding: 8px 20px;
+    box-shadow: 0 1px 2px rgba(19, 36, 42, 0.05), 0 10px 22px -14px rgba(19, 36, 42, 0.28);
+    font-size: 14px;
+  }
+  .logic__title { font-family: "Exo 2", sans-serif; font-weight: 900; font-size: 17px; text-transform: uppercase; color: var(--orange-ink); width: 128px; }
+  .logic__arrow { color: var(--orange); font-size: 20px; font-weight: 700; }
+  .logic__q { line-height: 1.3; color: var(--ink-60); }
+  .logic__q .yes { color: var(--orange-ink); font-weight: 700; margin-right: 40px; }
+  .logic__q .no { color: var(--petrol); font-weight: 700; }
+  .logic b { color: var(--ink); }
+
+  .foot { margin: 7px 56px 0; font-size: 12px; line-height: 1.4; color: var(--ink-60); }
+  .foot b { color: var(--ink); }
+</style>
+</head>
+<body>
+<section class="slide">
+  <header class="head">
+    <div class="eyebrow">Microsoft Advertising</div>
+    <h1>Kontoklassifizierung</h1>
+    <p>Base Accounts, Net New Business und Existing Business</p>
+    <div class="brand"><img class="brand__mark" src="../../assets/brand/sowespoke-zeichen.svg" alt="" /><img class="brand__logo" src="../../assets/brand/sowespoke-schriftzug.svg" alt="So We Spoke" /></div>
+  </header>
+
+  <div class="body">
+    <div class="cards">
+      <div class="card">
+        <h2>Base Accounts</h2>
+        <p class="sub">(= Base Business)</p>
+        <p>Ausgangsbestand: Konten, die zum Stichtag 30.06.2026 bei den Agenturen aktiv waren. Danach werden alle zwischen den beiden Stichtagen neu verknüpften Accounts am 01.01. bzw. 01.07. zu Base.</p>
+      </div>
+      <div class="card card--new">
+        <h2>Net New Business</h2>
+        <p>Neu verknüpft zwischen zwei Stichtagen. Bei Verknüpfung &lt; 3 Monate alt UND Kundendomäne zuvor nicht auf Microsoft Advertising aktiv. Bis zum nächsten Stichtag Net New.</p>
+      </div>
+      <div class="card card--existing">
+        <h2>Existing Business</h2>
+        <p>Neu verknüpft zwischen zwei Stichtagen, ohne die Net-New-Kriterien zu erfüllen, z. B. Konto ≥ 3 Monate alt oder Kundendomäne bereits aktiv. Bis zum nächsten Stichtag Existing.</p>
+      </div>
+    </div>
+
+    <div class="callout">Am 01.01. und 01.07. werden alle zwischen den beiden Stichtagen neu verknüpften Accounts zu Base.</div>
+
+    <!-- Positionen in % der Zeitachse (31.12. Vorjahr = 0 %, rechter Rand = 100 %),
+         Proportionen aus der bisherigen Folie übernommen -->
+    <div class="timeline">
+      <h3>Zeitstrahl</h3>
+      <div class="track">
+        <span class="half" style="left:27%">1. Halbjahr</span>
+        <span class="half" style="left:70%">2. Halbjahr</span>
+        <div class="axis"></div>
+        <span class="tick" style="left:0%"></span><span class="tick-label tick-label--up" style="left:0%">31.12.</span>
+        <span class="tick" style="left:3.9%"></span><span class="tick-label tick-label--down" style="left:3.9%">01.01.</span>
+        <span class="tick" style="left:46.3%"></span><span class="tick-label tick-label--up" style="left:46.3%">30.06.</span>
+        <span class="tick" style="left:90%"></span><span class="tick-label tick-label--up" style="left:90%">31.12.</span>
+      </div>
+
+      <div class="row__label"><b>Beispiel A</b><span>Verknüpft 15.02.</span></div>
+      <div class="lane"><span class="divider" style="left:46.7%"></span><span class="dot" style="left:13.9%"></span><span class="bar bar--new" style="left:13.9%;width:32.8%">Net New Business</span><span class="bar bar--base" style="left:46.7%;right:0">Base ab 01.07.</span></div>
+
+      <div class="row__label"><b>Beispiel B</b><span>Verknüpft 15.02.</span></div>
+      <div class="lane"><span class="divider" style="left:46.7%"></span><span class="dot dot--existing" style="left:13.9%"></span><span class="bar bar--existing" style="left:13.9%;width:32.8%">Existing Business</span><span class="bar bar--base" style="left:46.7%;right:0">Base ab 01.07.</span></div>
+
+      <div class="row__label"><b>Beispiel C</b><span>Verknüpft 15.08.</span></div>
+      <div class="lane"><span class="divider" style="left:46.7%"></span><span class="dot" style="left:57.2%"></span><span class="bar bar--new" style="left:57.2%;width:32.8%">Net New Business</span><span class="bar bar--base" style="left:90%;right:0">Base</span></div>
+
+      <div class="row__label"><b>Beispiel D</b><span>Verknüpft 15.08.</span></div>
+      <div class="lane"><span class="divider" style="left:46.7%"></span><span class="dot dot--existing" style="left:57.2%"></span><span class="bar bar--existing" style="left:57.2%;width:32.8%">Existing Business</span><span class="bar bar--base" style="left:90%;right:0">Base</span></div>
+
+      <div class="note">Base ab 01.01.</div>
+    </div>
+
+    <div class="logic">
+      <span class="logic__title">Kurzlogik</span>
+      <b>Neu verknüpft</b>
+      <span class="logic__arrow">→</span>
+      <span class="logic__q">&lt; 3 Monate UND Domäne zuvor inaktiv?<br /><span class="yes">Ja: Net New</span><span class="no">Nein: Existing</span></span>
+      <span class="logic__arrow">→</span>
+      <b>Nächster Stichtag 01.01. / 01.07.: Base</b>
+    </div>
+  </div>
+
+  <p class="foot">Ob die Agentur neu akquiriert wurde oder bereits im Bestand ist, spielt für Net New / Existing keine Rolle.<br /><b>Die Klassifizierung erfolgt immer auf Account-Ebene.</b></p>
+</section>
+</body>
+</html>

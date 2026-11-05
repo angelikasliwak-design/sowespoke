@@ -4542,7 +4542,7 @@
       <section class="kd-section" id="klassifizierung">
         <div class="kd-head">
           <h2 class="feed__title">So werden Konten eingeordnet</h2>
-          <a class="btn btn--secondary" href="content/konditionen/Kontoklassifizierung_SOWESPOKE_v3.pdf" target="_blank" rel="noopener">${ICONS.download} PDF</a>
+          <a class="btn btn--secondary" href="content/konditionen/Kontoklassifizierung_SOWESPOKE_v3.pdf?v=20261105" target="_blank" rel="noopener">${ICONS.download} PDF</a>
         </div>
         <p class="kd-lead">Base Accounts, Net New Business und Existing Business. Die Klassifizierung erfolgt immer auf Account-Ebene – ob die Agentur neu akquiriert wurde oder bereits im Bestand ist, spielt keine Rolle.</p>
         <div class="kd-grid kd-grid--3">
@@ -4562,8 +4562,8 @@
             <p class="kd-result" id="kk-result" aria-live="polite"></p>
             <p class="kd-note">Prüfhilfe nach der Kurzlogik der Übersicht – maßgeblich bleibt die Kooperationsvereinbarung.</p>
           </div>
-          <button type="button" class="kd-card kd-preview" data-zoom="content/konditionen/kontoklassifizierung.png" data-zoom-pdf="content/konditionen/Kontoklassifizierung_SOWESPOKE_v3.pdf" aria-label="Übersicht Kontoklassifizierung vergrößern">
-            <img src="content/konditionen/kontoklassifizierung.png" alt="Übersicht Kontoklassifizierung mit Zeitstrahl und Beispielen" loading="lazy" />
+          <button type="button" class="kd-card kd-preview" data-zoom="content/konditionen/kontoklassifizierung.png?v=20261105" data-zoom-pdf="content/konditionen/Kontoklassifizierung_SOWESPOKE_v3.pdf?v=20261105" aria-label="Übersicht Kontoklassifizierung vergrößern">
+            <img src="content/konditionen/kontoklassifizierung.png?v=20261105" alt="Übersicht Kontoklassifizierung mit Zeitstrahl und Beispielen" loading="lazy" />
             <span class="kd-zoom-hint">${ICONS.search} Zum Vergrößern klicken</span>
           </button>
         </div>
