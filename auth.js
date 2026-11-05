@@ -8,17 +8,17 @@
   const ERROR_MESSAGES = {
     domain: "Zugriff nur mit einem @sowespoke.com- oder @sowespoke.de-Konto.",
     state: "Sitzung abgelaufen — bitte erneut versuchen.",
-    google: "Anmeldung abgebrochen.",
+    microsoft: "Anmeldung abgebrochen.",
     oauth: "Anmeldung fehlgeschlagen — bitte erneut versuchen.",
   };
 
-  const googleBtn = document.getElementById("google-btn");
-  if (googleBtn) {
+  const loginBtn = document.getElementById("login-btn");
+  if (loginBtn) {
     const next = qs("next");
     if (next) {
-      const url = new URL(googleBtn.href, location.origin);
+      const url = new URL(loginBtn.href, location.origin);
       url.searchParams.set("next", next);
-      googleBtn.href = url.pathname + url.search;
+      loginBtn.href = url.pathname + url.search;
     }
   }
 

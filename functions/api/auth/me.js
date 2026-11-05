@@ -1,7 +1,7 @@
 /**
  * GET /api/auth/me — liefert die E-Mail der eingeloggten Session, für den
  * kleinen Profil-Bereich unten in der Sidebar. Kein Name/Foto/Rolle
- * verfügbar (Google liefert nur die verifizierte E-Mail), daher zeigt die
+ * verfügbar (die Anmeldung liefert nur die verifizierte E-Mail), daher zeigt die
  * UI nur die E-Mail plus einen generischen Platzhalter.
  * `isAdmin` (2026-08-13) kommt aus derselben festen Liste wie beim
  * Ideenboard-Löschen (`functions/_lib/auth.js`) — einzige Stelle, die

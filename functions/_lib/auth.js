@@ -26,12 +26,12 @@ export function isAdminEmail(email) {
   return ADMIN_EMAILS.includes(String(email || "").trim().toLowerCase());
 }
 
-function b64url(bytes) {
+export function b64url(bytes) {
   const str = btoa(String.fromCharCode(...new Uint8Array(bytes)));
   return str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-function b64urlDecode(str) {
+export function b64urlDecode(str) {
   str = str.replace(/-/g, "+").replace(/_/g, "/");
   while (str.length % 4) str += "=";
   const bin = atob(str);

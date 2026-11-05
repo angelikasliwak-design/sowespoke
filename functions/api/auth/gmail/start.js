@@ -1,7 +1,7 @@
 /**
  * GET /api/auth/gmail/start — separater, erst bei Bedarf ausgelöster
  * Zustimmungs-Flow für den gmail.send-Scope (Phase B, 2026-08-14). Bewusst
- * NICHT Teil des normalen Logins (functions/api/auth/google/*) — der
+ * NICHT Teil des normalen Logins (seit 2026-11-05 Microsoft, functions/api/auth/microsoft/*) — der
  * erweiterte Versand-Scope wird nur angefragt, wenn jemand im Mail-
  * Generator aktiv auf "Mit Gmail verbinden" klickt, nicht bei jedem Login.
  *
@@ -9,7 +9,7 @@
  * ist eine Hash-Router-SPA, ein voller Redirect zurück würde den aktuellen
  * Hash-Pfad verlieren, da der Browser das Fragment bei einer neuen
  * Navigation nicht an den Server sendet und die Middleware/next-Logik
- * (siehe functions/api/auth/google/start.js) hier ins Leere liefe.
+ * (früher functions/api/auth/google/start.js) hier ins Leere liefe.
  */
 
 import { verifySessionToken, getCookie } from "../../../_lib/auth.js";

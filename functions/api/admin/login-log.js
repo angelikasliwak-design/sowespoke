@@ -3,7 +3,7 @@
  * (2026-08-14, Nutzer-Wunsch: Sichtbarkeit über die Nutzung). Nur für
  * Admins (gleiche feste Liste wie beim Ideenboard-Löschen, functions/
  * _lib/auth.js) — bewusst kein allgemeines Rollensystem, nur dieser eine
- * Anwendungsfall. Die Einträge selbst werden in functions/api/auth/google/
+ * Anwendungsfall. Die Einträge selbst werden in functions/api/auth/microsoft/
  * callback.js geschrieben (ein Eintrag pro Person, aktualisiert bei jedem
  * Login), diese Datei liest sie nur.
  */

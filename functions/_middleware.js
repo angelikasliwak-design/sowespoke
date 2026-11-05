@@ -2,8 +2,8 @@
  * Cloudflare Pages Middleware — läuft vor jedem Request an die Seite
  * (Seiten UND /api/*) und ersetzt die frühere Cloudflare-Access-Sperre.
  * Ohne gültige Session wird auf /login umgeleitet (bzw. bei /api/* mit
- * 401 geantwortet). Login läuft über Google OAuth (functions/api/auth/google/*),
- * erfordert die Secrets GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET und SESSION_SECRET.
+ * 401 geantwortet). Login läuft über Microsoft Entra ID (functions/api/auth/microsoft/*, seit 2026-11-05),
+ * erfordert die Secrets MICROSOFT_CLIENT_ID, MICROSOFT_CLIENT_SECRET, MICROSOFT_TENANT_ID und SESSION_SECRET.
  */
 
 import { verifySessionToken, getCookie } from "./_lib/auth.js";
@@ -35,7 +35,7 @@ function isPublicPath(pathname) {
 
 // "Zuletzt aktiv"-Tracking (2026-08-14, Nutzer-Wunsch: echte Nutzung sehen,
 // nicht nur Login-Zeitpunkte). Aktualisiert denselben LOGIN_LOG-Eintrag wie
-// functions/api/auth/google/callback.js, aber höchstens einmal pro Person
+// functions/api/auth/microsoft/callback.js, aber höchstens einmal pro Person
 // und Tag — ein Cookie merkt sich, ob heute schon aktualisiert wurde, damit
 // nicht jeder einzelne Seiten-/Asset-/API-Aufruf einen KV-Zugriff auslöst.
 // Läuft über context.waitUntil() NACH dem Zurückgeben der Antwort, damit
