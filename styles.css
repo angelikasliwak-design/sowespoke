@@ -3886,3 +3886,84 @@ body:has(.shell__main:not(.has-stage)) .topbar { background: var(--c-tf-petrol);
 .search__control, .search input,
 .mailgen input, .mailgen textarea, .mailgen select,
 .nl-field input, select { background-color: white; }
+
+/* ==========================================================================
+   Neues Sowespoke-Logo + mehr Orange (2026-11-05, Nutzerin: neues Logo und
+   Schriftzug verwenden, "mehr Orange im Intranet"). Orange = Logo-Orange.
+   ========================================================================== */
+/* -- Kopfleiste: Zeichen + Schriftzug, darunter Bereichsname wie "TOOL FACTORY" */
+.topbar__brand { gap: 12px; }
+.topbar__mark { height: 42px; width: auto; flex: none; }
+.topbar__wordmark { display: flex; flex-direction: column; gap: 5px; }
+.topbar__logo { height: 19px; width: auto; }
+.topbar__title {
+  padding-left: 0;
+  border-left: 0;
+  font-size: 0.62rem;
+  line-height: 1;
+  letter-spacing: 0.24em;
+  color: rgba(255, 255, 255, 0.78);
+}
+@media (max-width: 767px) {
+  .topbar__mark { height: 28px; }
+  .topbar__logo { height: 12px; }
+}
+
+/* -- Fußzeile: Schriftzug links, Text rechts, Orange-Kante ---------------- */
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  border-top-color: var(--c-tf-orange);
+  text-align: left;
+}
+.site-footer__logo { height: 14px; width: auto; }
+@media (min-width: 768px) {
+  .site-footer { padding-inline: max(var(--space-6), calc((100% - var(--container)) / 2 + var(--space-6))); }
+}
+
+/* -- Orange-Akzente ------------------------------------------------------ */
+/* Aktiver Menüpunkt + Hover-Linie */
+.rail__nav a::after { background: color-mix(in srgb, var(--c-tf-orange) 45%, white); }
+.rail__nav a[aria-current="page"]::after { background: var(--c-tf-orange); }
+.subnav__children a[aria-current="page"] { background: var(--c-tf-orange); color: var(--c-tf-ink); }
+/* Aktiver Filter: Orange mit dunkler Schrift */
+.tabs__item.is-active { background: var(--c-tf-orange); border-color: var(--c-tf-orange); color: var(--c-tf-ink); }
+.tabs__item.is-active .tabs__item-count { background: color-mix(in srgb, var(--c-tf-ink) 14%, transparent); color: var(--c-tf-ink); }
+/* Such-Knopf */
+.search__submit { background: var(--c-tf-orange); color: var(--c-tf-ink); }
+.search__submit:hover { background: color-mix(in srgb, var(--c-tf-orange) 85%, black); }
+/* Neu-Markierung */
+.card-badge, .card-badge--new { background: var(--c-tf-orange-tint); color: var(--c-tf-orange-ink); }
+/* Kategorie in den Karten-Metadaten */
+.row__cat { color: var(--c-tf-orange-ink); font-weight: 700; }
+/* Text-Links und Mehr-Links */
+.countdown__toggle, .countdown-card__link, .event-row__link, .kb-article a, .kd-note a, .nl-preview a, .guide-more a:hover { color: var(--c-tf-orange-ink); }
+.row__video { color: var(--c-tf-orange-ink); }
+/* Pfeil in Karten beim Darüberfahren */
+.row:hover .row__arrow { color: var(--c-tf-orange-ink); }
+/* Kategorie-Pille auf dem Band: Orange mit dunkler Schrift */
+.has-stage .detail__meta .chip {
+  background: var(--c-tf-orange) !important;
+  border-color: var(--c-tf-orange);
+  color: var(--c-tf-ink);
+}
+/* Hervorgehobene Wörter in Hero-Titeln orange wie "WE" im Schriftzug */
+.hero mark, .hero__intro h1 mark { color: var(--c-tf-orange-light); }
+/* Ring im Band im hellen Petrol des Logo-Zeichens */
+.page-bg::after {
+  background:
+    radial-gradient(circle at 80% 26%, transparent 0 190px, color-mix(in srgb, var(--c-tf-ring) 55%, transparent) 191px 203px, transparent 204px),
+    radial-gradient(circle at 80% 26%, var(--c-tf-petrol-deep) 0 290px, transparent 291px);
+}
+@media (max-width: 767px) {
+  .page-bg::after {
+    background:
+      radial-gradient(circle at 95% 12%, transparent 0 110px, color-mix(in srgb, var(--c-tf-ring) 50%, transparent) 111px 119px, transparent 120px),
+      radial-gradient(circle at 95% 12%, var(--c-tf-petrol-deep) 0 170px, transparent 171px);
+  }
+}
+/* Avatar-Kreis mit Orange-Rand */
+.topbar__profile .rail__profile-avatar { border-color: var(--c-tf-orange); }

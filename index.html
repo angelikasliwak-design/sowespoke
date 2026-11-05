@@ -8,9 +8,9 @@
 <meta name="robots" content="noindex, nofollow" />
 <link rel="icon" type="image/png" href="assets/brand/logo-sowespoke-vertical (1).png" />
 <!-- ?v= erzwingt nach jedem Deploy frische CSS/JS-Dateien im Browser (2026-10-06); bei Änderungen hochzählen -->
-<link rel="stylesheet" href="tokens.css?v=20261105-1" />
-<link rel="stylesheet" href="assets/fonts/fonts.css?v=20261105-1" />
-<link rel="stylesheet" href="styles.css?v=20261105-1" />
+<link rel="stylesheet" href="tokens.css?v=20261105-2" />
+<link rel="stylesheet" href="assets/fonts/fonts.css?v=20261105-2" />
+<link rel="stylesheet" href="styles.css?v=20261105-2" />
 </head>
 <body>
 
@@ -19,8 +19,12 @@
 <header class="topbar">
   <div class="topbar__inner">
   <a class="topbar__brand" href="#/" aria-label="Sowespoke Wissenszentrum, zur Startseite">
-    <img class="topbar__logo" src="assets/brand/logo-sws-white.webp" alt="SWS Alliance" />
-    <span class="topbar__title">Wissenszentrum</span>
+    <!-- Neues Sowespoke-Logo (2026-11-05): Zeichen + Schriftzug, hell für das Petrol-Band -->
+    <img class="topbar__mark" src="assets/brand/sowespoke-zeichen.svg" alt="" />
+    <span class="topbar__wordmark">
+      <img class="topbar__logo" src="assets/brand/sowespoke-schriftzug.svg" alt="So We Spoke" />
+      <span class="topbar__title">Wissenszentrum</span>
+    </span>
   </a>
   <div class="rail__profile topbar__profile" id="rail-profile"></div>
   </div>
@@ -59,6 +63,7 @@
     <div class="page-bg" aria-hidden="true"></div>
     <main id="view" class="view" tabindex="-1"></main>
     <footer class="site-footer">
+      <img class="site-footer__logo" src="assets/brand/sowespoke-schriftzug.svg" alt="So We Spoke" />
       <p>Internes Wissenszentrum · nur für Mitarbeiter:innen · Zugriff auf Firmen-E-Mail beschränkt · <a href="#" id="logout-link">Abmelden</a></p>
     </footer>
   </div>
@@ -70,16 +75,16 @@
      Nur für die Performance-Chart-Karte auf Case-Study-Detailseiten
      gebraucht, deshalb erst kurz vor app.js statt bei den Datendateien. -->
 <script src="assets/vendor/chart.umd.min.js"></script>
-<script src="data.js?v=20261105-1"></script>
-<script src="presentations-data.js?v=20261105-1"></script>
-<script src="case-studies-data.js?v=20261105-1"></script>
-<script src="tickets-data.js?v=20261105-1"></script>
-<script src="microsoft-requests-data.js?v=20261105-1"></script>
-<script src="konditionen-data.js?v=20261105-1"></script>
-<script src="calendar-events.js?v=20261105-1"></script>
-<script src="fun-facts.js?v=20261105-1"></script>
-<script src="kb-guides-data.js?v=20261105-1"></script>
-<script src="icons.js?v=20261105-1"></script>
-<script src="app.js?v=20261105-1"></script>
+<script src="data.js?v=20261105-2"></script>
+<script src="presentations-data.js?v=20261105-2"></script>
+<script src="case-studies-data.js?v=20261105-2"></script>
+<script src="tickets-data.js?v=20261105-2"></script>
+<script src="microsoft-requests-data.js?v=20261105-2"></script>
+<script src="konditionen-data.js?v=20261105-2"></script>
+<script src="calendar-events.js?v=20261105-2"></script>
+<script src="fun-facts.js?v=20261105-2"></script>
+<script src="kb-guides-data.js?v=20261105-2"></script>
+<script src="icons.js?v=20261105-2"></script>
+<script src="app.js?v=20261105-2"></script>
 </body>
 </html>
