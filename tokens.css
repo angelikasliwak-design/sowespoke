@@ -109,9 +109,13 @@
   --c-tf-line:        #E6DED1; /* Haarlinien auf Creme */
   --c-tf-ink:         #13242A; /* Text, Fußzeile, dunkle Flächen */
   --c-tf-ink-60:      #4A5A60; /* Nebentext */
-  --c-tf-orange:      #EF6A2E; /* Hauptaktion ("Top up tokens"), nur mit dunkler Schrift */
-  --c-tf-orange-ink:  #B3441A; /* Orange als Text/Fläche mit weißer Schrift (~5:1) */
-  --c-tf-orange-tint: #FCE6DA;
+  /* Orange seit 2026-11-05 aus dem neuen Sowespoke-Logo ("WE", Halbkreis im
+     Zeichen: #D9774B), ersetzt das aus dem Screenshot abgelesene #EF6A2E. */
+  --c-tf-orange:      #D9774B; /* Flächen, Linien, große Schrift; auf Hell nur mit dunkler Schrift */
+  --c-tf-orange-ink:  #A8532C; /* Orange als Fließtext auf Creme/Karte (~5:1) bzw. Fläche mit weißer Schrift */
+  --c-tf-orange-tint: #FBEDE4; /* orange-ink darauf 4.7:1 */
+  --c-tf-orange-light: #F2A983; /* Orange als Schrift auf Petrol (3.8:1, nur große Titel) */
+  --c-tf-ring:        #6FA3AC; /* heller Petrol-Ton aus dem Logo-Zeichen */
   --c-tf-gold:        #E2AE4C; /* Linie unter aktivem Menüpunkt, Fußzeilen-Kante */
   --c-tf-gold-tint:   #F8EBCD;
 }
