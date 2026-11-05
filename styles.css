@@ -3627,3 +3627,262 @@ h1:focus, h2:focus, h3:focus { outline: none; }
 .video-card__meta { margin: 0; color: var(--ink-soft); font-size: .875rem; }
 .video-card__note { margin: 0; font-size: .9rem; line-height: 1.5; }
 .video-card .btn { justify-self: start; }
+
+
+/* ==========================================================================
+   Tool-Factory-Stil (2026-11-05, Nutzer: "Stil vom Intranet an diese UI
+   anpassen", Screenshots der SWS Tool Factory). Letzte Schicht, überschreibt
+   die SWS-2.0-Angleichung oben. Kurzfassung:
+   - Petrol ist die Hauptfarbe (Band, Icon-Kacheln, aktive Zustände, Links),
+     Orange nur für die Hauptaktion (.btn--primary, dunkle Schrift), Gold als
+     Linie (aktiver Menüpunkt, Fußzeilen-Kante).
+   - Creme-Seitengrund, gebrochen weiße Karten ohne Rand mit weichem Schatten.
+   - Band einfarbig Petrol mit großem dunklem Kreis + hellem Ring rechts.
+   - Kopfleiste liegt auf dem Band (weißes Logo), Fußzeile dunkel.
+   - Hero-Titel in Versalien, Exo 2 Black; kleine Labels in Monospace.
+   Die alten Token-Namen (--c-pink-*, --c-turquoise …) werden hier auf die
+   Tool-Factory-Werte umgebogen, damit alle älteren Regeln mitziehen.
+   ========================================================================== */
+:root {
+  /* Primitive umbiegen: altes Magenta → Petrol, Türkis → Petrol, Grund → Creme */
+  --c-pink-500: var(--c-tf-petrol);
+  --c-pink-700: var(--c-tf-petrol-deep);
+  --c-pink-tint: var(--c-tf-petrol-tint);
+  --c-pink-100: var(--c-tf-petrol-tint);
+  --c-turquoise: var(--c-tf-petrol);
+  --c-turquoise-700: var(--c-tf-petrol-deep);
+  --c-paper: var(--c-tf-cream);
+  --c-surface: var(--c-tf-card);
+  --c-line: var(--c-tf-line);
+  --c-line-dashed: var(--c-tf-line);
+  --c-ink: var(--c-tf-ink);
+  --c-ink-60: var(--c-tf-ink-60);
+  --c-yellow-500: var(--c-tf-gold);
+  --c-yellow-100: var(--c-tf-gold-tint);
+
+  /* Rollen */
+  --accent: var(--c-tf-petrol);
+  --accent-ink: var(--c-tf-petrol);
+  --accent-tint: var(--c-tf-petrol-tint);
+  --on-accent: var(--c-surface);
+  --turquoise-text: var(--c-tf-orange-ink); /* zweite Kategoriefarbe neben Petrol */
+  --paper-raised: var(--c-tf-card);
+
+  --grad-brand: linear-gradient(135deg, var(--c-tf-petrol) 0%, var(--c-tf-petrol-deep) 100%);
+  --grad-band: linear-gradient(var(--c-tf-petrol), var(--c-tf-petrol));
+
+  --font-mono: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, "Liberation Mono", monospace;
+  --radius: 14px;
+  --radius-btn: 8px;
+  --card-shadow: 0 1px 2px color-mix(in srgb, var(--c-tf-ink) 5%, transparent), 0 10px 24px -14px color-mix(in srgb, var(--c-tf-ink) 22%, transparent);
+  --card-shadow-hover: 0 2px 4px color-mix(in srgb, var(--c-tf-ink) 6%, transparent), 0 18px 34px -16px color-mix(in srgb, var(--c-tf-ink) 30%, transparent);
+}
+
+body { background: var(--c-tf-cream); color: var(--c-tf-ink); }
+
+/* -- Kopfleiste auf dem Band ------------------------------------------- */
+.topbar {
+  background: var(--c-tf-petrol);
+  border-bottom: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.topbar__brand { color: rgba(255, 255, 255, 0.82); }
+.topbar__title {
+  border-left-color: rgba(255, 255, 255, 0.28);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.topbar__profile .rail__profile-info strong { color: white; }
+.topbar__profile .rail__profile-info span { color: rgba(255, 255, 255, 0.7); }
+.topbar__profile .rail__profile-avatar {
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  color: white;
+}
+
+/* -- Band: einfarbig Petrol, großer dunkler Kreis + heller Ring rechts --- */
+.page-bg {
+  background-color: var(--c-tf-petrol);
+  background-image: none;
+}
+.page-bg::after {
+  inset: 0;
+  background:
+    radial-gradient(circle at 80% 20%, transparent 0 190px, rgba(255, 255, 255, 0.16) 191px 203px, transparent 204px),
+    radial-gradient(circle at 80% 20%, var(--c-tf-petrol-deep) 0 290px, transparent 291px);
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+@media (max-width: 767px) {
+  .page-bg::after {
+    background:
+      radial-gradient(circle at 95% 10%, transparent 0 110px, rgba(255, 255, 255, 0.14) 111px 119px, transparent 120px),
+      radial-gradient(circle at 95% 10%, var(--c-tf-petrol-deep) 0 170px, transparent 171px);
+  }
+}
+
+/* -- Hero: linksbündig, Versalien, Exo 2 Black ------------------------- */
+.hero__intro, .hero--connected .hero__intro { max-width: 960px; margin-inline: 0; }
+.hero__intro h1 {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(2.3rem, 1.2rem + 3.6vw, 4.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  color: white;
+}
+.hero__intro p { color: rgba(255, 255, 255, 0.86); max-width: 640px; }
+.has-stage .detail > h1 { font-weight: 900; letter-spacing: -0.02em; }
+
+/* -- Bereichsnavigation: Creme-Leiste, aktiv = Ink + Goldlinie ---------- */
+.subnav, .view .subnav, .view > .subnav, .detail > .subnav {
+  background: var(--c-tf-cream);
+  border-bottom: 1px solid var(--c-tf-line);
+}
+.rail__nav a,
+.rail__nav a.rail__nav-group-link,
+.rail__nav-sub a { color: var(--c-tf-ink-60); }
+.rail__nav a::after { height: 3px; background: color-mix(in srgb, var(--c-tf-gold) 55%, white); }
+.rail__nav a:hover { color: var(--c-tf-ink); }
+.rail__nav a[aria-current="page"] { color: var(--c-tf-ink); font-weight: 700; }
+.rail__nav a[aria-current="page"]::after { background: var(--c-tf-gold); }
+.subnav__children { border-top-color: var(--c-tf-line); }
+.subnav__children a[aria-current="page"] { background: var(--c-tf-petrol); color: white; }
+
+/* -- Abschnittstitel in Versalien ------------------------------------- */
+.feed__title, .countdown__title {
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+.feed__title__count {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: transparent;
+  border-color: var(--c-tf-line);
+}
+
+/* -- Karten: gebrochen weiß, ohne Rand, weicher Schatten --------------- */
+.article-list li:not(.feed__divider),
+.side-card,
+.countdown-card,
+.kd-card,
+.kd-callout,
+.nl-sec,
+.nl-mail,
+.kb-article {
+  background: var(--c-tf-card);
+  border-color: transparent;
+  box-shadow: var(--card-shadow);
+}
+.article-list li:not(.feed__divider):hover,
+.article-list li:not(.feed__divider):focus-within { box-shadow: var(--card-shadow-hover); }
+.kd-callout--warn { background: var(--c-tf-orange-tint); }
+
+/* Icon-Kachel einheitlich Petrol (wie die Tool-Factory-Karten); die
+   Kategoriefarbe steht inline am Element, daher !important. */
+.row__thumb,
+.row__thumb:not(.row__thumb--brand) {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--c-tf-petrol) !important;
+  color: white;
+}
+.row__thumb svg { width: 18px; height: 18px; }
+.row__title { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.005em; }
+
+/* Kleine Labels in Monospace-Versalien (wie "3 TOKENS / PACK") */
+.row__meta,
+.row__cat,
+.row__date,
+.detail__date,
+.countdown-card__name,
+.tabs__item-count,
+.card-badge,
+.row__channel {
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.row__meta, .row__cat, .row__date { font-size: 0.72rem; }
+.card-badge, .card-badge--new { background: var(--c-tf-gold-tint); color: var(--c-tf-ink); font-weight: 700; }
+
+/* -- Buttons: Hauptaktion Orange mit dunkler Schrift, sonst Kontur ------ */
+.btn { border-radius: var(--radius-btn); font-weight: 700; }
+.btn--primary { background: var(--c-tf-orange); color: var(--c-tf-ink); }
+.btn--primary:hover { background: color-mix(in srgb, var(--c-tf-orange) 88%, black); box-shadow: none; }
+.btn--secondary {
+  background: transparent;
+  color: var(--c-tf-ink);
+  border: 1.5px solid var(--c-tf-ink);
+}
+.btn--secondary:hover { background: var(--c-tf-ink); color: white; }
+
+/* -- Suche + Filter ---------------------------------------------------- */
+.search__submit { background: var(--c-tf-petrol); }
+.search__submit:hover { background: var(--c-tf-petrol-deep); }
+.tabs__item { border-color: var(--c-tf-line); background: var(--c-tf-card); }
+.tabs__item.is-active { background: var(--c-tf-ink); border-color: var(--c-tf-ink); }
+
+/* -- Fußzeile dunkel mit Goldkante ------------------------------------- */
+.site-footer {
+  margin-top: var(--space-8);
+  padding: 26px var(--space-6);
+  background: var(--c-tf-ink);
+  border-top: 4px solid var(--c-tf-gold);
+  color: rgba(255, 255, 255, 0.72);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.site-footer a { color: white; }
+
+/* -- Kopfleiste scrollt mit, Band läuft dahinter weiter ----------------
+      Wie in der Tool Factory liegt der große Kreis auch hinter der
+      Kopfleiste. Dafür ist die Leiste nicht mehr sticky und durchsichtig,
+      das Band beginnt eine Leistenhöhe weiter oben. Alle sticky-Abstände
+      rechnen mit --topbar-h; auf 0 gesetzt kleben Menüleiste und
+      Seitenspalten jetzt direkt an der Fensteroberkante. */
+:root { --topbar-h: 0px; --tf-topbar: 72px; }
+.topbar { position: relative; height: var(--tf-topbar); background: transparent; }
+body:has(.shell__main:not(.has-stage)) .topbar { background: var(--c-tf-petrol); }
+.page-bg { top: calc(-1 * var(--tf-topbar)); height: calc(var(--stage-h, 0px) + var(--stage-pad) + var(--tf-topbar)); }
+.page-bg::after {
+  background:
+    radial-gradient(circle at 80% 26%, transparent 0 190px, rgba(255, 255, 255, 0.16) 191px 203px, transparent 204px),
+    radial-gradient(circle at 80% 26%, var(--c-tf-petrol-deep) 0 290px, transparent 291px);
+}
+@media (max-width: 767px) {
+  :root { --tf-topbar: 56px; }
+  .page-bg::after {
+    background:
+      radial-gradient(circle at 95% 12%, transparent 0 110px, rgba(255, 255, 255, 0.14) 111px 119px, transparent 120px),
+      radial-gradient(circle at 95% 12%, var(--c-tf-petrol-deep) 0 170px, transparent 171px);
+  }
+}
+
+/* -- Kategorie-Pille auf dem Band sichtbar halten (Farbe steht inline) -- */
+.has-stage .detail__meta .chip {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: white;
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* -- Eingabefelder weiß auf Creme/Karte (Tool Factory) ------------------ */
+.search__control, .search input,
+.mailgen input, .mailgen textarea, .mailgen select,
+.nl-field input, select { background-color: white; }

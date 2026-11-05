@@ -96,4 +96,22 @@
   --grad-band: linear-gradient(135deg, var(--c-turquoise-700) 0%, var(--c-turquoise) 48%, var(--c-pink-500) 100%);
   --c-gold-soft:  #FFC90B; /* SWS --tier-strategic */
   --c-core:       #94C9D3; /* SWS --tier-core */
+
+  /* -- SWS Tool Factory (2026-11-05, Nutzer-Screenshots Dashboard/Roadmap/
+     Profil der Tool Factory). Werte aus den Screenshots abgelesen, nicht aus
+     einem ausgelieferten Stylesheet verifiziert. Verwendet in der letzten
+     Schicht von styles.css ("Tool-Factory-Stil"). ----------------------- */
+  --c-tf-petrol:      #1F5E6A; /* Kopfband, Icon-Kacheln, "Open"-Buttons */
+  --c-tf-petrol-deep: #19505B; /* großer Kreis im Band, Hover */
+  --c-tf-petrol-tint: #E2ECEC; /* helle Petrol-Fläche (aktive Unterpunkte, Badges) */
+  --c-tf-cream:       #F3ECE1; /* Seitengrund */
+  --c-tf-card:        #FBF8F3; /* Kartenfläche */
+  --c-tf-line:        #E6DED1; /* Haarlinien auf Creme */
+  --c-tf-ink:         #13242A; /* Text, Fußzeile, dunkle Flächen */
+  --c-tf-ink-60:      #4A5A60; /* Nebentext */
+  --c-tf-orange:      #EF6A2E; /* Hauptaktion ("Top up tokens"), nur mit dunkler Schrift */
+  --c-tf-orange-ink:  #B3441A; /* Orange als Text/Fläche mit weißer Schrift (~5:1) */
+  --c-tf-orange-tint: #FCE6DA;
+  --c-tf-gold:        #E2AE4C; /* Linie unter aktivem Menüpunkt, Fußzeilen-Kante */
+  --c-tf-gold-tint:   #F8EBCD;
 }
