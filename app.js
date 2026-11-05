@@ -3476,7 +3476,7 @@
       <div class="msads">
         <section class="hero hero--compact">
           <div class="hero__intro">
-            <h1>Kontoverknüpfungen prüfen</h1>
+            <h1>Konto&shy;verknüpfungen prüfen</h1>
             <p>Eine Frage nach der anderen – zuerst die Direct-Manager-Verknüpfung, danach der Rechnungsempfänger.</p>
           </div>
         </section>
@@ -4534,7 +4534,7 @@
     view.innerHTML = `
       <section class="hero hero--compact">
         <div class="hero__intro">
-          <h1>Kontoklassifizierung</h1>
+          <h1>Konto&shy;klassifizierung</h1>
           <p>Base Accounts, Net New Business und Existing Business auf einen Blick – mit Prüfhilfe und Originalunterlage zum Download.</p>
         </div>
       </section>
@@ -4650,7 +4650,7 @@
       img.setAttribute("style", "max-width:600px;width:100%;height:auto;border:1px solid #e3eaec;border-radius:6px;margin:8px 0;");
     }));
     box.querySelectorAll("h2,h3,h4").forEach((h) => h.setAttribute("style", "font-family:Arial,sans-serif;color:#1a1e22;margin:18px 0 6px;"));
-    box.querySelectorAll("a").forEach((l) => l.setAttribute("style", "color:#9e0249;"));
+    box.querySelectorAll("a").forEach((l) => l.setAttribute("style", "color:#a8532c;"));
     box.querySelectorAll("pre").forEach((pre) => pre.setAttribute("style", "background:#f4f8f9;border:1px solid #e3eaec;padding:10px;border-radius:6px;white-space:pre-wrap;font-family:Consolas,monospace;font-size:13px;"));
     box.querySelectorAll("code").forEach((c) => { if (!c.closest("pre")) c.setAttribute("style", "background:#f4f8f9;padding:1px 4px;border-radius:4px;font-family:Consolas,monospace;"); });
     return `<div style="font-family:Arial,sans-serif;font-size:14px;line-height:1.55;color:#1a1e22;"><h2 style="font-family:Arial,sans-serif;font-size:20px;margin:0 0 12px;">${escapeHtml(gf(g, "title", lang))}</h2>${box.innerHTML}</div>`;
@@ -4750,6 +4750,18 @@
     shellMain.classList.toggle("has-stage", !!head);
   }
   if (shellMain && "ResizeObserver" in window) new ResizeObserver(syncStage).observe(view);
+
+  /* Breite der Browser-Scrollleiste als --sbw (2026-11-05, Geräte-Prüfung):
+     die randlose Menüleiste rechnet mit 100vw, das auf dem Desktop die
+     Scrollleiste einschließt und sie dadurch 7–8px breiter als das Fenster
+     machte. Auf Handys mit überlagerter Scrollleiste ist der Wert 0. */
+  function syncScrollbar() {
+    const sbw = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+    document.documentElement.style.setProperty("--sbw", sbw + "px");
+  }
+  syncScrollbar();
+  window.addEventListener("resize", syncScrollbar);
+  if ("ResizeObserver" in window) new ResizeObserver(syncScrollbar).observe(document.body);
 
   /* Bereichsnavigation unter dem Farbband (2026-10-06, Nutzer-Aufnahme von
      support-tiers.sws-alliance.com): die Leiste wird nach jedem Rendern

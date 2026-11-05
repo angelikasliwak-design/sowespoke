@@ -3967,3 +3967,35 @@ body:has(.shell__main:not(.has-stage)) .topbar { background: var(--c-tf-petrol);
 }
 /* Avatar-Kreis mit Orange-Rand */
 .topbar__profile .rail__profile-avatar { border-color: var(--c-tf-orange); }
+
+/* ==========================================================================
+   Geräte-Prüfung (2026-11-05): 17 Seiten × 6 Breiten (360/390/768/1024/
+   1440/1920 px) per Playwright auf Überstand, Tippziele und Schriftgröße.
+   ========================================================================== */
+/* Randlose Menüleiste ohne Scrollleisten-Überstand (--sbw setzt app.js) */
+.view .subnav, .view > .subnav, .detail > .subnav {
+  margin-inline: calc(50% - 50vw + var(--sbw, 0px) / 2);
+}
+/* Überschrift + Zählerpille umbrechen statt über den Rand zu laufen */
+.feed__title { flex-wrap: wrap; row-gap: var(--space-2); }
+/* Ticket-/Nutzungszeilen: Datum darf in die nächste Zeile rutschen */
+.ticket-row__top { flex-wrap: wrap; row-gap: 2px; }
+.ticket-row__meta-label { font-size: 0.72rem; opacity: 1; }
+/* Lücke bei genau 768px (iPad hochkant): die alte Icon-Leisten-Regel gilt bis
+   48rem einschließlich, die Korrektur der waagerechten Leiste nur bis 767px —
+   bei 768px fehlten dadurch die Menü-Beschriftungen komplett. */
+@media (max-width: 48rem) {
+  .rail__nav a, .rail__nav a.rail__nav-group-link, .rail__nav-sub a { width: auto; height: auto; justify-content: flex-start; }
+  .rail__nav-label { display: inline; }
+}
+/* Lange Einzelwörter in Versal-Titeln (z. B. "KONTOKLASSIFIZIERUNG") auf
+   schmalen Bildschirmen trennen statt abschneiden */
+.hero__intro h1, .feed__title, .detail > h1 { hyphens: auto; -webkit-hyphens: auto; overflow-wrap: break-word; }
+@media (max-width: 480px) {
+  .hero__intro h1 { font-size: clamp(1.75rem, 1rem + 4.6vw, 2.3rem); }
+}
+/* Tippziele auf dem Handy mindestens 40px hoch */
+@media (max-width: 767px) {
+  .countdown__toggle, .side-card__expand, .fact-widget__more { min-height: 40px; }
+  .idea-card__delete { width: 40px; height: 40px; }
+}

@@ -22,25 +22,27 @@
     src: url("../../assets/fonts/Exo2-Variable.woff2") format("woff2");
   }
 
-  /* SWS 2.0 (2026-10-06): Palette wie tokens.css / SWS-Plattform */
+  /* Tool-Factory-Stil (2026-11-05): Palette wie tokens.css (--c-tf-*) —
+     Petrol als Hauptfarbe, Orange aus dem Sowespoke-Logo als Akzent. */
   :root {
-    --ink: #1A1E22;
-    --ink-60: #4B5560;
-    --paper: #FFFFFF;
-    --line: #E3EAEC;
-    --accent: #D40360;
-    --accent-ink: #9E0249;
-    --accent-tint: #FCE6F0;
-    --teal: #0092B0;
-    --teal-deep: #00697F;
-    --teal-tint: #E3F2F5;
-    --yellow: #FFC000;
-    --yellow-tint: #FFF6D6;
+    --ink: #13242A;
+    --ink-60: #4A5A60;
+    --paper: #FBF8F3;
+    --line: #E6DED1;
+    --accent: #D9774B;
+    --accent-ink: #A8532C;
+    --accent-tint: #FBEDE4;
+    --teal: #1F5E6A;
+    --teal-deep: #19505B;
+    --teal-tint: #E2ECEC;
+    --yellow: #E2AE4C;
+    --yellow-tint: #F8EBCD;
     --success: #146B3A;
     --success-tint: #DCF1E3;
     --warning: #A5341A;
     --warning-tint: #FBE4DE;
-    --grad: linear-gradient(135deg, #00697F 0%, #0092B0 48%, #D40360 100%);
+    --grad: linear-gradient(135deg, #1F5E6A 0%, #19505B 100%);
+    --mono: "Cascadia Mono", Consolas, "Liberation Mono", monospace;
   }
 
   @page { size: 297mm 210mm; margin: 0; }
@@ -49,12 +51,12 @@
   body {
     font-family: "Source Sans 3", "Segoe UI", sans-serif;
     color: var(--ink);
-    background: #E3EAEC;
+    background: #E6DED1;
   }
   h1, h2, h3, .display {
     font-family: "Exo 2", "Segoe UI", sans-serif;
-    font-weight: 800;
-    letter-spacing: -0.01em;
+    font-weight: 900;
+    letter-spacing: -0.02em;
     margin: 0;
   }
 
@@ -68,19 +70,34 @@
     overflow: hidden;
   }
   .page:last-child { page-break-after: auto; }
-  .page::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3mm; background: var(--grad); }
 
   .masthead {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-bottom: 6mm;
-    border-bottom: 1px solid var(--line);
-    margin-bottom: 6mm;
+    margin: -14mm -16mm 7mm;
+    padding: 6mm 16mm;
+    background-color: var(--teal);
+    background-image:
+      radial-gradient(circle at 88% 50%, transparent 0 15mm, rgba(111, 163, 172, 0.55) 15.2mm 16.2mm, transparent 16.4mm),
+      radial-gradient(circle at 88% 50%, var(--teal-deep) 0 26mm, transparent 26.2mm);
+    border-bottom: 1.2mm solid var(--accent);
+    overflow: hidden;
   }
-  .masthead__logo { height: 8mm; display: block; }
-  .masthead__meta { text-align: right; font-size: 9.5pt; color: var(--ink-60); font-weight: 600; }
-  .masthead__meta strong { color: var(--ink); }
+  .masthead__brand { display: flex; align-items: center; gap: 3mm; }
+  .masthead__mark { height: 11mm; display: block; }
+  .masthead__logo { height: 5mm; display: block; }
+  .masthead__meta {
+    position: relative;
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 7.6pt;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.8);
+  }
+  .masthead__meta strong { color: #fff; }
 
   .step-row { display: flex; align-items: flex-start; gap: 5mm; margin-bottom: 4mm; }
   .step-num {
@@ -92,12 +109,12 @@
     display: flex; align-items: center; justify-content: center;
     font-family: "Exo 2", sans-serif; font-weight: 800; font-size: 14pt;
   }
-  .step-head h1 { font-size: 22pt; }
+  .step-head h1 { font-size: 22pt; text-transform: uppercase; }
   .step-head p { margin: 1.5mm 0 0; font-size: 10.5pt; color: var(--ink-60); max-width: 150mm; }
 
   /* -- Route cards (Page 1) -- */
   .route-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin-top: 4mm; }
-  .route-card { border-radius: 4mm; border: 1px solid var(--line); overflow: hidden; }
+  .route-card { border-radius: 4mm; border: 1px solid var(--line); overflow: hidden; background: #fff; }
   .route-card__head { padding: 5mm 6mm; font-family: "Exo 2", sans-serif; font-weight: 800; font-size: 13pt; }
   .route-card--a .route-card__head { background: var(--teal-tint); color: var(--teal-deep); }
   .route-card--b .route-card__head { background: var(--accent-tint); color: var(--accent-ink); }
@@ -111,7 +128,7 @@
     color: #fff;
   }
   .route-card--a .route-step__badge { background: var(--teal); }
-  .route-card--b .route-step__badge { background: var(--accent); }
+  .route-card--b .route-step__badge { background: var(--accent-ink); }
   .route-step strong { display: block; font-size: 10pt; }
   .route-step span { display: block; font-size: 9pt; color: var(--ink-60); line-height: 1.4; }
 
@@ -119,7 +136,8 @@
     margin-top: 7mm;
     background: var(--ink);
     color: #fff;
-    border-radius: 999px;
+    border-radius: 2.5mm;
+    border-bottom: 1mm solid var(--accent);
     padding: 4mm 6mm;
     text-align: center;
     font-family: "Exo 2", sans-serif;
@@ -134,10 +152,10 @@
     border: 1px solid var(--line);
     border-radius: 4mm;
     padding: 4mm;
-    background: #F4F8F9;
+    background: #fff;
     position: relative;
   }
-  .ladder__node--variable { background: var(--yellow-tint); border-color: #E9CE6B; border-style: dashed; }
+  .ladder__node--variable { background: var(--yellow-tint); border-color: var(--yellow); border-style: dashed; }
   .ladder__node--leaf { background: var(--teal-tint); border-color: var(--teal); }
   .ladder__node b { display: block; font-size: 10pt; font-family: "Exo 2", sans-serif; }
   .ladder__node small { font-size: 8.3pt; color: var(--ink-60); line-height: 1.35; display: block; margin-top: 1mm; }
@@ -193,7 +211,8 @@
   }
   table.billto th:first-child { border-radius: 3mm 0 0 0; }
   table.billto th:last-child { border-radius: 0 3mm 0 0; }
-  table.billto td { padding: 3.6mm 4mm; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.billto td { padding: 3.6mm 4mm; border-bottom: 1px solid var(--line); vertical-align: top; background-clip: padding-box; }
+  table.billto tr.row-ok { background: #fff; }
   table.billto tr.row-ok td:first-child, table.billto tr.row-exception td:first-child { font-weight: 700; }
   table.billto tr.row-exception { background: var(--yellow-tint); }
   table.billto tr.row-bad { background: var(--warning-tint); }
@@ -215,7 +234,7 @@
 
   /* -- Page 4: Fristen -- */
   .deadline-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin-top: 5mm; }
-  .deadline-card { border-radius: 4mm; border: 1px solid var(--line); padding: 6mm; }
+  .deadline-card { border-radius: 4mm; border: 1px solid var(--line); padding: 6mm; background: #fff; }
   .deadline-card__date { font-family: "Exo 2", sans-serif; font-weight: 800; font-size: 30pt; line-height: 1; color: var(--accent); }
   .deadline-card--direct .deadline-card__date { color: var(--teal-deep); }
   .deadline-card__label { font-size: 9pt; color: var(--ink-60); margin: 1.5mm 0 4mm; }
@@ -235,8 +254,8 @@
   .foot {
     position: absolute;
     left: 16mm; right: 16mm; bottom: 8mm;
-    display: flex; justify-content: space-between;
-    font-size: 7.6pt; color: var(--ink-60);
+    display: flex; justify-content: space-between; gap: 6mm;
+    font-family: var(--mono); font-size: 6.6pt; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-60);
     padding-top: 3mm; border-top: 1px solid var(--line);
   }
 </style>
@@ -246,7 +265,7 @@
 <!-- ============ PAGE 1 — Prüfweg auswählen ============ -->
 <section class="page">
   <div class="masthead">
-    <img class="masthead__logo" src="../../assets/brand/logo-sws-black.png" alt="SWS Alliance" />
+    <div class="masthead__brand"><img class="masthead__mark" src="../../assets/brand/sowespoke-zeichen.svg" alt="" /><img class="masthead__logo" src="../../assets/brand/sowespoke-schriftzug.svg" alt="So We Spoke" /></div>
     <div class="masthead__meta"><strong>Microsoft Ads Kontoprüfung</strong> · Internes Lernset</div>
   </div>
 
@@ -288,7 +307,7 @@
 <!-- ============ PAGE 2 — Direct Manager und MCC prüfen ============ -->
 <section class="page">
   <div class="masthead">
-    <img class="masthead__logo" src="../../assets/brand/logo-sws-black.png" alt="SWS Alliance" />
+    <div class="masthead__brand"><img class="masthead__mark" src="../../assets/brand/sowespoke-zeichen.svg" alt="" /><img class="masthead__logo" src="../../assets/brand/sowespoke-schriftzug.svg" alt="So We Spoke" /></div>
     <div class="masthead__meta"><strong>Microsoft Ads Kontoprüfung</strong> · Internes Lernset</div>
   </div>
 
@@ -329,7 +348,7 @@
 <!-- ============ PAGE 3 — Bill-to entscheiden ============ -->
 <section class="page">
   <div class="masthead">
-    <img class="masthead__logo" src="../../assets/brand/logo-sws-black.png" alt="SWS Alliance" />
+    <div class="masthead__brand"><img class="masthead__mark" src="../../assets/brand/sowespoke-zeichen.svg" alt="" /><img class="masthead__logo" src="../../assets/brand/sowespoke-schriftzug.svg" alt="So We Spoke" /></div>
     <div class="masthead__meta"><strong>Microsoft Ads Kontoprüfung</strong> · Internes Lernset</div>
   </div>
 
@@ -388,7 +407,7 @@
 <!-- ============ PAGE 4 — Fristen & weiterführend ============ -->
 <section class="page">
   <div class="masthead">
-    <img class="masthead__logo" src="../../assets/brand/logo-sws-black.png" alt="SWS Alliance" />
+    <div class="masthead__brand"><img class="masthead__mark" src="../../assets/brand/sowespoke-zeichen.svg" alt="" /><img class="masthead__logo" src="../../assets/brand/sowespoke-schriftzug.svg" alt="So We Spoke" /></div>
     <div class="masthead__meta"><strong>Microsoft Ads Kontoprüfung</strong> · Internes Lernset</div>
   </div>
 
