@@ -3999,3 +3999,16 @@ body:has(.shell__main:not(.has-stage)) .topbar { background: var(--c-tf-petrol);
   .countdown__toggle, .side-card__expand, .fact-widget__more { min-height: 40px; }
   .idea-card__delete { width: 40px; height: 40px; }
 }
+
+/* ==========================================================================
+   Gleich hohes Band (2026-11-05, Nutzerin): --stage-min = Mindest-Unterkante
+   des Seitenkopfs je Breite, an der höchsten Hauptseite gemessen (2-zeiliger
+   Titel + 2-zeiliger Text). app.js (syncStage) füllt kürzere Köpfe oben mit
+   --stage-fill auf; Titel/Text stehen dadurch immer direkt über der Leiste.
+   ========================================================================== */
+.shell__main { --stage-min: 279px; }
+@media (max-width: 1023px) { .shell__main { --stage-min: 256px; } }
+@media (max-width: 767px) { .shell__main { --stage-min: 269px; } }
+.hero, .hero--compact, .hero--connected { padding-top: calc(var(--space-5) + var(--stage-fill, 0px)); }
+.detail { padding-top: var(--stage-fill, 0px); }
+.view > .back-link { margin-top: var(--stage-fill, 0px); }

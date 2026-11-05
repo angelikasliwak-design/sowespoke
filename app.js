@@ -4740,12 +4740,31 @@
      Schrift darf nie in den hellen Auslauf rutschen. ResizeObserver fängt
      nachgeladene Inhalte, Schriftwechsel und Fenstergrößen ab. */
   const shellMain = document.querySelector(".shell__main");
+  /* Gleich hohes Band auf allen Seiten (2026-11-05, Nutzerin: "der blaue
+     Teil mit Titel soll immer gleich groß bleiben"). --stage-min (styles.css,
+     je Breite) ist die Mindest-Unterkante des Seitenkopfs; was einem kurzen
+     Titel fehlt, wird als --stage-fill oben am Kopf (Hero bzw. Detailseite)
+     aufgefüllt, sodass Titel und Text immer direkt über der Menüleiste
+     stehen. Längere Köpfe (z. B. 4-zeiliger Titel auf dem Handy) dürfen das
+     Band weiterhin wachsen lassen, statt abgeschnitten zu werden. */
   function syncStage() {
     if (!shellMain) return;
     const head = view.querySelector(".hero") || view.querySelector(".detail > h1");
-    const bottom = head
-      ? head.getBoundingClientRect().bottom - shellMain.getBoundingClientRect().top
-      : 0;
+    // Aufgefüllt wird oberhalb des ganzen Kopfes: Hero selbst bzw. auf
+    // Detailseiten der Zurück-Link davor (sonst die Detailseite), damit Link,
+    // Kategorie und Titel zusammen über der Leiste stehen.
+    const filler = !head ? null
+      : head.classList.contains("hero") ? head
+      : (view.querySelector(":scope > .back-link") || head.parentElement);
+    let bottom = 0;
+    if (head) {
+      const currentFill = parseFloat(filler.style.getPropertyValue("--stage-fill")) || 0;
+      const natural = head.getBoundingClientRect().bottom - shellMain.getBoundingClientRect().top - currentFill;
+      const min = parseFloat(getComputedStyle(shellMain).getPropertyValue("--stage-min")) || 0;
+      const fill = Math.max(0, min - natural);
+      if (Math.abs(fill - currentFill) > 0.5) filler.style.setProperty("--stage-fill", fill.toFixed(1) + "px");
+      bottom = natural + fill;
+    }
     shellMain.style.setProperty("--stage-h", Math.round(bottom) + "px");
     shellMain.classList.toggle("has-stage", !!head);
   }
