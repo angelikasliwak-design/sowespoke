@@ -1285,4 +1285,28 @@ const PRESENTATIONS = [
     mailSubjectDE: "Gaming-Werbung mit Activision Blizzard Media: King, Xbox und Microsoft Casual Games",
     pageCount: 38,
   },
+  {
+    id: "holiday-ready-oct-2026",
+    file: "Holiday ready Practical strategies for advertisers (1).pdf",
+    title: "Holiday Ready: Praktische Strategien für Werbetreibende (Webinar Oktober 2026)",
+    // Titelfolie: "October 27th, 2026". Rund zwei Drittel der Folien stammen
+    // aus "Best Practices for Holiday Success 2026" und "Winning holiday
+    // moments" (Zeilenabgleich 48 % bzw. 34 %); eigener Eintrag, weil es ein
+    // eigenes, aktualisiertes Webinar mit DACH-/EMEA-Sprecher:innen ist.
+    date: "2026-10-27", dateKnown: true,
+    docType: "Saisonal",
+    summaryDE: "Webinar-Deck vom 27. Oktober 2026 (116 Seiten) mit Monica Orsino (Senior Learning & Development Manager), Kay Giza (Senior Marketing Manager EMEA, Agency & Partner Marketing Lead) und Federica Mueller (Manager Partner Development DACH). Beginnt mit der Entwicklung von Microsoft Advertising (Zeitleiste 1995–2023) und der Reichweite (188 Märkte, 41 Anzeigensprachen), danach der aktualisierte Vier-Phasen-Leitfaden für die Feiertagssaison: Wrap the Basics (KI-Bereitschaft mit Clarity, KI-tauglichem Feed und UCP im Merchant Center, Tracking, Kampagnen-Mix, Gebote, Experimente), Gift them a Reason (Zielgruppen, LinkedIn-Targeting, Neukundengewinnung mit PMax, Search Themes, Creative-Refresh), Ring in the Sales (AI Max und PMax, kurzfristige Aktionen, Budgets und Ziele, Saisonalitäts-Anpassungen, Conversion-Value-Regeln) und Unbox What's Next (Messung, Conversion-Verzögerung, Post-Holiday-Botschaften, Conversions API, Search Lift). Jede Phase endet mit \"Was der Vertrieb wissen muss\"; am Ende eine Bereitschafts-Checkliste.",
+    customerBlurb: "Microsofts aktueller Feiertags-Leitfaden in vier Phasen, von der Vorbereitung bis nach Weihnachten. Neu in diesem Jahr: Marken müssen nicht nur gefunden werden, sondern auch für KI leicht zu verstehen und zu empfehlen sein, etwa über einen vollständigen Produkt-Feed, Microsoft Clarity und AI Max. Gerne gehen wir die Checkliste gemeinsam mit euch durch.",
+    keyFactsDE: [
+      "Kernbotschaft: Gut auffindbar reicht nicht mehr; Marken müssen für KI leicht zu entdecken, zu verstehen, zu empfehlen und vertrauenswürdig sein (\"Das Internet ist das größte Einkaufszentrum, KI ist der Personal Shopper\").",
+      "Phase 1 (Grundlagen): KI-Bereitschaft mit Microsoft Clarity, KI-tauglichem Feed und UCP im Merchant Center; Conversion-Tracking end-to-end prüfen (auch per Copilot im Microsoft Advertising-Tool oder \"Test This Goal\"); Feed-Gleichstand mit Google, aussagekräftige Produkttitel (Marke + Produktname + Typ + Geschlecht + Größe + Farbe), Experimente mindestens 1–2 Wochen laufen lassen.",
+      "Phase 2 (Nachfrage aufbauen): Zielgruppen früh entwickeln, LinkedIn-Profil-Targeting, saisonale In-Market-Zielgruppen, PMax-Neukundengewinnung (nur für Neukunden höher bieten), Search Themes als zusätzliche Signale, Bilder mindestens 1,91:1 und 1:1 ohne Text-Overlay. Audience Ads beeinflussen laut Deck 41 % der ersten Kontaktpunkte.",
+      "Gebote: neue Kampagnen ab 30+ Conversions in 30 Tagen auf automatische Gebote umstellen, Ziele höchstens einmal pro Conversion-Zyklus und in Schritten unter 15 % ändern, Budgets in 15–20-%-Schritten früh erhöhen, Budgets nicht deckeln, sondern über Ziele steuern; Saisonalitäts-Anpassungen nur bei stabilen Kampagnen.",
+      "Phase 3 (Spitzenzeit): AI Max und PMax für neue Suchanfragen und KI-native Anzeigen in Bing und Copilot; für kurzfristige Aktionen neue Assets mindestens 48 Stunden vorher pausiert hochladen; CPA-/ROAS-Ziele lockern, Gebote und Budgets nur in Schritten von ±15 % ändern.",
+      "Phase 4 (nach dem Fest): Conversion-Verzögerung vor der Bewertung abwarten, Gebotsstrategien unverändert lassen, Botschaften auf Geschenkkarten, Umtausch, Abverkauf und Neujahrsziele drehen; Conversions API und Search-Lift-Messung für Audience Ads.",
+      "Praxisbeispiele: Ein Bekleidungshändler erzielte mit Shopping-Anzeigen und Microsoft Audience Signals 1,2 Mio. $ Zusatzumsatz bei 56 % effizienterem ROAS; s.Oliver (Christoph Bornkessel) lobt impression-basierte Remarketing-Listen als Brücke zwischen oberem und unterem Funnel.",
+    ],
+    emailHookDE: null,
+    pageCount: 116,
+  },
 ];
