@@ -24,7 +24,7 @@
     Allgemein: "--turquoise",
   };
 
-  const NAV_ICON = { konditionen: "scale", wissen: "book", newsletter: "mail", anleitungen: "fileText", news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass", nutzer: "gauge", "microsoft-ads-kontopruefung": "crosshair" };
+  const NAV_ICON = { roadmap: "chartLine", konditionen: "scale", wissen: "book", newsletter: "mail", anleitungen: "fileText", news: "home", praesentationen: "layers", vorlagen: "book", "case-studies": "trophy", tickets: "ticket", anfragen: "mail", ideen: "lightbulb", serienmails: "hourglass", nutzer: "gauge", "microsoft-ads-kontopruefung": "crosshair" };
   railLinks.forEach((a) => {
     const iconSlot = a.querySelector(".rail__nav-icon");
     if (iconSlot) iconSlot.innerHTML = ICONS[NAV_ICON[a.dataset.nav]];
@@ -4674,6 +4674,159 @@
   }
 
 
+  /* ------------------------------------------------------- Roadmap */
+  /* Roadmap (2026-11-13, Nutzerin: Product Roadmap als Grafik erklären, mit
+     offiziellen Microsoft-Artikeln, Fokus "was in DE verfügbar ist oder bald
+     kommt", eigener Menüpunkt statt unter Präsentationen). Daten in
+     roadmap-data.js; oben ein Zeitstrahl (Zeilen = Bereiche, Punkte = Termine,
+     Farbe = Status für Deutschland), darunter je Funktion eine Karte mit
+     Erklärung, Deutschland-Hinweis und Quellen. */
+  const RM_START = new Date("2026-07-01T00:00:00");
+  const RM_END = new Date("2027-04-01T00:00:00");
+  const RM_MONTHS = ["Jul", "Aug", "Sep", "Okt", "Nov", "Dez", "Jan", "Feb", "Mär"];
+  const RM_STATUS = {
+    ja: { label: "In Deutschland nutzbar", short: "In DE nutzbar" },
+    bald: { label: "Rollout, Pilot oder angekündigt", short: "Rollout / Pilot" },
+    nein: { label: "Noch nicht für Deutschland", short: "Nicht in DE" },
+  };
+  const rmPos = (iso) => {
+    const t = new Date(iso + "T00:00:00").getTime();
+    return Math.min(100, Math.max(0, ((t - RM_START) / (RM_END - RM_START)) * 100));
+  };
+
+  function renderRoadmap(filter) {
+    const f = ["ja", "bald", "nein"].includes(filter) ? filter : "alle";
+    const items = ROADMAP.filter((x) => f === "alle" || x.de === f);
+    const count = (k) => ROADMAP.filter((x) => k === "alle" || x.de === k).length;
+    const today = rmPos(new Date().toISOString().slice(0, 10));
+    const tab = (k, label) => `<button type="button" class="tabs__item ${f === k ? "is-active" : ""}" data-rm-filter="${k}">${label}<span class="tabs__item-count">${count(k)}</span></button>`;
+
+    const lanes = ROADMAP_AREAS.map((a) => {
+      const list = items.filter((x) => x.area === a.key).sort((x, y) => x.date.localeCompare(y.date));
+      return `
+        <div class="rm-lane">
+          <div class="rm-lane__label"><strong>${escapeHtml(a.title)}</strong><span>${escapeHtml(a.en)}</span></div>
+          <div class="rm-lane__track" data-rm-track>
+            ${list.map((x) => `<button type="button" class="rm-pill rm-pill--${x.de}${x.change ? " rm-pill--change" : ""}" style="left:${rmPos(x.date).toFixed(2)}%" data-rm-goto="${escapeHtml(x.id)}" title="${escapeHtml(x.title)} — ${escapeHtml(x.status)}"><span class="rm-pill__dot"></span>${escapeHtml(x.title.replace(/^Änderung: /, ""))}</button>`).join("")}
+          </div>
+        </div>`;
+    }).join("");
+
+    const src = (k) => {
+      const s = RM_SRC[k];
+      if (!s) return "";
+      const ext = !s.url.startsWith("#");
+      return `<li><a href="${escapeHtml(s.url)}"${ext ? ' target="_blank" rel="noopener"' : ""}>${escapeHtml(s.label)}</a></li>`;
+    };
+    const cards = ROADMAP_AREAS.map((a) => {
+      const list = items.filter((x) => x.area === a.key).sort((x, y) => x.date.localeCompare(y.date));
+      if (!list.length) return "";
+      return `
+        <section class="rm-group">
+          <h2 class="feed__title">${escapeHtml(a.title)}<span class="feed__title__count">${list.length}</span></h2>
+          <div class="rm-cards">
+            ${list.map((x) => `
+              <article class="rm-card rm-card--${x.de}" id="rm-${escapeHtml(x.id)}">
+                <div class="rm-card__head">
+                  <span class="rm-badge rm-badge--${x.de}">${escapeHtml(RM_STATUS[x.de].short)}</span>
+                  ${x.pmax ? `<span class="rm-tag">Performance Max</span>` : ""}
+                  ${x.change ? `<span class="rm-tag rm-tag--change">Änderung</span>` : ""}
+                </div>
+                <h3>${escapeHtml(x.title.replace(/^Änderung: /, ""))}</h3>
+                <p class="rm-card__status">${escapeHtml(x.status)}</p>
+                <p>${escapeHtml(x.what)}</p>
+                <p class="rm-card__de${x.deLimit || x.de === "nein" ? " rm-card__de--warn" : ""}"><strong>Deutschland:</strong> ${escapeHtml(x.deNote)}</p>
+                <p class="rm-card__why"><strong>Für Agenturen:</strong> ${escapeHtml(x.why)}</p>
+                <ul class="rm-card__src">${x.sources.map(src).join("")}</ul>
+              </article>`).join("")}
+          </div>
+        </section>`;
+    }).join("");
+
+    view.innerHTML = `
+      <section class="hero hero--compact">
+        <div class="hero__intro">
+          <h1>Roadmap</h1>
+          <p>Was bei Microsoft Advertising neu ist und als Nächstes kommt — mit Fokus auf das, was in Deutschland schon nutzbar ist oder bald kommt. Stand ${formatDate(ROADMAP_STAND)}.</p>
+        </div>
+      </section>
+      <div class="toolbar">
+        <nav class="tabs" aria-label="Status für Deutschland">
+          ${tab("alle", "Alle")}${tab("ja", "In DE nutzbar")}${tab("bald", "Rollout & Pilot")}${tab("nein", "Noch nicht in DE")}
+        </nav>
+      </div>
+
+      <section class="rm-chart-card" aria-label="Zeitstrahl">
+        <div class="rm-chart-card__head">
+          <h2 class="feed__title">Zeitstrahl</h2>
+          <ul class="rm-legend">
+            <li><span class="rm-legend__dot rm-legend__dot--ja"></span>${RM_STATUS.ja.label}</li>
+            <li><span class="rm-legend__dot rm-legend__dot--bald"></span>${RM_STATUS.bald.label}</li>
+            <li><span class="rm-legend__dot rm-legend__dot--nein"></span>${RM_STATUS.nein.label}</li>
+            <li><span class="rm-legend__dot rm-legend__dot--change"></span>Änderung mit Frist</li>
+          </ul>
+        </div>
+        <div class="rm-chart">
+          <div class="rm-chart__inner">
+            <div class="rm-axis">
+              <div class="rm-lane__label"></div>
+              <div class="rm-axis__months">${RM_MONTHS.map((m, i) => `<span>${m}${i === 0 || m === "Jan" ? ` ${i === 0 ? "2026" : "2027"}` : ""}</span>`).join("")}</div>
+            </div>
+            <div class="rm-lanes">
+              ${lanes}
+              <div class="rm-today" style="--today:${today.toFixed(2)}"><span>Heute</span></div>
+            </div>
+          </div>
+        </div>
+        <p class="rm-chart-card__note">Punkt = Termin der allgemeinen Verfügbarkeit, sonst Ankündigung bzw. Pilotstart. Antippen springt zur Erklärung. Auf dem Handy seitlich wischen.</p>
+      </section>
+
+      <div class="rm-notice">
+        <strong>Wichtig für B2B-Kunden in Deutschland:</strong> LinkedIn-Profil-Targeting (Firmen, Branchen, Jobfunktion, Seniorität) können deutsche Agenturen nutzen, die zugrunde liegenden LinkedIn-Daten schließen aber Nutzer:innen im EWR, in Großbritannien und der Schweiz aus. Deutsche Zielgruppen erreicht man darüber also nicht.
+      </div>
+
+      ${cards || `<div class="empty-state">${ICONS.info}<strong>Keine Einträge für diesen Filter</strong></div>`}
+
+      <p class="rm-sources">Quellen: Microsoft-Deck „Product Roadmap Q3 2026“ (intern, „timelines subject to change“) und die offiziellen Monats-Updates im Microsoft Advertising Blog (August–Oktober 2026). Microsoft nennt in den Updates selten einzelne Länder; „in DE nutzbar“ heißt: allgemein verfügbar und laut Microsoft global bzw. für alle Werbetreibenden. Vor Kundenzusagen die verlinkte Quelle prüfen.</p>`;
+
+    view.querySelectorAll("[data-rm-filter]").forEach((b) => b.addEventListener("click", () => {
+      location.hash = b.dataset.rmFilter === "alle" ? "#/roadmap" : `#/roadmap?f=${b.dataset.rmFilter}`;
+    }));
+    view.querySelectorAll("[data-rm-goto]").forEach((b) => b.addEventListener("click", () => {
+      const card = document.getElementById("rm-" + b.dataset.rmGoto);
+      if (!card) return;
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+      card.classList.remove("is-flash"); void card.offsetWidth; card.classList.add("is-flash");
+    }));
+
+    // Punkte einer Zeile, die sich überlappen würden, in weitere Reihen legen
+    const stack = () => {
+      view.querySelectorAll("[data-rm-track]").forEach((track) => {
+        const pills = [...track.querySelectorAll(".rm-pill")];
+        const rows = [];
+        pills.forEach((p) => {
+          p.style.top = "0px";
+          const left = p.offsetLeft, right = left + p.offsetWidth + 8;
+          let r = rows.findIndex((end) => end <= left);
+          if (r === -1) { r = rows.length; rows.push(right); } else rows[r] = right;
+          p.style.top = r * 34 + "px";
+        });
+        track.style.height = Math.max(1, rows.length) * 34 + 6 + "px";
+      });
+    };
+    stack();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(stack);
+    // Schmaler Bildschirm: Zeitstrahl so verschieben, dass ab August bis zur
+    // Heute-Linie alles sichtbar ist (statt des leeren Julis)
+    const chart = view.querySelector(".rm-chart");
+    const todayLine = view.querySelector(".rm-today");
+    if (chart && todayLine && chart.scrollWidth > chart.clientWidth) {
+      const label = view.querySelector(".rm-lane__label");
+      const lw = label ? label.offsetWidth : 0;
+      chart.scrollLeft = Math.max(0, todayLine.offsetLeft - lw - (chart.clientWidth - lw) * 0.75);
+    }
+  }
+
   /* ------------------------------------------------------- Newsletter */
   /* Newsletter (2026-10-07, am 2026-11-13 auf Wunsch wiederhergestellt): Archiv der versendeten "Neues aus der SWS-
      Alliance"-Ausgaben (newsletters-data.js, Import per tools/import-
@@ -4972,6 +5125,8 @@
       renderNews(params.get("ch") || "all");
     } else if (path.startsWith("/praesentationen/")) {
       renderPresentationDetail(path.slice("/praesentationen/".length));
+    } else if (path === "/roadmap") {
+      renderRoadmap(params.get("f") || "alle");
     } else if (path === "/praesentationen") {
       renderPresentations(params.get("q") || "", params.get("dt") || "all", params.get("sort") || "newest");
     } else if (path.startsWith("/vorlagen/")) {
