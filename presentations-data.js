@@ -1309,4 +1309,46 @@ const PRESENTATIONS = [
     emailHookDE: null,
     pageCount: 116,
   },
+  {
+    id: "last-minute-retail-de-2026",
+    file: "2026 Last Minute Retail Holiday Insights One-Pager - DE.pdf",
+    title: "Last-Minute-Geschäft Deutschland 2026: Weihnachts- und Januar-Insights (One-Pager)",
+    // Dokument nennt nur "Deutschland, 2026", kein Tagesdatum. Anzeigedatum = Upload-Tag.
+    date: "2026-11-09", dateKnown: true,
+    docType: "Saisonal",
+    summaryDE: "Zweiseitiger One-Pager (Deutsch und Englisch) zum deutschen Weihnachtsgeschäft 2026: Das Geschäft bleibt auf Rekordniveau, Verbraucher planen früher und kaufen gezielter; die Nachfrage konzentriert sich auf die Adventssamstage und das Einlösen von Gutscheinen statt auf hektische Käufe kurz vor Weihnachten. Drei Erkenntnisse mit je einer Empfehlung (Samstage im Dezember, Geschäft nach Weihnachten, Gutscheine im Januar), dazu Grafiken zu Klickzuwächsen nach Kategorie, CTR/CPC im Einzelhandel von Oktober bis Januar und Suchtrends für Geschenkartikel. Übergreifende Empfehlung: Performance Max nutzen, um November-Recherche, Adventswochenenden und Gutscheineinlösungen nach Weihnachten in einer KI-gestützten Kampagne abzudecken.",
+    customerBlurb: "Das Weihnachtsgeschäft in Deutschland endet nicht am 24. Dezember: Der 27. Dezember zählt zu den fünf stärksten Verkaufstagen, weil Gutscheine eingelöst und Geschenke umgetauscht werden, und die Klickpreise sind dann niedriger als in der Black-Friday-Woche. Gerne planen wir mit euch, wie eure Kampagnen von den Adventssamstagen bis in den Januar sichtbar bleiben.",
+    keyFactsDE: [
+      "Der „Super-Samstag“ am 19. Dezember ist der besucherstärkste Tag im deutschen stationären Handel; 30 % kaufen überwiegend oder ausschließlich im Geschäft. Empfehlung: Local Inventory Ads (Retail Solutions), um am Samstag verfügbare Produkte in der nächsten Filiale zu zeigen.",
+      "31 % kaufen Geschenke erst im Dezember, 32 % lassen sich von Rabatten leiten, 60 % nehmen sich mehr Zeit für die Schnäppchensuche (+2 Prozentpunkte), 10 % vergleichen Preise mit KI. Empfehlung: Ads in Copilot für Geschenksuche und Angebotsvergleich im November und Dezember.",
+      "Gutscheine sind Deutschlands beliebtestes Weihnachtsgeschenk; der 27. Dezember zählt zu den fünf stärksten Verkaufstagen der Saison. Empfehlung: Promotion Extensions für Gutscheinangebote und Januar-Aktionen vom 26. Dezember bis Januar.",
+      "Mehr Klicks zum Saisonende (Dez. 2025–Jan. 2026 gegenüber Vorjahr): Spielwaren & Spiele +25,6 %, Bücher & Belletristik +24,2 %, Beauty & Körperpflege +14,7 %.",
+      "CPC im Einzelhandel laut Grafik rund 0,38 in der Black-Friday-Woche gegenüber rund 0,29 in der Woche um den 26. Dezember (in Euro umgerechnet).",
+      "Quellen laut Dokument: HDE, Sensormatic Solutions, Handelsdaten.de, Shopfully/YouGov (2025) sowie interne Microsoft-Daten nur für Deutschland (2026).",
+    ],
+    emailHookDE: null,
+    pageCount: 2,
+  },
+  {
+    id: "shopping-opportunities-peak-season-emea-2026",
+    file: "Shopping Opportunities in Peak Season - EMEA.pdf",
+    title: "Shopping-Chancen in der Peak Season 2026: Top-Kategorien in sechs europäischen Märkten",
+    // Kein Datum im Dokument (Datenbasis Jan.–Sep. 2026 + Peak Season 2025).
+    // Anzeigedatum = Upload-Tag. Die Folien widersprechen sich teils (z. B.
+    // DE: Überschrift/Zusammenfassung nennen Furniture als Nr. 1, die Tabelle
+    // Sports & Outdoors) — die Kernfakten folgen den Tabellenwerten.
+    date: "2026-11-09", dateKnown: true,
+    docType: "Saisonal",
+    summaryDE: "Analyse-Deck (25 Seiten) dazu, was Microsoft-Nutzer:innen in der Peak Season am meisten kaufen, für Großbritannien, Deutschland, Frankreich, die Niederlande, Italien und Spanien (Datenbasis Januar–September 2026 plus Peak Season 2025). Je Markt die Top 10 der Shopping-Unterkategorien nach einem Opportunity Score, der Nachfrage (Klickanteil Oktober–Dezember), Conversion-Rate und den Anstieg im November (Black Friday/Weihnachten) kombiniert, als Blasendiagramm und Monatstabelle. Dazu eine Warnung: Ein großer Mass-Retail-Anbieter gewinnt seit September 2026 in allen Märkten wieder Klickanteile. Schließt mit einer Zusammenfassung und Handlungsempfehlungen.",
+    customerBlurb: "Microsoft hat für die Peak Season ausgewertet, welche Shopping-Kategorien in sechs europäischen Märkten Nachfrage, Conversion-Rate und Saisonspitze am besten verbinden. In Deutschland liegen Sport & Outdoor, Mode und Preisvergleich vorne. Gerne schauen wir gemeinsam, wie eure Kategorien abschneiden und wo sich zusätzliches Budget lohnt.",
+    keyFactsDE: [
+      "Opportunity Score aus drei Signalen: Nachfrage (Klickanteil Oktober–Dezember), Conversion-Rate und Peak-Multiplikator im November; Nachfrage und Conversion-Rate zählen gleich stark, die Saisonspitze etwas weniger.",
+      "Deutschland (Tabelle): 1. Sports & Outdoors (Score 74), 2. Fashion Apparel (70), 3. Comparison Shopping (67), 4. Online-Apotheken (59), 5. Furniture (56), danach Book Stores, Office & Party Supplies, Kitchen & Housewares, Product Reviews und Games.",
+      "Spitzenreiter der übrigen Märkte laut Tabellen: UK Shoes (70), Frankreich Home Furnishings (74), Niederlande Appliances (82), Italien Comparison Shopping (78), Spanien Telephones & Wireless Devices (70).",
+      "Warnung: Ein Mass-Retail-Anbieter hatte 2023–2024 binnen eines Jahres 1,9–4,5 Prozentpunkte Klickanteil aufgebaut, verlor ab November 2025 abrupt und legt seit September 2026 in allen Märkten wieder zu — Klickanteile der Händler sind laut Deck nicht gesichert.",
+      "Empfehlungen: Rangfolgen als Startpunkt für die marktspezifische Shopping-Planung nutzen, vor Investitionen Profitabilität, Verfügbarkeit und Kampagnenleistung prüfen; Klickanteile wöchentlich beobachten, einen Teil des Peak-Budgets flexibel halten und nur dorthin umschichten, wo die Ergebnisse die Profitabilitätsziele erreichen.",
+    ],
+    emailHookDE: null,
+    pageCount: 25,
+  },
 ];
