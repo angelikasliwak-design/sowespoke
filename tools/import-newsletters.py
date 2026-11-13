@@ -60,6 +60,27 @@ def guess_type(subject, text):
     oper = sum(k in s for k in ["operativ", "update", "beta", "feature", "kampagne", "uet", "tracking", "anleitung", "tipp", "pmax", "performance max", "audience"])
     return "strategisch" if strat > oper else "operativ"
 
+def suggest_topics(body):
+    """Themenvorschlag für den Zeitstrahl (2026-11-13): Die Ausgaben haben keine
+    echten Überschriften; Themen stehen als fett gesetzte Zeilen. Vorschlag
+    = fette Zeilen mittlerer Länge ohne Anrede, Floskeln und Fußzeile.
+    Kategorie wird grob geraten (Feld "k") und darf von Hand korrigiert werden;
+    "auto": true markiert ungeprüfte Vorschläge."""
+    skip = re.compile(r"(?i)liebe|hallo|was bedeutet|wichtig:|jetzt anmelden|infos anfordern|feedback|impressum|abmelden|eurotec|weitere infos|bedingung|^\d{1,2}\.\d{1,2}\.|^microsoft advertising (news|updates)|^inhalte des|^genau hier|^welche rolle|^was euch erwartet|^gemeinsam mit|nächsten veranstaltungen")
+    out, seen = [], set()
+    for raw in re.findall(r"(?is)<(?:strong|b)[^>]*>(.*?)</(?:strong|b)>", body):
+        t = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", raw))).strip(" :")
+        if not (18 <= len(t) <= 120) or skip.search(t) or t.lower() in seen:
+            continue
+        seen.add(t.lower())
+        low = t.lower()
+        k = ("event" if re.search(r"webinar|agenturtag|agencyday|einladung|camp|offsite|event|veranstaltung", low)
+             else "recht" if re.search(r"recht|verordnung|pflicht|dsgvo|ai act|indexnow|seo", low)
+             else "sws" if re.search(r"sws|alliance|coins|criteo|tiktok", low)
+             else "ms")
+        out.append({"k": k, "t": t, "auto": True})
+    return out[:8]
+
 def main():
     # Originale vor Weiterleitungen verarbeiten, damit bei Duplikaten das
     # Original (vom Absender, ohne Weiterleitungs-Kopf) im Archiv landet
@@ -94,7 +115,8 @@ def main():
             print(f"  übersprungen (gleiche Ausgabe schon vorhanden): {f.name}")
             continue
         items.append({"id": nid, "subject": subject, "date": date, "from": sender,
-                      "type": "newsletter", "excerpt": text[:260], "searchText": text[:5000], "html": body})
+                      "type": "newsletter", "excerpt": text[:260], "searchText": text[:5000],
+                      "topics": suggest_topics(body), "html": body})
         known.add(nid); added += 1
     items.sort(key=lambda i: i["date"], reverse=True)
     js = ("/**\n * Bisher versendete Newsletter (Archiv), erzeugt von tools/import-newsletters.py\n"

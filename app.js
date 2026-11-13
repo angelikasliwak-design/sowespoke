@@ -5008,45 +5008,141 @@
     return out.join("\n");
   }
 
-  function nlArchiveCard(nl) {
-    return `
-      <li>
-        <a class="row" href="#/newsletter/${encodeURIComponent(nl.id)}">
-          <span class="row__head"><span class="row__thumb">${ICONS.mail}</span></span>
-          <span class="row__body">
-            <span class="row__title">${escapeHtml(nl.subject)}</span>
-            <span class="row__summary">${escapeHtml((nl.excerpt || "").replace(/^\W*\d*\s*Liebe \{Vorname\},?\s*/, ""))}</span>
-          </span>
-          <span class="row__meta">${nl.date ? `<span class="row__date">${formatDate(nl.date)}</span>` : ""}</span>
-        </a>
-      </li>`;
+  /* Zeitstrahl der versendeten Newsletter (2026-11-13, Nutzerin: zuerst ein
+     Zeitstrahl, damit man schnell erkennt, was schon besprochen wurde).
+     Themen je Ausgabe in NEWSLETTERS[].topics (k = Kategorie, auto = vom
+     Importskript vorgeschlagen, noch nicht geprüft). */
+  const NL_KINDS = {
+    ms: { label: "Microsoft Advertising" },
+    sws: { label: "SWS Alliance" },
+    event: { label: "Veranstaltung" },
+    recht: { label: "Recht & SEO" },
+  };
+  const nlTopics = (nl) => (nl.topics && nl.topics.length ? nl.topics : [{ k: "ms", t: (nl.excerpt || "").replace(/^\W*\d*\s*Liebe \{Vorname\},?\s*/, "").slice(0, 120) + " …", auto: true }]);
+
+  function renderNewsletterTimeline(body) {
+    const list = NEWSLETTERS.filter((n) => n.date).slice().sort((a, b) => b.date.localeCompare(a.date));
+    if (!list.length) {
+      body.innerHTML = `<div class="empty-state">${ICONS.mail}<strong>Noch keine Newsletter im Archiv</strong><p>Newsletter in Gmail öffnen → ⋮ → „Nachricht herunterladen“ (.eml), nach <code>content/newsletter/</code> legen und <code>python tools/import-newsletters.py</code> ausführen.</p></div>`;
+      return;
+    }
+    const todayIso = new Date().toISOString().slice(0, 10);
+    const first = list[list.length - 1].date, last = list[0].date;
+    // Achse: vom Monat der ersten Ausgabe bis zum aktuellen Monat
+    const start = new Date(first.slice(0, 7) + "-01T00:00:00");
+    const endM = new Date(todayIso.slice(0, 7) + "-01T00:00:00"); endM.setMonth(endM.getMonth() + 1);
+    const span = endM - start;
+    const pos = (iso) => Math.min(100, Math.max(0, ((new Date(iso + "T00:00:00") - start) / span) * 100));
+    const months = [];
+    for (const d = new Date(start); d < endM; d.setMonth(d.getMonth() + 1)) months.push(new Date(d));
+    const MON = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
+    const daysSince = Math.round((new Date(todayIso) - new Date(last)) / 86400000);
+    const topicCount = list.reduce((n, x) => n + nlTopics(x).length, 0);
+    const kindCount = (k) => list.reduce((n, x) => n + nlTopics(x).filter((t) => t.k === k).length, 0);
+
+    body.innerHTML = `
+      <section class="nlt">
+        <div class="nlt__head">
+          <div>
+            <h2 class="feed__title">Zeitstrahl<span class="feed__title__count">${list.length} Ausgaben · ${topicCount} Themen</span></h2>
+            <p class="nlt__lead">Letzte Ausgabe am <strong>${formatDate(last)}</strong> — vor <strong>${daysSince} Tagen</strong>.</p>
+          </div>
+          <label class="nlt__search">${ICONS.search || ""}<input type="search" id="nlt-q" placeholder="Thema suchen, z. B. AI Max" aria-label="Thema in bisherigen Newslettern suchen" /></label>
+        </div>
+        <div class="nlt__kinds" role="group" aria-label="Kategorien">
+          ${Object.entries(NL_KINDS).map(([k, v]) => `<button type="button" class="nlt-kind nlt-kind--${k} is-on" data-kind="${k}" aria-pressed="true"><span class="nlt-kind__dot"></span>${v.label}<span class="nlt-kind__n">${kindCount(k)}</span></button>`).join("")}
+        </div>
+        <div class="nlt-axis">
+          <div class="nlt-axis__months">${months.map((m) => `<span>${MON[m.getMonth()]}${m.getMonth() === 0 || m.getTime() === start.getTime() ? ` ${m.getFullYear()}` : ""}</span>`).join("")}</div>
+          <div class="nlt-axis__track">
+            <span class="nlt-axis__gap" style="left:${pos(last).toFixed(2)}%;right:${(100 - pos(todayIso)).toFixed(2)}%"><span>${daysSince} Tage ohne Newsletter</span></span>
+            ${list.map((n) => `<a class="nlt-axis__dot" style="left:${pos(n.date).toFixed(2)}%" href="#nl-${escapeHtml(n.id)}" data-nlt-goto="${escapeHtml(n.id)}" title="${escapeHtml(n.subject)} — ${formatDate(n.date)}"><span>${String(n.date).slice(8, 10)}.${String(n.date).slice(5, 7)}.</span></a>`).join("")}
+            <span class="nlt-axis__today" style="left:${pos(todayIso).toFixed(2)}%"><span>Heute</span></span>
+          </div>
+        </div>
+        <ol class="nlt-list">
+          ${list.map((n) => {
+            const d = new Date(n.date + "T00:00:00");
+            return `
+            <li class="nlt-item" id="nl-${escapeHtml(n.id)}" data-nl="${escapeHtml(n.id)}">
+              <div class="nlt-item__date"><strong>${d.getDate()}.</strong><span>${MON[d.getMonth()]} ${d.getFullYear()}</span></div>
+              <article class="nlt-card">
+                <h3><a href="#/newsletter/${encodeURIComponent(n.id)}">${escapeHtml(n.subject)}</a></h3>
+                <ul class="nlt-topics">
+                  ${nlTopics(n).map((t) => `<li class="nlt-topic" data-kind="${escapeHtml(t.k)}" data-text="${escapeHtml(t.t.toLowerCase())}"><span class="nlt-tag nlt-tag--${escapeHtml(t.k)}">${escapeHtml((NL_KINDS[t.k] || NL_KINDS.ms).label)}</span><span class="nlt-topic__t">${escapeHtml(t.t)}</span>${t.auto ? `<span class="nlt-topic__auto" title="Automatisch vorgeschlagen, noch nicht geprüft">ungeprüft</span>` : ""}</li>`).join("")}
+                </ul>
+                <a class="nlt-card__open" href="#/newsletter/${encodeURIComponent(n.id)}">Ausgabe ansehen ${ICONS.arrowRight}</a>
+              </article>
+            </li>`;
+          }).join("")}
+        </ol>
+        <p class="nlt__empty" id="nlt-empty" hidden>Kein Thema gefunden — dazu gab es noch keinen Newsletter.</p>
+      </section>`;
+
+    // Schmaler Bildschirm: Achse am aktuellen Ende zeigen (letzte Ausgaben + Lücke bis heute)
+    const axis = body.querySelector(".nlt-axis");
+    if (axis && axis.scrollWidth > axis.clientWidth) axis.scrollLeft = axis.scrollWidth;
+
+    const q = body.querySelector("#nlt-q");
+    const kinds = new Set(Object.keys(NL_KINDS));
+    const apply = () => {
+      const term = q.value.trim().toLowerCase();
+      let anyItem = false;
+      body.querySelectorAll(".nlt-item").forEach((item) => {
+        let visible = 0;
+        item.querySelectorAll(".nlt-topic").forEach((li) => {
+          const ok = kinds.has(li.dataset.kind) && (!term || li.dataset.text.includes(term));
+          li.hidden = !ok;
+          li.classList.toggle("is-hit", !!term && ok);
+          if (ok) visible++;
+        });
+        item.hidden = visible === 0;
+        if (visible) anyItem = true;
+        const dot = body.querySelector(`[data-nlt-goto="${item.dataset.nl}"]`);
+        if (dot) dot.classList.toggle("is-dim", visible === 0);
+      });
+      body.querySelector("#nlt-empty").hidden = anyItem;
+    };
+    q.addEventListener("input", apply);
+    body.querySelectorAll("[data-kind].nlt-kind").forEach((b) => b.addEventListener("click", () => {
+      const k = b.dataset.kind;
+      if (kinds.has(k)) kinds.delete(k); else kinds.add(k);
+      b.classList.toggle("is-on", kinds.has(k));
+      b.setAttribute("aria-pressed", kinds.has(k) ? "true" : "false");
+      apply();
+    }));
+    body.querySelectorAll("[data-nlt-goto]").forEach((a) => a.addEventListener("click", (e) => {
+      e.preventDefault();
+      const el = document.getElementById("nl-" + a.dataset.nltGoto);
+      if (!el) return;
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.classList.remove("is-flash"); void el.offsetWidth; el.classList.add("is-flash");
+    }));
   }
 
   async function renderNewsletter(v, _typ, zeit) {
-    const view_ = v === "archiv" ? "archiv" : "vorschlag";
+    const view_ = v === "vorschlag" ? "vorschlag" : "zeitstrahl";
     const z = ["auto", "14", "30", "60", "90"].includes(zeit) ? zeit : "auto";
     const go = (o) => { location.hash = `#/newsletter?${new URLSearchParams({ v: view_, zeit: z, ...o })}`; };
     view.innerHTML = `
       <section class="hero hero--compact">
         <div class="hero__intro">
           <h1>Newsletter</h1>
-          <p>„Neues aus der SWS-Alliance“ – alle bisherigen Ausgaben und ein Vorschlag für die nächste: drei Microsoft-Advertising-Neuerungen, die für die Kontoentwicklung zählen, und unsere Veranstaltungen.</p>
+          <p>„Neues aus der SWS-Alliance“ — auf einen Blick, was wir wann verschickt haben, und ein Vorschlag für die nächste Ausgabe.</p>
         </div>
       </section>
       <div class="toolbar">
         <nav class="tabs" aria-label="Ansicht">
+          <button type="button" class="tabs__item ${view_ === "zeitstrahl" ? "is-active" : ""}" data-v="zeitstrahl">Zeitstrahl<span class="tabs__item-count">${NEWSLETTERS.length}</span></button>
           <button type="button" class="tabs__item ${view_ === "vorschlag" ? "is-active" : ""}" data-v="vorschlag">Nächste Ausgabe</button>
-          <button type="button" class="tabs__item ${view_ === "archiv" ? "is-active" : ""}" data-v="archiv">Archiv<span class="tabs__item-count">${NEWSLETTERS.length}</span></button>
         </nav>
       </div>
       <div id="nl-body"></div>`;
     view.querySelectorAll("[data-v]").forEach((b) => b.addEventListener("click", () => go({ v: b.dataset.v })));
     const body = document.getElementById("nl-body");
 
-    if (view_ === "archiv") {
-      body.innerHTML = NEWSLETTERS.length
-        ? `<ul class="article-list">${NEWSLETTERS.map(nlArchiveCard).join("")}</ul>`
-        : `<div class="empty-state">${ICONS.mail}<strong>Noch keine Newsletter im Archiv</strong><p>Newsletter in Gmail öffnen → ⋮ → „Nachricht herunterladen“ (.eml), nach <code>content/newsletter/</code> legen und <code>python tools/import-newsletters.py</code> ausführen.</p></div>`;
+    if (view_ === "zeitstrahl") {
+      renderNewsletterTimeline(body);
       return;
     }
 
@@ -5146,7 +5242,7 @@
     const nl = NEWSLETTERS.find((n) => n.id === id);
     if (!nl) { renderNotFound("/newsletter/" + id); return; }
     view.innerHTML = `
-      <a class="back-link" href="#/newsletter?v=archiv">${ICONS.arrowLeft} Zum Newsletter-Archiv</a>
+      <a class="back-link" href="#/newsletter">${ICONS.arrowLeft} Zum Newsletter-Zeitstrahl</a>
       <article class="detail">
         <div class="detail__meta">
           <span class="chip" style="background-color: var(--turquoise-text)">Newsletter</span>
@@ -5194,7 +5290,7 @@
     } else if (path.startsWith("/newsletter/")) {
       renderNewsletterDetail(decodeURIComponent(path.slice("/newsletter/".length)));
     } else if (path === "/newsletter") {
-      renderNewsletter(params.get("v") || "vorschlag", params.get("typ") || "operativ", params.get("zeit") || "auto");
+      renderNewsletter(params.get("v") || "zeitstrahl", params.get("typ") || "operativ", params.get("zeit") || "auto");
     } else if (path.startsWith("/anleitungen/")) {
       renderGuideDetail(decodeURIComponent(path.slice("/anleitungen/".length)));
     } else if (path === "/anleitungen") {
