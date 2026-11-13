@@ -38,6 +38,16 @@ const RM_SRC = {
   april: { label: "Microsoft Advertising Blog, April 2026", url: "https://about.ads.microsoft.com/en/blog/post/april-2026/win-across-all-three-eras-of-the-web" },
   mcp: { label: "Microsoft Advertising: MCP Server", url: "https://about.ads.microsoft.com/en/solutions/technology/mcp-server" },
   deck: { label: "Product Roadmap Q3 2026 (intern)", url: "#/praesentationen/product-roadmap-q3-2026" },
+  aiMaxLearn: { label: "Microsoft Learn: AI Max (API-Leitfaden)", url: "https://learn.microsoft.com/en-us/advertising/guides/ai-max?view=bingads-13" },
+  capiLearn: { label: "Microsoft Learn: Conversions API", url: "https://learn.microsoft.com/en-us/advertising/guides/uet-conversion-api-integration?view=bingads-13" },
+  consent: { label: "Microsoft Advertising Blog: Advanced Consent Mode, 19.02.2026", url: "https://about.ads.microsoft.com/en/blog/post/february-2026/advanced-consent-mode-preserving-accurate-measurement-while-respecting-user-privacy" },
+  mcpLearn: { label: "Microsoft Learn: MCP-Server einrichten", url: "https://learn.microsoft.com/en-us/advertising/guides/mcp-setup?view=bingads-13" },
+  apr: { label: "Microsoft Advertising Blog, 16.04.2026", url: "https://about.ads.microsoft.com/en/blog/post/april-2026/performance-max-updates-and-other-product-news-for-april-2026" },
+  feb: { label: "Microsoft Advertising Blog, 17.02.2026", url: "https://about.ads.microsoft.com/en/blog/post/february-2026/ad-preview-hub-and-other-product-news-for-february-2026" },
+  pmaxTransp: { label: "Microsoft Advertising Blog: PMax-Transparenz, 07.05.2026", url: "https://about.ads.microsoft.com/en/blog/post/may-2026/providing-more-transparency-for-your-performance-max-campaigns" },
+  june: { label: "Microsoft Advertising Blog, 17.06.2026", url: "https://about.ads.microsoft.com/en/blog/post/june-2026/building-a-new-ai-economy-that-creates-value-for-everyone" },
+  restLearn: { label: "Microsoft Learn: Umstieg auf die REST-API", url: "https://learn.microsoft.com/en-us/advertising/guides/migrate-to-rest?view=bingads-13" },
+  agencyLearn: { label: "Microsoft Learn: Kunden als Agentur verwalten", url: "https://learn.microsoft.com/en-us/advertising/msa-help/hlp_ba_proc_agencyenable" },
 };
 
 const ROADMAP = [
@@ -225,12 +235,12 @@ const ROADMAP = [
     title: "Kontoübergreifende Portfolio-Gebote",
     area: "gebote",
     de: "ja",
-    status: "Allgemein verfügbar bis 11.000 Kampagnen, Pilot bis 100.000",
-    date: "2026-08-01",
-    what: "Eine Portfolio-Gebotsstrategie für Kampagnen aus mehreren Konten mit gleichem Ziel; die Gebotsautomatik lernt aus den gebündelten Daten.",
+    status: "Verfügbar seit Mai 2026 (bis 11.000 Kampagnen, Pilot bis 100.000)",
+    date: "2026-05-19",
+    what: "Eine Portfolio-Gebotsstrategie für Such- und Shopping-Kampagnen aus mehreren Konten mit gleichem Ziel; die Gebotsautomatik lernt aus den gebündelten Daten.",
     why: "Für Agenturen und Kunden mit vielen Konten weniger Handarbeit.",
     deNote: "Laut Roadmap global.",
-    sources: ["deck"],
+    sources: ["may", "deck"],
   },
   {
     id: "maxconvvalue-audience",
@@ -438,11 +448,243 @@ const ROADMAP = [
     area: "workflow",
     de: "ja",
     change: true,
-    status: "Abschaltung am 31.01.2027",
+    status: "Abschaltung am 31.01.2027 (bis dahin neue Funktionen in SOAP und REST)",
     date: "2027-01-31",
     what: "Die SOAP-API wird am 31.01.2027 abgeschaltet; bis dahin kommen neue Funktionen in SOAP und REST.",
     why: "Agenturen mit eigenen Tools oder Skripten müssen bis dahin auf die REST-API umstellen.",
     deNote: "Plattformweit.",
-    sources: ["sep"],
+    sources: ["sep", "restLearn"],
   },
 ];
+
+/**
+ * Ausführliche Erklärungen für die Detailseiten #/roadmap/<id> (2026-11-13,
+ * Nutzerin: "wenn man auf eine Beta oder einen Punkt klickt, durchlesen,
+ * worum es genau geht — von offiziellen MS-Seiten"). Inhalte aus Microsoft
+ * Learn, Microsoft-Advertising-Hilfe und -Blog (Quellen je Eintrag, "src"
+ * ergänzt die Quellen aus ROADMAP). Wo Microsoft noch keine Hilfeseite
+ * veröffentlicht hat (Piloten), stammen die Angaben aus dem Roadmap-Deck;
+ * "official: false" blendet dann einen Hinweis ein.
+ * Felder: how = so funktioniert es, needs = Voraussetzungen, limits =
+ * Einschränkungen, setup = Schritte (optional).
+ */
+const ROADMAP_DETAILS = {
+  "ai-max": {
+    how: [
+      "AI Max ist eine Zusatzebene in normalen Suchkampagnen, kein eigener Kampagnentyp. Ein Hauptschalter schaltet alle Teile ein oder aus.",
+      "Suchbegriffs-Abgleich: Microsoft nutzt Keywords, Anzeigen, Landingpages und weitere Signale, um passende Suchanfragen zu finden, die bisher nicht abgedeckt sind — auch lange, gesprächsartige Anfragen. Im Bericht erscheinen sie mit dem Match-Typ „AI optimized“.",
+      "Textanpassung: Aus vorhandenen Assets und Website-Inhalten erzeugt die KI zusätzliche Text-Varianten und wählt in der Auktion die passendste Kombination.",
+      "Final-URL-Erweiterung: Statt immer auf dieselbe Seite zu leiten, wählt das System die Seite der Website, die am besten zur Suchanfrage passt. Mit URL-Einschlüssen und Seiten-Feeds (bis zu 20) lässt sich steuern, welche Seiten in Frage kommen.",
+      "Steuerung: Marken-Ein- und -Ausschlüsse über Markenlisten, Begriffs-Ausschlüsse (bis 25 Begriffe) und Messaging Guidelines (bis 40 Vorgaben, Pilot).",
+      "Berichte: Suchbegriffe mit „AI optimized“, KI-erzeugte Assets im Asset-Bericht und ein Suchbegriff-Landingpage-Bericht.",
+    ],
+    needs: [
+      "Suchkampagne mit Conversion-basierter Gebotsstrategie (Max. Conversions, Max. Conversion-Wert, Ziel-CPA, Ziel-ROAS) oder einer passenden Portfolio-Strategie.",
+      "UET-Tag bzw. passendes Conversion-Ziel.",
+      "Final-URL-Erweiterung funktioniert nur, wenn die automatische Texterzeugung eingeschaltet ist.",
+    ],
+    limits: [
+      "Bei neuen Suchkampagnen ist AI Max standardmäßig eingeschaltet — bei Bedarf bewusst ausschalten.",
+      "Marken-Einschlüsse setzen den Suchbegriffs-Abgleich voraus.",
+      "Bildgenerierung und URL-Einschlüsse brauchen eine eigene Freischaltung des Kontos.",
+      "Dynamic Search Ads werden laut Microsoft „bis auf Weiteres“ weiter unterstützt.",
+    ],
+    setup: [
+      "Suchkampagne mit Conversion-basierter Gebotsstrategie öffnen.",
+      "In den Kampagneneinstellungen AI Max aktivieren und die gewünschten Teile (Suchbegriffs-Abgleich, Textanpassung, Final-URL-Erweiterung) wählen.",
+      "Marken- und Begriffs-Ausschlüsse hinterlegen, bevor Traffic läuft.",
+      "Am besten als Optimization Experiment gegen die bisherige Kampagne testen.",
+    ],
+    src: ["aiMaxLearn", "june"],
+  },
+  "brand-agents": {
+    how: [
+      "Ein KI-Gesprächsassistent auf der eigenen Website, der die Marke vertritt: beantwortet Fragen, hilft bei der Produktauswahl und begleitet bis zum Kauf.",
+      "Grundlage ist der Produktkatalog des Shops; Änderungen werden laut Microsoft in Echtzeit übernommen. Mit der Zustimmung zu den Nutzungsbedingungen wird der Katalog auch im Microsoft Merchant Center veröffentlicht und so in Bing und Copilot auffindbar.",
+      "Läuft über Microsoft Clarity; ein Dashboard zeigt Interaktionen, Conversions und Umsatzeffekt im Vergleich zu Sitzungen ohne Assistent. Microsoft nennt in einer internen Auswertung im Schnitt doppelt so viele Conversions wie in Sitzungen ohne Assistent.",
+      "Laut Microsoft für Gespräche in allen Sprachen ausgelegt, mit Sprachwechsel mitten im Gespräch.",
+    ],
+    needs: ["Shop auf Shopify oder WooCommerce.", "Microsoft Clarity.", "Zustimmung zu den Brand-Agents-Bedingungen und ein Zusatz in der Datenschutzerklärung des Shops (Microsoft stellt eine Musterformulierung bereit)."],
+    limits: ["Laut Microsoft „currently in beta“.", "Nur für Websites, nicht für Apps.", "Microsoft nennt keine Länderliste und spricht von „berechtigten“ Shops."],
+    setup: ["Brand Agents über den Shopify App Store bzw. den WooCommerce-Ablauf installieren.", "Markensprache und Katalog konfigurieren.", "Live schalten und über das Dashboard beobachten."],
+    src: ["june", "april"],
+  },
+  "ucp-copilot": {
+    how: [
+      "UCP-fähige Produkt-Feeds im Microsoft Merchant Center liefern strukturierte Zusatzdaten, damit Copilot Produkte in Gesprächen passend zeigen kann.",
+      "Copilot Checkout: Der Kauf wird direkt in Copilot abgeschlossen, der Händler bleibt Merchant of Record. Microsoft nennt über 500.000 angebundene Händler und Treueprogramme (z. B. Target).",
+      "Shopify-Kataloge werden über die Commerce-Schnittstelle automatisch an Copilot angebunden.",
+    ],
+    needs: ["Microsoft Merchant Center mit vollständigem Produkt-Feed.", "Für Copilot Checkout eine Anbindung über das Agentic-Commerce-Onboarding von Microsoft."],
+    limits: ["UCP-Feeds laut Microsoft „generally available … in the U.S.“ (21.04.2026).", "Copilot Checkout „live in the U.S.“, Einstellungen teils nur für Beta-Teilnehmer.", "Keine Ankündigung für Deutschland oder die EU."],
+    src: ["april"],
+  },
+  "pmax-auto": {
+    official: false,
+    how: ["Eine KI-optimierte Performance-Max-Kampagne speziell für Fahrzeugbestände, ausgespielt im eigenen Microsoft-Netzwerk an Menschen, die gerade ein Auto suchen.", "Die Fahrzeug-Feeds werden im Merchant Center verwaltet, die automatischen Gebote optimieren auf Conversions."],
+    needs: ["Fahrzeug-Feed im Merchant Center.", "Teilnahme am geschlossenen Pilot über Microsoft."],
+    limits: ["Geschlossener Pilot, keine öffentliche Hilfeseite."],
+  },
+  "linkedin-companies": {
+    how: ["Firmenlisten für das LinkedIn-Firmen-Targeting fassen jetzt bis zu 10.000 Firmennamen (vorher 1.000).", "Listen lassen sich bei der Kampagnenerstellung oder in der Zielgruppen-Bibliothek hochladen, die Gebote gelten auf Listenebene — ohne die Liste auf mehrere Anzeigengruppen zu verteilen.", "Einsetzbar in Such- und Audience-Kampagnen."],
+    needs: ["Such- oder Audience-Kampagne.", "Liste mit Firmennamen."],
+    limits: ["Microsoft: „The underlying consumer data excludes users in the EEA, the UK and Switzerland.“ Personen in Deutschland werden über LinkedIn-Merkmale also nicht erreicht.", "LinkedIn-Profil-Targeting ist reines Gebots-Targeting („bid only“)."],
+    src: [],
+  },
+  "linkedin-seniority": {
+    how: ["Zehn einheitliche Senioritätsstufen im LinkedIn-Profil-Targeting: CXO, VP, Director, Manager, Senior, Entry, Owner, Partner, Training, Volunteer.", "Kombinierbar mit den übrigen LinkedIn-Merkmalen Firma, Branche und Jobfunktion, in Audience-Anzeigen und Suchkampagnen."],
+    needs: ["Audience- oder Suchkampagne."],
+    limits: ["Wie alle LinkedIn-Profil-Daten ohne Nutzer:innen aus EWR, UK und Schweiz."],
+  },
+  "linkedin-grid": {
+    official: false,
+    how: ["Alle LinkedIn-Profil-Kriterien und Demografie-Daten in einem gemeinsamen Raster mit Ergebnissen, statt verteilt auf mehrere Ansichten."],
+    limits: ["Open Pilot, noch keine Hilfeseite.", "LinkedIn-Daten ohne EWR."],
+  },
+  "audience-generation": {
+    how: ["Die Wunsch-Zielgruppe wird in normaler Sprache beschrieben; Microsoft-KI übersetzt das in konkrete Targeting-Einstellungen: Demografie, Orte, In-Market-Signale und von Copilot erzeugte individuelle Zielgruppen.", "Die KI schlägt nur vor — welche Einstellungen übernommen werden, entscheidet die Kampagnenführung."],
+    needs: ["Audience-Kampagne.", "Teilnahme am Pilot über das Account-Team."],
+    limits: ["April 2026: „closed pilot in the U.S. and Canada“; laut Roadmap (Q3) Open Pilot in USA, Kanada, Großbritannien, Australien, global erst zur allgemeinen Verfügbarkeit."],
+    src: ["april"],
+  },
+  "pmax-age-gender": {
+    how: ["In Performance-Max-Kampagnen lassen sich Altersgruppen (z. B. 18–24, 25–34) und Geschlechter (männlich, weiblich, unbekannt) ein- oder ausschließen."],
+    needs: ["Performance-Max-Kampagne."],
+    limits: ["Ausschlüsse engen die Reichweite ein; Microsoft empfiehlt grundsätzlich, die Automatik nicht durch zu viele manuelle Ausschlüsse zu bremsen."],
+    src: ["pmaxTransp"],
+  },
+  "pmax-device": {
+    how: ["Bestimmte Gerätetypen in Performance-Max-Kampagnen ein- oder ausschließen."],
+    needs: ["Performance-Max-Kampagne."],
+    limits: ["Rollout „in the coming weeks“ ab 28.10.2026 — im Konto prüfen, ob schon verfügbar."],
+  },
+  "pmax-audience-excl": {
+    how: ["Bestimmte Zielgruppen, etwa Bestandskunden-Listen, aus Performance-Max-Kampagnen ausschließen."],
+    needs: ["Teilnahme am Open Pilot über das Microsoft-Account-Team oder den Support."],
+    limits: ["Open Pilot."],
+  },
+  "pmax-brand-excl": {
+    how: ["Marken-Ausschlusslisten blockieren Marken-Suchanfragen. Neu: Sie lassen sich nur auf Textanzeigen anwenden — Produktanzeigen dürfen bei diesen Marken-Suchen weiter erscheinen."],
+    needs: ["Performance-Max-Kampagne mit Markenliste."],
+    limits: ["Pilot; laut Roadmap global außer China."],
+  },
+  "dda": {
+    how: ["Ein Machine-Learning-Modell verteilt den Conversion-Wert auf alle Anzeigenkontakte entlang der Customer Journey — statt alles dem letzten Klick zuzuschreiben.", "Die automatischen Gebote lernen dadurch, welche Kontakte wirklich zum Abschluss beitragen.", "Der Bericht „Conversion Model Compare“ (Berichte › Standardberichte › Performance) vergleicht die Modelle auf Keyword-Ebene."],
+    needs: ["Kampagnen mit Max. Conversions (optional Ziel-CPA), Max. Conversion-Wert (optional Ziel-ROAS) oder erweitertem CPC."],
+    limits: ["Standard bleibt das Last-Click-Modell — DDA muss im Conversion-Ziel aktiv gewählt werden.", "Conversion-Fenster bis 90 Tage."],
+    setup: ["Conversion-Ziel öffnen.", "Attributionsmodell auf „datengetrieben“ umstellen.", "Nach der Umstellung Gebote und Ziele eine Lernphase lang beobachten."],
+    src: [],
+  },
+  "seasonality-portfolio": {
+    how: ["Saisonalitäts-Anpassungen sagen der Gebotsautomatik vorab, dass sich die Conversion-Rate für einen kurzen Zeitraum deutlich ändert (Aktion, Saisonspitze, Großereignis).", "Seit April 2026 auch für Kampagnen in Portfolio-Gebotsstrategien und seit Mai für geteilte Budgets."],
+    needs: ["Kampagnen mit Ziel-ROAS oder Ziel-CPA.", "Stabile Leistung und abgeschlossene Lernphase."],
+    limits: ["Nur für kurzfristige Ereignisse, nicht für laufende Optimierung.", "Im Portfolio möglichst eine einheitliche Anpassung für alle Kampagnen — unterschiedliche Anpassungen können Budget aggressiv umverteilen.", "Mehrere Anpassungen auf derselben Kampagne werden alle angewendet."],
+    setup: ["Werkzeuge › Planung › Gebotsstrategien öffnen.", "Saisonalitäts-Anpassung anlegen: Zeitraum, Kampagnen bzw. Portfolio und erwartete Änderung der Conversion-Rate.", "Nach dem Ereignis Ergebnisse mit dem Vorzeitraum vergleichen."],
+    src: ["apr", "may"],
+  },
+  "cross-account-portfolio": {
+    how: ["Eine Portfolio-Gebotsstrategie umfasst Kampagnen aus mehreren Konten mit demselben Ziel.", "Die Daten aller Kampagnen fließen zusammen, sodass die Gebotsautomatik schneller lernt und das Budget über die Kampagnen hinweg effizient verteilt wird."],
+    needs: ["Such- oder Shopping-Kampagnen mit gleichem Ziel.", "Zugriff auf alle beteiligten Konten (Manager-Konto)."],
+    limits: ["Laut Microsoft (Mai 2026) für Such- und Shopping-Kampagnen.", "Laut Roadmap bis 11.000 Kampagnen allgemein verfügbar, bis 100.000 im Pilot.", "Der Typ einer Portfolio-Strategie lässt sich nachträglich nicht ändern."],
+  },
+  "maxconvvalue-audience": {
+    official: false,
+    how: ["Audience-Anzeigen bieten auf möglichst wertvolle Conversions statt auf möglichst viele, optional mit Ziel-ROAS."],
+    needs: ["Conversion-Ziele mit Werten (z. B. Umsatz)."],
+    limits: ["Open Pilot, noch keine Hilfeseite."],
+  },
+  "max-cpc": {
+    how: ["Seit 01.10.2026 gibt es bei neuen Kampagnen ohne Portfolio mit Max. Conversions (Ziel-CPA), Max. Conversion-Wert (Ziel-ROAS) oder Max. Klicks keine Max-CPC-Obergrenze mehr.", "Kampagnen, die vor dem 01.10.2026 angelegt wurden, behalten die Einstellung; Portfolio-Strategien bieten Max-CPC weiterhin an."],
+    limits: ["Steuerung neuer Kampagnen über Ziele, Budgets und Saisonalitäts-Anpassungen statt über ein CPC-Limit."],
+  },
+  "term-exclusions": {
+    how: ["Wörter oder Formulierungen, die in KI-erzeugten Anzeigentexten nie vorkommen dürfen (Beispiele von Microsoft: „discount“, „buy now“, „cure“).", "Gilt für AI Max for Search und Performance Max."],
+    needs: ["Suchkampagne mit AI Max oder Performance-Max-Kampagne."],
+    limits: ["Bis zu 25 Begriffe mit je bis zu 30 Zeichen."],
+    src: ["aiMaxLearn"],
+  },
+  "messaging-guidelines": {
+    how: ["Bis zu 40 Leitlinien, was KI-erzeugte Anzeigentexte sagen oder nicht sagen sollen: Aussagen, Themen, Tonalität, Wortwahl — als Verbote und als positive Vorgaben."],
+    needs: ["Performance-Max-Kampagne oder Suchkampagne mit AI Max."],
+    limits: ["Open Pilot.", "Je Leitlinie bis zu 300 Zeichen."],
+    src: ["aiMaxLearn"],
+  },
+  "asset-policy": {
+    how: ["Im Assets-Tab ist der Richtlinienstatus aller Text- und Bild-Assets sichtbar, inklusive Ablehnungsgrund.", "Abgelehnte Assets lassen sich filtern und kampagnenübergreifend gesammelt bearbeiten, ersetzen oder anfechten."],
+    limits: ["Laut Roadmap für Native, Display, Responsive Search Ads und Multimedia-Anzeigen."],
+  },
+  "ad-preview-hub": {
+    how: ["Zeigt vor dem Start, wie Anzeigen auf verschiedenen Platzierungen, Formaten und Geräten aussehen; Überschriften, Beschreibungen, Bilder, Logos und Videos lassen sich gemeinsam prüfen.", "Erzeugt teilbare Nur-Lese-Links für Kunden oder Kolleg:innen ohne Microsoft-Advertising-Zugang.", "Bei Audience-Anzeigen: Publisher wählen, Asset wählen, Gerät wechseln, zwischen Seiten- und Anzeigenansicht umschalten."],
+    needs: ["Performance-Max- oder Audience-Kampagne."],
+    limits: ["Für Audience-Anzeigen derzeit Vorschauen für MSN und Outlook, weitere Seiten sollen folgen."],
+    setup: ["Bei der Kampagnenerstellung in der Anzeigenvorschau „View all“ wählen.", "Platzierung und Gerät wählen.", "Freigabe-Link erzeugen und an den Kunden schicken."],
+    src: ["feb"],
+  },
+  "experiments": {
+    how: ["Ein Experiment ist eine Kopie der Kampagne, die einen Teil von Budget und Traffic erhält; eine Änderung (z. B. AI Max, Gebotsstrategie, Targeting, Creatives) wird nur in der Kopie getestet.", "Eine gemeinsame Ergebnisseite vergleicht Experiment und Original.", "Gewinnt die Änderung, wird sie auf die Originalkampagne übertragen oder als neue Kampagne übernommen."],
+    needs: ["Such-, Shopping-, Audience- oder Performance-Max-Kampagne."],
+    limits: ["Kampagnen mit geteiltem Budget können nicht Basis eines Experiments sein (laut API-Dokumentation).", "Ergebnisse brauchen Zeit: Microsoft empfiehlt mindestens 2, bei Conversion-Gebotsstrategien besser 4 Wochen."],
+    setup: ["Kampagne wählen und Experiment anlegen, Aufteilung idealerweise 50/50.", "Genau eine Änderung im Experiment vornehmen.", "Mindestens 1–2 Wochen Lernphase abwarten, dann auswerten.", "Gewinner auf die Originalkampagne übertragen."],
+  },
+  "capi": {
+    how: ["Server-zu-Server-Schnittstelle: Conversion- und Interaktionsdaten aus Website, CRM, Offline-Kanälen und Apps werden direkt an Microsoft Advertising gesendet — auch für dynamisches Remarketing.", "Ergänzt den UET-Tag. Senden beide dasselbe Ereignis, wird es über eine gemeinsame Event-ID nur einmal gezählt.", "Zuordnung über msclkid, gehashte E-Mail oder Telefonnummer, eigene IDs u. a.; Einwilligung wird pro Ereignis mitgegeben (adStorageConsent G/D).", "Einrichtung direkt per API, über (serverseitigen) Google Tag Manager oder über Partner wie Commanders Act, Segment, Stape.io, Tealium oder Zeotap."],
+    needs: ["UET-Tag und definierte Conversion-Ziele.", "CAPI-Token aus den UET-Einstellungen.", "Für Remarketing zusätzlich das clientseitige ID-Sync."],
+    limits: ["Ereignisse dürfen höchstens 90 Tage alt sein.", "Bis 1.000 Ereignisse pro Sendung.", "Keine unverschlüsselten E-Mails oder Telefonnummern senden — nur SHA-256-Hashes.", "Wird kein Einwilligungsstatus mitgegeben, behandelt Microsoft das Ereignis als „erteilt“ — für Deutschland den Einwilligungsstatus immer mitsenden."],
+    setup: ["Im Bereich UET den Tag öffnen (Stift-Symbol).", "„Speichern und weiter“, dann unter „Tagging einrichten“ „Conversions API verwenden“ wählen.", "Token kopieren und an den Entwickler bzw. Partner geben.", "Testereignisse senden und Doppelzählung über die Event-ID ausschließen."],
+    src: ["capiLearn", "consent"],
+  },
+  "avg-targets": {
+    how: ["Neue Kennzahlen „Durchschn. Ziel-ROAS“, „Durchschn. Ziel-CPA“ und „Durchschn. Ziel-Anteil an möglichen Impressionen“ auf Kampagnen-, Konto- und Portfolio-Ebene.", "Der Gebotsstrategie-Bericht zeigt außerdem Conversion-Verzögerungen und Gebotslandschaften: wie sich geänderte Ziele voraussichtlich auswirken."],
+    needs: ["Kampagnen mit automatischen Gebotsstrategien."],
+    limits: ["Keine Einschränkungen genannt."],
+    src: ["may"],
+  },
+  "pmax-search-terms": {
+    how: ["Suchbegriffs-Bericht: zeigt, bei welchen Suchanfragen Performance-Max-Anzeigen erschienen sind — auch im normalen Bericht „Suchbegriff“ und kontoübergreifend.", "Auktionsdaten: zeigen Überschneidungsrate und Anteil, bei dem Mitbewerber besser platziert waren.", "Dazu Landingpage-Bericht nach Final URL und Website-Bericht mit Conversions und Kosten je Platzierung."],
+    needs: ["Performance-Max-Kampagne."],
+    limits: ["Microsoft rät, nicht zu häufig manuell auszuschließen, weil das die Lernfähigkeit der Kampagne stört."],
+    src: ["pmaxTransp", "apr"],
+  },
+  "landing-page-report": {
+    how: ["Ordnet jedem Suchbegriff die tatsächlich angesteuerte Landingpage und die ausgespielte Überschrift zu.", "Besonders wichtig bei der Final-URL-Erweiterung von AI Max: zeigt, ob Nutzer:innen auf sinnvolle Seiten geleitet werden."],
+    needs: ["Suchkampagne mit AI Max."],
+    limits: ["Zeilen ohne Klicks werden nicht angezeigt.", "Rollout ab Mitte November 2026."],
+    src: ["aiMaxLearn"],
+  },
+  "pmax-channel-report": {
+    official: false,
+    how: ["Zeigt, welche Kanäle (z. B. Suche, Audience, Shopping) zur Leistung einer Performance-Max-Kampagne beitragen."],
+    limits: ["Geschlossener Pilot, noch keine Hilfeseite."],
+  },
+  "mcp": {
+    how: ["Ein Server nach dem offenen Model Context Protocol verbindet KI-Assistenten mit Live-Daten aus Microsoft Advertising.", "Unterstützt laut Microsoft Copilot Studio, GitHub Copilot in VS Code, ChatGPT und Claude.", "Man fragt in normaler Sprache, etwa nach Leistungsübersichten, Kampagnen- und Keyword-Analysen oder einem Vergleich mit Google Ads."],
+    needs: ["Microsoft-Konto (geschäftlich oder privat) mit Zugriff auf die betreffenden Werbekonten.", "Je nach Assistent eine App-Registrierung in Microsoft Entra (für ChatGPT, Claude, Copilot Studio).", "ChatGPT: Plus, Pro, Business, Enterprise oder Edu; Claude: Plan mit Remote-Connectors."],
+    limits: ["Derzeit nur Lesezugriff — keine Änderungen an Kampagnen.", "Der Server gibt keine zusätzlichen Rechte; jede Person sieht nur, worauf sie ohnehin Zugriff hat.", "Laut Roadmap global außer China und Indien."],
+    setup: ["App in Microsoft Entra registrieren (für persönliche und Geschäftskonten).", "Im Assistenten einen Connector mit der Server-Adresse von Microsoft anlegen und die Rückruf-Adresse in der App eintragen.", "Anmelden und mit einer Testfrage prüfen, z. B. „Welche Konten kann ich sehen?“."],
+    src: ["mcpLearn", "june"],
+  },
+  "ai-campaign-creation": {
+    how: ["Aus der Website und hochgeladenen Unterlagen (Marketingplan, Markenrichtlinien, Produktbilder) erstellt die KI eine erste Performance-Max-Kampagne.", "Vorher zeigt sie eine bearbeitbare Zusammenfassung des Unternehmens; Budget, Gebotsstrategie, Texte und Bilder lassen sich vor dem Start anpassen."],
+    needs: ["Neues Microsoft-Advertising-Konto."],
+    limits: ["Laut Roadmap Open Pilot, global außer China und Indien."],
+  },
+  "modern-ui": {
+    official: false,
+    how: ["Überarbeitete Oberfläche mit neuem Layout, besserer Navigation und erweiterten Tabellenansichten."],
+    limits: ["Wird schrittweise ausgerollt; nicht alle Konten sehen sie gleichzeitig."],
+  },
+  "dual-id": {
+    how: ["Neue Verknüpfungsanfragen brauchen zwei Kennungen statt einer.", "Verknüpfung mit einem Manager-Konto: Manager-Kontonummer + Manager-Konto-ID.", "Verknüpfung mit einem Werbekonto: Manager-Kontonummer + Kontonummer.", "Die Kontonummer ist ein 8-stelliger, die Manager-Kontonummer ein 10-stelliger alphanumerischer Code; beide stehen im Konto-Auswahlmenü und unter „Alle Konten“."],
+    needs: ["Super-Admin-Rolle zum Senden einer Anfrage.", "Aktives, nicht eingeschränktes Konto."],
+    limits: ["Gilt nur für neue Anfragen; bestehende Verknüpfungen bleiben.", "Höchstens fünf direkte Manager pro Konto.", "Der Kontoinhaber hat 30 Tage Zeit zum Annehmen, danach wird die Anfrage automatisch abgelehnt."],
+    setup: ["Werkzeuge › Alle Konten › Anfragen › „Mit Konto verknüpfen“.", "Beide Kennungen eintragen, Startdatum setzen, optional Abrechnung übernehmen.", "Anfrage senden; der Inhaber bestätigt per E-Mail-Link."],
+    src: ["agencyLearn"],
+  },
+  "soap": {
+    how: ["Microsoft stellt die Programmierschnittstelle von SOAP auf REST um.", "Bis zum 31.01.2027 laufen SOAP-Anbindungen weiter und bekommen auch neue Funktionen; danach wird SOAP abgeschaltet.", "Die im April genannte Grenze (neue Funktionen ab 01.10.2026 nur noch in REST) hat Microsoft im September zurückgenommen."],
+    needs: ["Für SDK-Nutzer: .NET- bzw. Java-SDK ab 13.0.22, für Python und PHP das neue Paket „msads“ statt „bingads“.", "Ohne SDK: REST-Adressen und -Formate laut API-Referenz."],
+    limits: ["Betrifft nur eigene Tools, Skripte und Drittanbieter-Anbindungen — nicht die normale Arbeit in der Oberfläche."],
+    setup: ["Prüfen, welche eigenen Tools oder Anbieter die Microsoft-Advertising-API nutzen.", "Anbieter nach REST-Unterstützung fragen bzw. SDK aktualisieren.", "Umstellung vor dem 31.01.2027 testen."],
+    src: ["restLearn"],
+  },
+};

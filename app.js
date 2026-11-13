@@ -4707,7 +4707,7 @@
         <div class="rm-lane">
           <div class="rm-lane__label"><strong>${escapeHtml(a.title)}</strong><span>${escapeHtml(a.en)}</span></div>
           <div class="rm-lane__track" data-rm-track>
-            ${list.map((x) => `<button type="button" class="rm-pill rm-pill--${x.de}${x.change ? " rm-pill--change" : ""}" style="left:${rmPos(x.date).toFixed(2)}%" data-rm-goto="${escapeHtml(x.id)}" title="${escapeHtml(x.title)} — ${escapeHtml(x.status)}"><span class="rm-pill__dot"></span>${escapeHtml(x.title.replace(/^Änderung: /, ""))}</button>`).join("")}
+            ${list.map((x) => `<a class="rm-pill rm-pill--${x.de}${x.change ? " rm-pill--change" : ""}" style="left:${rmPos(x.date).toFixed(2)}%" href="#/roadmap/${encodeURIComponent(x.id)}" title="${escapeHtml(x.title)} — ${escapeHtml(x.status)}"><span class="rm-pill__dot"></span>${escapeHtml(x.title.replace(/^Änderung: /, ""))}</a>`).join("")}
           </div>
         </div>`;
     }).join("");
@@ -4732,12 +4732,12 @@
                   ${x.pmax ? `<span class="rm-tag">Performance Max</span>` : ""}
                   ${x.change ? `<span class="rm-tag rm-tag--change">Änderung</span>` : ""}
                 </div>
-                <h3>${escapeHtml(x.title.replace(/^Änderung: /, ""))}</h3>
+                <h3><a class="rm-card__link" href="#/roadmap/${encodeURIComponent(x.id)}">${escapeHtml(x.title.replace(/^Änderung: /, ""))}</a></h3>
                 <p class="rm-card__status">${escapeHtml(x.status)}</p>
                 <p>${escapeHtml(x.what)}</p>
                 <p class="rm-card__de${x.deLimit || x.de === "nein" ? " rm-card__de--warn" : ""}"><strong>Deutschland:</strong> ${escapeHtml(x.deNote)}</p>
                 <p class="rm-card__why"><strong>Für Agenturen:</strong> ${escapeHtml(x.why)}</p>
-                <ul class="rm-card__src">${x.sources.map(src).join("")}</ul>
+                <a class="rm-card__more" href="#/roadmap/${encodeURIComponent(x.id)}">Ausführlich lesen ${ICONS.arrowRight}</a>
               </article>`).join("")}
           </div>
         </section>`;
@@ -4778,7 +4778,7 @@
             </div>
           </div>
         </div>
-        <p class="rm-chart-card__note">Punkt = Termin der allgemeinen Verfügbarkeit, sonst Ankündigung bzw. Pilotstart. Antippen springt zur Erklärung. Auf dem Handy seitlich wischen.</p>
+        <p class="rm-chart-card__note">Punkt = Termin der allgemeinen Verfügbarkeit, sonst Ankündigung bzw. Pilotstart. Antippen öffnet die ausführliche Erklärung (Strg-Klick: neuer Tab). Auf dem Handy seitlich wischen.</p>
       </section>
 
       <div class="rm-notice">
@@ -4791,12 +4791,6 @@
 
     view.querySelectorAll("[data-rm-filter]").forEach((b) => b.addEventListener("click", () => {
       location.hash = b.dataset.rmFilter === "alle" ? "#/roadmap" : `#/roadmap?f=${b.dataset.rmFilter}`;
-    }));
-    view.querySelectorAll("[data-rm-goto]").forEach((b) => b.addEventListener("click", () => {
-      const card = document.getElementById("rm-" + b.dataset.rmGoto);
-      if (!card) return;
-      card.scrollIntoView({ behavior: "smooth", block: "center" });
-      card.classList.remove("is-flash"); void card.offsetWidth; card.classList.add("is-flash");
     }));
 
     // Punkte einer Zeile, die sich überlappen würden, in weitere Reihen legen
@@ -4825,6 +4819,66 @@
       const lw = label ? label.offsetWidth : 0;
       chart.scrollLeft = Math.max(0, todayLine.offsetLeft - lw - (chart.clientWidth - lw) * 0.75);
     }
+  }
+
+  /* Detailseite je Roadmap-Punkt (2026-11-13): ausführliche Erklärung aus
+     ROADMAP_DETAILS (offizielle Microsoft-Seiten), Kopf im Band wie andere
+     Detailseiten, rechts Steckbrief mit Status, Quellen und Vor/Zurück. */
+  function renderRoadmapDetail(id) {
+    const x = ROADMAP.find((r) => r.id === id);
+    if (!x) { renderNotFound("/roadmap/" + id); return; }
+    const d = ROADMAP_DETAILS[id] || {};
+    const area = ROADMAP_AREAS.find((a) => a.key === x.area);
+    const order = ROADMAP_AREAS.flatMap((a) => ROADMAP.filter((r) => r.area === a.key).sort((p, q) => p.date.localeCompare(q.date)));
+    const i = order.findIndex((r) => r.id === id);
+    const prev = order[i - 1], next = order[i + 1];
+    const srcKeys = [...new Set([...(d.src || []), ...x.sources])];
+    const list = (arr) => `<ul>${arr.map((t) => `<li>${escapeHtml(t)}</li>`).join("")}</ul>`;
+    const title = x.title.replace(/^Änderung: /, "");
+    view.innerHTML = `
+      <a class="back-link" href="#/roadmap">${ICONS.arrowLeft} Zur Roadmap</a>
+      <article class="detail">
+        <div class="detail__meta">
+          <span class="chip rm-chip rm-chip--${x.de}">${escapeHtml(RM_STATUS[x.de].short)}</span>
+          <span class="detail__date">— ${escapeHtml(area ? area.title : "")}${x.pmax ? " · Performance Max" : ""}${x.change ? " · Änderung" : ""}</span>
+        </div>
+        <h1>${escapeHtml(title)}</h1>
+        <div class="guide-detail rm-detail">
+          <div class="kb-article">
+            ${d.official === false ? `<p class="rm-detail__hint">${ICONS.info} Zu dieser Funktion hat Microsoft noch keine öffentliche Hilfeseite veröffentlicht. Die Angaben stammen aus dem internen Roadmap-Deck und können sich ändern.</p>` : ""}
+            <h2>Worum geht es?</h2>
+            <p>${escapeHtml(x.what)}</p>
+            ${d.how && d.how.length ? `<h2>So funktioniert es</h2>${list(d.how)}` : ""}
+            ${d.needs && d.needs.length ? `<h2>Voraussetzungen</h2>${list(d.needs)}` : ""}
+            ${d.limits && d.limits.length ? `<h2>Einschränkungen</h2>${list(d.limits)}` : ""}
+            ${d.setup && d.setup.length ? `<h2>So richtet ihr es ein</h2><ol>${d.setup.map((t) => `<li>${escapeHtml(t)}</li>`).join("")}</ol>` : ""}
+            <h2>Was heißt das für Deutschland?</h2>
+            <p class="rm-detail__de${x.deLimit || x.de === "nein" ? " rm-detail__de--warn" : ""}">${escapeHtml(x.deNote)}</p>
+            <h2>Was bedeutet das für Agenturen?</h2>
+            <p>${escapeHtml(x.why)}</p>
+          </div>
+          <aside class="guide-aside">
+            <div class="side-card rm-facts">
+              <h2>Steckbrief</h2>
+              <dl>
+                <dt>Status</dt><dd>${escapeHtml(x.status)}</dd>
+                <dt>Deutschland</dt><dd>${escapeHtml(RM_STATUS[x.de].label)}</dd>
+                <dt>Bereich</dt><dd>${escapeHtml(area ? area.title : "")}</dd>
+                <dt>Termin im Zeitstrahl</dt><dd>${formatDate(x.date)}</dd>
+              </dl>
+            </div>
+            <div class="side-card">
+              <h2>Offizielle Quellen</h2>
+              <ul class="rm-detail__src">${srcKeys.map((k) => { const s = RM_SRC[k]; if (!s) return ""; const ext = !s.url.startsWith("#"); return `<li><a href="${escapeHtml(s.url)}"${ext ? ' target="_blank" rel="noopener"' : ""}>${escapeHtml(s.label)}</a></li>`; }).join("")}</ul>
+              <p class="guide-aside__text">Stand ${formatDate(ROADMAP_STAND)}. Vor Kundenzusagen die Quelle prüfen — Microsoft ändert Termine häufig.</p>
+            </div>
+            <nav class="side-card rm-detail__nav" aria-label="Weitere Roadmap-Punkte">
+              ${prev ? `<a href="#/roadmap/${encodeURIComponent(prev.id)}">${ICONS.arrowLeft} ${escapeHtml(prev.title.replace(/^Änderung: /, ""))}</a>` : ""}
+              ${next ? `<a href="#/roadmap/${encodeURIComponent(next.id)}">${escapeHtml(next.title.replace(/^Änderung: /, ""))} ${ICONS.arrowRight}</a>` : ""}
+            </nav>
+          </aside>
+        </div>
+      </article>`;
   }
 
   /* ------------------------------------------------------- Newsletter */
@@ -5125,6 +5179,8 @@
       renderNews(params.get("ch") || "all");
     } else if (path.startsWith("/praesentationen/")) {
       renderPresentationDetail(path.slice("/praesentationen/".length));
+    } else if (path.startsWith("/roadmap/")) {
+      renderRoadmapDetail(decodeURIComponent(path.slice("/roadmap/".length)));
     } else if (path === "/roadmap") {
       renderRoadmap(params.get("f") || "alle");
     } else if (path === "/praesentationen") {
@@ -5169,8 +5225,14 @@
     // hashchange) ist das Fokus-Verschieben auf den neuen Inhalt dagegen
     // gewünscht (Screenreader-Nutzer sollen wissen, dass sich was ändert).
     if (!isInitialRender) view.focus({ preventScroll: true });
+    // Neue Seite = nach oben (2026-11-13, Fund beim Roadmap-Test: Detailseiten
+    // öffneten an der Scrollposition der Liste). Bleibt der Pfad gleich (nur
+    // Filter/Suche/Tab per ?…), bleibt auch die Scrollposition.
+    if (!isInitialRender && path !== lastRenderedPath) window.scrollTo(0, 0);
+    lastRenderedPath = path;
     isInitialRender = false;
   }
+  let lastRenderedPath = null;
 
   /* SWS 2.0 (2026-10-06): Die Verlaufs-Bühne (.page-bg) reicht immer bis
      unter den Seitenkopf — Hero oder, auf Detailseiten, den Titel. Gemessen

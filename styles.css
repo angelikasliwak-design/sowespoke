@@ -4180,3 +4180,40 @@ body:has(.shell__main:not(.has-stage)) .topbar { background: var(--c-tf-petrol);
   .rm-chart-card { padding: 18px 14px 12px; }
   .rm-cards { grid-template-columns: 1fr; }
 }
+
+/* Roadmap-Detailseiten (2026-11-13): Pillen/Karten sind Links */
+.rm-pill { text-decoration: none; }
+.rm-card__link { color: inherit; text-decoration: none; }
+.rm-card__link:hover { color: var(--c-tf-orange-ink); text-decoration: underline; }
+.rm-card__more {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px dashed var(--c-tf-line);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--c-tf-orange-ink);
+  text-decoration: none;
+}
+.rm-card__more svg { width: 15px; height: 15px; transition: transform 150ms ease; }
+.rm-card__more:hover svg { transform: translateX(3px); }
+.rm-detail .kb-article h2:first-of-type { margin-top: 0; }
+.rm-detail__hint { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 8px; background: var(--c-tf-gold-tint); font-size: 0.92rem; }
+.rm-detail__hint svg { flex: none; width: 18px; height: 18px; margin-top: 2px; }
+.rm-detail__de { padding: 10px 12px; border-radius: 8px; background: var(--c-tf-petrol-tint); }
+.rm-detail__de--warn { background: var(--c-tf-orange-tint); }
+.rm-facts dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin: 0; font-size: 0.9rem; }
+.rm-facts dt { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--c-tf-ink-60); padding-top: 2px; }
+.rm-facts dd { margin: 0; }
+.rm-detail__src { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--space-3); }
+.rm-detail__src a { font-weight: 600; font-size: 0.9rem; color: var(--c-tf-orange-ink); }
+.rm-detail__nav { display: flex; flex-direction: column; gap: 10px; }
+.rm-detail__nav a { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 0.9rem; color: var(--c-tf-ink); text-decoration: none; }
+.rm-detail__nav a:hover { color: var(--c-tf-orange-ink); }
+.rm-detail__nav svg { flex: none; width: 15px; height: 15px; }
+/* Status-Pille im Band der Roadmap-Detailseite (überschreibt die allgemeine Orange-Regel) */
+.has-stage .detail__meta .chip.rm-chip--ja { background: white !important; border-color: white; color: var(--c-tf-petrol); }
+.has-stage .detail__meta .chip.rm-chip--bald { background: var(--c-tf-orange) !important; border-color: var(--c-tf-orange); color: var(--c-tf-ink); }
+.has-stage .detail__meta .chip.rm-chip--nein { background: transparent !important; border: 1.5px solid rgba(255, 255, 255, 0.75); color: white; }
